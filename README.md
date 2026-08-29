@@ -1,9 +1,8 @@
 # The Itti Foundation — website
 
-Public-facing site for **The Itti Foundation** — [itti.org.in](https://itti.org.in)
-
-Legal entity (legal entity: Itti's Skill School Foundation,
-a Section 8 not-for-profit). Built with [Astro](https://docs.astro.build).
+Public-facing site for **The Itti Foundation** — [itti.org.in](https://itti.org.in).
+Legal entity: Itti's Skill School Foundation, a Section 8 not-for-profit.
+Built with [Astro](https://docs.astro.build).
 
 > **Status: structure complete, copy deliberately withheld.**
 > Almost every string past the opening arc reads `N.A.` on purpose. The poem, the three pillar
