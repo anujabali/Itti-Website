@@ -314,7 +314,12 @@ const PILLARS = [
 		background:
 			linear-gradient(rgba(8, 9, 10, 0.34), rgba(8, 9, 10, 0.34)),
 			radial-gradient(120% 88% at 50% 44%, transparent 22%, rgba(8, 9, 10, 0.78) 100%),
-			linear-gradient(to bottom, rgba(8, 9, 10, 0.82), rgba(8, 9, 10, 0.3) 10%, transparent 26%),
+			linear-gradient(
+				to bottom,
+				rgba(8, 9, 10, 0.82),
+				rgba(8, 9, 10, 0.3) 10%,
+				transparent 26%
+			),
 			linear-gradient(to top, rgba(8, 9, 10, 0.8), transparent 32%);
 	}
 
@@ -586,7 +591,12 @@ const PILLARS = [
 				// Once a line's hold releases it is shepherded out a little faster
 				// than the page scrolls, so it has cleared the frame before the
 				// next line arrives. Two lines are never both legible at once.
-				const exits: { el: HTMLElement; by: number; words: HTMLElement[]; arrival: number }[] = [];
+				const exits: {
+					el: HTMLElement;
+					by: number;
+					words: HTMLElement[];
+					arrival: number;
+				}[] = [];
 				for (const beat of mv.querySelectorAll<HTMLElement>('.beat')) {
 					const text = beat.querySelector<HTMLElement>('.beat__text');
 					if (!text) continue;
@@ -644,8 +654,7 @@ const PILLARS = [
 				const distance = Math.min(r.room, r.stageH * r.pan);
 				// Travel and push in one transform, so each movement composites a
 				// single layer rather than a scaled layer inside a translated one.
-				r.plate.style.transform =
-					`translate3d(0, ${(-distance * p).toFixed(1)}px, 0) scale(${(1 + r.zoom * p).toFixed(4)})`;
+				r.plate.style.transform = `translate3d(0, ${(-distance * p).toFixed(1)}px, 0) scale(${(1 + r.zoom * p).toFixed(4)})`;
 
 				// As a movement leaves it hangs back, so the next slides over it
 				// instead of butting straight against it.

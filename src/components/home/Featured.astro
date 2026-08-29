@@ -159,7 +159,6 @@ const SLIDES = [
 			grid-template-columns: 1fr;
 			gap: 1.75rem;
 		}
-
 	}
 
 	.slide[hidden] {
@@ -258,7 +257,7 @@ const SLIDES = [
 				slide.toggleAttribute('aria-hidden', i !== current);
 			});
 			dots.forEach((dot, i) =>
-				dot.setAttribute('aria-selected', String(i === current))
+				dot.setAttribute('aria-selected', String(i === current)),
 			);
 		};
 
@@ -286,7 +285,7 @@ const SLIDES = [
 			dot.addEventListener('click', () => {
 				stop();
 				show(i);
-			})
+			}),
 		);
 		band.addEventListener('pointerenter', stop);
 		band.addEventListener('focusin', stop);

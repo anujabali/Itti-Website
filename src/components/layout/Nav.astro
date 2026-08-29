@@ -167,11 +167,13 @@ const MENUS = [
 							<a href={menu.href}>{menu.label}</a>
 						</h2>
 						<ul class="drawer__links">
-							{menu.groups.flatMap((g) => g.links).map((link) => (
-								<li>
-									<a href={link.href}>{link.label}</a>
-								</li>
-							))}
+							{menu.groups
+								.flatMap((g) => g.links)
+								.map((link) => (
+									<li>
+										<a href={link.href}>{link.label}</a>
+									</li>
+								))}
 						</ul>
 					</section>
 				))
@@ -608,7 +610,7 @@ const MENUS = [
 			// register the starting state. With a single frame the transition
 			// intermittently did not run at all.
 			requestAnimationFrame(() =>
-				requestAnimationFrame(() => panel.setAttribute('data-open', ''))
+				requestAnimationFrame(() => panel.setAttribute('data-open', '')),
 			);
 			trigger.setAttribute('aria-expanded', 'true');
 		};

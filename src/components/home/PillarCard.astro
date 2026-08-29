@@ -30,13 +30,18 @@ const { numeral, name, line, back, href, accent, mark } = Astro.props;
 			</button>
 			<span class="pillar__head" aria-hidden="true">
 				<span class="pillar__numeral">{numeral}</span>
-				{mark === 'claw' ? (
-					<span class="pillar__sign">
-						<ClawMark mono />
-					</span>
-				) : mark ? (
-					<span class="pillar__sign pillar__sign--raster" style={`--mark:url('${mark}')`} />
-				) : null}
+				{
+					mark === 'claw' ? (
+						<span class="pillar__sign">
+							<ClawMark mono />
+						</span>
+					) : mark ? (
+						<span
+							class="pillar__sign pillar__sign--raster"
+							style={`--mark:url('${mark}')`}
+						/>
+					) : null
+				}
 			</span>
 			<div class="pillar__body">
 				<h3 class="pillar__name">{name}</h3>
@@ -49,13 +54,15 @@ const { numeral, name, line, back, href, accent, mark } = Astro.props;
 				<span class="u-visually-hidden">Turn the {name} card back</span>
 			</button>
 			<div class="pillar__body pillar__body--back">
-				{mark === 'claw' ? (
-					<span class="pillar__mark pillar__mark--svg">
-						<ClawMark />
-					</span>
-				) : mark ? (
-					<img class="pillar__mark" src={mark} alt="" aria-hidden="true" />
-				) : null}
+				{
+					mark === 'claw' ? (
+						<span class="pillar__mark pillar__mark--svg">
+							<ClawMark />
+						</span>
+					) : mark ? (
+						<img class="pillar__mark" src={mark} alt="" aria-hidden="true" />
+					) : null
+				}
 				<h4 class="pillar__back-name">{name}</h4>
 				<p class="pillar__back-text">{back}</p>
 				<a class="pillar__link" href={href}>Learn more &rarr;</a>

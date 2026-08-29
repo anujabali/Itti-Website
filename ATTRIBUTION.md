@@ -5,7 +5,7 @@ This file travels with the code because the licences below oblige it to.
 
 ## `public/plates/bird.jpg` — CC BY-SA 4.0
 
-*Hummingbird at Arizona-Sonora Desert Museum* (2023) by **Lorie Shaull**.
+_Hummingbird at Arizona-Sonora Desert Museum_ (2023) by **Lorie Shaull**.
 Licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
 
 **Modified.** Colour-graded in linear light — filmic tonemap, split-toning,
@@ -18,12 +18,12 @@ Source: https://commons.wikimedia.org/wiki/File:Hummingbird_at_Arizona-Sonora_De
 
 ## `public/plates/cajal.jpg` — public domain
 
-*Purkinje cell of the cerebellum* (1899) by Santiago Ramón y Cajal.
+_Purkinje cell of the cerebellum_ (1899) by Santiago Ramón y Cajal.
 Modified: colour-graded and re-encoded as above.
 
 ## `public/plates/thorax.jpg` — public domain
 
-*Traité complet de l'anatomie de l'homme*, Plate 42 (1831–54), drawn by
+_Traité complet de l'anatomie de l'homme_, Plate 42 (1831–54), drawn by
 Nicolas-Henri Jacob for J. M. Bourgery. Modified as above.
 
 ## Fonts

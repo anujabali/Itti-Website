@@ -1,0 +1,7 @@
+{
+	"useTabs": true,
+	"singleQuote": true,
+	"printWidth": 88,
+	"plugins": ["prettier-plugin-astro"],
+	"overrides": [{ "files": "*.astro", "options": { "parser": "astro" } }]
+}

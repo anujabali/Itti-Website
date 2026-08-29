@@ -22,6 +22,8 @@ The dev server binds to every interface, so a phone or tablet on the same networ
 `http://<your-lan-ip>:4321`. On macOS the firewall must allow the **real** node binary — the one
 `/usr/local/bin/node` symlinks to, not the symlink itself.
 
+New to the project? Start with [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## Layout
 
 ```

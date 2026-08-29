@@ -36,7 +36,9 @@ const { class: className, mono = false } = Astro.props;
 		<rect class="sky sky--lost" x="50" y="0" width="50" height="100"></rect>
 
 		<!-- Living ground: a hill that rolls. -->
-		<path class="ground ground--living" d="M0 66 C12 56 26 52 38 57 C44 59 48 62 50 65 L50 100 L0 100 Z"></path>
+		<path
+			class="ground ground--living"
+			d="M0 66 C12 56 26 52 38 57 C44 59 48 62 50 65 L50 100 L0 100 Z"></path>
 
 		<!-- Lost ground: flat, and broken. -->
 		<path class="ground ground--lost" d="M50 65 L100 62 L100 100 L50 100 Z"></path>
@@ -45,7 +47,8 @@ const { class: className, mono = false } = Astro.props;
 		<path class="crack" d="M88 74 L84 82"></path>
 
 		<!-- The river, running out of the living half. -->
-		<path class="water" d="M44 62 C40 74 46 84 40 100 L58 100 C60 84 54 72 52 62 Z"></path>
+		<path class="water" d="M44 62 C40 74 46 84 40 100 L58 100 C60 84 54 72 52 62 Z"
+		></path>
 
 		<!-- Living tree. -->
 		<path class="tree" d="M24 56 L26 56 L26 40 L24 40 Z"></path>
