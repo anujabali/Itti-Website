@@ -17,13 +17,7 @@
 		"@astrojs/netlify": "^8.2.0",
 		"@fontsource-variable/bodoni-moda": "^5.3.0",
 		"@fontsource-variable/cinzel": "^5.3.0",
-		"@fontsource-variable/cormorant": "^5.3.0",
 		"@fontsource-variable/eb-garamond": "^5.3.0",
-		"@fontsource-variable/fraunces": "^5.3.0",
-		"@fontsource-variable/playfair-display": "^5.3.0",
-		"@fontsource/instrument-serif": "^5.3.0",
-		"@fontsource/marcellus": "^5.3.0",
-		"@fontsource/prata": "^5.3.0",
 		"@supabase/supabase-js": "^2.112.2",
 		"astro": "^7.1.5"
 	},

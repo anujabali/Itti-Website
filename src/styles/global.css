@@ -1,11 +1,5 @@
-@import '@fontsource-variable/cormorant';
-@import '@fontsource-variable/playfair-display';
 @import '@fontsource-variable/bodoni-moda';
-@import '@fontsource/instrument-serif';
-@import '@fontsource/prata';
-@import '@fontsource-variable/fraunces';
 @import '@fontsource-variable/cinzel';
-@import '@fontsource/marcellus';
 @import '@fontsource-variable/eb-garamond';
 
 /* ── Tokens ─────────────────────────────────────────────────────────────── */
@@ -31,19 +25,13 @@
 	--rose: #b3837e;
 	--sage: #7f9070;
 
-	/* Type.
-	   Both stand-ins for Gardenia are loaded so the display face is a one-line
-	   swap — set --display to var(--face-playfair) to compare. */
-	--face-cormorant: 'Cormorant Variable', 'Cormorant', Georgia, serif;
-	--face-playfair: 'Playfair Display Variable', 'Playfair Display', Georgia, serif;
+	/* Type. Three faces ship: Bodoni Moda for display, Cinzel for the poem's
+	   inscriptional capitals, EB Garamond for body and every small tracked
+	   label. Gardenia is still the wanted display face and needs a licence. */
 	--face-bodoni: 'Bodoni Moda Variable', 'Bodoni Moda', Didot, Georgia, serif;
-	--face-instrument: 'Instrument Serif', Georgia, serif;
-	--face-prata: 'Prata', Georgia, serif;
-	--face-fraunces: 'Fraunces Variable', 'Fraunces', Georgia, serif;
 	/* Cinzel is the free Trajan: same inscriptional Roman capitals. Trajan Pro
 	   itself is an Adobe licence, and is caps-only either way. */
 	--face-cinzel: 'Cinzel Variable', 'Cinzel', 'Trajan Pro', Georgia, serif;
-	--face-marcellus: 'Marcellus', Georgia, serif;
 	--display: var(--face-bodoni);
 	--body: 'EB Garamond Variable', 'EB Garamond', Georgia, serif;
 

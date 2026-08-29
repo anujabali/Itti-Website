@@ -58,6 +58,15 @@ silently matches nothing, because the child's root carries its own scope hash. P
 as **custom properties** on a parent — they inherit normally — or wrap the child in an
 element this component owns.
 
+**Most nav links 404, and that is expected.** `src/pages/` contains one file. Every route in
+the navigation and footer — `/our-story`, `/commitments/*`, `/marketplace`, `/join` — is a
+promise, not a page. The information architecture was settled first on purpose. Building one
+of those pages means adding the file; the link is already pointing at it.
+
+**Three typefaces ship, and only three.** Bodoni Moda for display, Cinzel for the poem's
+capitals, EB Garamond for body and small tracked labels. Every `@import` in `global.css` is
+downloaded by every visitor whether the face is used or not, so do not add one speculatively.
+
 **Copy that reads `N.A.` is deliberate.** The structure is finished and the words are
 pending. Don't invent replacements; ask.
 
