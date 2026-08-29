@@ -65,12 +65,21 @@ permits `.trycloudflare.com` for preview. Add any other tunnel domain there.
 
 ## Deployment
 
-Not yet deployed. Netlify is the intended host — free tier, private repos, per-branch preview
-URLs. Cloudflare Pages is the alternative if traffic is mostly India.
+Hosted on **Netlify**, built from `main`. Every push to `main` redeploys the live site, and
+every pull request gets its own preview URL — that is the whole reason the repository is
+connected rather than a folder being uploaded.
 
-**Before going live:** the plates total roughly 3 MB and are served straight from `public/`. They
-should move to Astro's image pipeline for responsive WebP. And the CC BY-SA obligations in
-[ATTRIBUTION.md](ATTRIBUTION.md) must be satisfied.
+Build settings live in [netlify.toml](netlify.toml), not in the dashboard, so they are
+reviewable and survive the site connection being rebuilt.
+
+```sh
+npm run build      # exactly what Netlify runs
+npm run preview    # serve the result locally
+```
+
+**Before this is a public launch:** the plates total roughly 3 MB and are served straight from
+`public/`. They should move to Astro's image pipeline for responsive WebP. The CC BY-SA
+obligations in [ATTRIBUTION.md](ATTRIBUTION.md) also need satisfying.
 
 ## Design record
 
