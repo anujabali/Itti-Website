@@ -1,0 +1,141 @@
+---
+import '../styles/global.css';
+import Nav from '../components/layout/Nav.astro';
+
+interface Props {
+	title: string;
+	description?: string;
+}
+
+const { title, description = 'The Itti Foundation.' } = Astro.props;
+
+// Paper grain. Kept as a data URI so there is no extra request and no asset to
+// keep in sync with the palette.
+const GRAIN =
+	"url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.86' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")";
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="icon" type="image/png" href="/favicon.png" />
+		<link rel="apple-touch-icon" href="/favicon.png" />
+		<meta name="generator" content={Astro.generator} />
+		<meta name="description" content={description} />
+		<meta name="theme-color" content="#0e3e45" />
+		<title>{title}</title>
+		<script is:inline>
+			// Blocking and first, so nothing is ever hidden by a transition that
+			// no script is coming to finish.
+			document.documentElement.classList.add('js');
+		</script>
+	</head>
+
+	<body>
+		<a class="skip" href="#main">Skip to content</a>
+		<Nav />
+		<main id="main">
+			<slot />
+		</main>
+		<div class="grain" style={`background-image:${GRAIN}`} aria-hidden="true"></div>
+	</body>
+</html>
+
+<style>
+	.skip {
+		position: absolute;
+		top: 0.5rem;
+		left: 0.5rem;
+		z-index: 100;
+		padding: 0.6rem 1rem;
+		border-radius: 0.5rem;
+		background: var(--cream);
+		color: var(--ink);
+		transform: translateY(-200%);
+	}
+
+	.skip:focus-visible {
+		transform: none;
+	}
+
+	.grain {
+		position: fixed;
+		inset: 0;
+		z-index: 90;
+		opacity: 0.055;
+		mix-blend-mode: overlay;
+		pointer-events: none;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.grain {
+			opacity: 0.035;
+		}
+	}
+</style>
+
+<script>
+	const nav = document.querySelector<HTMLElement>('[data-nav]');
+	const zone = document.querySelector<HTMLElement>('[data-light-zone]');
+
+	if (nav) {
+		if (!zone) {
+			// Pages without the opening arc start on cream.
+			nav.classList.add('is-light');
+		} else {
+			// The mark takes the colour of its ground, so the switch is bound to
+			// what is behind the bar — not to a scroll offset.
+			// Collapse the wordmark once the hero is behind us, and bring it back
+			// at the turn. Two thresholds rather than one so a scroll that
+			// hovers on the boundary can't flicker it.
+			const COLLAPSE_AT = 48;
+			const RESTORE_AT = 12;
+			let compact = false;
+			let queued = false;
+
+			const settle = () => {
+				queued = false;
+				const markCentre = nav.offsetHeight / 2;
+				const turned = zone.getBoundingClientRect().top <= markCentre;
+
+				if (turned) compact = false;
+				else if (!compact && window.scrollY > COLLAPSE_AT) compact = true;
+				else if (compact && window.scrollY < RESTORE_AT) compact = false;
+
+				nav.classList.toggle('is-light', turned);
+				nav.classList.toggle('is-compact', compact);
+			};
+			const schedule = () => {
+				if (queued) return;
+				queued = true;
+				requestAnimationFrame(settle);
+			};
+
+			document.addEventListener('scroll', schedule, { passive: true });
+			window.addEventListener('resize', schedule);
+			settle();
+		}
+	}
+
+	// Cross-fade anything marked to arrive on scroll.
+	const fades = document.querySelectorAll<HTMLElement>('.u-fade');
+	const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+	if (reduced) {
+		// All four lines render at once, as a single stanza.
+		for (const el of fades) el.classList.add('is-in');
+	} else {
+		const observer = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) {
+					if (!entry.isIntersecting) continue;
+					entry.target.classList.add('is-in');
+					observer.unobserve(entry.target);
+				}
+			},
+			{ rootMargin: '0px 0px -22% 0px', threshold: 0.01 }
+		);
+		for (const el of fades) observer.observe(el);
+	}
+</script>

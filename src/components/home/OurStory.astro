@@ -1,0 +1,76 @@
+---
+/**
+ * Our Story — the breath between the pillar cards and the Featured band.
+ *
+ * Deliberately the only centred section on the page. Everything before it is a
+ * full-bleed picture with type pushed to one edge, and everything after it is a
+ * left-aligned band; centring this one makes it read as a pause rather than as
+ * another block of content, which is what it has to be — the page asks for
+ * money four sections later and this is the only place that says who is asking.
+ *
+ * Text is N.A. until the facts are settled.
+ */
+---
+
+<section class="story" aria-labelledby="story-heading">
+	<p class="story__eyebrow">Our story</p>
+
+	<h2 class="story__statement" id="story-heading">N.A.</h2>
+
+	<p class="story__line">N.A.</p>
+
+	<p class="story__more">
+		<a href="/our-story">N.A. <span aria-hidden="true">&rarr;</span></a>
+	</p>
+</section>
+
+<style>
+	.story {
+		display: grid;
+		justify-items: center;
+		gap: 1.25rem;
+		padding: clamp(5rem, 13vh, 8.5rem) var(--gutter);
+		background: var(--cream-deep);
+		border-top: 1px solid rgba(44, 39, 33, 0.12);
+		text-align: center;
+	}
+
+	.story__eyebrow {
+		font-size: 0.6875rem;
+		font-weight: 500;
+		letter-spacing: 0.2em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+	}
+
+	/* Larger than any other heading past the arc. This is the one moment on the
+	   page where the foundation speaks in its own voice rather than describing
+	   something. */
+	.story__statement {
+		max-width: 24ch;
+		margin-top: 0.6rem;
+		font-size: clamp(1.875rem, 4vw, 3rem);
+		line-height: 1.16;
+		text-wrap: balance;
+	}
+
+	.story__line {
+		max-width: 44ch;
+		font-size: 1.0625rem;
+		line-height: 1.65;
+		color: var(--ink-soft);
+		text-wrap: pretty;
+	}
+
+	.story__more {
+		margin-top: 0.9rem;
+		font-family: var(--display);
+		font-size: 1.125rem;
+		color: var(--teal);
+	}
+
+	.story__more a {
+		padding-bottom: 0.2rem;
+		border-bottom: 1px solid currentColor;
+	}
+</style>

@@ -1,0 +1,119 @@
+---
+/**
+ * Impact — the proof behind the poetry, and the reason a foundation page is
+ * trusted at all.
+ *
+ * Every number here is PLACEHOLDER and must not ship as-is. The `since` line
+ * matters as much as the figure: a number without a window is a claim, not a
+ * measurement.
+ */
+
+const FIGURES = [
+	{ value: 'N.A.', unit: '', label: 'N.A.', since: 'N.A.' },
+	{ value: 'N.A.', unit: '', label: 'N.A.', since: 'N.A.' },
+	{ value: 'N.A.', unit: '', label: 'N.A.', since: 'N.A.' },
+	{ value: 'N.A.', unit: '', label: 'N.A.', since: 'N.A.' },
+];
+---
+
+<section class="impact" aria-labelledby="impact-heading">
+	<div class="impact__head">
+		<p class="impact__eyebrow">Impact</p>
+		<h2 class="impact__title" id="impact-heading">N.A.</h2>
+	</div>
+
+	<dl class="impact__grid">
+		{
+			FIGURES.map((figure) => (
+				<div class="figure">
+					<dt class="figure__value">
+						{figure.value}
+						{figure.unit && <span class="figure__unit">{figure.unit}</span>}
+					</dt>
+					<dd class="figure__label">
+						{figure.label}
+						<span class="figure__since">{figure.since}</span>
+					</dd>
+				</div>
+			))
+		}
+	</dl>
+
+	<p class="impact__note">
+		<a href="/our-story/transparency">N.A. &rarr;</a>
+	</p>
+</section>
+
+<style>
+	.impact {
+		padding: clamp(4rem, 10vh, 7rem) var(--gutter);
+		background: var(--cream-deep);
+		border-block: 1px solid rgba(44, 39, 33, 0.12);
+	}
+
+	.impact__eyebrow {
+		font-size: 0.6875rem;
+		font-weight: 500;
+		letter-spacing: 0.2em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+	}
+
+	.impact__title {
+		margin-top: 0.9rem;
+		max-width: 24rem;
+		font-size: clamp(1.75rem, 3.4vw, 2.5rem);
+		line-height: 1.12;
+	}
+
+	.impact__grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(13rem, 100%), 1fr));
+		gap: clamp(2rem, 4vw, 3.5rem);
+		margin: clamp(3rem, 6vh, 4.5rem) 0 0;
+	}
+
+	.figure__value {
+		font-family: var(--display);
+		font-size: clamp(3rem, 6vw, 4.5rem);
+		font-weight: 400;
+		line-height: 1;
+		color: var(--teal);
+		font-variant-numeric: lining-nums tabular-nums;
+	}
+
+	.figure__unit {
+		font-size: 0.42em;
+		margin-left: 0.15em;
+	}
+
+	.figure__label {
+		display: grid;
+		gap: 0.35rem;
+		margin: 1rem 0 0;
+		padding-top: 1rem;
+		border-top: 1px solid rgba(44, 39, 33, 0.14);
+		font-size: 1rem;
+		line-height: 1.45;
+		color: var(--ink);
+	}
+
+	.figure__since {
+		font-size: 0.75rem;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+	}
+
+	.impact__note {
+		margin-top: clamp(2.5rem, 5vh, 3.5rem);
+		font-family: var(--display);
+		font-size: 1.0625rem;
+		color: var(--teal);
+	}
+
+	.impact__note a {
+		padding-bottom: 0.2rem;
+		border-bottom: 1px solid currentColor;
+	}
+</style>

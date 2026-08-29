@@ -1,0 +1,181 @@
+---
+import Mark from '../brand/Mark.astro';
+import Wordmark from '../brand/Wordmark.astro';
+
+/**
+ * The footer. Contact, socials, legal, and a route into the Index of Plates —
+ * which is where the licence and provenance for every plate belongs now that
+ * the wall labels no longer carry it.
+ */
+
+const COLUMNS = [
+	{
+		title: 'The Foundation',
+		links: [
+			{ label: 'Mission', href: '/our-story/mission' },
+			{ label: 'Team', href: '/our-story/team' },
+			{ label: 'Transparency & Reports', href: '/our-story/transparency' },
+			{ label: 'Careers & Press', href: '/careers' },
+		],
+	},
+	{
+		title: 'Commitments',
+		links: [
+			{ label: 'Neurodivergence', href: '/commitments/neurodivergence' },
+			{ label: 'Cancer Care', href: '/commitments/cancer-care' },
+			{ label: 'CLAW', href: '/commitments/claw' },
+			{ label: 'Projects', href: '/commitments/projects' },
+		],
+	},
+	{
+		title: 'Take part',
+		links: [
+			{ label: 'Donate', href: '/join/donate' },
+			{ label: 'Become a member', href: '/join/member' },
+			{ label: 'Volunteer & partner', href: '/join/volunteer' },
+			{ label: 'Marketplace', href: '/marketplace' },
+		],
+	},
+];
+
+const SOCIALS = [
+	{ label: 'N.A.', href: '#' },
+	{ label: 'N.A.', href: '#' },
+	{ label: 'N.A.', href: '#' },
+];
+
+const year = 2026;
+---
+
+<footer class="foot">
+	<div class="foot__top">
+		<a class="foot__brand" href="/" aria-label="The Itti Foundation — home">
+			<Mark class="foot__mark" />
+			<span class="foot__word"><Wordmark /></span>
+		</a>
+
+		<nav class="foot__columns" aria-label="Footer">
+			{
+				COLUMNS.map((column) => (
+					<section class="foot__column">
+						<h2 class="foot__heading">{column.title}</h2>
+						<ul class="foot__links">
+							{column.links.map((link) => (
+								<li>
+									<a href={link.href}>{link.label}</a>
+								</li>
+							))}
+						</ul>
+					</section>
+				))
+			}
+		</nav>
+	</div>
+
+	<div class="foot__base">
+		<p class="foot__legal">N.A.</p>
+
+		<ul class="foot__socials">
+			{
+				SOCIALS.map((social) => (
+					<li>
+						<a href={social.href}>{social.label}</a>
+					</li>
+				))
+			}
+		</ul>
+
+		<ul class="foot__legalese">
+			<li><a href="/plates">Index of Plates</a></li>
+			<li><a href="/privacy">Privacy</a></li>
+			<li><a href="/contact">Contact</a></li>
+		</ul>
+	</div>
+</footer>
+
+<style>
+	.foot {
+		padding: clamp(3.5rem, 8vh, 5.5rem) var(--gutter) 2.5rem;
+		border-top: 1px solid rgba(44, 39, 33, 0.14);
+		color: var(--ink-soft);
+	}
+
+	.foot__top {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
+		gap: clamp(2.5rem, 5vw, 4rem);
+	}
+
+	.foot__brand {
+		display: flex;
+		align-items: center;
+		align-self: start;
+		color: var(--teal);
+		/* Reach the child components by inheritance — a scoped class selector
+		   would not match their roots. */
+		--mark-h: 2.4rem;
+		--wordmark-size: 1.25rem;
+		--wordmark-name: var(--ink);
+		--wordmark-sub: var(--teal);
+	}
+
+	.foot__word {
+		padding-left: 1rem;
+	}
+
+	.foot__columns {
+		display: contents;
+	}
+
+	.foot__heading {
+		font-family: var(--body);
+		font-size: 0.6875rem;
+		font-weight: 500;
+		letter-spacing: 0.19em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+	}
+
+	.foot__links {
+		display: grid;
+		gap: 0.55rem;
+		margin: 1.1rem 0 0;
+		padding: 0;
+		list-style: none;
+		font-size: 0.9375rem;
+	}
+
+	.foot__links a:hover {
+		color: var(--teal);
+	}
+
+	.foot__base {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 1rem 2rem;
+		margin-top: clamp(3rem, 6vh, 4.5rem);
+		padding-top: 1.75rem;
+		border-top: 1px solid rgba(44, 39, 33, 0.14);
+		font-size: 0.8125rem;
+	}
+
+	.foot__socials,
+	.foot__legalese {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1.25rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.foot__legalese {
+		margin-left: auto;
+	}
+
+	.foot__socials a:hover,
+	.foot__legalese a:hover {
+		color: var(--teal);
+	}
+</style>

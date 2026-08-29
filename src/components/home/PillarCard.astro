@@ -1,0 +1,250 @@
+---
+/**
+ * A pillar card — the last beat of the opening arc, where the poetry cashes
+ * out into plain language.
+ *
+ * Hover flips it on desktop, tap flips it on touch, and the back always carries
+ * an explicit "Learn more" so the flip is never the only way through.
+ */
+import ClawMark from '../brand/ClawMark.astro';
+
+interface Props {
+	numeral: string;
+	name: string;
+	line: string;
+	back: string;
+	href: string;
+	accent: 'ochre' | 'rose' | 'sage';
+	/** The project's own mark. A raster path, or 'claw' for the derived SVG. */
+	mark?: string;
+}
+
+const { numeral, name, line, back, href, accent, mark } = Astro.props;
+---
+
+<article class="pillar" style={`--accent: var(--${accent})`} data-pillar>
+	<div class="pillar__inner">
+		<div class="pillar__face pillar__face--front">
+			<button class="pillar__hit" type="button" aria-expanded="false" data-flip>
+				<span class="u-visually-hidden">Turn the {name} card over</span>
+			</button>
+			<span class="pillar__head" aria-hidden="true">
+				<span class="pillar__numeral">{numeral}</span>
+				{mark === 'claw' ? (
+					<span class="pillar__sign">
+						<ClawMark mono />
+					</span>
+				) : mark ? (
+					<span class="pillar__sign pillar__sign--raster" style={`--mark:url('${mark}')`} />
+				) : null}
+			</span>
+			<div class="pillar__body">
+				<h3 class="pillar__name">{name}</h3>
+				<p class="pillar__line">{line}</p>
+			</div>
+		</div>
+
+		<div class="pillar__face pillar__face--back">
+			<button class="pillar__hit" type="button" aria-expanded="true" data-flip>
+				<span class="u-visually-hidden">Turn the {name} card back</span>
+			</button>
+			<div class="pillar__body pillar__body--back">
+				{mark === 'claw' ? (
+					<span class="pillar__mark pillar__mark--svg">
+						<ClawMark />
+					</span>
+				) : mark ? (
+					<img class="pillar__mark" src={mark} alt="" aria-hidden="true" />
+				) : null}
+				<h4 class="pillar__back-name">{name}</h4>
+				<p class="pillar__back-text">{back}</p>
+				<a class="pillar__link" href={href}>Learn more &rarr;</a>
+			</div>
+		</div>
+	</div>
+</article>
+
+<style>
+	.pillar {
+		perspective: 1400px;
+		min-height: 17rem;
+	}
+
+	.pillar__inner {
+		position: relative;
+		height: 100%;
+		min-height: inherit;
+		transform-style: preserve-3d;
+		transition: transform 780ms var(--ease);
+	}
+
+	@media (hover: hover) {
+		.pillar:hover .pillar__inner,
+		.pillar:focus-within .pillar__inner {
+			transform: rotateY(180deg);
+		}
+	}
+
+	.pillar.is-flipped .pillar__inner {
+		transform: rotateY(180deg);
+	}
+
+	.pillar__face {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		padding: 1.75rem 1.6rem 1.6rem;
+		border-radius: 0.875rem;
+		border: 1px solid rgba(44, 39, 33, 0.1);
+		background: var(--cream-deep);
+		backface-visibility: hidden;
+		overflow: hidden;
+		box-shadow: 0 14px 30px -22px rgba(44, 39, 33, 0.5);
+		transition: box-shadow 400ms var(--ease);
+	}
+
+	.pillar:hover .pillar__face {
+		box-shadow: 0 22px 44px -22px rgba(44, 39, 33, 0.42);
+	}
+
+	/* A chalky wash of the pillar's pigment along the top edge. */
+	.pillar__face::before {
+		content: '';
+		position: absolute;
+		inset: 0 0 auto;
+		height: 0.1875rem;
+		background: var(--accent);
+		opacity: 0.85;
+	}
+
+	/* Cream, not a colour block: the butterfly's colouring is the whole idea of
+	   that mark, and it cannot survive being reversed out of a solid ground. */
+	.pillar__face--back {
+		transform: rotateY(180deg);
+		background: var(--cream);
+		color: var(--ink);
+	}
+
+	.pillar__hit {
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		cursor: pointer;
+	}
+
+	.pillar__head {
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		pointer-events: none;
+	}
+
+	.pillar__numeral {
+		font-family: var(--display);
+		font-size: 0.8125rem;
+		letter-spacing: 0.24em;
+		text-transform: uppercase;
+		color: var(--accent);
+	}
+
+	/* A signature, not a logo: one colour, small, so the front stays the museum
+	   label it is and the project's own identity waits for the flip. */
+	.pillar__sign {
+		display: block;
+		width: 2.25rem;
+		height: 2.25rem;
+		flex: none;
+		color: var(--accent);
+		opacity: 0.75;
+	}
+
+	.pillar__sign--raster {
+		background-color: currentColor;
+		-webkit-mask: var(--mark) center / contain no-repeat;
+		mask: var(--mark) center / contain no-repeat;
+	}
+
+	/* On the back it appears in full, in its own colours. */
+	.pillar__mark {
+		display: block;
+		width: auto;
+		height: 4.25rem;
+		max-width: 70%;
+		margin-bottom: 0.4rem;
+		object-fit: contain;
+		object-position: left center;
+	}
+
+	.pillar__mark--svg {
+		width: 4.25rem;
+	}
+
+	.pillar__body {
+		position: relative;
+		pointer-events: none;
+	}
+
+	.pillar__name {
+		font-size: clamp(1.75rem, 2.4vw, 2.125rem);
+		color: var(--ink);
+	}
+
+	.pillar__line {
+		margin-top: 0.7rem;
+		font-size: 1.0625rem;
+		line-height: 1.5;
+		color: var(--ink-soft);
+	}
+
+	.pillar__body--back {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.7rem;
+		height: 100%;
+	}
+
+	.pillar__back-name {
+		font-family: var(--body);
+		font-size: 0.6875rem;
+		font-weight: 500;
+		letter-spacing: 0.2em;
+		text-transform: uppercase;
+		opacity: 0.75;
+	}
+
+	.pillar__back-text {
+		font-size: 1.0625rem;
+		line-height: 1.55;
+		color: var(--ink-soft);
+	}
+
+	.pillar__link {
+		align-self: flex-start;
+		margin-top: auto;
+		color: var(--accent);
+		pointer-events: auto;
+		padding-bottom: 0.15rem;
+		border-bottom: 1px solid currentColor;
+		font-size: 0.9375rem;
+		letter-spacing: 0.02em;
+	}
+</style>
+
+<script>
+	for (const card of document.querySelectorAll<HTMLElement>('[data-pillar]')) {
+		for (const button of card.querySelectorAll<HTMLButtonElement>('[data-flip]')) {
+			button.addEventListener('click', () => {
+				card.classList.toggle('is-flipped');
+				const flipped = card.classList.contains('is-flipped');
+				card
+					.querySelector<HTMLButtonElement>('.pillar__face--front [data-flip]')
+					?.setAttribute('aria-expanded', String(flipped));
+			});
+		}
+	}
+</script>

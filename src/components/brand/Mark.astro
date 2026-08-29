@@ -1,0 +1,40 @@
+---
+/**
+ * The Itti mark — mountain range with the tree, snow and water knocked out.
+ *
+ * Painted as a CSS mask filled with `currentColor` rather than an <img>, because
+ * the core brand rule is that the mark takes the colour of its ground: warm
+ * white on the dark arc, teal on cream. One asset, both states, no swap.
+ *
+ * Source: public/brand/mark.png, extracted from the supplied lockup at
+ * 670 × 281. Replace with a vector when one exists — only this file changes.
+ */
+interface Props {
+	class?: string;
+	/** Any CSS length. The width follows from the mark's own ratio. */
+	height?: string;
+	label?: string;
+}
+
+const { class: className, height, label = 'The Itti Foundation' } = Astro.props;
+---
+
+<span
+	class:list={['mark', className]}
+	style={height ? `--mark-h:${height}` : undefined}
+	role="img"
+	aria-label={label}
+></span>
+
+<style>
+	.mark {
+		display: block;
+		flex: none;
+		height: var(--mark-h, 1.9rem);
+		aspect-ratio: 670 / 281;
+		background-color: currentColor;
+		-webkit-mask: url('/brand/mark.png') center / contain no-repeat;
+		mask: url('/brand/mark.png') center / contain no-repeat;
+		transition: background-color var(--turn-dur) var(--ease);
+	}
+</style>

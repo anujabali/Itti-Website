@@ -1,0 +1,60 @@
+---
+/**
+ * The wordmark, set live rather than shipped as an image.
+ *
+ * The supplied lockup stacks the two lines centred under the mark and tracks
+ * them out to the same width. Here they sit beside the mark instead, still
+ * left- and right-flush with each other — the tracking on FOUNDATION is tuned
+ * so both lines end on the same vertical.
+ *
+ * Colour comes from two custom properties so the whole lockup can invert as one
+ * thing: charcoal + teal on cream, all warm white on the dark arc.
+ */
+interface Props {
+	class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<span class:list={['wordmark', className]} aria-hidden="true">
+	<span class="wordmark__name">The Itti</span>
+	<span class="wordmark__sub">Foundation</span>
+</span>
+
+<style>
+	.wordmark {
+		display: grid;
+		gap: 0.18em;
+		white-space: nowrap;
+	}
+
+	.wordmark__name,
+	.wordmark__sub {
+		font-family: var(--display);
+		text-transform: uppercase;
+		line-height: 1;
+		transition: color var(--turn-dur) var(--ease);
+	}
+
+	.wordmark__name {
+		font-size: var(--wordmark-size, 1.0625rem);
+		font-weight: 500;
+		/* The original opens a wide gap between THE and ITTI — keep it. */
+		letter-spacing: 0.2em;
+		word-spacing: 0em;
+		color: var(--wordmark-name, currentColor);
+	}
+
+	.wordmark__sub {
+		font-size: calc(var(--wordmark-size, 1.0625rem) * 0.6);
+		font-weight: 600;
+		/* Tuned by measuring both lines: this is the tracking that makes
+		   FOUNDATION end on the same vertical as THE ITTI. */
+		letter-spacing: 0.316em;
+		/* Tracking adds a trailing space after the last letter; pull it back so
+		   the two lines are optically flush on the right. */
+		margin-right: -0.316em;
+		color: var(--wordmark-sub, currentColor);
+	}
+</style>

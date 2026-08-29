@@ -1,0 +1,38 @@
+# build output
+dist/
+# generated types
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+
+# environment variables
+.env
+.env.production
+
+# macOS-specific files
+.DS_Store
+
+# jetbrains setting folder
+.idea/
+
+# Astro occasionally writes these into whatever directory it was started from.
+# They have appeared inside public/ before, where they would have been served.
+**/public/**/.astro/
+**/public/**/node_modules/
+
+# Local tooling
+*.log
+.cache/
+
+# Working documents. Decisions, research and transcripts stay on the machine —
+# the repository carries the code and the assets it ships, nothing else.
+docs/
+_local/

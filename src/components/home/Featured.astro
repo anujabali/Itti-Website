@@ -1,0 +1,296 @@
+---
+/**
+ * Featured — the rotating band directly after the turn.
+ *
+ * Locked behaviour: auto-rotates on roughly a ten-second beat, dots and arrows,
+ * stops permanently the moment anyone interacts, and does not move at all under
+ * reduced motion. Content is PLACEHOLDER.
+ */
+
+const SLIDES = [
+	{
+		kind: 'Campaign',
+		title: 'N.A.',
+		line: 'N.A.',
+		cta: 'N.A.',
+		href: '/join',
+		accent: 'ochre',
+	},
+	{
+		kind: 'Marketplace',
+		title: 'N.A.',
+		line: 'N.A.',
+		cta: 'N.A.',
+		href: '/marketplace',
+		accent: 'rose',
+		image: '/shop/tee-itti.jpg',
+		// Front and back together, in a frame cut to match. Nothing meaningful
+		// is cropped.
+		focus: '50% 50%',
+	},
+	{
+		kind: 'Event',
+		title: 'N.A.',
+		line: 'N.A.',
+		cta: 'N.A.',
+		href: '/events',
+		accent: 'sage',
+	},
+];
+---
+
+<section class="featured" aria-labelledby="featured-heading" data-featured>
+	<h2 class="u-visually-hidden" id="featured-heading">Featured</h2>
+
+	<div class="featured__viewport">
+		{
+			SLIDES.map((slide, i) => (
+				<article
+					class="slide"
+					style={`--accent: var(--${slide.accent})`}
+					data-slide
+					aria-hidden={i === 0 ? undefined : 'true'}
+					hidden={i !== 0}
+				>
+					<div class="slide__body">
+						<p class="slide__kind">{slide.kind}</p>
+						<h3 class="slide__title">{slide.title}</h3>
+						<p class="slide__line">{slide.line}</p>
+						<a class="slide__cta" href={slide.href}>
+							{slide.cta} <span aria-hidden="true">&rarr;</span>
+						</a>
+					</div>
+					{slide.image ? (
+						<img
+							class="slide__media"
+							src={slide.image}
+							alt=""
+							aria-hidden="true"
+							loading="lazy"
+							decoding="async"
+							style={`object-position:${slide.focus ?? '50% 50%'}`}
+						/>
+					) : (
+						<div class="slide__media" aria-hidden="true">
+							N.A.
+						</div>
+					)}
+				</article>
+			))
+		}
+	</div>
+
+	<div class="featured__controls">
+		<button class="featured__arrow" type="button" data-prev>
+			<span class="u-visually-hidden">Previous</span>
+			<span aria-hidden="true">&larr;</span>
+		</button>
+
+		<ul class="featured__dots" role="tablist" aria-label="Featured items">
+			{
+				SLIDES.map((slide, i) => (
+					<li role="presentation">
+						<button
+							class="featured__dot"
+							type="button"
+							role="tab"
+							aria-selected={i === 0 ? 'true' : 'false'}
+							data-dot
+						>
+							<span class="u-visually-hidden">{slide.title}</span>
+						</button>
+					</li>
+				))
+			}
+		</ul>
+
+		<button class="featured__arrow" type="button" data-next>
+			<span class="u-visually-hidden">Next</span>
+			<span aria-hidden="true">&rarr;</span>
+		</button>
+	</div>
+</section>
+
+<style>
+	.featured {
+		display: grid;
+		gap: clamp(2rem, 4vh, 3rem);
+		padding: clamp(4rem, 10vh, 7rem) var(--gutter);
+	}
+
+	.featured__viewport {
+		display: grid;
+	}
+
+	/* Every slide occupies the same cell, so the band never changes height as it
+	   rotates. Two columns, because a full-width band with its content pushed
+	   into the left third reads as a mistake rather than as restraint. */
+	.slide {
+		grid-area: 1 / 1;
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+		gap: clamp(2rem, 5vw, 4.5rem);
+		align-items: center;
+	}
+
+	.slide__body {
+		max-width: 34rem;
+	}
+
+	/* Where the campaign, product or event image goes. */
+	.slide__media {
+		display: grid;
+		place-items: center;
+		width: 100%;
+		aspect-ratio: 16 / 9;
+		border: 1px solid rgba(44, 39, 33, 0.14);
+		border-radius: 0.875rem;
+		background: var(--cream-deep);
+		color: var(--ink-faint);
+		font-size: 0.9375rem;
+	}
+
+	img.slide__media {
+		object-fit: cover;
+	}
+
+	@media (max-width: 52rem) {
+		.slide {
+			grid-template-columns: 1fr;
+			gap: 1.75rem;
+		}
+
+	}
+
+	.slide[hidden] {
+		display: none;
+	}
+
+	.slide__kind {
+		font-size: 0.6875rem;
+		font-weight: 500;
+		letter-spacing: 0.2em;
+		text-transform: uppercase;
+		color: var(--accent);
+	}
+
+	.slide__title {
+		margin-top: 0.9rem;
+		font-size: clamp(1.75rem, 3.6vw, 2.75rem);
+		line-height: 1.1;
+	}
+
+	.slide__line {
+		margin-top: 1rem;
+		max-width: 36rem;
+		font-size: 1.0625rem;
+		line-height: 1.6;
+		color: var(--ink-soft);
+	}
+
+	.slide__cta {
+		display: inline-block;
+		margin-top: 1.6rem;
+		padding-bottom: 0.2rem;
+		border-bottom: 1px solid currentColor;
+		font-family: var(--display);
+		font-size: 1.0625rem;
+		color: var(--teal);
+	}
+
+	.featured__controls {
+		display: flex;
+		align-items: center;
+		gap: 1.25rem;
+	}
+
+	.featured__arrow {
+		width: 2.25rem;
+		height: 2.25rem;
+		border: 1px solid rgba(44, 39, 33, 0.18);
+		border-radius: 999px;
+		color: var(--ink-soft);
+		transition:
+			border-color 250ms var(--ease),
+			color 250ms var(--ease);
+	}
+
+	.featured__arrow:hover {
+		border-color: var(--teal);
+		color: var(--teal);
+	}
+
+	.featured__dots {
+		display: flex;
+		gap: 0.5rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.featured__dot {
+		width: 0.5rem;
+		height: 0.5rem;
+		border-radius: 999px;
+		background: rgba(44, 39, 33, 0.22);
+		transition: background 250ms var(--ease);
+	}
+
+	.featured__dot[aria-selected='true'] {
+		background: var(--teal);
+	}
+</style>
+
+<script>
+	const band = document.querySelector<HTMLElement>('[data-featured]');
+
+	if (band) {
+		const slides = [...band.querySelectorAll<HTMLElement>('[data-slide]')];
+		const dots = [...band.querySelectorAll<HTMLButtonElement>('[data-dot]')];
+		const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+		let current = 0;
+		let timer: number | undefined;
+
+		const show = (next: number) => {
+			current = (next + slides.length) % slides.length;
+			slides.forEach((slide, i) => {
+				slide.hidden = i !== current;
+				slide.toggleAttribute('aria-hidden', i !== current);
+			});
+			dots.forEach((dot, i) =>
+				dot.setAttribute('aria-selected', String(i === current))
+			);
+		};
+
+		// Any deliberate interaction ends the rotation for good — nothing is more
+		// irritating than a carousel that moves while you are reading it.
+		const stop = () => {
+			window.clearInterval(timer);
+			timer = undefined;
+		};
+
+		const start = () => {
+			if (reduced.matches || timer) return;
+			timer = window.setInterval(() => show(current + 1), 10000);
+		};
+
+		band.querySelector('[data-prev]')?.addEventListener('click', () => {
+			stop();
+			show(current - 1);
+		});
+		band.querySelector('[data-next]')?.addEventListener('click', () => {
+			stop();
+			show(current + 1);
+		});
+		dots.forEach((dot, i) =>
+			dot.addEventListener('click', () => {
+				stop();
+				show(i);
+			})
+		);
+		band.addEventListener('pointerenter', stop);
+		band.addEventListener('focusin', stop);
+
+		start();
+	}
+</script>

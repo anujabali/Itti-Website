@@ -1,0 +1,275 @@
+---
+/**
+ * The credit line for a plate, and the wall label behind it.
+ *
+ * Rules: quiet by default, never animates for attention, one per section. The
+ * whole line is the target — not a tiny arrow — and what rises is a wall label,
+ * not a citation.
+ */
+interface Props {
+	plate: string;
+	artist: string;
+	title: string;
+	year: string;
+	collection: string;
+	licence: string;
+	note: string;
+	align?: 'left' | 'right';
+	/** The pillar this plate stands for — a way out of the overture for anyone
+	 *  who is already curious. */
+	programme?: string;
+	programmeHref?: string;
+}
+
+const {
+	plate,
+	artist,
+	title,
+	year,
+	collection,
+	licence,
+	note,
+	align = 'left',
+	programme,
+	programmeHref,
+} = Astro.props;
+
+const id = `label-${plate.toLowerCase().replace(/\W+/g, '-')}`;
+---
+
+<div class:list={['credit', `credit--${align}`]} data-credit>
+	<button class="credit__line" type="button" aria-expanded="false" aria-controls={id}>
+		<span class="credit__artist">{artist}</span>
+		<span class="credit__work">
+			{title}, {year}
+			<span class="credit__chevron" aria-hidden="true">&#8964;</span>
+		</span>
+	</button>
+
+	{
+		programme && programmeHref && (
+			<a class="credit__programme" href={programmeHref}>
+				{programme} <span aria-hidden="true">&rarr;</span>
+			</a>
+		)
+	}
+
+	<div class="label" id={id} hidden>
+		<h2 class="label__title">{title}</h2>
+		<p class="label__meta">{artist} &middot; {year}</p>
+		<p class="label__note">{note}</p>
+		<dl class="label__facts">
+			<div><dt>Collection</dt><dd>{collection}</dd></div>
+		</dl>
+	</div>
+</div>
+
+<style>
+	/* Both rows span the block and align their own contents, so the rule between
+	   them always matches the text above it — justifying the rows themselves
+	   left the rule floating loose as soon as the line wrapped. */
+	.credit {
+		position: relative;
+		display: grid;
+		justify-items: stretch;
+		gap: 0.55rem;
+	}
+
+	.credit--right {
+		margin-left: auto;
+		text-align: right;
+	}
+
+	/* The wall-label line and the way out of the overture, separated by a rule
+	   the width of the block above it. */
+	/* The rule runs flush with the block's outer edge and overshoots the text
+	   inward, into the frame — never off toward the gutter. */
+	.credit__programme {
+		position: relative;
+		padding-top: 0.6rem;
+		font-family: var(--display);
+		font-size: 1.125rem;
+		letter-spacing: 0.01em;
+		opacity: 0.72;
+		transition: opacity 300ms var(--ease);
+	}
+
+	.credit__programme::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		height: 1px;
+		background: currentColor;
+	}
+
+	.credit--right .credit__programme {
+		text-align: right;
+	}
+
+	.credit--right .credit__programme::before {
+		right: 0;
+		left: -3rem;
+	}
+
+	.credit--left .credit__programme::before {
+		left: 0;
+		right: -3rem;
+	}
+
+	.credit__programme:hover {
+		opacity: 1;
+	}
+
+	/* Always two lines: the maker, then the work. Setting them on one line meant
+	   the block changed shape depending on how long an artist's name happened to
+	   be. */
+	.credit__line {
+		display: grid;
+		justify-items: start;
+		gap: 0.3rem;
+		font-size: 1rem;
+		letter-spacing: 0.09em;
+		text-transform: uppercase;
+		color: currentColor;
+		opacity: 0.5;
+		text-align: left;
+		transition: opacity 300ms var(--ease);
+	}
+
+	.credit--right .credit__line {
+		justify-items: end;
+		text-align: right;
+	}
+
+	.credit__line:hover,
+	.credit__line[aria-expanded='true'] {
+		opacity: 0.9;
+	}
+
+	.credit__work {
+		text-transform: none;
+		letter-spacing: 0.03em;
+		font-style: italic;
+	}
+
+	.credit__chevron {
+		display: inline-block;
+		margin-left: 0.35em;
+		font-size: 0.7em;
+		transition: transform 320ms var(--ease);
+	}
+
+	.credit__line[aria-expanded='true'] .credit__chevron {
+		transform: rotate(180deg);
+	}
+
+	/* The label rises out of the line. */
+	.label {
+		position: absolute;
+		bottom: calc(100% + 0.9rem);
+		left: 0;
+		width: min(26rem, calc(100vw - 2 * var(--gutter)));
+		padding: 1.5rem 1.6rem 1.35rem;
+		border-radius: 0.75rem;
+		/* Frosted rather than solid, so the plate is still faintly present
+		   behind its own label. */
+		background: rgba(251, 248, 240, 0.46);
+		/* Thin glass, so the brightness lift does the work the opacity used to.
+		   Blurring and lifting what is behind keeps the panel light enough for
+		   ink no matter how dark the plate under it happens to be. */
+		-webkit-backdrop-filter: blur(36px) saturate(135%) brightness(1.5);
+		backdrop-filter: blur(36px) saturate(135%) brightness(1.5);
+		border: 1px solid rgba(251, 248, 240, 0.35);
+		color: var(--ink);
+		text-align: left;
+		box-shadow: 0 22px 50px -22px rgba(6, 7, 8, 0.7);
+		opacity: 0;
+		transform: translateY(0.6rem);
+		transition:
+			opacity 320ms var(--ease),
+			transform 420ms var(--ease);
+	}
+
+	.credit--right .label {
+		left: auto;
+		right: 0;
+	}
+
+	.label[data-open] {
+		opacity: 1;
+		transform: none;
+	}
+
+	.label__title {
+		font-size: 1.5rem;
+		font-style: italic;
+	}
+
+	.label__meta {
+		margin-top: 0.3rem;
+		font-size: 0.8125rem;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+	}
+
+	.label__note {
+		margin-top: 0.9rem;
+		font-size: 0.9375rem;
+		line-height: 1.55;
+		color: var(--ink-soft);
+	}
+
+	.label__facts {
+		display: grid;
+		gap: 0.35rem;
+		margin: 1.1rem 0 0;
+		padding-top: 0.9rem;
+		border-top: 1px solid rgba(44, 39, 33, 0.12);
+		font-size: 0.75rem;
+	}
+
+	.label__facts > div {
+		display: flex;
+		gap: 0.6rem;
+	}
+
+	.label__facts dt {
+		flex: none;
+		width: 5.5rem;
+		letter-spacing: 0.11em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+	}
+
+	.label__facts dd {
+		margin: 0;
+		color: var(--ink-soft);
+	}
+</style>
+
+<script>
+	for (const credit of document.querySelectorAll<HTMLElement>('[data-credit]')) {
+		const trigger = credit.querySelector<HTMLButtonElement>('button')!;
+		const label = credit.querySelector<HTMLElement>('.label')!;
+
+		trigger.addEventListener('click', () => {
+			const isOpen = trigger.getAttribute('aria-expanded') === 'true';
+			trigger.setAttribute('aria-expanded', String(!isOpen));
+			if (isOpen) {
+				label.removeAttribute('data-open');
+				label.hidden = true;
+			} else {
+				label.hidden = false;
+				requestAnimationFrame(() => label.setAttribute('data-open', ''));
+			}
+		});
+
+		document.addEventListener('click', (event) => {
+			if (credit.contains(event.target as Node)) return;
+			trigger.setAttribute('aria-expanded', 'false');
+			label.removeAttribute('data-open');
+			label.hidden = true;
+		});
+	}
+</script>

@@ -1,0 +1,143 @@
+---
+/**
+ * CLAW — a small-size sibling of the project logo.
+ *
+ * The full mark is a detailed scene: gradient skies, a bird, cracked earth, a
+ * river. It will not survive being shown at card size and it is the odd one out
+ * beside two clean silhouettes. This keeps the only thing that matters — one
+ * circle split between living ground and dead ground, a tree standing on each —
+ * because that split is the same argument the poem makes.
+ *
+ * `mono` renders it as a single-colour silhouette for the card front; the
+ * default renders in the project's own colours for the back.
+ */
+interface Props {
+	class?: string;
+	mono?: boolean;
+}
+const { class: className, mono = false } = Astro.props;
+---
+
+<svg
+	class:list={['claw', mono && 'claw--mono', className]}
+	viewBox="0 0 100 100"
+	role="img"
+	aria-label="CLAW"
+	focusable="false"
+>
+	<defs>
+		<clipPath id="claw-round">
+			<circle cx="50" cy="50" r="48"></circle>
+		</clipPath>
+	</defs>
+
+	<g clip-path="url(#claw-round)">
+		<rect class="sky sky--living" x="0" y="0" width="50" height="100"></rect>
+		<rect class="sky sky--lost" x="50" y="0" width="50" height="100"></rect>
+
+		<!-- Living ground: a hill that rolls. -->
+		<path class="ground ground--living" d="M0 66 C12 56 26 52 38 57 C44 59 48 62 50 65 L50 100 L0 100 Z"></path>
+
+		<!-- Lost ground: flat, and broken. -->
+		<path class="ground ground--lost" d="M50 65 L100 62 L100 100 L50 100 Z"></path>
+		<path class="crack" d="M62 70 L66 78 L62 84"></path>
+		<path class="crack" d="M78 68 L74 76 L79 82"></path>
+		<path class="crack" d="M88 74 L84 82"></path>
+
+		<!-- The river, running out of the living half. -->
+		<path class="water" d="M44 62 C40 74 46 84 40 100 L58 100 C60 84 54 72 52 62 Z"></path>
+
+		<!-- Living tree. -->
+		<path class="tree" d="M24 56 L26 56 L26 40 L24 40 Z"></path>
+		<circle class="canopy" cx="25" cy="33" r="10"></circle>
+		<circle class="canopy" cx="17" cy="38" r="6"></circle>
+		<circle class="canopy" cx="33" cy="38" r="6"></circle>
+
+		<!-- Lost tree: the same tree, bare. -->
+		<g class="tree tree--bare">
+			<path d="M74 64 L76 64 L76 40 L74 40 Z"></path>
+			<path d="M75 48 L67 40"></path>
+			<path d="M75 46 L83 38"></path>
+			<path d="M75 42 L70 34"></path>
+			<path d="M75 41 L80 33"></path>
+		</g>
+	</g>
+
+	<circle class="rim" cx="50" cy="50" r="48"></circle>
+</svg>
+
+<style>
+	.claw {
+		width: 100%;
+		height: 100%;
+	}
+
+	.sky--living {
+		fill: #dbe8f1;
+	}
+	.sky--lost {
+		fill: #d9d9d9;
+	}
+	.ground--living {
+		fill: #4f7f3c;
+	}
+	.ground--lost {
+		fill: #6f6f6f;
+	}
+	.water {
+		fill: #1f7cc0;
+	}
+	.tree,
+	.canopy {
+		fill: #1d3140;
+	}
+	.tree--bare path {
+		fill: #1d3140;
+		stroke: #1d3140;
+		stroke-width: 1.6;
+		stroke-linecap: round;
+	}
+	.canopy {
+		fill: #3f7a35;
+	}
+	.crack {
+		fill: none;
+		stroke: #4a4a4a;
+		stroke-width: 1.4;
+		stroke-linecap: round;
+	}
+	.rim {
+		fill: none;
+		stroke: rgba(29, 49, 64, 0.25);
+		stroke-width: 1.5;
+	}
+
+	/* One colour. The split still reads, because a tree in leaf and a tree
+	   stripped bare do not need colour to tell them apart. */
+	.claw--mono .sky {
+		fill: none;
+	}
+	.claw--mono .ground,
+	.claw--mono .water,
+	.claw--mono .tree,
+	.claw--mono .canopy {
+		fill: currentColor;
+	}
+	.claw--mono .water {
+		fill: none;
+	}
+	.claw--mono .ground--lost {
+		fill-opacity: 0.45;
+	}
+	.claw--mono .crack,
+	.claw--mono .tree--bare path {
+		stroke: currentColor;
+	}
+	.claw--mono .tree--bare path {
+		fill: currentColor;
+	}
+	.claw--mono .rim {
+		stroke: currentColor;
+		stroke-opacity: 0.4;
+	}
+</style>

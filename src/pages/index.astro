@@ -1,0 +1,703 @@
+---
+import Base from '../layouts/Base.astro';
+import PlateCredit from '../components/home/PlateCredit.astro';
+import PillarCard from '../components/home/PillarCard.astro';
+import OurStory from '../components/home/OurStory.astro';
+import Featured from '../components/home/Featured.astro';
+import Impact from '../components/home/Impact.astro';
+import Events from '../components/home/Events.astro';
+import JoinUs from '../components/home/JoinUs.astro';
+import SiteFooter from '../components/layout/SiteFooter.astro';
+
+/**
+ * The opening arc — the museum.
+ *
+ * The unit is a MOVEMENT, not a screen. A movement is one uncut plate, filling
+ * the frame edge to edge, that pans slowly downward for as long as the movement
+ * lasts. Over it ride one or more BEATS: a line of the poem that pins dead
+ * still, holds, then scrolls away so the next can arrive. The picture never
+ * cuts inside a movement — which is how the first two lines read as one
+ * continuous descent through the Cajal rather than as two slides.
+ *
+ * Between movements there is no dissolve. One simply scrolls off and the next
+ * scrolls on.
+ *
+ * Copy below the poem is PLACEHOLDER. The poem is locked; see docs/DECISIONS.md.
+ */
+
+const MOVEMENTS = [
+	{
+		id: 'mind',
+		plate: '/plates/cajal.jpg',
+		// A descent with a real push behind it. The travel is the point, but at
+		// 3% the zoom was invisible.
+		pan: 1,
+		zoom: 0.16,
+		labelSide: 'right',
+		credit: {
+			plate: 'I',
+			artist: 'Santiago Ramón y Cajal',
+			title: 'Purkinje cell of the cerebellum',
+			year: '1899',
+			collection: 'Museo Cajal, Instituto Cajal, CSIC, Madrid',
+			licence: 'Public domain',
+			note: 'Cajal drew what no one had been able to see whole: a single cell, branching like a tree pressed flat. He was arguing that the brain is not a mesh but a crowd of individuals, each one meeting the next. It is the oldest picture we have of a mind being looked at properly.',
+			programme: 'Neurodivergence',
+			programmeHref: '/commitments/neurodivergence',
+		},
+		beats: [
+			{
+				id: 'when',
+				line: 'The difference is&nbsp;when.',
+				hero: true,
+				side: 'right',
+				y: 52,
+				// Shorter than the beat it hands to: the thesis has one short line
+				// to land, and the wait before the poem starts should not drag.
+				hold: 130,
+			},
+			{
+				id: 'met',
+				line: 'A mind met, not&nbsp;mended.',
+				// Opposite corner, high — the composition turns while the picture
+				// keeps going.
+				side: 'left',
+				y: 34,
+				hold: 220,
+			},
+		],
+	},
+	{
+		id: 'body',
+		plate: '/plates/thorax.jpg',
+		// A push in. Barely any travel, a slow close on the chest — the camera
+		// leaning toward the thing rather than moving past it.
+		pan: 0.3,
+		zoom: 0.2,
+		labelSide: 'left',
+		credit: {
+			plate: 'II',
+			artist: 'Nicolas-Henri Jacob, for J. M. Bourgery',
+			title: "Traité complet de l'anatomie de l'homme, Pl. 42",
+			year: '1831–54',
+			collection: 'Hand-coloured lithograph',
+			licence: 'Public domain',
+			note: 'Bourgery spent twenty years on the atlas and died before the last volume appeared. Jacob drew every plate from dissection, in colour, at full size — an act of attention rather than of spectacle. What it shows is a body being understood.',
+			programme: 'Cancer Care',
+			programmeHref: '/commitments/cancer-care',
+		},
+		beats: [
+			{
+				id: 'caught',
+				line: 'A cancer caught, not&nbsp;carried.',
+				// Dead centre, back to the right — the stillest position on the
+				// page, for the plainest line in the poem.
+				side: 'right',
+				y: 50,
+				// A single-beat movement needs roughly the length of a double to
+				// feel like it lasted as long.
+				hold: 410,
+			},
+		],
+	},
+	{
+		id: 'forest',
+		plate: '/plates/bird.jpg',
+		// A lift. The only photograph in the arc, and the only living thing in
+		// it — a drawing, a drawing, then something with a pulse. Middling
+		// travel and a gentle push, so the frame closes on the bird as the arc
+		// resolves.
+		pan: 0.6,
+		zoom: 0.17,
+		labelSide: 'right',
+		credit: {
+			plate: 'III',
+			artist: 'Lorie Shaull',
+			title: 'Hummingbird on the nest',
+			year: '2023',
+			collection: 'Arizona-Sonora Desert Museum',
+			licence: 'CC BY-SA 4.0',
+			note: 'The first two plates are drawings — a mind and a body, observed and set down. This one is alive, on a nest, watching back through a screen of leaves. It is here because the difference between a species drawn and a species photographed is the difference the whole page is about.',
+			programme: 'CLAW',
+			programmeHref: '/commitments/claw',
+		},
+		beats: [
+			{
+				id: 'saved',
+				line: 'A forest saved, not&nbsp;mourned.',
+				// Low and left, so the bird rises out of the line and the arc ends
+				// at the bottom of the frame — which is where the turn begins.
+				side: 'left',
+				y: 62,
+				hold: 410,
+			},
+		],
+	},
+];
+
+const PILLARS = [
+	{
+		numeral: 'I',
+		name: 'Neurodivergence',
+		line: 'N.A.',
+		back: 'N.A.',
+		href: '/commitments/neurodivergence',
+		accent: 'ochre' as const,
+		mark: '/brand/pillar-neuro.png',
+	},
+	{
+		numeral: 'II',
+		name: 'Cancer Care',
+		line: 'N.A.',
+		back: 'N.A.',
+		href: '/commitments/cancer-care',
+		accent: 'rose' as const,
+		mark: '/brand/pillar-cancer.png',
+	},
+	{
+		numeral: 'III',
+		name: 'CLAW',
+		line: 'N.A.',
+		back: 'N.A.',
+		href: '/commitments/claw',
+		accent: 'sage' as const,
+		mark: 'claw',
+	},
+];
+---
+
+<Base
+	title="The Itti Foundation"
+	description="The difference is when. The Itti Foundation works on neurodivergence, cancer care, and climate."
+>
+	<div class="arc">
+		{
+			MOVEMENTS.map((mv, i) => (
+				<section class="mv" id={mv.id} data-mv data-pan={mv.pan} data-zoom={mv.zoom}>
+					<div class="mv__stage">
+						<div class="mv__plate" data-plate aria-hidden="true">
+							<img
+								src={mv.plate}
+								alt=""
+								loading={i === 0 ? 'eager' : 'lazy'}
+								decoding="async"
+							/>
+						</div>
+						<div class="mv__scrim" aria-hidden="true" />
+						<div class="mv__grade" aria-hidden="true" />
+						<div class="mv__grain" aria-hidden="true" />
+						<div class="mv__dip" data-dip aria-hidden="true" />
+					</div>
+
+					<div class="mv__beats">
+						{mv.beats.map((beat, bi) => (
+							<div
+								class="beat"
+								data-side={beat.side}
+								data-first={i === 0 && bi === 0 ? '' : undefined}
+								data-lead={bi === 0 ? '' : undefined}
+								style={`--text-y:${beat.y};--hold:${beat.hold}`}
+							>
+								<div class="beat__hold">
+									<div class="beat__text">
+										{(() => {
+											const Tag = beat.hero ? 'h1' : 'p';
+											return (
+												<Tag class:list={['line', beat.hero && 'line--hero']}>
+													{beat.line.split(' ').map((word, w) => (
+														<span class="word" style={`--w:${w}`}>
+															<span set:html={word} />
+														</span>
+													))}
+												</Tag>
+											);
+										})()}
+									</div>
+
+									{beat.hero && <span class="cue" aria-hidden="true" />}
+								</div>
+							</div>
+						))}
+					</div>
+
+					{/* Its own layer, pulled back to the movement's start so it pins
+					    for exactly as long as the plate does, and painted after the
+					    beats so the wall label opens over the poem rather than
+					    under it. */}
+					<div class="mv__chrome">
+						<div class="mv__chrome-pin">
+							<div class="mv__label" data-label-side={mv.labelSide}>
+								<PlateCredit align={mv.labelSide as 'left' | 'right'} {...mv.credit} />
+							</div>
+						</div>
+					</div>
+				</section>
+			))
+		}
+	</div>
+
+	<!-- ── The turn: one gear-change, everything at once ────────────────── -->
+	<div class="light" data-light-zone>
+		<section class="turn" id="turn">
+			<p class="turn__lede u-fade">N.A.</p>
+
+			<div class="pillars">
+				{PILLARS.map((pillar) => <PillarCard {...pillar} />)}
+			</div>
+		</section>
+
+		<OurStory />
+		<Featured />
+		<Impact />
+		<Events />
+		<JoinUs />
+		<SiteFooter />
+	</div>
+</Base>
+
+<style>
+	/* A dark room. The brand's teal is held back for the turn, which is what
+	   makes the turn land. */
+	.arc {
+		position: relative;
+		color: var(--warm-white);
+		background: #0a0c0d;
+	}
+
+	.light {
+		background: var(--cream);
+		color: var(--ink);
+		min-height: 100svh;
+	}
+
+	/* ── Movements ──────────────────────────────────────────────────────── */
+
+	.mv {
+		position: relative;
+		/* A block formatting context, so the chrome layer's large bottom margin
+		   cannot collapse through and push the next movement down. */
+		display: flow-root;
+	}
+
+	.mv__stage {
+		position: sticky;
+		top: 0;
+		height: 100svh;
+		overflow: clip;
+		background: #0a0c0d;
+	}
+
+	/* The plate IS the frame: full width, natural height, always taller than the
+	   viewport so there is somewhere to travel. */
+	.mv__plate {
+		position: absolute;
+		inset: 0 0 auto;
+		transform-origin: 50% 40%;
+		will-change: transform;
+	}
+
+	.mv__plate img {
+		display: block;
+		width: 100%;
+		height: auto;
+		max-width: none;
+	}
+
+	/* The grade. Stacked the way a colourist would: overall deepening, vignette,
+	   then the holds at top and bottom for the nav and the wall label. Dark
+	   enough that cream type never fights the picture, open enough that the
+	   picture still reads. */
+	.mv__grade {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		background:
+			linear-gradient(rgba(8, 9, 10, 0.34), rgba(8, 9, 10, 0.34)),
+			radial-gradient(120% 88% at 50% 44%, transparent 22%, rgba(8, 9, 10, 0.78) 100%),
+			linear-gradient(to bottom, rgba(8, 9, 10, 0.82), rgba(8, 9, 10, 0.3) 10%, transparent 26%),
+			linear-gradient(to top, rgba(8, 9, 10, 0.8), transparent 32%);
+	}
+
+	/* Every movement falls into shadow as it leaves and lifts out of it as it
+	   arrives. A cut between two pictures always shows the join; a dip to black
+	   means you never see them meet. Not a cross-dissolve — the images never
+	   overlap, they hand over through darkness. */
+	.mv__dip {
+		position: absolute;
+		inset: 0;
+		background: #06070a;
+		opacity: 0;
+		pointer-events: none;
+		will-change: opacity;
+	}
+
+	/* ── Beats ──────────────────────────────────────────────────────────── */
+
+	/* Laid back over the stage, so the type is on the picture, not after it. */
+	.mv__beats {
+		position: relative;
+		margin-top: -100svh;
+	}
+
+	/* Taller than the viewport: the surplus is the hold, the stretch of scroll
+	   where the line stays put and only the picture moves. */
+	.beat {
+		position: relative;
+		min-height: calc(var(--hold, 380) * 1svh);
+	}
+
+	.beat__hold {
+		position: sticky;
+		top: 0;
+		height: 100svh;
+		pointer-events: none;
+	}
+
+	/* A quiet, symmetric edge darkening that never changes. The previous
+	   version cross-shifted its weight from one side to the other as the beats
+	   handed over, which read as a black cloud drifting across the picture —
+	   the most distracting thing on the page. Type legibility now comes from
+	   the glyph shadow, which is local to the letters and moves nothing. */
+	.mv__scrim {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		background:
+			linear-gradient(to right, rgba(8, 9, 10, 0.46), transparent 40%),
+			linear-gradient(to left, rgba(8, 9, 10, 0.46), transparent 40%);
+	}
+
+	/* ── The wall label ─────────────────────────────────────────────────── */
+
+	/* Out of flow and spanning the whole movement, with a sticky child inside.
+	   Restoring the flow with a large bottom margin instead shrinks the area a
+	   sticky element is allowed to travel in — to zero, in this case — so the
+	   label never pinned and simply scrolled away. */
+	.mv__chrome {
+		position: absolute;
+		inset: 0;
+		z-index: 3;
+		pointer-events: none;
+	}
+
+	.mv__chrome-pin {
+		position: sticky;
+		top: 0;
+		height: 100svh;
+	}
+
+	/* Positioned on the element itself, not on its child. A scoped selector
+	   cannot reach into a child component's root, so `.mv__label > *` silently
+	   matched nothing and the label sat wherever it landed. */
+	.mv__label {
+		position: absolute;
+		bottom: 2.5rem;
+		max-width: min(38rem, 54%);
+		pointer-events: auto;
+	}
+
+	.mv__label[data-label-side='right'] {
+		right: var(--gutter);
+	}
+
+	.mv__label[data-label-side='left'] {
+		left: var(--gutter);
+	}
+
+	/* Grain, over the picture rather than over the whole page — film has it,
+	   and a clean gradient is the fastest way to look like a render. */
+	.mv__grain {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		opacity: 0.14;
+		mix-blend-mode: overlay;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+	}
+
+	.beat__text {
+		position: absolute;
+		top: calc(var(--text-y, 50) * 1svh);
+		translate: 0 -50%;
+		max-width: min(40rem, 54%);
+	}
+
+	.beat[data-side='right'] .beat__text {
+		right: var(--gutter);
+		text-align: right;
+	}
+
+	.beat[data-side='left'] .beat__text {
+		left: var(--gutter);
+		text-align: left;
+	}
+
+	/* Each word is its own inline-block so it can be brought in on its own
+	   beat. Nothing moves once the frame has settled. */
+	.word {
+		display: inline-block;
+		/* Splitting the line into inline-blocks removes the whitespace between
+		   words along with it. This puts the space back. */
+		margin-right: 0.32em;
+		/* Opacity only. The words arrive exactly where they will sit — nothing
+		   rises into position. */
+		opacity: var(--in, 1);
+		will-change: opacity;
+	}
+
+	/* The opening line is already in frame when the page loads, so it reveals
+	   on a timer rather than on a scroll position it will never reach. */
+	.beat[data-first] .word {
+		animation: word-in 1100ms var(--ease) backwards;
+		animation-delay: calc(var(--w) * 150ms + 250ms);
+	}
+
+	@keyframes word-in {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+
+	.word:last-child {
+		margin-right: 0;
+	}
+
+	.word > span {
+		display: inline-block;
+	}
+
+	/* The poem is set in inscriptional capitals — the title-card register —
+	   while everything else stays in Bodoni. Caps need their own tuning: they
+	   run much wider, so the measure opens up, and they need real leading and a
+	   little positive tracking rather than the negative tracking lowercase
+	   wants. */
+	.line {
+		font-family: var(--face-cinzel);
+		font-weight: 500;
+		font-size: clamp(1.875rem, 4.6vw, 3.875rem);
+		line-height: 1.24;
+		letter-spacing: 0.015em;
+		text-wrap: balance;
+		text-shadow:
+			0 1px 3px rgba(8, 9, 10, 0.7),
+			0 2px 22px rgba(8, 9, 10, 0.92),
+			0 0 60px rgba(8, 9, 10, 0.75);
+	}
+
+	.line--hero {
+		font-size: clamp(2.125rem, 5.9vw, 4.875rem);
+	}
+
+	.cue {
+		position: absolute;
+		bottom: 2.5rem;
+		left: 50%;
+		width: 1px;
+		height: 2.75rem;
+		translate: -50% 0;
+		background: linear-gradient(to bottom, transparent, currentColor);
+		opacity: 0.35;
+	}
+
+	/* ── The turn ───────────────────────────────────────────────────────── */
+
+	.turn {
+		padding: clamp(5rem, 14vh, 9.5rem) var(--gutter) clamp(4.5rem, 10vh, 7.5rem);
+	}
+
+	.turn__lede {
+		max-width: 46rem;
+		font-family: var(--display);
+		font-size: clamp(1.5rem, 2.7vw, 2.25rem);
+		line-height: 1.32;
+		text-wrap: pretty;
+	}
+
+	.pillars {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(17rem, 100%), 1fr));
+		gap: 1.125rem;
+		margin-top: clamp(3rem, 7vh, 5rem);
+	}
+
+	@media (max-width: 60rem) {
+		.beat {
+			min-height: calc(var(--hold, 380) * 0.72svh);
+		}
+
+		.beat__text,
+		.beat[data-side='right'] .beat__text,
+		.beat[data-side='left'] .beat__text {
+			left: var(--gutter);
+			right: var(--gutter);
+			max-width: none;
+			text-align: left;
+		}
+
+		/* One column: the scrim comes up from the floor rather than in from the
+		   sides. */
+		.mv__scrim {
+			background: linear-gradient(
+				to top,
+				rgba(8, 9, 10, 0.8) 0%,
+				rgba(8, 9, 10, 0.42) 46%,
+				transparent 86%
+			);
+		}
+
+		.mv__label,
+		.mv__label[data-label-side='right'],
+		.mv__label[data-label-side='left'] {
+			left: var(--gutter);
+			right: var(--gutter);
+			max-width: none;
+		}
+	}
+</style>
+
+<script>
+	// The only motion in the arc: each plate travelling down inside its own
+	// movement. No fades — one movement scrolls off, the next scrolls on.
+	const movements = [...document.querySelectorAll<HTMLElement>('[data-mv]')];
+	const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+	if (movements.length && !reduced.matches) {
+		const clamp = (n: number) => (n < 0 ? 0 : n > 1 ? 1 : n);
+		// Smoothstep. Linear scroll-linked motion starts and stops abruptly;
+		// easing the progress is most of what "smoother" means here.
+		const ease = (n: number) => n * n * (3 - 2 * n);
+
+		const draw = () => {
+			// Read every measurement first, then write, so scrolling never
+			// interleaves layout reads with style writes.
+			const vh = window.innerHeight;
+
+			const last = movements.length - 1;
+
+			const reads = movements.map((mv, index) => {
+				const plate = mv.querySelector<HTMLElement>('[data-plate]');
+				const stage = mv.querySelector<HTMLElement>('.mv__stage');
+				const img = plate?.querySelector('img');
+				if (!plate || !stage || !img) return null;
+
+				// Once a line's hold releases it is shepherded out a little faster
+				// than the page scrolls, so it has cleared the frame before the
+				// next line arrives. Two lines are never both legible at once.
+				const exits: { el: HTMLElement; by: number; words: HTMLElement[]; arrival: number }[] = [];
+				for (const beat of mv.querySelectorAll<HTMLElement>('.beat')) {
+					const text = beat.querySelector<HTMLElement>('.beat__text');
+					if (!text) continue;
+					const r = beat.getBoundingClientRect();
+					const held = r.height - vh;
+					const past = -r.top - held;
+					// 0 when the frame is a full viewport away, 1 once it has pinned.
+					// A beat that opens a movement has to wait for the dip to black
+					// to finish — otherwise it starts resolving while the previous
+					// picture is still a fifth of the way up the screen. A beat that
+					// continues the same uncut picture has nothing to wait for.
+					const lead = beat.hasAttribute('data-lead');
+					// A continuing beat starts before it pins — waiting for the pin
+					// left a whole viewport of scroll with nothing on it. It still
+					// finishes in place, and the words never move, so it reads as
+					// resolving rather than as rising into frame.
+					const delay = lead ? vh * 0.35 : vh * -0.55;
+					const window = lead ? vh * 1 : vh * 0.5;
+					const settled = (-r.top - delay) / window;
+					exits.push({
+						el: text,
+						by: past > 0 ? past * 0.5 : 0,
+						words: beat.hasAttribute('data-first')
+							? []
+							: [...text.querySelectorAll<HTMLElement>('.word')],
+						arrival: settled < 0 ? 0 : settled > 1 ? 1 : settled,
+					});
+				}
+
+				return {
+					plate,
+					img,
+					stage,
+					dip: mv.querySelector<HTMLElement>('[data-dip]'),
+					chrome: mv.querySelector<HTMLElement>('.mv__chrome'),
+					// The last movement hands over to the turn, not to another
+					// picture. Dipping it to black would put a blackout right where
+					// the page is supposed to open onto cream.
+					exits_dark: index !== last,
+					exits,
+					top: mv.getBoundingClientRect().top,
+					travel: mv.offsetHeight - stage.offsetHeight,
+					stageH: stage.offsetHeight,
+					// Never pan past the bottom of the picture.
+					room: Math.max(0, plate.offsetHeight - stage.offsetHeight),
+					pan: Number(mv.dataset.pan ?? 0.5),
+					zoom: Number(mv.dataset.zoom ?? 0.05),
+				};
+			});
+
+			for (const r of reads) {
+				if (!r || r.travel <= 0) continue;
+				const raw = clamp(-r.top / r.travel);
+				const p = ease(raw);
+				const distance = Math.min(r.room, r.stageH * r.pan);
+				// Travel and push in one transform, so each movement composites a
+				// single layer rather than a scaled layer inside a translated one.
+				r.plate.style.transform =
+					`translate3d(0, ${(-distance * p).toFixed(1)}px, 0) scale(${(1 + r.zoom * p).toFixed(4)})`;
+
+				// As a movement leaves it hangs back, so the next slides over it
+				// instead of butting straight against it.
+				const overrun = (-r.top - r.travel) / r.stageH;
+				const lag =
+					overrun > 0 && r.exits_dark ? ease(clamp(overrun)) * r.stageH * 0.12 : 0;
+				r.stage.style.transform = lag ? `translate3d(0, ${lag.toFixed(1)}px, 0)` : '';
+
+				// Dark on the way in and on the way out, so the handover happens
+				// in shadow rather than on a visible seam.
+				// Wider ramps and a shade short of full black: a long, shallow fall
+				// into shadow reads as the picture receding, where a fast one to
+				// pure black reads as a blackout.
+				const arriving = clamp(r.top / (r.stageH * 0.5));
+				const leaving = r.exits_dark ? clamp(overrun / 0.42) : 0;
+				const dark = ease(Math.max(arriving, leaving)) * 0.94;
+				if (r.dip) r.dip.style.opacity = dark.toFixed(3);
+				// The wall label sits above the dip, so it has to go into shadow
+				// with its own picture rather than hanging over the black.
+				if (r.chrome) r.chrome.style.opacity = (1 - dark).toFixed(3);
+				// Each movement gets its own camera: the Cajal descends, the
+				// Bourgery pushes in, the heron lifts. One move repeated three
+				// times is an effect; three different moves is cinematography.
+				for (const exit of r.exits) {
+					exit.el.style.transform = exit.by
+						? `translate3d(0, ${-exit.by.toFixed(1)}px, 0)`
+						: '';
+					// Words land one after another, the last one home just as the
+					// frame settles.
+					const stagger = 0.17;
+					exit.words.forEach((word, i) => {
+						const span = 1 - stagger * (exit.words.length - 1);
+						const v = clamp((exit.arrival - stagger * i) / span);
+						word.style.setProperty('--in', ease(v).toFixed(3));
+					});
+				}
+			}
+		};
+
+		let queued = false;
+		const schedule = () => {
+			if (queued) return;
+			queued = true;
+			requestAnimationFrame(() => {
+				queued = false;
+				draw();
+			});
+		};
+
+		draw();
+		document.addEventListener('scroll', schedule, { passive: true });
+		window.addEventListener('resize', schedule);
+		document.fonts?.ready.then(draw);
+	}
+</script>

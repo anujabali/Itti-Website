@@ -1,0 +1,662 @@
+---
+import Mark from '../brand/Mark.astro';
+import Wordmark from '../brand/Wordmark.astro';
+
+/**
+ * Site navigation. Stays visible and live for the entire opening arc — the
+ * overture is an offering, not a toll gate.
+ *
+ * Two states, driven by `.is-light`, which the page toggles when the ground
+ * behind the bar turns cream. Everything inverts at once: mark, wordmark,
+ * links, pill.
+ */
+
+const MENUS = [
+	{
+		label: 'Our Story',
+		href: '/our-story',
+		groups: [
+			{
+				title: 'The Foundation',
+				links: [
+					{ label: 'Mission', href: '/our-story/mission' },
+					{ label: 'Legacy', href: '/our-story/legacy' },
+					{ label: "Founder's Journey", href: '/our-story/founder' },
+				],
+			},
+			{
+				title: 'People & Governance',
+				links: [
+					{ label: 'Team', href: '/our-story/team' },
+					{ label: 'Constitution & Policies', href: '/our-story/constitution' },
+					{ label: 'Transparency & Reports', href: '/our-story/transparency' },
+				],
+			},
+		],
+	},
+	{
+		label: 'Commitments',
+		href: '/commitments',
+		groups: [
+			{
+				title: 'Our Pillars',
+				links: [
+					{ label: 'Neurodivergence', href: '/commitments/neurodivergence' },
+					{ label: 'Cancer Care', href: '/commitments/cancer-care' },
+					{ label: 'CLAW', href: '/commitments/claw' },
+				],
+			},
+			{
+				title: 'Projects',
+				links: [
+					{ label: 'Current Projects', href: '/commitments/projects' },
+					{ label: 'Past Work', href: '/commitments/past-work' },
+					{ label: 'Partners', href: '/commitments/partners' },
+				],
+			},
+		],
+	},
+	{
+		label: 'Marketplace',
+		href: '/marketplace',
+		groups: [
+			{
+				title: 'Shop',
+				links: [
+					{ label: 'All Products', href: '/marketplace/all' },
+					{ label: 'Makers', href: '/marketplace/makers' },
+					{ label: 'How It Works', href: '/marketplace/how-it-works' },
+				],
+			},
+			{
+				title: 'Featured',
+				links: [
+					{ label: 'New Arrivals', href: '/marketplace/new' },
+					{ label: 'Collections', href: '/marketplace/collections' },
+				],
+			},
+		],
+	},
+	{
+		label: 'Events',
+		href: '/events',
+		groups: [
+			{
+				title: 'Happening Now',
+				links: [
+					{ label: 'Upcoming', href: '/events/upcoming' },
+					{ label: 'Ongoing Campaigns', href: '/events/campaigns' },
+				],
+			},
+			{
+				title: 'Newsroom',
+				links: [
+					{ label: 'Announcements', href: '/events/announcements' },
+					{ label: 'Press', href: '/events/press' },
+				],
+			},
+		],
+	},
+];
+---
+
+<header class="nav" id="site-nav" data-nav>
+	<div class="nav__inner">
+		<a class="brand" href="/" aria-label="The Itti Foundation — home">
+			<Mark class="brand__mark" />
+			<span class="brand__word">
+				<Wordmark />
+			</span>
+		</a>
+
+		<nav class="nav__menu" aria-label="Primary">
+			<ul class="nav__list">
+				{
+					MENUS.map((menu, i) => (
+						<li class="nav__item" data-menu-item>
+							<button
+								class="nav__link"
+								type="button"
+								aria-expanded="false"
+								aria-controls={`mega-${i}`}
+								data-menu-trigger
+							>
+								{menu.label}
+							</button>
+
+							<div class="mega" id={`mega-${i}`} data-menu-panel hidden>
+								<div class="mega__inner">
+									{menu.groups.map((group) => (
+										<section class="mega__group">
+											<h2 class="mega__title">{group.title}</h2>
+											<ul class="mega__links">
+												{group.links.map((link) => (
+													<li>
+														<a href={link.href}>{link.label}</a>
+													</li>
+												))}
+											</ul>
+										</section>
+									))}
+									<p class="mega__aside">
+										<a href={menu.href}>All of {menu.label} &rarr;</a>
+									</p>
+								</div>
+							</div>
+						</li>
+					))
+				}
+			</ul>
+		</nav>
+
+		<a class="pill" href="/join">Join Us</a>
+
+		<button class="nav__burger" type="button" aria-expanded="false" data-burger>
+			<span class="u-visually-hidden">Menu</span>
+			<span class="nav__burger-bar"></span>
+			<span class="nav__burger-bar"></span>
+		</button>
+	</div>
+
+	<div class="drawer" data-drawer hidden>
+		<div class="drawer__inner">
+			{
+				MENUS.map((menu) => (
+					<section class="drawer__group">
+						<h2 class="drawer__title">
+							<a href={menu.href}>{menu.label}</a>
+						</h2>
+						<ul class="drawer__links">
+							{menu.groups.flatMap((g) => g.links).map((link) => (
+								<li>
+									<a href={link.href}>{link.label}</a>
+								</li>
+							))}
+						</ul>
+					</section>
+				))
+			}
+			<a class="pill pill--drawer" href="/join">Join Us</a>
+		</div>
+	</div>
+</header>
+
+<style>
+	.nav {
+		position: fixed;
+		inset: 0 0 auto;
+		z-index: 60;
+		color: var(--warm-white);
+		/* On the dark arc the whole lockup is one colour; FOUNDATION's teal
+		   would sink into a deep-teal ground. */
+		--wordmark-name: var(--warm-white);
+		--wordmark-sub: rgba(250, 247, 240, 0.82);
+		transition: color var(--turn-dur) var(--ease);
+	}
+
+	/* On cream the lockup returns to the brand's own two colours. */
+	.nav.is-light {
+		color: var(--teal);
+		--wordmark-name: var(--ink);
+		--wordmark-sub: var(--teal);
+	}
+
+	/* Over the arc the bar is glass on top of a picture. Past the turn there is
+	   real content underneath, and a transparent bar means every section scrolls
+	   straight through the lockup. */
+	.nav.is-light .nav__inner {
+		background: rgba(251, 248, 240, 0.92);
+		border-bottom: 1px solid rgba(44, 39, 33, 0.08);
+		-webkit-backdrop-filter: blur(12px);
+		backdrop-filter: blur(12px);
+	}
+
+	.nav__inner {
+		display: flex;
+		align-items: center;
+		gap: clamp(1rem, 3vw, 3rem);
+		height: var(--nav-h);
+		padding-inline: var(--gutter);
+	}
+
+	/* ── Brand ──────────────────────────────────────────────────────────── */
+
+	.brand {
+		display: flex;
+		align-items: center;
+		margin-right: auto;
+		min-width: 0;
+		/* Custom properties, so they reach the Mark and Wordmark components by
+		   inheritance — a scoped class selector here would not match them. */
+		--mark-h: 2.65rem;
+		--wordmark-size: 1.4rem;
+	}
+
+	/* The gap lives on the wordmark, not the flex row, so it collapses with it
+	   and the mark ends up flush left. */
+	.brand__word {
+		display: grid;
+		overflow: hidden;
+		white-space: nowrap;
+		max-width: 14rem;
+		padding-left: 1.1rem;
+		opacity: 1;
+		transform: none;
+		transition:
+			max-width 520ms var(--ease),
+			padding-left 520ms var(--ease),
+			opacity 300ms var(--ease),
+			transform 520ms var(--ease);
+	}
+
+	/* The wordmark steps aside for the length of the poem. The lines scroll up
+	   underneath a fixed, transparent bar, and a 76px display line passing
+	   behind THE ITTI / FOUNDATION is a collision, not a layer. It returns at
+	   the turn, once the ground is cream and nothing scrolls under it. */
+	.nav.is-compact .brand__word {
+		max-width: 0;
+		padding-left: 0;
+		opacity: 0;
+		transform: translateX(-0.75rem);
+	}
+
+	/* ── Links ──────────────────────────────────────────────────────────── */
+
+	.nav__menu {
+		display: contents;
+	}
+
+	.nav__list {
+		display: flex;
+		align-self: stretch;
+		gap: clamp(0.75rem, 2.2vw, 2.25rem);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	/* Each item is the panel's containing block, and stretches the full height
+	   of the bar so the panel hangs from the bar's edge with no dead gap for
+	   the pointer to fall through. */
+	.nav__item {
+		position: relative;
+		display: flex;
+		align-items: center;
+	}
+
+	.nav__link {
+		position: relative;
+		padding: 0.4rem 0;
+		font-size: 0.9375rem;
+		letter-spacing: 0.02em;
+		opacity: 0.92;
+		transition: opacity 250ms var(--ease);
+	}
+
+	.nav__link::after {
+		content: '';
+		position: absolute;
+		inset: auto 0 0.1rem;
+		height: 1px;
+		background: currentColor;
+		transform: scaleX(0);
+		transform-origin: left;
+		transition: transform 380ms var(--ease);
+	}
+
+	.nav__link:hover,
+	.nav__link[aria-expanded='true'] {
+		opacity: 1;
+	}
+
+	.nav__link:hover::after,
+	.nav__link[aria-expanded='true']::after {
+		transform: scaleX(1);
+	}
+
+	/* ── Join Us pill — inverts at the turn ─────────────────────────────── */
+
+	.pill {
+		flex: none;
+		padding: 0.5rem 1.35rem 0.55rem;
+		border-radius: 999px;
+		background: var(--cream);
+		color: var(--teal-deep);
+		font-size: 0.9375rem;
+		letter-spacing: 0.02em;
+		white-space: nowrap;
+		transition:
+			background var(--turn-dur) var(--ease),
+			color var(--turn-dur) var(--ease),
+			transform 300ms var(--ease);
+	}
+
+	.nav.is-light .pill {
+		background: var(--teal);
+		color: var(--warm-white);
+	}
+
+	.pill:hover {
+		transform: translateY(-1px);
+	}
+
+	/* ── Mega menu ──────────────────────────────────────────────────────── */
+
+	.mega {
+		position: absolute;
+		top: 100%;
+		/* Pulled left by the panel's own padding, so the first link sits on the
+		   same vertical as the nav label above it. */
+		left: -1.3rem;
+		/* Transparent bridge between the bar and the card — visual gap without a
+		   hover gap. */
+		padding-top: 0.5rem;
+		opacity: 0;
+		transform: translateY(-0.5rem) scale(0.98);
+		transform-origin: top left;
+		pointer-events: none;
+		/* Opacity snaps and the transform carries the motion. Cross-fading a
+		   backdrop-filtered panel means the blur resolves while the panel is
+		   half-transparent, which is what made it look cheap. */
+		transition:
+			opacity 110ms linear,
+			transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	/* The last item would push its panel past the gutter, so it hangs the other
+	   way. */
+	.nav__item:last-child .mega {
+		left: auto;
+		right: -1.3rem;
+		transform-origin: top right;
+	}
+
+	.mega[data-open] {
+		opacity: 1;
+		transform: none;
+		pointer-events: auto;
+	}
+
+	/* The contents arrive just behind the panel, so it unfolds rather than
+	   appearing whole. */
+	.mega[data-open] .mega__group,
+	.mega[data-open] .mega__aside {
+		animation: mega-rise 380ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+	}
+
+	.mega[data-open] .mega__group:nth-of-type(1) {
+		animation-delay: 55ms;
+	}
+
+	.mega[data-open] .mega__group:nth-of-type(2) {
+		animation-delay: 105ms;
+	}
+
+	.mega[data-open] .mega__aside {
+		animation-delay: 145ms;
+	}
+
+	@keyframes mega-rise {
+		from {
+			opacity: 0;
+			transform: translateY(0.5rem);
+		}
+	}
+
+	.mega__inner {
+		display: grid;
+		/* No gap — the rules below carry the rhythm instead. */
+		gap: 0;
+		width: max-content;
+		min-width: 13.25rem;
+		max-width: 18rem;
+		padding: 1.1rem 1.3rem 0.95rem;
+		border-radius: 0.8rem;
+		/* Solid. A panel you can see the artwork through can never read as
+		   crisper than the artwork behind it, and no amount of blur fixes that.
+		   The glass belongs on the wall label, which sits still; this one has a
+		   moving picture underneath it. */
+		background: var(--cream);
+		border: 1px solid rgba(44, 39, 33, 0.1);
+		color: var(--ink);
+		box-shadow:
+			0 2px 8px rgba(6, 7, 8, 0.14),
+			0 26px 52px -22px rgba(6, 7, 8, 0.5);
+	}
+
+	/* A hairline between subsections, and before the catch-all link. */
+	.mega__group + .mega__group,
+	.mega__aside {
+		margin-top: 0.85rem;
+		padding-top: 0.85rem;
+		border-top: 1px solid rgba(44, 39, 33, 0.11);
+	}
+
+	.mega__title {
+		margin-bottom: 0.55rem;
+		font-family: var(--body);
+		font-size: 0.625rem;
+		font-weight: 500;
+		letter-spacing: 0.17em;
+		text-transform: uppercase;
+		/* Teal rather than grey. The subheadings were the flattest thing in the
+		   panel and they are what the eye lands on first. */
+		color: var(--teal);
+		opacity: 0.8;
+	}
+
+	.mega__links {
+		display: grid;
+		gap: 0.36rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.mega__links a {
+		display: inline-block;
+		font-family: var(--display);
+		font-size: 1.0625rem;
+		color: var(--ink);
+		transition:
+			color 180ms var(--ease),
+			transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	.mega__links a:hover {
+		color: var(--teal);
+		transform: translateX(3px);
+	}
+
+	.mega__aside {
+		font-size: 0.8125rem;
+		color: var(--teal);
+	}
+
+	.mega__aside a:hover {
+		text-decoration: underline;
+		text-underline-offset: 0.25em;
+	}
+
+	/* ── Mobile ─────────────────────────────────────────────────────────── */
+
+	.nav__burger {
+		display: none;
+		flex: none;
+		width: 1.75rem;
+		height: 1.25rem;
+		flex-direction: column;
+		justify-content: center;
+		gap: 0.375rem;
+	}
+
+	.nav__burger-bar {
+		display: block;
+		height: 1px;
+		background: currentColor;
+		transition: transform 320ms var(--ease);
+	}
+
+	.nav__burger[aria-expanded='true'] .nav__burger-bar:first-child {
+		transform: translateY(3.5px) rotate(45deg);
+	}
+
+	.nav__burger[aria-expanded='true'] .nav__burger-bar:last-child {
+		transform: translateY(-3.5px) rotate(-45deg);
+	}
+
+	.drawer {
+		position: fixed;
+		inset: var(--nav-h) 0 0;
+		overflow-y: auto;
+		background: var(--cream);
+		color: var(--ink);
+		opacity: 0;
+		transition: opacity 300ms var(--ease);
+	}
+
+	.drawer[data-open] {
+		opacity: 1;
+	}
+
+	.drawer__inner {
+		display: grid;
+		gap: 2.25rem;
+		padding: 2.5rem var(--gutter) 4rem;
+	}
+
+	.drawer__title {
+		margin-bottom: 0.75rem;
+		font-size: 1.75rem;
+		color: var(--teal);
+	}
+
+	.drawer__links {
+		display: grid;
+		gap: 0.5rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		font-size: 1.0625rem;
+		color: var(--ink-soft);
+	}
+
+	.pill--drawer {
+		justify-self: start;
+		background: var(--teal);
+		color: var(--warm-white);
+		padding: 0.7rem 1.75rem;
+	}
+
+	@media (max-width: 60rem) {
+		.nav__list,
+		.nav__inner > .pill {
+			display: none;
+		}
+
+		.nav__burger {
+			display: flex;
+		}
+
+		.brand {
+			margin-right: auto;
+		}
+
+		/* On mobile the drawer is cream, so the bar must read as light while
+		   it is open regardless of what is behind the page. */
+		.nav:has(.drawer[data-open]) {
+			color: var(--teal);
+			--wordmark-name: var(--ink);
+			--wordmark-sub: var(--teal);
+		}
+
+		.nav:has(.drawer[data-open]) .nav__inner {
+			background: var(--cream);
+		}
+
+		.nav:has(.drawer[data-open]) .brand__word {
+			max-width: 14rem;
+			padding-left: 1.1rem;
+			opacity: 1;
+			transform: none;
+		}
+	}
+</style>
+
+<script>
+	const nav = document.querySelector<HTMLElement>('[data-nav]');
+	if (nav) {
+		const items = [...nav.querySelectorAll<HTMLElement>('[data-menu-item]')];
+		let openTimer: number | undefined;
+
+		const closeAll = () => {
+			for (const item of items) {
+				const trigger = item.querySelector<HTMLButtonElement>('[data-menu-trigger]')!;
+				const panel = item.querySelector<HTMLElement>('[data-menu-panel]')!;
+				trigger.setAttribute('aria-expanded', 'false');
+				panel.removeAttribute('data-open');
+				panel.hidden = true;
+			}
+		};
+
+		const open = (item: HTMLElement) => {
+			closeAll();
+			const trigger = item.querySelector<HTMLButtonElement>('[data-menu-trigger]')!;
+			const panel = item.querySelector<HTMLElement>('[data-menu-panel]')!;
+			panel.hidden = false;
+			// Two frames: one for the browser to lay the panel out, one for it to
+			// register the starting state. With a single frame the transition
+			// intermittently did not run at all.
+			requestAnimationFrame(() =>
+				requestAnimationFrame(() => panel.setAttribute('data-open', ''))
+			);
+			trigger.setAttribute('aria-expanded', 'true');
+		};
+
+		for (const item of items) {
+			const trigger = item.querySelector<HTMLButtonElement>('[data-menu-trigger]')!;
+
+			item.addEventListener('pointerenter', () => {
+				window.clearTimeout(openTimer);
+				open(item);
+			});
+
+			item.addEventListener('pointerleave', () => {
+				openTimer = window.setTimeout(closeAll, 120);
+			});
+
+			trigger.addEventListener('click', () => {
+				const isOpen = trigger.getAttribute('aria-expanded') === 'true';
+				isOpen ? closeAll() : open(item);
+			});
+
+			trigger.addEventListener('focus', () => open(item));
+		}
+
+		nav.addEventListener('focusout', (event) => {
+			if (!nav.contains(event.relatedTarget as Node)) closeAll();
+		});
+
+		document.addEventListener('keydown', (event) => {
+			if (event.key === 'Escape') closeAll();
+		});
+
+		// Mobile drawer.
+		const burger = nav.querySelector<HTMLButtonElement>('[data-burger]');
+		const drawer = nav.querySelector<HTMLElement>('[data-drawer]');
+		burger?.addEventListener('click', () => {
+			const isOpen = burger.getAttribute('aria-expanded') === 'true';
+			burger.setAttribute('aria-expanded', String(!isOpen));
+			if (!drawer) return;
+			if (isOpen) {
+				drawer.removeAttribute('data-open');
+				drawer.hidden = true;
+				document.body.style.removeProperty('overflow');
+			} else {
+				drawer.hidden = false;
+				requestAnimationFrame(() => drawer.setAttribute('data-open', ''));
+				document.body.style.overflow = 'hidden';
+			}
+		});
+	}
+</script>
