@@ -1,0 +1,1611 @@
+---
+/**
+ * The Itti Foundation — Form 1: Basic Information / Get Started Overlay
+ *
+ * Appears as an elegant, accessible modal overlay on top of the live website,
+ * adhering directly to the project's design tokens, typography, and Supabase identity schema.
+ *
+ * Folder: src/components/forms/form-1/
+ */
+import Mark from '../../brand/Mark.astro';
+import { INDIAN_CITIES } from './cities';
+
+interface Props {
+	/** If true, starts visible on page load. Defaults to true for instant evaluation. */
+	initiallyOpen?: boolean;
+}
+
+const { initiallyOpen = true } = Astro.props;
+---
+
+<div
+	class="f1-overlay"
+	id="form1-modal"
+	role="dialog"
+	aria-modal="true"
+	aria-labelledby="f1-heading"
+	data-form1-overlay
+	data-initially-open={initiallyOpen ? 'true' : 'false'}
+	hidden
+>
+	<!-- Backdrop scrim with subtle blur -->
+	<div class="f1-backdrop" data-f1-backdrop aria-hidden="true"></div>
+
+	<!-- Scrollable viewport frame -->
+	<div class="f1-scroller" data-f1-scroller>
+		<div class="f1-card" data-f1-card>
+			<!-- Top utility bar: brand mark and close button -->
+			<div class="f1-topbar">
+				<div class="f1-brand" aria-hidden="true">
+					<Mark height="1.6rem" />
+					<span class="f1-brand__label">The Itti Foundation &middot; Intake</span>
+				</div>
+				<button
+					class="f1-close"
+					type="button"
+					aria-label="Close Get Started form"
+					data-f1-close
+				>
+					<span class="f1-close__icon" aria-hidden="true">&times;</span>
+				</button>
+			</div>
+
+			<!-- Main Form Content -->
+			<form class="f1-form" id="form1-element" novalidate data-f1-form>
+				<!-- Header section -->
+				<header class="f1-header">
+					<p class="f1-eyebrow">Form 1 &middot; Intake Step 1 of 2</p>
+					<h1 class="f1-title" id="f1-heading">Let's Get Started</h1>
+					<p class="f1-subtitle">
+						Tell us a little about yourself so we can connect you with the right Itti
+						Foundation program.
+					</p>
+				</header>
+
+				<!-- Global error banner (hidden by default) -->
+				<div class="f1-alert" id="f1-global-alert" role="alert" hidden>
+					<span class="f1-alert__icon" aria-hidden="true">!</span>
+					<span class="f1-alert__text" data-f1-global-error></span>
+				</div>
+
+				<!-- ════════════ SECTION 1: ABOUT YOU ════════════ -->
+				<fieldset class="f1-section">
+					<legend class="f1-section__legend">
+						<span class="f1-section__num">01</span>
+						<span class="f1-section__text">About You</span>
+					</legend>
+
+					<!-- 1. Full Name * -->
+					<div class="f1-field" data-field="fullName">
+						<label class="f1-label" for="f1-fullName">
+							Full Name <span class="f1-req" aria-hidden="true">*</span>
+						</label>
+						<input
+							class="f1-input"
+							id="f1-fullName"
+							name="fullName"
+							type="text"
+							placeholder="Enter your full name"
+							autocomplete="name"
+							maxlength="120"
+							required
+						/>
+						<p class="f1-error" data-error="fullName" role="alert"></p>
+					</div>
+
+					<!-- Contact Method Group (Phone OR Email rule) -->
+					<div class="f1-contact-group">
+						<div class="f1-contact-note">
+							<span class="f1-contact-note__badge">Contact Method</span>
+							<span
+								>Please provide at least <strong>one</strong> of phone number or email address.</span
+							>
+						</div>
+
+						<div class="f1-grid f1-grid--2col">
+							<!-- 2. Phone Number -->
+							<div class="f1-field" data-field="phone">
+								<label class="f1-label" for="f1-phone"> Phone Number </label>
+								<div class="f1-input-affix">
+									<input
+										class="f1-input"
+										id="f1-phone"
+										name="phone"
+										type="tel"
+										placeholder="+91 XXXXX XXXXX"
+										autocomplete="tel"
+									/>
+								</div>
+								<p class="f1-error" data-error="phone" role="alert"></p>
+							</div>
+
+							<!-- 3. Email Address -->
+							<div class="f1-field" data-field="email">
+								<label class="f1-label" for="f1-email"> Email Address </label>
+								<input
+									class="f1-input"
+									id="f1-email"
+									name="email"
+									type="email"
+									placeholder="name@example.com"
+									autocomplete="email"
+								/>
+								<p class="f1-error" data-error="email" role="alert"></p>
+							</div>
+						</div>
+						<p class="f1-error f1-error--contact" data-error="contact" role="alert"></p>
+					</div>
+
+					<!-- 4. Date of Birth & 5. Gender (2 Column Grid) -->
+					<div class="f1-grid f1-grid--2col">
+						<!-- 4. Date of Birth -->
+						<div class="f1-field" data-field="dateOfBirth">
+							<label class="f1-label" for="f1-dob"> Date of Birth </label>
+							<input
+								class="f1-input f1-input--date"
+								id="f1-dob"
+								name="dateOfBirth"
+								type="date"
+								autocomplete="bday"
+							/>
+							<p class="f1-hint">
+								Used only to compute age and provide age-appropriate care.
+							</p>
+							<p class="f1-error" data-error="dateOfBirth" role="alert"></p>
+						</div>
+
+						<!-- 5. Gender (Optional) -->
+						<div class="f1-field" data-field="gender">
+							<label class="f1-label" for="f1-gender">
+								Gender <span class="f1-opt">(Optional)</span>
+							</label>
+							<div class="f1-select-wrap">
+								<select class="f1-select" id="f1-gender" name="gender">
+									<option value="">Select gender</option>
+									<option value="woman">Female</option>
+									<option value="man">Male</option>
+									<option value="non_binary">Non-binary / Other</option>
+									<option value="undisclosed">Prefer not to say</option>
+								</select>
+							</div>
+						</div>
+					</div>
+
+					<!-- 6. City * (Searchable Autocomplete) -->
+					<div class="f1-field f1-autocomplete" data-field="city" data-f1-autocomplete>
+						<label class="f1-label" for="f1-city-input">
+							City <span class="f1-req" aria-hidden="true">*</span>
+						</label>
+						<div class="f1-autocomplete__box">
+							<input
+								class="f1-input"
+								id="f1-city-input"
+								type="text"
+								placeholder="Search your city (e.g. Pune, Mumbai, Nagpur)"
+								autocomplete="off"
+								data-city-input
+								required
+							/>
+							<span
+								class="f1-autocomplete__clear"
+								data-city-clear
+								title="Clear city"
+								hidden>&times;</span
+							>
+						</div>
+						<!-- Hidden inputs for canonical city & state -->
+						<input type="hidden" name="city" id="f1-city-hidden" data-city-val />
+						<input type="hidden" name="state" id="f1-state-hidden" data-state-val />
+
+						<!-- Autocomplete suggestions dropdown -->
+						<ul
+							class="f1-suggestions"
+							id="f1-city-list"
+							role="listbox"
+							aria-label="City suggestions"
+							data-city-suggestions
+							hidden
+						>
+						</ul>
+						<p class="f1-error" data-error="city" role="alert"></p>
+					</div>
+
+					<!-- 7. Pincode (Optional - revealed naturally after city is selected) -->
+					<div
+						class="f1-field f1-pincode-reveal"
+						id="f1-pincode-container"
+						data-field="pincode"
+						data-pincode-container
+					>
+						<label class="f1-label" for="f1-pincode">
+							Pincode <span class="f1-opt">(Optional)</span>
+						</label>
+						<input
+							class="f1-input"
+							id="f1-pincode"
+							name="pincode"
+							type="text"
+							inputmode="numeric"
+							pattern="[1-9][0-9]{5}"
+							maxlength="6"
+							placeholder="Enter your 6-digit pincode"
+						/>
+						<p class="f1-hint">
+							Assists us with local clinic and volunteer network serviceability.
+						</p>
+						<p class="f1-error" data-error="pincode" role="alert"></p>
+					</div>
+
+					<!-- 8. Preferred Language (Optional) -->
+					<div class="f1-field" data-field="preferredLanguage">
+						<label class="f1-label" for="f1-language">
+							Preferred Language <span class="f1-opt">(Optional)</span>
+						</label>
+						<div class="f1-select-wrap">
+							<select class="f1-select" id="f1-language" name="preferredLanguage">
+								<option value="">Select language</option>
+								<option value="en">English</option>
+								<option value="hi">Hindi</option>
+								<option value="mr">Marathi</option>
+								<option value="other">Other</option>
+							</select>
+						</div>
+					</div>
+				</fieldset>
+
+				<!-- ════════ SECTION 2: CONNECTION WITH ITTI FOUNDATION ════════ -->
+				<fieldset class="f1-section">
+					<legend class="f1-section__legend">
+						<span class="f1-section__num">02</span>
+						<span class="f1-section__text">Your Connection with Itti Foundation</span>
+					</legend>
+
+					<!-- 9. I am joining as * -->
+					<div class="f1-field" data-field="role">
+						<label class="f1-label f1-label--standalone">
+							I am joining as <span class="f1-req" aria-hidden="true">*</span>
+						</label>
+
+						<div class="f1-choice-grid">
+							<label class="f1-choice-card">
+								<input type="radio" name="role" value="patient" required />
+								<span class="f1-choice-card__indicator"></span>
+								<span class="f1-choice-card__body">
+									<span class="f1-choice-card__title">Patient / Beneficiary</span>
+									<span class="f1-choice-card__desc"
+										>I am seeking support or guidance for myself</span
+									>
+								</span>
+							</label>
+
+							<label class="f1-choice-card">
+								<input type="radio" name="role" value="caregiver" />
+								<span class="f1-choice-card__indicator"></span>
+								<span class="f1-choice-card__body">
+									<span class="f1-choice-card__title">Caregiver / Family Member</span>
+									<span class="f1-choice-card__desc"
+										>I am supporting a child, parent, spouse, or loved one</span
+									>
+								</span>
+							</label>
+
+							<label class="f1-choice-card">
+								<input type="radio" name="role" value="supporter" />
+								<span class="f1-choice-card__indicator"></span>
+								<span class="f1-choice-card__body">
+									<span class="f1-choice-card__title">Volunteer / Supporter</span>
+									<span class="f1-choice-card__desc"
+										>I want to contribute time, expertise, or resources</span
+									>
+								</span>
+							</label>
+
+							<label class="f1-choice-card">
+								<input type="radio" name="role" value="supporter" data-role-other />
+								<span class="f1-choice-card__indicator"></span>
+								<span class="f1-choice-card__body">
+									<span class="f1-choice-card__title">Other</span>
+									<span class="f1-choice-card__desc"
+										>General community member or interested partner</span
+									>
+								</span>
+							</label>
+						</div>
+						<p class="f1-error" data-error="role" role="alert"></p>
+					</div>
+				</fieldset>
+
+				<!-- ════════ SECTION 3: AREA OF INTEREST ════════ -->
+				<fieldset class="f1-section">
+					<legend class="f1-section__legend">
+						<span class="f1-section__num">03</span>
+						<span class="f1-section__text">Area of Interest</span>
+					</legend>
+
+					<!-- 10. Which area would you like to connect with? * -->
+					<div class="f1-field" data-field="pillar">
+						<label class="f1-label f1-label--standalone">
+							Which area would you like to connect with? <span
+								class="f1-req"
+								aria-hidden="true">*</span
+							>
+						</label>
+
+						<div class="f1-pillar-grid">
+							<!-- Neurodivergence -->
+							<label class="f1-pillar-card" style="--card-accent: var(--ochre);">
+								<input type="radio" name="pillar" value="neurodivergence" required />
+								<div class="f1-pillar-card__inner">
+									<span class="f1-pillar-card__tag">Pillar I</span>
+									<span class="f1-pillar-card__title">Neurodivergence</span>
+									<span class="f1-pillar-card__motto">"A mind met, not mended."</span>
+								</div>
+							</label>
+
+							<!-- Cancer Care -->
+							<label class="f1-pillar-card" style="--card-accent: var(--rose);">
+								<input type="radio" name="pillar" value="cancer_care" />
+								<div class="f1-pillar-card__inner">
+									<span class="f1-pillar-card__tag">Pillar II</span>
+									<span class="f1-pillar-card__title">Cancer Care</span>
+									<span class="f1-pillar-card__motto"
+										>"A cancer caught, not carried."</span
+									>
+								</div>
+							</label>
+
+							<!-- CLAW -->
+							<label class="f1-pillar-card" style="--card-accent: var(--sage);">
+								<input type="radio" name="pillar" value="claw" />
+								<div class="f1-pillar-card__inner">
+									<span class="f1-pillar-card__tag">Pillar III</span>
+									<span class="f1-pillar-card__title">CLAW</span>
+									<span class="f1-pillar-card__motto"
+										>"A forest saved, not mourned."</span
+									>
+								</div>
+							</label>
+
+							<!-- I'm not sure yet (maps to 'other' in DB) -->
+							<label class="f1-pillar-card" style="--card-accent: var(--teal);">
+								<input type="radio" name="pillar" value="other" />
+								<div class="f1-pillar-card__inner">
+									<span class="f1-pillar-card__tag">General</span>
+									<span class="f1-pillar-card__title">I'm not sure yet</span>
+									<span class="f1-pillar-card__motto"
+										>Help guide me to the right team</span
+									>
+								</div>
+							</label>
+						</div>
+						<p class="f1-error" data-error="pillar" role="alert"></p>
+					</div>
+				</fieldset>
+
+				<!-- ════════ SUBMIT / CONTINUE CTA ════════ -->
+				<footer class="f1-footer">
+					<div class="f1-footer__action">
+						<button class="f1-submit-btn" type="submit" data-f1-submit>
+							<span>Continue</span>
+							<span class="f1-submit-btn__arrow" aria-hidden="true">&rarr;</span>
+						</button>
+					</div>
+					<p class="f1-footer__disclaimer">
+						Your information is handled with care under the Itti Foundation Privacy
+						Charter. Step 1 creates your foundational intake profile.
+					</p>
+				</footer>
+			</form>
+
+			<!-- ════════ SUCCESS / HANDOFF CONFIRMATION SCREEN ════════ -->
+			<div class="f1-success" data-f1-success hidden>
+				<div class="f1-success__icon" aria-hidden="true">&#10003;</div>
+				<h2 class="f1-success__title">Step 1 Complete</h2>
+				<p class="f1-success__name" data-success-name></p>
+				<p class="f1-success__message">
+					Your basic profile has been formatted according to the Itti Foundation intake
+					schema and safely preserved for the health intake step.
+				</p>
+
+				<div class="f1-success__summary" data-success-summary>
+					<!-- Generated details injected here -->
+				</div>
+
+				<div class="f1-success__actions">
+					<button class="f1-submit-btn" type="button" data-f1-close-success>
+						<span>Done &amp; Return to Website</span>
+					</button>
+					<button class="f1-btn-secondary" type="button" data-f1-reset>
+						<span>Edit / Start Over</span>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Reopen Trigger Pill for convenience when overlay is dismissed -->
+<button
+	class="f1-reopen-pill"
+	type="button"
+	data-f1-reopen
+	title="Open Get Started form"
+>
+	<span class="f1-reopen-pill__dot" aria-hidden="true"></span>
+	<span>Get Started Form</span>
+</button>
+
+<style>
+	/* ── Scrim & Overlay Container ────────────────────────────────────────── */
+	.f1-overlay {
+		position: fixed;
+		inset: 0;
+		z-index: 9999;
+		display: grid;
+		place-items: center;
+		overflow: hidden;
+		opacity: 0;
+		visibility: hidden;
+		transition:
+			opacity 320ms var(--ease),
+			visibility 320ms var(--ease);
+	}
+
+	.f1-overlay.is-active {
+		opacity: 1;
+		visibility: visible;
+	}
+
+	.f1-backdrop {
+		position: absolute;
+		inset: 0;
+		background: rgba(10, 12, 13, 0.74);
+		-webkit-backdrop-filter: blur(10px) saturate(120%);
+		backdrop-filter: blur(10px) saturate(120%);
+		cursor: pointer;
+	}
+
+	.f1-scroller {
+		position: relative;
+		z-index: 2;
+		width: 100%;
+		height: 100%;
+		display: grid;
+		place-items: center;
+		padding: clamp(1rem, 3.5vh, 2.75rem) var(--gutter);
+		overflow-y: auto;
+		overflow-x: hidden;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	/* ── Main Modal Card ──────────────────────────────────────────────────── */
+	.f1-card {
+		position: relative;
+		width: min(45rem, 100%);
+		margin: auto;
+		background: #e8e0d1;
+		color: var(--ink);
+		border: 1px solid rgba(44, 39, 33, 0.12);
+		border-radius: 1.25rem;
+		box-shadow:
+			0 4px 16px rgba(6, 7, 8, 0.18),
+			0 28px 72px -16px rgba(6, 7, 8, 0.55);
+		padding: clamp(1.75rem, 4.5vw, 3rem);
+		transform: scale(0.97) translateY(12px);
+		transition: transform 380ms cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	.f1-overlay.is-active .f1-card {
+		transform: none;
+	}
+
+	/* ── Topbar (Brand & Close) ────────────────────────────────────────────── */
+	.f1-topbar {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		padding-bottom: 1.25rem;
+		border-bottom: 1px solid rgba(44, 39, 33, 0.1);
+		margin-bottom: 1.75rem;
+	}
+
+	.f1-brand {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		color: var(--teal);
+	}
+
+	.f1-brand__label {
+		font-family: var(--body);
+		font-size: 0.75rem;
+		font-weight: 500;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+	}
+
+	.f1-close {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 2.25rem;
+		height: 2.25rem;
+		border-radius: 999px;
+		background: rgba(44, 39, 33, 0.06);
+		color: var(--ink-soft);
+		font-size: 1.5rem;
+		line-height: 1;
+		transition:
+			background 200ms var(--ease),
+			color 200ms var(--ease),
+			transform 200ms var(--ease);
+	}
+
+	.f1-close:hover {
+		background: var(--teal);
+		color: var(--warm-white);
+		transform: scale(1.05);
+	}
+
+	/* ── Header ───────────────────────────────────────────────────────────── */
+	.f1-header {
+		margin-bottom: 2.25rem;
+	}
+
+	.f1-eyebrow {
+		font-family: var(--body);
+		font-size: 0.6875rem;
+		font-weight: 600;
+		letter-spacing: 0.22em;
+		text-transform: uppercase;
+		color: var(--teal);
+		margin-bottom: 0.5rem;
+	}
+
+	.f1-title {
+		font-family: var(--face-bodoni);
+		font-size: clamp(1.875rem, 3.4vw, 2.5rem);
+		font-weight: 450;
+		line-height: 1.1;
+		letter-spacing: -0.01em;
+		color: var(--ink);
+	}
+
+	.f1-subtitle {
+		margin-top: 0.65rem;
+		font-size: 1.0625rem;
+		line-height: 1.55;
+		color: var(--ink-soft);
+		max-width: 38rem;
+	}
+
+	/* ── Global Alert ─────────────────────────────────────────────────────── */
+	.f1-alert {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0.85rem 1.1rem;
+		border-radius: 0.6rem;
+		background: #fdf2f2;
+		border: 1px solid #f2b8b5;
+		color: #9c2727;
+		margin-bottom: 1.75rem;
+		font-size: 0.9375rem;
+	}
+
+	.f1-alert__icon {
+		display: grid;
+		place-items: center;
+		width: 1.35rem;
+		height: 1.35rem;
+		border-radius: 999px;
+		background: #9c2727;
+		color: #fff;
+		font-size: 0.75rem;
+		font-weight: bold;
+		flex: none;
+	}
+
+	/* ── Fieldsets & Sections ─────────────────────────────────────────────── */
+	.f1-section {
+		border: none;
+		margin: 0 0 2.25rem 0;
+		padding: 0;
+	}
+
+	.f1-section + .f1-section {
+		padding-top: 1.75rem;
+		border-top: 1px solid rgba(44, 39, 33, 0.1);
+	}
+
+	.f1-section__legend {
+		display: flex;
+		align-items: baseline;
+		gap: 0.6rem;
+		font-family: var(--body);
+		font-size: 0.8125rem;
+		font-weight: 600;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: var(--teal);
+		margin-bottom: 1.5rem;
+	}
+
+	.f1-section__num {
+		font-family: var(--face-bodoni);
+		font-size: 1.0625rem;
+		opacity: 0.75;
+	}
+
+	/* ── Grid Layouts ─────────────────────────────────────────────────────── */
+	.f1-grid {
+		display: grid;
+		gap: 1.25rem;
+	}
+
+	.f1-grid--2col {
+		grid-template-columns: 1fr 1fr;
+	}
+
+	@media (max-width: 44rem) {
+		.f1-grid--2col {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	/* ── Form Controls & Fields ───────────────────────────────────────────── */
+	.f1-field {
+		display: grid;
+		gap: 0.45rem;
+		margin-bottom: 1.25rem;
+	}
+
+	.f1-label {
+		display: block;
+		font-size: 0.9375rem;
+		font-weight: 500;
+		color: var(--ink);
+	}
+
+	.f1-label--standalone {
+		margin-bottom: 0.75rem;
+	}
+
+	.f1-req {
+		color: var(--rose);
+		font-weight: bold;
+		margin-left: 0.15rem;
+	}
+
+	.f1-opt {
+		font-size: 0.8125rem;
+		font-weight: 400;
+		color: var(--ink-faint);
+		margin-left: 0.25rem;
+	}
+
+	.f1-input,
+	.f1-select {
+		width: 100%;
+		padding: 0.75rem 0.95rem;
+		font-family: var(--body);
+		font-size: 1.0625rem;
+		color: var(--ink);
+		background: var(--warm-white);
+		border: 1px solid rgba(44, 39, 33, 0.22);
+		border-radius: 0.5rem;
+		transition:
+			border-color 200ms var(--ease),
+			box-shadow 200ms var(--ease),
+			background-color 200ms var(--ease);
+	}
+
+	.f1-input::placeholder {
+		color: var(--ink-faint);
+		opacity: 0.85;
+	}
+
+	.f1-input:focus,
+	.f1-select:focus {
+		outline: none;
+		border-color: var(--teal);
+		box-shadow: 0 0 0 3px rgba(28, 107, 119, 0.18);
+		background: #fff;
+	}
+
+	.f1-input.has-error,
+	.f1-select.has-error {
+		border-color: #c93b3b;
+		box-shadow: 0 0 0 2px rgba(201, 59, 59, 0.15);
+	}
+
+	.f1-select-wrap {
+		position: relative;
+	}
+
+	.f1-select-wrap::after {
+		content: '';
+		position: absolute;
+		right: 1rem;
+		top: 50%;
+		width: 0.45rem;
+		height: 0.45rem;
+		border-right: 2px solid var(--ink-soft);
+		border-bottom: 2px solid var(--ink-soft);
+		transform: translateY(-65%) rotate(45deg);
+		pointer-events: none;
+	}
+
+	.f1-select {
+		appearance: none;
+		padding-right: 2.2rem;
+		cursor: pointer;
+	}
+
+	.f1-hint {
+		font-size: 0.8125rem;
+		line-height: 1.4;
+		color: var(--ink-faint);
+		margin-top: 0.1rem;
+	}
+
+	.f1-error {
+		display: none;
+		font-size: 0.8125rem;
+		color: #b72b2b;
+		margin-top: 0.2rem;
+	}
+
+	.f1-error.is-visible {
+		display: block;
+	}
+
+	/* ── Contact Mutual Note & Errors ─────────────────────────────────────── */
+	.f1-contact-group {
+		margin-bottom: 1.25rem;
+		padding: 1rem 1.15rem 0.6rem;
+		border-radius: 0.75rem;
+		background: rgba(44, 39, 33, 0.035);
+		border: 1px solid rgba(44, 39, 33, 0.08);
+	}
+
+	.f1-contact-note {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.8438rem;
+		color: var(--ink-soft);
+		margin-bottom: 0.9rem;
+	}
+
+	.f1-contact-note__badge {
+		font-size: 0.6875rem;
+		font-weight: 600;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		background: var(--teal);
+		color: var(--cream);
+		padding: 0.2rem 0.5rem;
+		border-radius: 999px;
+	}
+
+	.f1-error--contact {
+		margin-top: 0.65rem;
+		padding-top: 0.55rem;
+		border-top: 1px solid rgba(183, 43, 43, 0.2);
+	}
+
+	/* ── City Autocomplete ────────────────────────────────────────────────── */
+	.f1-autocomplete {
+		position: relative;
+	}
+
+	.f1-autocomplete__box {
+		position: relative;
+	}
+
+	.f1-autocomplete__clear {
+		position: absolute;
+		right: 0.75rem;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 1.5rem;
+		height: 1.5rem;
+		display: grid;
+		place-items: center;
+		font-size: 1.2rem;
+		color: var(--ink-faint);
+		cursor: pointer;
+		border-radius: 999px;
+		transition: background 150ms var(--ease);
+	}
+
+	.f1-autocomplete__clear:hover {
+		background: rgba(44, 39, 33, 0.1);
+		color: var(--ink);
+	}
+
+	.f1-suggestions {
+		position: absolute;
+		top: calc(100% + 4px);
+		left: 0;
+		right: 0;
+		z-index: 50;
+		margin: 0;
+		padding: 0.4rem;
+		list-style: none;
+		background: #ffffff;
+		border: 1px solid rgba(44, 39, 33, 0.16);
+		border-radius: 0.6rem;
+		box-shadow: 0 12px 28px -6px rgba(6, 7, 8, 0.25);
+		max-height: 14rem;
+		overflow-y: auto;
+	}
+
+	.f1-suggestion-item {
+		padding: 0.65rem 0.85rem;
+		border-radius: 0.35rem;
+		font-size: 0.9375rem;
+		cursor: pointer;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		color: var(--ink);
+		transition: background 120ms var(--ease);
+	}
+
+	.f1-suggestion-item:hover,
+	.f1-suggestion-item.is-selected {
+		background: var(--cream-deep);
+		color: var(--teal-deep);
+	}
+
+	.f1-suggestion-item__city {
+		font-weight: 500;
+	}
+
+	.f1-suggestion-item__state {
+		font-size: 0.8125rem;
+		color: var(--ink-faint);
+	}
+
+	/* ── Pincode Smooth Revelation ────────────────────────────────────────── */
+	.f1-pincode-reveal {
+		max-height: 0;
+		opacity: 0;
+		overflow: hidden;
+		margin-bottom: 0;
+		transition:
+			max-height 380ms var(--ease),
+			opacity 300ms var(--ease),
+			margin-bottom 300ms var(--ease);
+	}
+
+	.f1-pincode-reveal.is-revealed {
+		max-height: 8rem;
+		opacity: 1;
+		margin-bottom: 1.25rem;
+	}
+
+	/* ── Role Choice Cards ────────────────────────────────────────────────── */
+	.f1-choice-grid {
+		display: grid;
+		gap: 0.75rem;
+		grid-template-columns: 1fr 1fr;
+	}
+
+	@media (max-width: 40rem) {
+		.f1-choice-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	.f1-choice-card {
+		position: relative;
+		display: flex;
+		align-items: flex-start;
+		gap: 0.85rem;
+		padding: 1rem 1.1rem;
+		border: 1px solid rgba(44, 39, 33, 0.15);
+		border-radius: 0.65rem;
+		background: var(--warm-white);
+		cursor: pointer;
+		transition:
+			border-color 200ms var(--ease),
+			background-color 200ms var(--ease),
+			transform 200ms var(--ease);
+	}
+
+	.f1-choice-card:hover {
+		border-color: var(--teal);
+		background: #fff;
+		transform: translateY(-1px);
+	}
+
+	.f1-choice-card input[type='radio'] {
+		position: absolute;
+		opacity: 0;
+		pointer-events: none;
+	}
+
+	.f1-choice-card__indicator {
+		flex: none;
+		width: 1.2rem;
+		height: 1.2rem;
+		margin-top: 0.15rem;
+		border: 1.5px solid rgba(44, 39, 33, 0.35);
+		border-radius: 999px;
+		display: grid;
+		place-items: center;
+		transition:
+			border-color 200ms var(--ease),
+			background 200ms var(--ease);
+	}
+
+	.f1-choice-card input[type='radio']:checked + .f1-choice-card__indicator {
+		border-color: var(--teal);
+		background: var(--teal);
+	}
+
+	.f1-choice-card input[type='radio']:checked + .f1-choice-card__indicator::after {
+		content: '';
+		width: 0.45rem;
+		height: 0.45rem;
+		border-radius: 999px;
+		background: #fff;
+	}
+
+	.f1-choice-card:has(input[type='radio']:checked) {
+		border-color: var(--teal);
+		background: #fff;
+		box-shadow: 0 4px 14px -4px rgba(28, 107, 119, 0.22);
+	}
+
+	.f1-choice-card__body {
+		display: grid;
+		gap: 0.25rem;
+	}
+
+	.f1-choice-card__title {
+		font-weight: 500;
+		font-size: 1rem;
+		color: var(--ink);
+	}
+
+	.f1-choice-card__desc {
+		font-size: 0.8438rem;
+		line-height: 1.4;
+		color: var(--ink-soft);
+	}
+
+	/* ── Pillar Selection Cards ───────────────────────────────────────────── */
+	.f1-pillar-grid {
+		display: grid;
+		gap: 0.75rem;
+		grid-template-columns: 1fr 1fr;
+	}
+
+	@media (max-width: 44rem) {
+		.f1-pillar-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	.f1-pillar-card {
+		position: relative;
+		cursor: pointer;
+		display: block;
+	}
+
+	.f1-pillar-card input[type='radio'] {
+		position: absolute;
+		opacity: 0;
+		pointer-events: none;
+	}
+
+	.f1-pillar-card__inner {
+		display: grid;
+		gap: 0.35rem;
+		padding: 1.15rem 1.25rem;
+		border-radius: 0.75rem;
+		background: var(--warm-white);
+		border: 1px solid rgba(44, 39, 33, 0.15);
+		border-top: 3px solid var(--card-accent);
+		transition:
+			border-color 200ms var(--ease),
+			background-color 200ms var(--ease),
+			transform 200ms var(--ease),
+			box-shadow 200ms var(--ease);
+	}
+
+	.f1-pillar-card:hover .f1-pillar-card__inner {
+		background: #fff;
+		transform: translateY(-2px);
+		box-shadow: 0 8px 20px -8px rgba(44, 39, 33, 0.25);
+	}
+
+	.f1-pillar-card:has(input[type='radio']:checked) .f1-pillar-card__inner {
+		border-color: var(--card-accent);
+		border-top-width: 4px;
+		background: #fff;
+		box-shadow: 0 10px 24px -8px rgba(44, 39, 33, 0.3);
+	}
+
+	.f1-pillar-card__tag {
+		font-family: var(--body);
+		font-size: 0.6875rem;
+		font-weight: 600;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: var(--card-accent);
+	}
+
+	.f1-pillar-card__title {
+		font-family: var(--face-bodoni);
+		font-size: 1.25rem;
+		font-weight: 500;
+		line-height: 1.2;
+		color: var(--ink);
+	}
+
+	.f1-pillar-card__motto {
+		font-size: 0.875rem;
+		font-style: italic;
+		line-height: 1.4;
+		color: var(--ink-soft);
+	}
+
+	/* ── Footer & Submit CTA ──────────────────────────────────────────────── */
+	.f1-footer {
+		margin-top: 2rem;
+		padding-top: 1.75rem;
+		border-top: 1px solid rgba(44, 39, 33, 0.12);
+		display: grid;
+		gap: 1.25rem;
+	}
+
+	.f1-footer__action {
+		display: flex;
+		justify-content: flex-end;
+	}
+
+	.f1-submit-btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.75rem;
+		padding: 0.85rem 2.25rem;
+		border-radius: 999px;
+		background: var(--teal);
+		color: var(--cream);
+		font-family: var(--display);
+		font-size: 1.125rem;
+		letter-spacing: 0.02em;
+		font-weight: 500;
+		border: none;
+		cursor: pointer;
+		transition:
+			background 200ms var(--ease),
+			transform 200ms var(--ease),
+			box-shadow 200ms var(--ease);
+		box-shadow: 0 4px 14px rgba(28, 107, 119, 0.32);
+	}
+
+	.f1-submit-btn:hover {
+		background: var(--teal-abyss);
+		transform: translateY(-2px);
+		box-shadow: 0 8px 20px rgba(28, 107, 119, 0.4);
+	}
+
+	.f1-submit-btn:active {
+		transform: translateY(0);
+	}
+
+	.f1-submit-btn__arrow {
+		font-size: 1.25rem;
+		transition: transform 200ms var(--ease);
+	}
+
+	.f1-submit-btn:hover .f1-submit-btn__arrow {
+		transform: translateX(4px);
+	}
+
+	.f1-btn-secondary {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.85rem 1.75rem;
+		border-radius: 999px;
+		background: transparent;
+		color: var(--ink-soft);
+		font-family: var(--body);
+		font-size: 1rem;
+		border: 1px solid rgba(44, 39, 33, 0.2);
+		cursor: pointer;
+		transition:
+			border-color 200ms var(--ease),
+			color 200ms var(--ease);
+	}
+
+	.f1-btn-secondary:hover {
+		border-color: var(--teal);
+		color: var(--teal);
+	}
+
+	.f1-footer__disclaimer {
+		font-size: 0.8125rem;
+		line-height: 1.5;
+		color: var(--ink-faint);
+		text-align: center;
+		margin: 0;
+	}
+
+	/* ── Success Screen ───────────────────────────────────────────────────── */
+	.f1-success {
+		text-align: center;
+		padding: 1.5rem 0.5rem;
+	}
+
+	.f1-success__icon {
+		display: grid;
+		place-items: center;
+		width: 3.75rem;
+		height: 3.75rem;
+		margin: 0 auto 1.25rem;
+		border-radius: 999px;
+		background: var(--teal);
+		color: var(--cream);
+		font-size: 2rem;
+	}
+
+	.f1-success__title {
+		font-family: var(--face-bodoni);
+		font-size: 2.25rem;
+		color: var(--ink);
+	}
+
+	.f1-success__name {
+		font-size: 1.2rem;
+		font-weight: 500;
+		color: var(--teal);
+		margin-top: 0.25rem;
+	}
+
+	.f1-success__message {
+		margin: 0.9rem auto 1.75rem;
+		max-width: 32rem;
+		font-size: 1.0625rem;
+		line-height: 1.6;
+		color: var(--ink-soft);
+	}
+
+	.f1-success__summary {
+		text-align: left;
+		margin: 1.5rem auto 2.25rem;
+		max-width: 34rem;
+		padding: 1.25rem 1.5rem;
+		border-radius: 0.75rem;
+		background: var(--cream-deep);
+		border: 1px solid rgba(44, 39, 33, 0.12);
+		display: grid;
+		gap: 0.55rem;
+		font-size: 0.9375rem;
+	}
+
+	.f1-success__actions {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 1rem;
+	}
+
+	/* ── Reopen Pill (Bottom Right) ────────────────────────────────────────── */
+	.f1-reopen-pill {
+		position: fixed;
+		bottom: 2rem;
+		right: 2rem;
+		z-index: 50;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.6rem;
+		padding: 0.65rem 1.25rem;
+		border-radius: 999px;
+		background: var(--teal);
+		color: var(--warm-white);
+		font-family: var(--display);
+		font-size: 0.9375rem;
+		letter-spacing: 0.02em;
+		box-shadow: 0 8px 24px -4px rgba(6, 7, 8, 0.4);
+		cursor: pointer;
+		transition:
+			transform 250ms var(--ease),
+			box-shadow 250ms var(--ease),
+			background 200ms var(--ease);
+	}
+
+	.f1-reopen-pill:hover {
+		transform: translateY(-2px);
+		background: var(--teal-abyss);
+		box-shadow: 0 12px 30px -4px rgba(6, 7, 8, 0.5);
+	}
+
+	.f1-reopen-pill__dot {
+		width: 0.55rem;
+		height: 0.55rem;
+		border-radius: 999px;
+		background: #8cf0cc;
+		box-shadow: 0 0 6px #8cf0cc;
+	}
+
+	@media (max-width: 48rem) {
+		.f1-card {
+			padding: 1.5rem 1.25rem;
+			border-radius: 1rem;
+		}
+
+		.f1-reopen-pill {
+			bottom: 1.25rem;
+			right: 1.25rem;
+			padding: 0.55rem 1rem;
+			font-size: 0.875rem;
+		}
+	}
+</style>
+
+<script>
+	import { searchCities } from './cities';
+	import { validateForm1 } from './validation';
+	import { persistForm1Data } from './schema';
+	import type { Form1Data, Form1Field, Form1Errors } from './types';
+
+	const modal = document.getElementById('form1-modal');
+	const form = document.getElementById('form1-element') as HTMLFormElement | null;
+	const cityInput = document.querySelector<HTMLInputElement>('[data-city-input]');
+	const cityClear = document.querySelector<HTMLElement>('[data-city-clear]');
+	const cityHidden = document.getElementById(
+		'f1-city-hidden',
+	) as HTMLInputElement | null;
+	const stateHidden = document.getElementById(
+		'f1-state-hidden',
+	) as HTMLInputElement | null;
+	const suggestionsList = document.querySelector<HTMLUListElement>(
+		'[data-city-suggestions]',
+	);
+	const pincodeContainer = document.querySelector<HTMLElement>(
+		'[data-pincode-container]',
+	);
+	const reopenBtn = document.querySelector<HTMLButtonElement>('[data-f1-reopen]');
+	const globalAlert = document.getElementById('f1-global-alert');
+	const globalAlertText = document.querySelector<HTMLElement>('[data-f1-global-error]');
+	const successView = document.querySelector<HTMLElement>('[data-f1-success]');
+
+	if (modal && form) {
+		// ── Open / Close Management ──────────────────────────────────────────
+		const openModal = () => {
+			modal.hidden = false;
+			requestAnimationFrame(() => modal.classList.add('is-active'));
+			document.body.style.overflow = 'hidden';
+			const firstInput = form.querySelector<HTMLInputElement>(
+				'input:not([type="hidden"])',
+			);
+			firstInput?.focus();
+		};
+
+		const closeModal = () => {
+			modal.classList.remove('is-active');
+			setTimeout(() => {
+				modal.hidden = true;
+				document.body.style.removeProperty('overflow');
+			}, 320);
+		};
+
+		// Check initially-open attribute or URL hash
+		const shouldOpen =
+			modal.getAttribute('data-initially-open') === 'true' ||
+			window.location.hash === '#get-started' ||
+			window.location.hash === '#join';
+
+		if (shouldOpen) {
+			openModal();
+		}
+
+		// Close listeners
+		modal.querySelectorAll('[data-f1-close]').forEach((btn) => {
+			btn.addEventListener('click', closeModal);
+		});
+
+		modal.querySelector('[data-f1-backdrop]')?.addEventListener('click', closeModal);
+
+		document.addEventListener('keydown', (e) => {
+			if (e.key === 'Escape' && !modal.hidden) {
+				closeModal();
+			}
+		});
+
+		// Re-open pill
+		reopenBtn?.addEventListener('click', () => {
+			openModal();
+		});
+
+		// Wire any existing 'Join Us' buttons across the site to open Form 1
+		document.querySelectorAll('a[href="/join"], a[href="#join"]').forEach((el) => {
+			el.addEventListener('click', (ev) => {
+				ev.preventDefault();
+				openModal();
+			});
+		});
+
+		// ── Form State & Live Validation ──────────────────────────────────────
+		const getFormData = (): Form1Data => {
+			const data = new FormData(form);
+			return {
+				fullName: (data.get('fullName') as string) || '',
+				phone: (data.get('phone') as string) || '',
+				email: (data.get('email') as string) || '',
+				dateOfBirth: (data.get('dateOfBirth') as string) || '',
+				gender: (data.get('gender') as any) || '',
+				city: (data.get('city') as string) || '',
+				state: (data.get('state') as string) || '',
+				pincode: (data.get('pincode') as string) || '',
+				preferredLanguage: (data.get('preferredLanguage') as any) || '',
+				role: (data.get('role') as any) || '',
+				pillar: (data.get('pillar') as any) || '',
+			};
+		};
+
+		const renderErrors = (errors: Form1Errors) => {
+			// Clear existing error states
+			form.querySelectorAll('.f1-error').forEach((el) => {
+				el.textContent = '';
+				el.classList.remove('is-visible');
+			});
+			form.querySelectorAll('.has-error').forEach((el) => {
+				el.classList.remove('has-error');
+			});
+
+			if (globalAlert && globalAlertText) {
+				const errorCount = Object.keys(errors).length;
+				if (errorCount > 0) {
+					globalAlert.hidden = false;
+					globalAlertText.textContent = `Please correct the ${errorCount} highlighted field${errorCount > 1 ? 's' : ''} to continue.`;
+				} else {
+					globalAlert.hidden = true;
+				}
+			}
+
+			// Render field-specific errors
+			for (const [key, msg] of Object.entries(errors)) {
+				const errorEl = form.querySelector<HTMLElement>(`[data-error="${key}"]`);
+				if (errorEl && msg) {
+					errorEl.textContent = msg;
+					errorEl.classList.add('is-visible');
+				}
+
+				// Highlight input if applicable
+				const fieldContainer = form.querySelector<HTMLElement>(`[data-field="${key}"]`);
+				const inputEl = fieldContainer?.querySelector<HTMLElement>('input, select');
+				inputEl?.classList.add('has-error');
+			}
+		};
+
+		// ── City Autocomplete Implementation ──────────────────────────────────
+		let activeSuggestionIndex = -1;
+
+		const updatePincodeVisibility = (hasCity: boolean) => {
+			if (pincodeContainer) {
+				pincodeContainer.classList.toggle('is-revealed', hasCity);
+			}
+		};
+
+		const selectCity = (city: string, state: string) => {
+			if (cityInput && cityHidden && stateHidden) {
+				cityInput.value = `${city}, ${state}`;
+				cityHidden.value = city;
+				stateHidden.value = state;
+				if (cityClear) cityClear.hidden = false;
+				closeSuggestions();
+				updatePincodeVisibility(true);
+
+				// Clear city error if present
+				const cityError = form.querySelector('[data-error="city"]');
+				cityError?.classList.remove('is-visible');
+				cityInput.classList.remove('has-error');
+
+				// Focus pincode smoothly
+				setTimeout(() => {
+					document.getElementById('f1-pincode')?.focus();
+				}, 150);
+			}
+		};
+
+		const clearCity = () => {
+			if (cityInput && cityHidden && stateHidden) {
+				cityInput.value = '';
+				cityHidden.value = '';
+				stateHidden.value = '';
+				if (cityClear) cityClear.hidden = true;
+				closeSuggestions();
+				updatePincodeVisibility(false);
+				const pinInput = document.getElementById(
+					'f1-pincode',
+				) as HTMLInputElement | null;
+				if (pinInput) pinInput.value = '';
+				cityInput.focus();
+			}
+		};
+
+		const closeSuggestions = () => {
+			if (suggestionsList) {
+				suggestionsList.hidden = true;
+				suggestionsList.innerHTML = '';
+				activeSuggestionIndex = -1;
+			}
+		};
+
+		const renderSuggestions = (query: string) => {
+			if (!suggestionsList) return;
+			const matches = searchCities(query);
+
+			if (matches.length === 0) {
+				suggestionsList.innerHTML = `
+					<li class="f1-suggestion-item" style="color: var(--ink-faint); font-style: italic; cursor: default;">
+						No matching Indian city found. You can type your city and select it.
+					</li>
+				`;
+				suggestionsList.hidden = false;
+				return;
+			}
+
+			suggestionsList.innerHTML = '';
+			matches.forEach((item, index) => {
+				const li = document.createElement('li');
+				li.className = 'f1-suggestion-item';
+				li.setAttribute('role', 'option');
+				li.setAttribute('data-index', String(index));
+				li.innerHTML = `
+					<span class="f1-suggestion-item__city">${item.city}</span>
+					<span class="f1-suggestion-item__state">${item.state}</span>
+				`;
+				li.addEventListener('mousedown', (e) => {
+					e.preventDefault();
+					selectCity(item.city, item.state);
+				});
+				suggestionsList.appendChild(li);
+			});
+			suggestionsList.hidden = false;
+		};
+
+		cityInput?.addEventListener('input', () => {
+			const val = cityInput.value.trim();
+			if (cityClear) cityClear.hidden = val.length === 0;
+
+			if (val.length >= 1) {
+				renderSuggestions(val);
+			} else {
+				closeSuggestions();
+				updatePincodeVisibility(false);
+				if (cityHidden) cityHidden.value = '';
+				if (stateHidden) stateHidden.value = '';
+			}
+		});
+
+		cityClear?.addEventListener('click', clearCity);
+
+		cityInput?.addEventListener('keydown', (e) => {
+			if (!suggestionsList || suggestionsList.hidden) return;
+			const items = [
+				...suggestionsList.querySelectorAll<HTMLElement>(
+					'.f1-suggestion-item[data-index]',
+				),
+			];
+			if (!items.length) return;
+
+			if (e.key === 'ArrowDown') {
+				e.preventDefault();
+				activeSuggestionIndex = (activeSuggestionIndex + 1) % items.length;
+				items.forEach((item, i) =>
+					item.classList.toggle('is-selected', i === activeSuggestionIndex),
+				);
+				items[activeSuggestionIndex]?.scrollIntoView({ block: 'nearest' });
+			} else if (e.key === 'ArrowUp') {
+				e.preventDefault();
+				activeSuggestionIndex =
+					(activeSuggestionIndex - 1 + items.length) % items.length;
+				items.forEach((item, i) =>
+					item.classList.toggle('is-selected', i === activeSuggestionIndex),
+				);
+				items[activeSuggestionIndex]?.scrollIntoView({ block: 'nearest' });
+			} else if (e.key === 'Enter') {
+				if (activeSuggestionIndex >= 0 && items[activeSuggestionIndex]) {
+					e.preventDefault();
+					items[activeSuggestionIndex].click();
+				}
+			} else if (e.key === 'Escape') {
+				closeSuggestions();
+			}
+		});
+
+		cityInput?.addEventListener('blur', () => {
+			setTimeout(closeSuggestions, 200);
+		});
+
+		// ── Live clearing of errors on user input ──────────────────────────────
+		form.addEventListener('input', (e) => {
+			const target = e.target as HTMLInputElement;
+			if (!target) return;
+			const name = target.name as Form1Field;
+			if (name) {
+				const errorEl = form.querySelector(`[data-error="${name}"]`);
+				errorEl?.classList.remove('is-visible');
+				target.classList.remove('has-error');
+
+				if (name === 'phone' || name === 'email') {
+					form.querySelector('[data-error="contact"]')?.classList.remove('is-visible');
+				}
+			}
+		});
+
+		// ── Form Submission Handler ──────────────────────────────────────────
+		form.addEventListener('submit', (e) => {
+			e.preventDefault();
+			const data = getFormData();
+			const { isValid, errors } = validateForm1(data);
+
+			if (!isValid) {
+				renderErrors(errors);
+				// Scroll to first error
+				const firstErrorField = form.querySelector('.has-error, .is-visible');
+				firstErrorField?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+				return;
+			}
+
+			// Clear errors
+			renderErrors({});
+
+			// Map & persist to safe browser session storage (matches Supabase schema)
+			const payload = persistForm1Data(data);
+
+			// Dispatch event for modular external integration
+			window.dispatchEvent(
+				new CustomEvent('itti:form1-complete', {
+					detail: payload,
+				}),
+			);
+
+			// Render Success / Next Step screen
+			form.hidden = true;
+			if (successView) {
+				successView.hidden = false;
+				const nameEl = successView.querySelector('[data-success-name]');
+				if (nameEl) nameEl.textContent = payload.full_name;
+
+				const summaryEl = successView.querySelector('[data-success-summary]');
+				if (summaryEl) {
+					summaryEl.innerHTML = `
+						<div><strong>Name:</strong> ${payload.full_name}</div>
+						<div><strong>Contact:</strong> ${payload.phone || payload.email || 'None'}</div>
+						<div><strong>Location:</strong> ${payload.meta.city}, ${payload.meta.state} ${payload.pincode ? '(' + payload.pincode + ')' : ''}</div>
+						<div><strong>Role:</strong> ${payload.role || 'Not specified'}</div>
+						<div><strong>Area of Interest:</strong> ${payload.meta.selected_pillar.replace('_', ' ').toUpperCase()}</div>
+					`;
+				}
+				successView.scrollIntoView({ behavior: 'smooth', block: 'start' });
+			}
+		});
+
+		// Success screen actions
+		modal
+			.querySelector('[data-f1-close-success]')
+			?.addEventListener('click', closeModal);
+		modal.querySelector('[data-f1-reset]')?.addEventListener('click', () => {
+			if (successView) successView.hidden = true;
+			form.hidden = false;
+			form.reset();
+			clearCity();
+			renderErrors({});
+		});
+	}
+</script>

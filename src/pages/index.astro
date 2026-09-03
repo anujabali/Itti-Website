@@ -8,6 +8,7 @@ import Impact from '../components/home/Impact.astro';
 import Events from '../components/home/Events.astro';
 import JoinUs from '../components/home/JoinUs.astro';
 import SiteFooter from '../components/layout/SiteFooter.astro';
+import Form1Overlay from '../components/forms/form-1/Form1Overlay.astro';
 
 /**
  * The opening arc — the museum.
@@ -253,6 +254,8 @@ const PILLARS = [
 		<JoinUs />
 		<SiteFooter />
 	</div>
+
+	<Form1Overlay initiallyOpen={true} />
 </Base>
 
 <style>
