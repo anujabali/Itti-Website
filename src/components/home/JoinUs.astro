@@ -9,26 +9,43 @@
  */
 
 const PATHS = [
-	{ label: 'Become a member', line: 'N.A.', href: '/join/member' },
-	{ label: 'Volunteer & partner', line: 'N.A.', href: '/join/volunteer' },
-	// The fourth pathway DECISIONS lists. It points at the form below rather
-	// than a page of its own, which is also what fills the row of three.
-	{ label: 'Subscribe', line: 'N.A.', href: '#subscribe-email' },
+	{
+		label: 'Become a member',
+		line: 'Join a community committed to inclusion, learning and lasting change.',
+		href: '/join',
+	},
+	{
+		label: 'Volunteer & partner',
+		line: 'Share your time, skills or resources to help our initiatives reach further.',
+		href: '/join',
+	},
+	{
+		label: 'Subscribe',
+		line: 'Receive stories, upcoming events and opportunities to take action.',
+		href: '#subscribe-email',
+	},
 ];
 ---
 
-<section class="join" aria-labelledby="join-heading">
+<section class="join" id="join" aria-labelledby="join-heading">
 	<div class="join__lead">
 		<p class="join__eyebrow">Join us</p>
-		<h2 class="join__title" id="join-heading">N.A.</h2>
-		<p class="join__line">N.A.</p>
+		<h2 class="join__title" id="join-heading">
+			Your action can become someone’s turning point
+		</h2>
+		<p class="join__line">
+			Whether you give, volunteer, partner with us or simply stay connected, you become
+			part of a community creating kinder, healthier and more sustainable futures.
+		</p>
 	</div>
 
 	<div class="join__paths">
-		<a class="path path--primary" href="/join/donate">
+		<a class="path path--primary" href="/join">
 			<span class="path__primary-text">
 				<span class="path__label">Donate</span>
-				<span class="path__line">N.A.</span>
+				<span class="path__line"
+					>Every contribution helps turn care and ideas into meaningful action.</span
+				>
 			</span>
 			<span class="path__cta" aria-hidden="true">&rarr;</span>
 		</a>
@@ -48,8 +65,13 @@ const PATHS = [
 
 	<div class="join__base">
 		<form class="subscribe" data-subscribe>
-			<label class="subscribe__label" for="subscribe-email">N.A.</label>
+			<h3 class="subscribe__heading">Stay connected with our work</h3>
+			<p class="subscribe__desc">
+				Receive stories from the community, updates on our programmes and simple ways to
+				create change.
+			</p>
 			<div class="subscribe__row">
+				<label class="u-visually-hidden" for="subscribe-email">Email address</label>
 				<input
 					class="subscribe__input"
 					id="subscribe-email"
@@ -68,8 +90,11 @@ const PATHS = [
 
 		<address class="contact">
 			<p class="contact__eyebrow">Contact</p>
-			<p class="contact__line">N.A.</p>
-			<p class="contact__line contact__line--muted">N.A.</p>
+			<h3 class="contact__heading">Let’s create change together</h3>
+			<p class="contact__desc">
+				For collaborations, volunteering, workshops or general enquiries, reach out to
+				The Itti Foundation.
+			</p>
 		</address>
 	</div>
 </section>
@@ -200,19 +225,29 @@ const PATHS = [
 		border-top: 1px solid rgba(44, 39, 33, 0.14);
 	}
 
-	.subscribe__label {
-		display: block;
-		max-width: 26rem;
-		font-size: 1rem;
-		line-height: 1.5;
+	.subscribe__heading,
+	.contact__heading {
+		margin-top: 0.6rem;
+		font-family: var(--display);
+		font-size: clamp(1.375rem, 2.4vw, 1.75rem);
+		line-height: 1.15;
 		color: var(--ink);
+	}
+
+	.subscribe__desc,
+	.contact__desc {
+		margin-top: 0.6rem;
+		max-width: 28rem;
+		font-size: 1rem;
+		line-height: 1.55;
+		color: var(--ink-soft);
 	}
 
 	.subscribe__row {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 0.6rem;
-		margin-top: 1rem;
+		margin-top: 1.25rem;
 	}
 
 	.subscribe__input {
@@ -255,19 +290,6 @@ const PATHS = [
 		letter-spacing: 0.2em;
 		text-transform: uppercase;
 		color: var(--ink-faint);
-	}
-
-	.contact__line {
-		margin-top: 0.8rem;
-		font-family: var(--display);
-		font-size: 1.25rem;
-		color: var(--teal);
-	}
-
-	.contact__line--muted {
-		font-family: var(--body);
-		font-size: 0.9375rem;
-		color: var(--ink-soft);
 	}
 </style>
 

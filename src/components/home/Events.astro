@@ -9,43 +9,42 @@
 
 const EVENTS = [
 	{
-		datetime: '2026-09-12',
-		day: 'N.A.',
-		month: 'N.A.',
-		status: 'N.A.',
-		title: 'N.A.',
-		place: 'N.A.',
-		line: 'N.A.',
-		href: '/events/founding-day',
+		datetime: '2023-12-11',
+		day: '11',
+		month: 'Dec 2023',
+		status: 'Experiential Learning',
+		title: 'Pedestrian Safety Action Day',
+		line: 'Students managed the Shiv Shakti Chowk signal, wrote to the traffic commissioner and performed a street play on pedestrian safety, traffic violations, encroachment and waste management.',
+		href: '#events',
 	},
 	{
-		datetime: '2026-10-04',
-		day: 'N.A.',
-		month: 'N.A.',
-		status: 'N.A.',
-		title: 'N.A.',
-		place: 'N.A.',
-		line: 'N.A.',
-		href: '/events/assessment-clinic',
+		datetime: '2024-09',
+		day: 'Sep',
+		month: '2024',
+		status: 'Menstrual Health',
+		title: 'Periods Ki Pathshala Begins',
+		line: 'Online and in-person sessions were introduced for girls and women, covering period literacy, hygiene, health and sustainable menstruation.',
+		href: '#events',
 	},
 	{
-		datetime: '2026-07-01',
-		day: 'N.A.',
-		month: 'N.A.',
-		status: 'N.A.',
-		title: 'N.A.',
-		place: 'N.A.',
-		line: 'N.A.',
-		href: '/events/restoration-season',
+		datetime: '2025',
+		day: '2025',
+		month: '',
+		status: 'Climate Action',
+		title: 'Bioenzyme Training at Amanora School',
+		line: 'School housekeeping staff received practical training in transforming kitchen waste into useful, environmentally friendly bioenzymes.',
+		href: '#events',
 	},
 ];
 ---
 
-<section class="events" aria-labelledby="events-heading">
+<section class="events" id="events" aria-labelledby="events-heading">
 	<div class="events__head">
 		<p class="events__eyebrow">Events</p>
-		<h2 class="events__title" id="events-heading">N.A.</h2>
-		<a class="events__all" href="/events">N.A. &rarr;</a>
+		<h2 class="events__title" id="events-heading">
+			Learning that moves beyond the classroom
+		</h2>
+		<a class="events__all" href="#events">View all events &rarr;</a>
 	</div>
 
 	<ul class="events__list">
@@ -55,14 +54,13 @@ const EVENTS = [
 					<a class="event__link" href={event.href}>
 						<time class="event__date" datetime={event.datetime}>
 							<span class="event__day">{event.day}</span>
-							<span class="event__month">{event.month}</span>
+							{event.month && <span class="event__month">{event.month}</span>}
 						</time>
 
 						<div class="event__body">
 							<p class="event__status">{event.status}</p>
 							<h3 class="event__name">{event.title}</h3>
 							<p class="event__line">{event.line}</p>
-							<p class="event__place">{event.place}</p>
 						</div>
 					</a>
 				</li>

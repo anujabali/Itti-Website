@@ -9,31 +9,27 @@
 
 const SLIDES = [
 	{
-		kind: 'Campaign',
-		title: 'N.A.',
-		line: 'N.A.',
-		cta: 'N.A.',
-		href: '/join',
+		kind: 'Experiential Learning',
+		title: 'Pedestrian Safety Action Day',
+		line: 'Students stepped outside the classroom to address real civic issues through traffic management, letter writing and a public street play.',
+		cta: 'Read the story',
+		href: '#events',
 		accent: 'ochre',
 	},
 	{
-		kind: 'Marketplace',
-		title: 'N.A.',
-		line: 'N.A.',
-		cta: 'N.A.',
-		href: '/marketplace',
+		kind: 'Menstrual Health',
+		title: 'Periods Ki Pathshala',
+		line: 'Helping girls and women understand menstrual health, hygiene and sustainable choices through accessible online and in-person sessions.',
+		cta: 'Explore the initiative',
+		href: '#events',
 		accent: 'rose',
-		image: '/shop/tee-itti.jpg',
-		// Front and back together, in a frame cut to match. Nothing meaningful
-		// is cropped.
-		focus: '50% 50%',
 	},
 	{
-		kind: 'Event',
-		title: 'N.A.',
-		line: 'N.A.',
-		cta: 'N.A.',
-		href: '/events',
+		kind: 'Climate Action',
+		title: 'Turning Waste into Bioenzymes',
+		line: 'A practical training session showed how everyday kitchen waste can become a safe and useful cleaning resource.',
+		cta: 'See our climate work',
+		href: '#events',
 		accent: 'sage',
 	},
 ];
@@ -64,16 +60,14 @@ const SLIDES = [
 						<img
 							class="slide__media"
 							src={slide.image}
-							alt=""
-							aria-hidden="true"
+							alt={slide.alt || ''}
+							aria-hidden={slide.alt ? undefined : 'true'}
 							loading="lazy"
 							decoding="async"
 							style={`object-position:${slide.focus ?? '50% 50%'}`}
 						/>
 					) : (
-						<div class="slide__media" aria-hidden="true">
-							N.A.
-						</div>
+						<div class="slide__media" aria-hidden="true" />
 					)}
 				</article>
 			))

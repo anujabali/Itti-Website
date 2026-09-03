@@ -9,17 +9,37 @@
  */
 
 const FIGURES = [
-	{ value: 'N.A.', unit: '', label: 'N.A.', since: 'N.A.' },
-	{ value: 'N.A.', unit: '', label: 'N.A.', since: 'N.A.' },
-	{ value: 'N.A.', unit: '', label: 'N.A.', since: 'N.A.' },
-	{ value: 'N.A.', unit: '', label: 'N.A.', since: 'N.A.' },
+	{
+		value: '125',
+		unit: '',
+		title: 'Waste Warrior Episodes',
+		caption: 'Conversations sharing practical ideas for sustainable living.',
+	},
+	{
+		value: '45',
+		unit: '',
+		title: 'Students Supported',
+		caption: 'Students sponsored with art kits for creative learning.',
+	},
+	{
+		value: '3+',
+		unit: 'Years',
+		title: 'Of Community Action',
+		caption: 'Creating change through education, care and sustainability since 2023.',
+	},
+	{
+		value: '3',
+		unit: '',
+		title: 'Core Commitments',
+		caption: 'Neurodivergence, cancer care and climate action working together.',
+	},
 ];
 ---
 
-<section class="impact" aria-labelledby="impact-heading">
+<section class="impact" id="impact" aria-labelledby="impact-heading">
 	<div class="impact__head">
 		<p class="impact__eyebrow">Impact</p>
-		<h2 class="impact__title" id="impact-heading">N.A.</h2>
+		<h2 class="impact__title" id="impact-heading">Change created together</h2>
 	</div>
 
 	<dl class="impact__grid">
@@ -31,8 +51,8 @@ const FIGURES = [
 						{figure.unit && <span class="figure__unit">{figure.unit}</span>}
 					</dt>
 					<dd class="figure__label">
-						{figure.label}
-						<span class="figure__since">{figure.since}</span>
+						<span class="figure__title">{figure.title}</span>
+						<span class="figure__caption">{figure.caption}</span>
 					</dd>
 				</div>
 			))
@@ -40,7 +60,7 @@ const FIGURES = [
 	</dl>
 
 	<p class="impact__note">
-		<a href="/our-story/transparency">N.A. &rarr;</a>
+		<a href="/join">See our impact &rarr;</a>
 	</p>
 </section>
 
@@ -68,7 +88,7 @@ const FIGURES = [
 
 	.impact__grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(min(13rem, 100%), 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr));
 		gap: clamp(2rem, 4vw, 3.5rem);
 		margin: clamp(3rem, 6vh, 4.5rem) 0 0;
 	}
@@ -89,20 +109,23 @@ const FIGURES = [
 
 	.figure__label {
 		display: grid;
-		gap: 0.35rem;
+		gap: 0.4rem;
 		margin: 1rem 0 0;
 		padding-top: 1rem;
 		border-top: 1px solid rgba(44, 39, 33, 0.14);
-		font-size: 1rem;
-		line-height: 1.45;
+	}
+
+	.figure__title {
+		font-family: var(--display);
+		font-size: 1.125rem;
+		line-height: 1.25;
 		color: var(--ink);
 	}
 
-	.figure__since {
-		font-size: 0.75rem;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-		color: var(--ink-faint);
+	.figure__caption {
+		font-size: 0.9375rem;
+		line-height: 1.5;
+		color: var(--ink-soft);
 	}
 
 	.impact__note {
