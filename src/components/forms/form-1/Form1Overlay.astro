@@ -15,7 +15,7 @@ interface Props {
 	initiallyOpen?: boolean;
 }
 
-const { initiallyOpen = true } = Astro.props;
+const { initiallyOpen = false } = Astro.props;
 ---
 
 <div
@@ -1259,6 +1259,7 @@ const { initiallyOpen = true } = Astro.props;
 	import { searchCities } from './cities';
 	import { validateForm1 } from './validation';
 	import { persistForm1Data } from './schema';
+	import { registerMember } from '../../../lib/services/registration';
 	import type { Form1Data, Form1Field, Form1Errors } from './types';
 
 	const modal = document.getElementById('form1-modal');
@@ -1567,6 +1568,26 @@ const { initiallyOpen = true } = Astro.props;
 
 			// Map & persist to safe browser session storage (matches Supabase schema)
 			const payload = persistForm1Data(data);
+
+			// Map and save directly to Supabase database
+			const dbRole =
+				data.role === 'supporter' ? 'volunteer' : (data.role as any) || 'other';
+
+			registerMember({
+				fullName: data.fullName,
+				city: data.city,
+				role: dbRole,
+				email: data.email || undefined,
+				phone: data.phone || undefined,
+				dateOfBirth: data.dateOfBirth || undefined,
+				gender: data.gender ? (data.gender as any) : undefined,
+				pincode: data.pincode || undefined,
+				preferredLanguage: data.preferredLanguage || undefined,
+				selectedPillar: data.pillar ? (data.pillar as any) : undefined,
+				consentWhatsapp: true,
+			}).catch((err) => {
+				console.error('[@itti/supabase] Error submitting to database:', err);
+			});
 
 			// Dispatch event for modular external integration
 			window.dispatchEvent(

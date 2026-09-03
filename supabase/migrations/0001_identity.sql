@@ -7,6 +7,8 @@
 -- Supabase's own `auth.users` remains the authentication record (phone, OTP,
 -- email). `person` is the profile hanging off it.
 
+create extension if not exists citext;
+
 -- ── Controlled vocabularies ──────────────────────────────────────────────────
 -- Enums rather than free text, everywhere an answer will later be counted.
 -- Every user-facing list also carries an "other" member with a matching
