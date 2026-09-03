@@ -38,10 +38,11 @@ const COLUMNS = [
 	},
 ];
 
-const SOCIALS = [
-	{ label: 'N.A.', href: '#' },
-	{ label: 'N.A.', href: '#' },
-	{ label: 'N.A.', href: '#' },
+const LEGAL_LINKS = [
+	{ label: 'Privacy Policy', href: null },
+	{ label: 'Terms of Use', href: null },
+	{ label: 'Accessibility', href: null },
+	{ label: 'Contact', href: null },
 ];
 
 const year = 2026;
@@ -73,22 +74,20 @@ const year = 2026;
 	</div>
 
 	<div class="foot__base">
-		<p class="foot__legal">N.A.</p>
+		<p class="foot__copyright">&copy; {year} The Itti Foundation</p>
 
-		<ul class="foot__socials">
+		<ul class="foot__legalese">
 			{
-				SOCIALS.map((social) => (
+				LEGAL_LINKS.map((item) => (
 					<li>
-						<a href={social.href}>{social.label}</a>
+						{item.href ? (
+							<a href={item.href}>{item.label}</a>
+						) : (
+							<span>{item.label}</span>
+						)}
 					</li>
 				))
 			}
-		</ul>
-
-		<ul class="foot__legalese">
-			<li><a href="/plates">Index of Plates</a></li>
-			<li><a href="/privacy">Privacy</a></li>
-			<li><a href="/contact">Contact</a></li>
 		</ul>
 	</div>
 </footer>
@@ -160,22 +159,33 @@ const year = 2026;
 		font-size: 0.8125rem;
 	}
 
-	.foot__socials,
+	.foot__copyright {
+		margin: 0;
+		color: var(--ink-faint);
+	}
+
 	.foot__legalese {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 1.25rem;
-		margin: 0;
+		margin: 0 0 0 auto;
 		padding: 0;
 		list-style: none;
+		color: var(--ink-faint);
 	}
 
-	.foot__legalese {
-		margin-left: auto;
-	}
-
-	.foot__socials a:hover,
 	.foot__legalese a:hover {
 		color: var(--teal);
+	}
+
+	@media (max-width: 48rem) {
+		.foot {
+			/* Extra clearance so fixed floating button (Get Started Form) never overlaps footer content */
+			padding-bottom: 5.5rem;
+		}
+
+		.foot__legalese {
+			margin-left: 0;
+		}
 	}
 </style>

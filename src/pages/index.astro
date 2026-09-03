@@ -140,29 +140,46 @@ const PILLARS = [
 	{
 		numeral: 'I',
 		name: 'Neurodivergence',
-		line: 'N.A.',
-		back: 'N.A.',
-		href: '/commitments/neurodivergence',
+		line: 'Every mind deserves to shine.',
+		back: `Different minds do not need to fit in; they deserve to shine.
+We see the strengths, dreams and possibilities within every individual.
+When every mind is embraced, every future becomes brighter.`,
+		href: '/join',
 		accent: 'ochre' as const,
 		mark: '/brand/pillar-neuro.png',
 	},
 	{
 		numeral: 'II',
 		name: 'Cancer Care',
-		line: 'N.A.',
-		back: 'N.A.',
-		href: '/commitments/cancer-care',
+		line: 'Care, courage and hope.',
+		back: `No one should walk through cancer alone.
+With every hand we hold, we offer courage, comfort and hope.
+Because care can bring light, even during the darkest days.`,
+		href: '/join',
 		accent: 'rose' as const,
 		mark: '/brand/pillar-cancer.png',
 	},
 	{
 		numeral: 'III',
 		name: 'CLAW',
-		line: 'N.A.',
-		back: 'N.A.',
-		href: '/commitments/claw',
+		line: 'Conservation of Land, Air and Water.',
+		back: `The Earth gives us everything; now it is our turn to give back.
+Every drop saved, every breath protected and every patch of land restored matters.
+Small actions today can keep our planet alive for tomorrow.`,
+		href: '/join',
 		accent: 'sage' as const,
 		mark: 'claw',
+	},
+	{
+		numeral: 'IV',
+		name: 'Mental Health',
+		line: 'No one should struggle in silence.',
+		back: `Behind every smile is a story we may not know.
+A listening ear, a kind word or a little support can change a life.
+Let us create a world where no one struggles in silence.`,
+		href: '/join',
+		accent: 'teal' as const,
+		mark: '/brand/mark.png',
 	},
 ];
 ---
@@ -239,8 +256,14 @@ const PILLARS = [
 
 	<!-- ── The turn: one gear-change, everything at once ────────────────── -->
 	<div class="light" data-light-zone>
-		<section class="turn" id="turn">
-			<p class="turn__lede u-fade">N.A.</p>
+		<section class="turn" id="turn" aria-labelledby="commitments-heading">
+			<div class="turn__head u-fade">
+				<h2 class="turn__title" id="commitments-heading">Our Commitments</h2>
+				<p class="turn__lede">
+					Three connected commitments guide our work—embracing different minds,
+					supporting people through cancer, and protecting the world we share.
+				</p>
+			</div>
 
 			<div class="pillars">
 				{PILLARS.map((pillar) => <PillarCard {...pillar} />)}
@@ -516,19 +539,39 @@ const PILLARS = [
 		padding: clamp(5rem, 14vh, 9.5rem) var(--gutter) clamp(4.5rem, 10vh, 7.5rem);
 	}
 
+	.turn__title {
+		font-size: clamp(2rem, 4vw, 3rem);
+		line-height: 1.1;
+		margin-bottom: 1.25rem;
+		color: var(--ink);
+	}
+
 	.turn__lede {
 		max-width: 46rem;
 		font-family: var(--display);
-		font-size: clamp(1.5rem, 2.7vw, 2.25rem);
-		line-height: 1.32;
+		font-size: clamp(1.25rem, 2.2vw, 1.625rem);
+		line-height: 1.4;
+		color: var(--ink-soft);
 		text-wrap: pretty;
 	}
 
 	.pillars {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(min(17rem, 100%), 1fr));
+		grid-template-columns: repeat(4, minmax(0, 1fr));
 		gap: 1.125rem;
 		margin-top: clamp(3rem, 7vh, 5rem);
+	}
+
+	@media (max-width: 72rem) {
+		.pillars {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	@media (max-width: 40rem) {
+		.pillars {
+			grid-template-columns: 1fr;
+		}
 	}
 
 	@media (max-width: 60rem) {
