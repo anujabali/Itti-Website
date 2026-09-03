@@ -1,18 +1,13 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '../types/database';
 
-const env =
-	typeof import.meta !== 'undefined' && 'env' in import.meta
-		? (import.meta as { env?: Record<string, string> }).env
-		: undefined;
-
 const supabaseUrl =
-	env?.PUBLIC_SUPABASE_URL ||
+	import.meta.env.PUBLIC_SUPABASE_URL ||
 	(typeof process !== 'undefined' ? process.env?.PUBLIC_SUPABASE_URL : '') ||
 	'';
 
 const supabaseAnonKey =
-	env?.PUBLIC_SUPABASE_ANON_KEY ||
+	import.meta.env.PUBLIC_SUPABASE_ANON_KEY ||
 	(typeof process !== 'undefined' ? process.env?.PUBLIC_SUPABASE_ANON_KEY : '') ||
 	'';
 
