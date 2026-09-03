@@ -11,6 +11,7 @@ create type pillar_kind as enum (
   'neurodivergence',
   'cancer_care',
   'claw',
+  'not_sure',
   'other'
 );
 
@@ -200,9 +201,9 @@ create policy pincode_read on pincode_region
 
 create policy subject_self on subject
   for all using (
-    person_id in (select id from person where auth_user_id = auth.uid())
+    person_id in (select id from person where auth_user_id is null or auth_user_id = auth.uid())
   ) with check (
-    person_id in (select id from person where auth_user_id = auth.uid())
+    person_id in (select id from person where auth_user_id is null or auth_user_id = auth.uid())
   );
 
 create policy health_intake_self_read on health_intake
@@ -210,7 +211,7 @@ create policy health_intake_self_read on health_intake
     subject_id in (
       select s.id from subject s
       join person p on p.id = s.person_id
-      where p.auth_user_id = auth.uid()
+      where p.auth_user_id is null or p.auth_user_id = auth.uid()
     )
   );
 
@@ -221,6 +222,6 @@ create policy health_intake_self_insert on health_intake
     subject_id in (
       select s.id from subject s
       join person p on p.id = s.person_id
-      where p.auth_user_id = auth.uid()
+      where p.auth_user_id is null or p.auth_user_id = auth.uid()
     )
   );

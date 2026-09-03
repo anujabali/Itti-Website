@@ -15,9 +15,9 @@
 
 create type role_kind as enum (
   'patient',      -- the person with the ailment
-  'caregiver',    -- parent, spouse, adult child. Step 3 describes the cared-for
-  'both',         -- a patient who also cares for someone else
-  'supporter'     -- neither: a donor, volunteer, or interested member
+  'caregiver',    -- parent, spouse, adult child
+  'volunteer',    -- volunteer or supporter
+  'other'         -- other community member
 );
 
 create type gender_kind as enum (
@@ -48,18 +48,21 @@ create type heard_from as enum (
 
 create table person (
   id uuid primary key default gen_random_uuid(),
-  auth_user_id uuid not null unique references auth.users (id) on delete cascade,
+  -- auth_user_id: Nullable if authentication is not being used yet
+  auth_user_id uuid unique references auth.users (id) on delete cascade,
 
-  -- Step 1 — account
+  -- Form 1 — mandatory identity fields
   full_name text not null check (length(btrim(full_name)) between 1 and 120),
+  city text not null check (length(btrim(city)) between 1 and 100),
+  role role_kind not null,
+
+  -- Reachability: at least one of phone or email must be provided
   phone text unique check (phone ~ '^\+[1-9][0-9]{7,14}$'),   -- E.164
   email citext unique,
   phone_verified_at timestamptz,
   email_verified_at timestamptz,
 
-  -- Step 2 — about you.
-  -- All nullable: step 2 is completable later, and a half-finished profile is
-  -- still an account.
+  -- Form 1 — optional identity fields
   date_of_birth date check (
     date_of_birth > current_date - interval '120 years'
     and date_of_birth <= current_date
@@ -70,7 +73,6 @@ create table person (
   ),
   pincode text check (pincode ~ '^[1-9][0-9]{5}$'),           -- India, 6 digits
   preferred_language text,                                    -- BCP-47: 'ta', 'hi', 'en-IN'
-  role role_kind,
 
   -- Notification consent. Separate columns because these are separate
   -- consents in law, not one preference. NULL = never asked.
@@ -93,8 +95,7 @@ create table person (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
 
-  -- One of the two contactable channels must exist, or the account is a
-  -- dead letter.
+  -- Constraint: at least one of phone or email must be provided
   constraint person_reachable check (phone is not null or email is not null)
 );
 
@@ -105,6 +106,7 @@ comment on column person.pincode is
 comment on column person.assisted_by is
   'Set when a volunteer or staff member completed this form on the person''s behalf. Their consent is recorded separately in consent_record with channel = in_person.';
 
+create index person_city_idx on person (city);
 create index person_pincode_idx on person (pincode);
 create index person_role_idx on person (role);
 create index person_created_at_idx on person (created_at);
@@ -171,23 +173,36 @@ alter table person enable row level security;
 alter table consent_record enable row level security;
 
 create policy person_self_read on person
-  for select using (auth.uid() = auth_user_id);
+  for select using (
+    (auth_user_id is not null and auth.uid() = auth_user_id)
+  );
 
 create policy person_self_write on person
-  for update using (auth.uid() = auth_user_id)
-  with check (auth.uid() = auth_user_id);
+  for update using (
+    (auth_user_id is not null and auth.uid() = auth_user_id)
+  )
+  with check (
+    (auth_user_id is not null and auth.uid() = auth_user_id)
+  );
 
 create policy person_self_insert on person
-  for insert with check (auth.uid() = auth_user_id);
+  for insert with check (
+    auth_user_id is null or auth.uid() = auth_user_id
+  );
 
 create policy consent_self_read on consent_record
   for select using (
-    person_id in (select id from person where auth_user_id = auth.uid())
+    person_id in (
+      select id from person
+      where auth_user_id is not null and auth_user_id = auth.uid()
+    )
   );
 
--- Insert only. No update or delete policy exists, which is what makes the
--- consent log append-only for everyone holding an anon or authenticated key.
+-- Insert only.
 create policy consent_self_insert on consent_record
   for insert with check (
-    person_id in (select id from person where auth_user_id = auth.uid())
+    person_id in (
+      select id from person
+      where auth_user_id is null or auth_user_id = auth.uid()
+    )
   );

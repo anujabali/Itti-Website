@@ -35,4 +35,5 @@ pnpm-debug.log*
 # Working documents. Decisions, research and transcripts stay on the machine —
 # the repository carries the code and the assets it ships, nothing else.
 docs/
+!docs/MEMBER_REGISTRATION_SPEC.md
 _local/
