@@ -3,6 +3,7 @@ import { defineConfig } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
+	site: 'https://itti.org.in',
 	// Bind to every interface, so `dev` and `preview` are reachable from a phone
 	// or tablet on the same network for real-device testing.
 	server: { host: true },
