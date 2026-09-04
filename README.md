@@ -16,11 +16,27 @@ npm install
 npm run dev        # http://localhost:4321
 npm run build      # → dist/
 npm run preview    # serve the production build
+npm run format     # format code with Prettier
 ```
 
 The dev server binds to every interface, so a phone or tablet on the same network can reach it at
 `http://<your-lan-ip>:4321`. On macOS the firewall must allow the **real** node binary — the one
 `/usr/local/bin/node` symlinks to, not the symlink itself.
+
+## Environment Variables
+
+Copy `.env.example` to `.env` to configure Supabase integration:
+
+```sh
+cp .env.example .env
+```
+
+| Variable                   | Required | Description                                                 |
+| :------------------------- | :------- | :---------------------------------------------------------- |
+| `PUBLIC_SUPABASE_URL`      | Optional | Your Supabase project URL (`https://<project>.supabase.co`) |
+| `PUBLIC_SUPABASE_ANON_KEY` | Optional | Your Supabase public anonymous API key                      |
+
+> Note: If Supabase credentials are not provided, the app runs in safe mock mode without throwing errors during development.
 
 New to the project? Start with [CONTRIBUTING.md](CONTRIBUTING.md).
 
