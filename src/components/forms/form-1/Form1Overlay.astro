@@ -1550,7 +1550,7 @@ const { initiallyOpen = false } = Astro.props;
 		});
 
 		// ── Form Submission Handler ──────────────────────────────────────────
-		form.addEventListener('submit', (e) => {
+		form.addEventListener('submit', async (e) => {
 			e.preventDefault();
 			const data = getFormData();
 			const { isValid, errors } = validateForm1(data);
@@ -1566,6 +1566,14 @@ const { initiallyOpen = false } = Astro.props;
 			// Clear errors
 			renderErrors({});
 
+			// Disable submit button while saving
+			const submitBtn = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+			const originalBtnHtml = submitBtn ? submitBtn.innerHTML : 'Continue';
+			if (submitBtn) {
+				submitBtn.disabled = true;
+				submitBtn.innerHTML = `<span>Saving...</span>`;
+			}
+
 			// Map & persist to safe browser session storage (matches Supabase schema)
 			const payload = persistForm1Data(data);
 
@@ -1573,21 +1581,72 @@ const { initiallyOpen = false } = Astro.props;
 			const dbRole =
 				data.role === 'supporter' ? 'volunteer' : (data.role as any) || 'other';
 
-			registerMember({
-				fullName: data.fullName,
-				city: data.city,
-				role: dbRole,
-				email: data.email || undefined,
-				phone: data.phone || undefined,
-				dateOfBirth: data.dateOfBirth || undefined,
-				gender: data.gender ? (data.gender as any) : undefined,
-				pincode: data.pincode || undefined,
-				preferredLanguage: data.preferredLanguage || undefined,
-				selectedPillar: data.pillar ? (data.pillar as any) : undefined,
-				consentWhatsapp: true,
-			}).catch((err) => {
-				console.error('[@itti/supabase] Error submitting to database:', err);
-			});
+			try {
+				const result = await registerMember({
+					fullName: data.fullName,
+					city: data.city,
+					role: dbRole,
+					email: data.email || undefined,
+					phone: data.phone || undefined,
+					dateOfBirth: data.dateOfBirth || undefined,
+					gender: data.gender ? (data.gender as any) : undefined,
+					pincode: data.pincode || undefined,
+					preferredLanguage: data.preferredLanguage || undefined,
+					selectedPillar: data.pillar ? (data.pillar as any) : undefined,
+					consentWhatsapp: true,
+				});
+
+				if (!result.success) {
+					if (submitBtn) {
+						submitBtn.disabled = false;
+						submitBtn.innerHTML = originalBtnHtml;
+					}
+					if (globalAlert && globalAlertText) {
+						globalAlert.hidden = false;
+						globalAlertText.textContent =
+							result.message || 'Registration failed. Please check your details.';
+						globalAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
+					}
+					if (
+						result.message?.includes('mobile number') ||
+						result.message?.includes('phone')
+					) {
+						const phoneField = form.querySelector('[data-field="phone"]');
+						phoneField?.querySelector('input')?.classList.add('has-error');
+						const err = form.querySelector('[data-error="phone"]');
+						if (err) {
+							err.textContent = result.message;
+							err.classList.add('is-visible');
+						}
+					} else if (result.message?.includes('email')) {
+						const emailField = form.querySelector('[data-field="email"]');
+						emailField?.querySelector('input')?.classList.add('has-error');
+						const err = form.querySelector('[data-error="email"]');
+						if (err) {
+							err.textContent = result.message;
+							err.classList.add('is-visible');
+						}
+					}
+					return;
+				}
+			} catch (err: any) {
+				if (submitBtn) {
+					submitBtn.disabled = false;
+					submitBtn.innerHTML = originalBtnHtml;
+				}
+				if (globalAlert && globalAlertText) {
+					globalAlert.hidden = false;
+					globalAlertText.textContent =
+						err?.message || 'Network error occurred while connecting to database. Please try again.';
+					globalAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
+				}
+				return;
+			}
+
+			if (submitBtn) {
+				submitBtn.disabled = false;
+				submitBtn.innerHTML = originalBtnHtml;
+			}
 
 			// Dispatch event for modular external integration
 			window.dispatchEvent(

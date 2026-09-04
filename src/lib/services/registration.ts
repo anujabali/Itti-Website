@@ -259,10 +259,24 @@ export const registerMember = async (
 			.single();
 
 		if (personError) {
+			let errorMsg = personError.message;
+			if (
+				personError.code === '23505' ||
+				personError.message.includes('unique constraint') ||
+				personError.message.includes('duplicate key')
+			) {
+				if (personError.message.includes('phone')) {
+					errorMsg = 'This mobile number is already registered with us. Your registration is already on file!';
+				} else if (personError.message.includes('email')) {
+					errorMsg = 'This email address is already registered with us. Your registration is already on file!';
+				} else {
+					errorMsg = 'A record with this contact information is already registered with us.';
+				}
+			}
 			return {
 				success: false,
-				message: personError.message,
-				errors: { database: personError.message },
+				message: errorMsg,
+				errors: { database: errorMsg },
 			};
 		}
 
