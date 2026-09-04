@@ -151,14 +151,27 @@ const MENUS = [
 
 		<a class="pill" href="/join">Join Us</a>
 
-		<button class="nav__burger" type="button" aria-expanded="false" data-burger>
+		<button
+			class="nav__burger"
+			type="button"
+			aria-expanded="false"
+			aria-controls="mobile-drawer"
+			aria-label="Toggle navigation menu"
+			data-burger
+		>
 			<span class="u-visually-hidden">Menu</span>
 			<span class="nav__burger-bar"></span>
 			<span class="nav__burger-bar"></span>
 		</button>
 	</div>
 
-	<div class="drawer" data-drawer hidden>
+	<div
+		class="drawer"
+		id="mobile-drawer"
+		data-drawer
+		hidden
+		aria-label="Mobile navigation"
+	>
 		<div class="drawer__inner">
 			{
 				MENUS.map((menu) => (
