@@ -602,7 +602,7 @@
 	/* ── Fieldsets & Sections ─────────────────────────────────────────────── */
 	.f1-section {
 		border: none;
-		margin: 0 0 2.25rem 0;
+		margin: 0 0 3.5rem 0;
 		padding: 0;
 	}
 
@@ -611,23 +611,27 @@
 		border-top: 1px solid rgba(44, 39, 33, 0.1);
 	}
 
+	/* The inscriptional face the arc is set in, so the form reads in the same
+	   voice as the page it came from. */
 	.f1-section__legend {
 		display: flex;
 		align-items: baseline;
-		gap: 0.6rem;
-		font-family: var(--body);
-		font-size: 0.8125rem;
-		font-weight: 600;
-		letter-spacing: 0.18em;
+		gap: 0.9rem;
+		font-family: var(--face-cinzel);
+		font-size: 0.9375rem;
+		font-weight: 500;
+		letter-spacing: 0.2em;
 		text-transform: uppercase;
 		color: var(--teal);
-		margin-bottom: 1.5rem;
+		margin-bottom: 2rem;
 	}
 
 	.f1-section__num {
 		font-family: var(--face-bodoni);
-		font-size: 1.0625rem;
-		opacity: 0.75;
+		font-size: 1.25rem;
+		font-style: italic;
+		letter-spacing: 0;
+		opacity: 0.6;
 	}
 
 	/* ── Grid Layouts ─────────────────────────────────────────────────────── */
@@ -826,40 +830,44 @@
 		right: 0;
 		z-index: 50;
 		margin: 0;
-		padding: 0.4rem;
+		padding: 0.35rem 0;
 		list-style: none;
 		background: var(--warm-white);
-		border: 1px solid rgba(44, 39, 33, 0.16);
-		border-radius: 0.3rem;
-		box-shadow: 0 12px 28px -6px rgba(4, 12, 14, 0.25);
-		max-height: 14rem;
+		border: 1px solid rgba(44, 39, 33, 0.14);
+		border-radius: 0;
+		box-shadow: 0 18px 36px -20px rgba(4, 12, 14, 0.45);
+		max-height: 15rem;
 		overflow-y: auto;
 	}
 
-	.f1-suggestion-item {
-		padding: 0.65rem 0.85rem;
-		border-radius: 0.35rem;
-		font-size: 0.9375rem;
-		cursor: pointer;
+	.f1-suggestions :global(.f1-suggestion-item) {
 		display: flex;
 		justify-content: space-between;
-		align-items: center;
+		align-items: baseline;
+		gap: 1.5rem;
+		padding: 0.7rem 0.9rem;
+		font-size: 1rem;
 		color: var(--ink);
+		cursor: pointer;
 		transition: background 120ms var(--ease);
 	}
 
-	.f1-suggestion-item:hover,
-	.f1-suggestion-item.is-selected {
+	.f1-suggestions :global(.f1-suggestion-item:hover),
+	.f1-suggestions :global(.f1-suggestion-item.is-selected) {
 		background: var(--cream-deep);
 		color: var(--teal-deep);
 	}
 
-	.f1-suggestion-item__city {
+	.f1-suggestions :global(.f1-suggestion-item__city) {
 		font-weight: 500;
 	}
 
-	.f1-suggestion-item__state {
-		font-size: 0.8125rem;
+	.f1-suggestions :global(.f1-suggestion-item__state) {
+		flex: none;
+		font-size: 0.6875rem;
+		font-weight: 600;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
 		color: var(--ink-faint);
 	}
 
@@ -920,8 +928,18 @@
 	}
 	.f1-country__search { margin-bottom: .4rem; }
 	.f1-country__list { list-style: none; margin: 0; padding: 0; max-height: 15rem; overflow: auto; }
-	.f1-country__item, .f1-country__empty { padding: .65rem .7rem; border-radius: .4rem; cursor: pointer; }
-	.f1-country__item:hover { background: var(--cream-deep); }
+	.f1-country__list :global(.f1-country__item),
+	.f1-country__list :global(.f1-country__empty) {
+		padding: 0.6rem 0.75rem;
+		font-size: 1rem;
+		cursor: pointer;
+		transition: background 120ms var(--ease);
+	}
+
+	.f1-country__list :global(.f1-country__item:hover) {
+		background: color-mix(in srgb, var(--teal) 8%, transparent);
+		color: var(--teal-deep);
+	}
 	.f1-reveal { margin-top: .75rem; }
 	/* No stacking rule any more. Once the control is "+91" and a chevron rather
 	   than a flag, a name and a code in a box, it fits beside the number at any
@@ -1095,13 +1113,15 @@
 	/* ── Pillar Selection Cards ───────────────────────────────────────────── */
 	.f1-pillar-grid {
 		display: grid;
-		gap: 0.75rem;
 		grid-template-columns: 1fr 1fr;
+		column-gap: 2.5rem;
+		row-gap: 2rem;
 	}
 
-	@media (max-width: 44rem) {
+	@media (max-width: 34rem) {
 		.f1-pillar-grid {
 			grid-template-columns: 1fr;
+			row-gap: 1.75rem;
 		}
 	}
 
@@ -1120,10 +1140,11 @@
 	.f1-pillar-card__inner {
 		display: grid;
 		gap: 0.35rem;
-		padding: 1.25rem 1.3rem;
-		border-radius: 2px;
+		padding: 1rem 0 0;
+		border-radius: 0;
 		background: transparent;
-		border: 1px solid rgba(44, 39, 33, 0.14);
+		border: 0;
+		border-top: 1px solid rgba(44, 39, 33, 0.2);
 		border-top: 3px solid var(--card-accent);
 		transition:
 			border-color 200ms var(--ease),
@@ -1133,13 +1154,18 @@
 	}
 
 	.f1-pillar-card:hover .f1-pillar-card__inner {
-		border-color: rgba(44, 39, 33, 0.3);
-		background: color-mix(in srgb, var(--card-accent) 4%, transparent);
+		border-top-color: var(--card-accent);
 	}
 
+	/* The rule thickens into the pillar's own colour. Nothing is boxed, and
+	   the chosen one is still unmistakable at a glance. */
 	.f1-pillar-card:has(input[type='radio']:checked) .f1-pillar-card__inner {
-		border-color: var(--card-accent);
-		background: color-mix(in srgb, var(--card-accent) 7%, var(--warm-white));
+		border-top-color: var(--card-accent);
+		box-shadow: 0 -2px 0 0 var(--card-accent);
+	}
+
+	.f1-pillar-card:has(input[type='radio']:checked) .f1-pillar-card__title {
+		color: var(--card-accent);
 	}
 
 	.f1-pillar-card__tag {
@@ -1153,10 +1179,11 @@
 
 	.f1-pillar-card__title {
 		font-family: var(--face-bodoni);
-		font-size: 1.25rem;
+		font-size: 1.5rem;
 		font-weight: 500;
-		line-height: 1.2;
+		line-height: 1.15;
 		color: var(--ink);
+		transition: color 180ms var(--ease);
 	}
 
 	.f1-pillar-card__motto {
@@ -1583,7 +1610,13 @@
 				li.className = 'f1-suggestion-item';
 				li.setAttribute('role', 'option');
 				li.setAttribute('data-index', String(index));
-				li.innerHTML = `<span class="f1-suggestion-item__city">${item.city}</span><span class="f1-suggestion-item__state">${item.state}</span>`;
+				const cityEl = document.createElement('span');
+				cityEl.className = 'f1-suggestion-item__city';
+				cityEl.textContent = item.city;
+				const stateEl = document.createElement('span');
+				stateEl.className = 'f1-suggestion-item__state';
+				stateEl.textContent = item.state;
+				li.append(cityEl, stateEl);
 				li.addEventListener('mousedown', (e) => {
 					e.preventDefault();
 					selectCity(item.city, item.state);
