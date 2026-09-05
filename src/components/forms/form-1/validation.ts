@@ -115,11 +115,18 @@ export function validateForm1(data: Form1Data): {
 		errors.city = 'Please search and select your city.';
 	}
 
-	// 7. Pincode (Required)
-	if (!data.pincode || !data.pincode.trim()) {
-		errors.pincode = 'Pincode is required.';
-	} else if (!isValidPincode(data.pincode)) {
-		errors.pincode = 'Pincode must be a 6-digit Indian postal code (e.g. 411001).';
+	// 7. Pincode — an Indian PIN, so only asked for when the country is India.
+	// `person.pincode` carries the same `^[1-9][0-9]{5}$` check, and a postal
+	// code from anywhere else would fail it.
+	const isIndia = (data.countryIso2 || 'IN') === 'IN';
+	if (isIndia) {
+		if (!data.pincode || !data.pincode.trim()) {
+			errors.pincode = 'Pincode is required.';
+		} else if (!isValidPincode(data.pincode)) {
+			errors.pincode = 'Pincode must be a 6-digit Indian postal code (e.g. 411001).';
+		}
+	} else if (data.pincode && data.pincode.trim() && !isValidPincode(data.pincode)) {
+		errors.pincode = 'Leave this blank unless you have a 6-digit Indian pincode.';
 	}
 
 	// Gender (Required)

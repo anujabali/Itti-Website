@@ -3,8 +3,13 @@
  * Type definitions & database contract interfaces.
  */
 
-export type RoleKind = 'patient' | 'caregiver' | 'supporter';
-export type GenderKind = 'woman' | 'man' | 'non_binary' | 'undisclosed';
+export type RoleKind = 'patient' | 'caregiver' | 'supporter' | 'other';
+export type GenderKind =
+	| 'woman'
+	| 'man'
+	| 'non_binary'
+	| 'self_described'
+	| 'undisclosed';
 export type PillarKind = 'neurodivergence' | 'cancer_care' | 'claw' | 'other';
 export type PreferredLanguage = 'en' | 'hi' | 'mr' | 'gu' | 'bn' | 'ta' | 'te' | 'kn' | 'ml' | 'pa' | 'ur' | 'or' | 'as' | 'other';
 
@@ -15,6 +20,7 @@ export interface Form1Data {
 	email: string;
 	dateOfBirth: string;
 	gender: GenderKind | '';
+	genderSelfDescribed?: string;
 	city: string;
 	state: string;
 	pincode: string;
@@ -22,6 +28,11 @@ export interface Form1Data {
 	languageOther?: string;
 	role: RoleKind | '';
 	pillar: PillarKind | '';
+	// Separate consents because they are separate consents in law, and separate
+	// columns on `person`. Absent means not given, never assumed.
+	consentWhatsapp: boolean;
+	consentSms: boolean;
+	consentEmail: boolean;
 }
 
 export type Form1Field = keyof Form1Data;

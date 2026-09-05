@@ -15,8 +15,11 @@ export async function lookupPincode(pincode: string): Promise<PincodeResult | nu
   const pin = pincode.trim();
   if (!/^[1-9]\d{5}$/.test(pin)) return null;
   try {
+    // A third-party lookup with no deadline leaves the field showing
+    // "Finding your area…" indefinitely when the service is slow or down.
     const response = await fetch(`https://api.postalpincode.in/pincode/${encodeURIComponent(pin)}`, {
       headers: { Accept: 'application/json' },
+      signal: AbortSignal.timeout(6000),
     });
     if (!response.ok) return null;
     const body = (await response.json()) as IndiaPostResponse[];

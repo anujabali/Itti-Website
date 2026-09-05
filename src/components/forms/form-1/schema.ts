@@ -53,6 +53,22 @@ export function persistForm1Data(data: Form1Data): SupabasePersonPayload {
 }
 
 /**
+ * Clears the saved payload. Called once the registration has been accepted:
+ * the row is on the server by then, and the copy in the browser is a name,
+ * phone number, email address and date of birth sitting in storage for anyone
+ * who later uses the same device.
+ */
+export function clearForm1Data(): void {
+	try {
+		if (typeof window !== 'undefined' && window.sessionStorage) {
+			window.sessionStorage.removeItem(FORM1_STORAGE_KEY);
+		}
+	} catch (e) {
+		console.warn('Unable to clear sessionStorage:', e);
+	}
+}
+
+/**
  * Reads any saved Form 1 payload from session storage.
  */
 export function getSavedForm1Payload(): SupabasePersonPayload | null {

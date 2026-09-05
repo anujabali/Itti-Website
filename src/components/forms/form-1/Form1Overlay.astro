@@ -176,10 +176,21 @@ const { initiallyOpen = false } = Astro.props;
 									<option value="">Select gender</option>
 									<option value="woman">Female</option>
 									<option value="man">Male</option>
-									<option value="non_binary">Non-binary / Other</option>
+									<option value="non_binary">Non-binary</option>
+									<option value="self_described">Prefer to self-describe</option>
 									<option value="undisclosed">Prefer not to say</option>
 								</select>
 							</div>
+							<input
+								class="f1-input f1-input--follow"
+								name="genderSelfDescribed"
+								type="text"
+								maxlength="60"
+								placeholder="How would you describe it?"
+								aria-label="Describe your gender"
+								data-gender-self
+								hidden
+							/>
 							<p class="f1-error" data-error="gender" role="alert"></p>
 						</div>
 					</div>
@@ -195,6 +206,7 @@ const { initiallyOpen = false } = Astro.props;
 								id="f1-city-input"
 								type="text"
 								placeholder="Search your city (e.g. Pune, Mumbai, Nagpur)"
+								data-city-free
 								autocomplete="off"
 								data-city-input
 								required
@@ -226,7 +238,7 @@ const { initiallyOpen = false } = Astro.props;
 					<!-- 7. Pincode (Required) -->
 					<div class="f1-field" data-field="pincode">
 						<label class="f1-label" for="f1-pincode">
-							Pincode
+							<span data-pincode-label>Pincode</span>
 						</label>
 						<input
 							class="f1-input"
@@ -239,6 +251,7 @@ const { initiallyOpen = false } = Astro.props;
 							placeholder="Enter your 6-digit pincode"
 							required
 							autocomplete="postal-code"
+							data-pincode-field
 							data-pincode-input
 						/>
 						<p class="f1-hint" data-pincode-status></p>
@@ -324,7 +337,7 @@ const { initiallyOpen = false } = Astro.props;
 							</label>
 
 							<label class="f1-choice-card">
-								<input type="radio" name="role" value="supporter" data-role-other />
+								<input type="radio" name="role" value="other" />
 								<span class="f1-choice-card__indicator"></span>
 								<span class="f1-choice-card__body">
 									<span class="f1-choice-card__title">Other</span>
@@ -399,6 +412,37 @@ const { initiallyOpen = false } = Astro.props;
 							</label>
 						</div>
 						<p class="f1-error" data-error="pillar" role="alert"></p>
+					</div>
+
+					<!-- 11. How we may contact you. Separate consents, none assumed. -->
+					<div class="f1-field" data-field="consent">
+						<label class="f1-label f1-label--standalone">
+							How may we contact you?
+						</label>
+						<p class="f1-hint">
+							Optional, and you can change your mind at any time. We will always
+							reply to what you send us either way.
+						</p>
+
+						<div class="f1-consent-grid">
+							<label class="f1-consent" data-consent-needs="phone">
+								<input type="checkbox" name="consentWhatsapp" value="yes" />
+								<span class="f1-consent__indicator" aria-hidden="true"></span>
+								<span class="f1-consent__text">WhatsApp</span>
+							</label>
+
+							<label class="f1-consent" data-consent-needs="phone">
+								<input type="checkbox" name="consentSms" value="yes" />
+								<span class="f1-consent__indicator" aria-hidden="true"></span>
+								<span class="f1-consent__text">SMS</span>
+							</label>
+
+							<label class="f1-consent" data-consent-needs="email">
+								<input type="checkbox" name="consentEmail" value="yes" />
+								<span class="f1-consent__indicator" aria-hidden="true"></span>
+								<span class="f1-consent__text">Email</span>
+							</label>
+						</div>
 					</div>
 				</fieldset>
 
@@ -930,6 +974,87 @@ const { initiallyOpen = false } = Astro.props;
 		}
 	}
 
+	/* Consent. Square where the role cards are round, because these are
+	   independent yes/no answers rather than one choice among several. */
+	.f1-consent-grid {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.6rem;
+		margin-top: 0.75rem;
+	}
+
+	.f1-consent {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.6rem;
+		padding: 0.6rem 0.95rem;
+		border: 1px solid rgba(44, 39, 33, 0.15);
+		border-radius: 0.65rem;
+		background: var(--warm-white);
+		cursor: pointer;
+		transition:
+			border-color 200ms var(--ease),
+			background-color 200ms var(--ease);
+	}
+
+	.f1-consent:hover {
+		border-color: var(--teal);
+		background: #fff;
+	}
+
+	.f1-consent input[type='checkbox'] {
+		position: absolute;
+		opacity: 0;
+		pointer-events: none;
+	}
+
+	.f1-consent__indicator {
+		flex: none;
+		width: 1.1rem;
+		height: 1.1rem;
+		border: 1.5px solid rgba(44, 39, 33, 0.35);
+		border-radius: 0.25rem;
+		display: grid;
+		place-items: center;
+		transition:
+			border-color 200ms var(--ease),
+			background 200ms var(--ease);
+	}
+
+	.f1-consent__indicator::after {
+		content: '';
+		width: 0.55rem;
+		height: 0.3rem;
+		border-left: 1.5px solid var(--warm-white);
+		border-bottom: 1.5px solid var(--warm-white);
+		transform: rotate(-45deg) scale(0.6);
+		opacity: 0;
+		transition:
+			opacity 150ms var(--ease),
+			transform 150ms var(--ease);
+	}
+
+	.f1-consent input[type='checkbox']:checked + .f1-consent__indicator {
+		border-color: var(--teal);
+		background: var(--teal);
+	}
+
+	.f1-consent input[type='checkbox']:checked + .f1-consent__indicator::after {
+		opacity: 1;
+		transform: rotate(-45deg) scale(1);
+	}
+
+	.f1-consent input[type='checkbox']:focus-visible + .f1-consent__indicator {
+		outline: 1.5px solid var(--teal);
+		outline-offset: 3px;
+	}
+
+	/* A field that only appears once its parent answer calls for it. */
+	.f1-input--follow {
+		margin-top: 0.6rem;
+	}
+
 	.f1-choice-card {
 		position: relative;
 		display: flex;
@@ -1285,7 +1410,7 @@ const { initiallyOpen = false } = Astro.props;
 <script>
 	import { searchCities } from './cities';
 	import { validateForm1 } from './validation';
-	import { persistForm1Data } from './schema';
+	import { persistForm1Data, clearForm1Data } from './schema';
 	import { COUNTRIES, findCountry, searchCountries, detectCountryFromInternationalNumber } from './countries';
 	import { lookupPincode } from './pincode';
 	import { registerMember } from '../../../lib/services/registration';
@@ -1325,7 +1450,18 @@ const { initiallyOpen = false } = Astro.props;
 
 	if (modal && form) {
 		// ── Open / Close Management ──────────────────────────────────────────
+		let lastFocused: HTMLElement | null = null;
+
+		const FOCUSABLE =
+			'a[href], button:not([disabled]), input:not([type="hidden"]):not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+		const focusable = () =>
+			Array.from(modal.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
+				(el) => el.offsetParent !== null || el === document.activeElement,
+			);
+
 		const openModal = () => {
+			lastFocused = document.activeElement as HTMLElement | null;
 			modal.hidden = false;
 			requestAnimationFrame(() => modal.classList.add('is-active'));
 			document.body.style.overflow = 'hidden';
@@ -1337,11 +1473,31 @@ const { initiallyOpen = false } = Astro.props;
 
 		const closeModal = () => {
 			modal.classList.remove('is-active');
-			setTimeout(() => {
+			const settle = () => {
 				modal.hidden = true;
 				document.body.style.removeProperty('overflow');
-			}, 320);
+				// Back where they were, so the keyboard does not lose its place.
+				lastFocused?.focus();
+			};
+			if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) settle();
+			else setTimeout(settle, 320);
 		};
+
+		// Keep Tab inside the dialog for as long as it is open.
+		modal.addEventListener('keydown', (e) => {
+			if (e.key !== 'Tab') return;
+			const items = focusable();
+			if (items.length === 0) return;
+			const first = items[0]!;
+			const last = items[items.length - 1]!;
+			if (e.shiftKey && document.activeElement === first) {
+				e.preventDefault();
+				last.focus();
+			} else if (!e.shiftKey && document.activeElement === last) {
+				e.preventDefault();
+				first.focus();
+			}
+		});
 
 		// Check initially-open attribute or URL hash
 		const shouldOpen =
@@ -1395,13 +1551,21 @@ const { initiallyOpen = false } = Astro.props;
 				email: (data.get('email') as string) || '',
 				dateOfBirth: (data.get('dateOfBirth') as string) || '',
 				gender: (data.get('gender') as any) || '',
-				city: (data.get('city') as string) || '',
+				genderSelfDescribed: (data.get('genderSelfDescribed') as string) || '',
+				// The hidden input holds a chosen suggestion; outside India there are
+				// no suggestions to choose, so fall back to what was typed.
+				city:
+					((data.get('city') as string) || '').trim() ||
+					(cityInput?.value || '').trim(),
 				state: (data.get('state') as string) || '',
 				pincode: (data.get('pincode') as string) || '',
 				preferredLanguage: (data.get('preferredLanguage') as any) || '',
 				languageOther: (data.get('languageOther') as string) || '',
 				role: (data.get('role') as any) || '',
 				pillar: (data.get('pillar') as any) || '',
+				consentWhatsapp: data.get('consentWhatsapp') === 'yes',
+				consentSms: data.get('consentSms') === 'yes',
+				consentEmail: data.get('consentEmail') === 'yes',
 			};
 		};
 
@@ -1443,8 +1607,38 @@ const { initiallyOpen = false } = Astro.props;
 		// ── Country + phone selector ───────────────────────────────────────────
 		let selectedCountry = findCountry(countryIso?.value || 'IN');
 
+		const pincodeField = document.querySelector<HTMLInputElement>('[data-pincode-field]');
+		const pincodeLabel = document.querySelector<HTMLElement>('[data-pincode-label]');
+
+		// `pincode` is validated as a six-digit Indian PIN, in the browser and
+		// again in the database. Outside India it is a postal code we do not
+		// hold a format for, so we stop asking rather than ask for something
+		// nobody can supply.
+		const syncPostalCode = () => {
+			const isIndia = selectedCountry.iso2 === 'IN';
+			if (pincodeLabel) {
+				pincodeLabel.textContent = isIndia ? 'Pincode' : 'Postal code (optional)';
+			}
+			if (pincodeField) {
+				pincodeField.required = isIndia;
+				pincodeField.placeholder = isIndia
+					? 'Enter your 6-digit pincode'
+					: 'Optional';
+				if (!isIndia) {
+					pincodeField.value = '';
+					if (pincodeStatus) pincodeStatus.textContent = '';
+				}
+			}
+			if (cityInput) {
+				cityInput.placeholder = isIndia
+					? 'Search your city (e.g. Pune, Mumbai, Nagpur)'
+					: 'Enter your city';
+			}
+		};
+
 		const setCountry = (country: typeof selectedCountry) => {
 			selectedCountry = country;
+			syncPostalCode();
 			if (countryIso) countryIso.value = country.iso2;
 			if (countryFlag) countryFlag.textContent = country.flag;
 			if (countryName) countryName.textContent = country.name;
@@ -1452,6 +1646,8 @@ const { initiallyOpen = false } = Astro.props;
 			if (countryButton) countryButton.setAttribute('aria-expanded', 'false');
 			if (countryMenu) countryMenu.hidden = true;
 		};
+
+		syncPostalCode();
 
 		const renderCountries = (query = '') => {
 			if (!countryList) return;
@@ -1615,18 +1811,44 @@ const { initiallyOpen = false } = Astro.props;
 					if (pincodeStatus) pincodeStatus.textContent = 'We could not find that pincode. Please check it or enter your city manually.';
 					return;
 				}
-				if (cityInput && cityHidden && stateHidden) {
+				// Fill the city only if it is still empty. Someone who has already
+				// chosen "Mumbai" should not have it silently rewritten to whichever
+				// district the postal API returns.
+				const cityAlreadyGiven = Boolean((cityInput?.value || '').trim());
+				if (cityInput && cityHidden && stateHidden && !cityAlreadyGiven) {
 					cityInput.value = result.city;
 					cityHidden.value = result.city;
 					stateHidden.value = result.state;
 					if (cityClear) cityClear.hidden = false;
+				} else if (stateHidden && !stateHidden.value) {
+					stateHidden.value = result.state;
 				}
-				if (pincodeStatus) pincodeStatus.textContent = result.state ? `Location detected: ${result.city}, ${result.state}` : `Location detected: ${result.city}`;
+
+				if (pincodeStatus) {
+					const place = [result.city, result.state].filter(Boolean).join(', ');
+					pincodeStatus.textContent = cityAlreadyGiven
+						? `Pincode matches ${place}.`
+						: `Location detected: ${place}`;
+				}
 				form.querySelector('[data-error="pincode"]')?.classList.remove('is-visible');
 				pincodeInput.classList.remove('has-error');
 				cityInput?.classList.remove('has-error');
 			}, 450);
 		});
+
+		// ── Self-described gender ─────────────────────────────────────────────
+		const genderSelect = document.getElementById('f1-gender') as HTMLSelectElement | null;
+		const genderSelf = document.querySelector<HTMLInputElement>('[data-gender-self]');
+
+		const syncGenderSelf = () => {
+			const show = genderSelect?.value === 'self_described';
+			if (genderSelf) {
+				genderSelf.hidden = !show;
+				if (!show) genderSelf.value = '';
+			}
+		};
+		genderSelect?.addEventListener('change', syncGenderSelf);
+		syncGenderSelf();
 
 		// ── Other language ────────────────────────────────────────────────────
 		const syncOtherLanguage = () => {
@@ -1726,9 +1948,8 @@ const { initiallyOpen = false } = Astro.props;
 			// Map & persist to safe browser session storage (matches Supabase schema)
 			const payload = persistForm1Data(data);
 
-			// Map and save directly to Supabase database
-			const dbRole =
-				data.role === 'supporter' ? 'volunteer' : (data.role as any) || 'other';
+			// The form says "supporter"; the schema's enum says "volunteer".
+			const dbRole = data.role === 'supporter' ? 'volunteer' : data.role || 'other';
 
 			try {
 				const result = await registerMember({
@@ -1739,10 +1960,13 @@ const { initiallyOpen = false } = Astro.props;
 					phone: data.phone || undefined,
 					dateOfBirth: data.dateOfBirth || undefined,
 					gender: data.gender ? (data.gender as any) : undefined,
+					genderSelfDescribed: data.genderSelfDescribed || undefined,
 					pincode: data.pincode || undefined,
 					preferredLanguage: data.preferredLanguage || undefined,
 					selectedPillar: data.pillar ? (data.pillar as any) : undefined,
-					consentWhatsapp: true,
+					consentWhatsapp: data.consentWhatsapp,
+					consentSms: data.consentSms,
+					consentEmail: data.consentEmail,
 				});
 
 				if (!result.success) {
@@ -1750,31 +1974,28 @@ const { initiallyOpen = false } = Astro.props;
 						submitBtn.disabled = false;
 						submitBtn.innerHTML = originalBtnHtml;
 					}
+
+					// The service names the field it rejected. Matching on the text of
+					// the message instead meant that rewording a message silently
+					// broke the highlighting — and the duplicate-contact message is
+					// deliberately vague about which field matched, so there is no
+					// field name in it to find.
+					const fieldErrors: Form1Errors = {};
+					for (const [key, message] of Object.entries(result.errors || {})) {
+						if (form.querySelector(`[data-error="${key}"]`)) {
+							fieldErrors[key as keyof Form1Errors] = message;
+						}
+					}
+
+					if (Object.keys(fieldErrors).length > 0) {
+						renderErrors(fieldErrors);
+					}
+
 					if (globalAlert && globalAlertText) {
 						globalAlert.hidden = false;
 						globalAlertText.textContent =
 							result.message || 'Registration failed. Please check your details.';
 						globalAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
-					}
-					if (
-						result.message?.includes('mobile number') ||
-						result.message?.includes('phone')
-					) {
-						const phoneField = form.querySelector('[data-field="phone"]');
-						phoneField?.querySelector('input')?.classList.add('has-error');
-						const err = form.querySelector('[data-error="phone"]');
-						if (err) {
-							err.textContent = result.message;
-							err.classList.add('is-visible');
-						}
-					} else if (result.message?.includes('email')) {
-						const emailField = form.querySelector('[data-field="email"]');
-						emailField?.querySelector('input')?.classList.add('has-error');
-						const err = form.querySelector('[data-error="email"]');
-						if (err) {
-							err.textContent = result.message;
-							err.classList.add('is-visible');
-						}
 					}
 					return;
 				}
@@ -1797,6 +2018,10 @@ const { initiallyOpen = false } = Astro.props;
 				submitBtn.innerHTML = originalBtnHtml;
 			}
 
+			// The record is on the server now, so the copy in this browser is just
+			// personal data left lying on a possibly shared device.
+			clearForm1Data();
+
 			// Dispatch event for modular external integration
 			window.dispatchEvent(
 				new CustomEvent('itti:form1-complete', {
@@ -1813,14 +2038,32 @@ const { initiallyOpen = false } = Astro.props;
 
 				const summaryEl = successView.querySelector('[data-success-summary]');
 				if (summaryEl) {
-					summaryEl.innerHTML = `
-						<div><strong>Name:</strong> ${payload.full_name}</div>
-						<div><strong>Contact:</strong> ${payload.phone || payload.email || 'None'}</div>
-						<div><strong>Location:</strong> ${payload.meta.city}, ${payload.meta.state} ${payload.pincode ? '(' + payload.pincode + ')' : ''}</div>
-						<div><strong>Role:</strong> ${payload.role || 'Not specified'}</div>
-						<div><strong>Area of Interest:</strong> ${payload.meta.selected_pillar.replace('_', ' ').toUpperCase()}</div>
-					`;
+					// textContent, not innerHTML: `full_name` and `city` are free text
+					// the visitor typed, and a name containing markup would otherwise
+					// be parsed as markup.
+					const rows: Array<[string, string]> = [
+						['Name', payload.full_name],
+						['Contact', payload.phone || payload.email || 'None'],
+						[
+							'Location',
+							[payload.meta.city, payload.meta.state].filter(Boolean).join(', ') +
+								(payload.pincode ? ` (${payload.pincode})` : ''),
+						],
+						['Role', payload.role || 'Not specified'],
+						['Area of interest', payload.meta.selected_pillar.replace(/_/g, ' ')],
+					];
+
+					summaryEl.replaceChildren(
+						...rows.map(([label, value]) => {
+							const row = document.createElement('div');
+							const strong = document.createElement('strong');
+							strong.textContent = `${label}: `;
+							row.append(strong, document.createTextNode(value));
+							return row;
+						}),
+					);
 				}
+
 				successView.scrollIntoView({ behavior: 'smooth', block: 'start' });
 			}
 		});
