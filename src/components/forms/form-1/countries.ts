@@ -38,5 +38,5 @@ export function detectCountryFromInternationalNumber(value: string): Country | n
   const digits=value.replace(/\D/g,'');
   if(!value.trim().startsWith('+') && !/^(?:00)/.test(value.trim())) return null;
   const normalized=digits;
-  return [...COUNTRIES].sort((a,b)=>b.dialCode.length-a.dialCode.length).find(c => normalized.startsWith(a.dialCode.replace('+',''))) || null;
+  return [...COUNTRIES].sort((a,b)=>b.dialCode.length-a.dialCode.length).find(c => normalized.startsWith(c.dialCode.replace('+',''))) || null;
 }
