@@ -6,12 +6,19 @@ interface Props {
 	title: string;
 	description?: string;
 	image?: string;
+	/**
+	 * How the bar is coloured. `auto` binds it to what is behind it, which is
+	 * what the opening arc needs. A page that is dark all the way down has no
+	 * such moment, so it says so.
+	 */
+	navTheme?: 'auto' | 'light' | 'dark';
 }
 
 const {
 	title,
 	description = 'The Itti Foundation — embracing different minds, supporting people through cancer, and protecting the world we share.',
 	image = '/brand/lockup.png',
+	navTheme = 'auto',
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://itti.org.in');
@@ -56,7 +63,7 @@ const GRAIN =
 		</script>
 	</head>
 
-	<body>
+	<body data-nav-theme={navTheme}>
 		<a class="skip" href="#main">Skip to content</a>
 		<Nav />
 		<main id="main">
@@ -103,8 +110,12 @@ const GRAIN =
 	const nav = document.querySelector<HTMLElement>('[data-nav]');
 	const zone = document.querySelector<HTMLElement>('[data-light-zone]');
 
+	const navTheme = document.body.dataset.navTheme ?? 'auto';
+
 	if (nav) {
-		if (!zone) {
+		if (navTheme === 'dark') {
+			// Dark all the way down; there is no ground change to follow.
+		} else if (navTheme === 'light' || !zone) {
 			// Pages without the opening arc start on cream.
 			nav.classList.add('is-light');
 		} else {

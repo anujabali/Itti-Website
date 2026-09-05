@@ -1,14 +1,27 @@
 ---
 import Base from '../layouts/Base.astro';
+import SiteFooter from '../components/layout/SiteFooter.astro';
 import Form1Overlay from '../components/forms/form-1/Form1Overlay.astro';
 ---
 
 <Base
 	title="Join Us — The Itti Foundation"
 	description="Tell us a little about yourself, and we will point you to the right part of the foundation."
+	navTheme="dark"
 >
-	<!-- No site footer here. The overlay is fixed to the viewport, so anything
-	     placed after it could never be scrolled to. The way out is the card's
-	     own "Back to the site". -->
 	<Form1Overlay />
+
+	<!-- The footer sets no background and its ink assumes cream, so it needs a
+	     ground. The wrapper is here rather than in the footer because an Astro
+	     scoped style never reaches a child component's root. -->
+	<div class="join-footer">
+		<SiteFooter />
+	</div>
 </Base>
+
+<style>
+	.join-footer {
+		position: relative;
+		background: var(--cream);
+	}
+</style>

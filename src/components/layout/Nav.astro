@@ -226,6 +226,17 @@ const MENUS = [
 		backdrop-filter: blur(12px);
 	}
 
+	/* A page that is dark the whole way down still has content passing under
+	   the bar — a cream card, in the case of the form — so it needs the same
+	   ground the light state has, in its own colour. Without it the lockup and
+	   the links are white on cream for as long as the card is behind them. */
+	:global(body[data-nav-theme='dark']) .nav__inner {
+		background: rgba(8, 33, 38, 0.82);
+		border-bottom: 1px solid rgba(250, 247, 240, 0.1);
+		-webkit-backdrop-filter: blur(12px);
+		backdrop-filter: blur(12px);
+	}
+
 	.nav__inner {
 		display: flex;
 		align-items: center;
