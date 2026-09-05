@@ -231,11 +231,11 @@ const MENUS = [
 	   ground the light state has, in its own colour. Without it the lockup and
 	   the links are white on cream for as long as the card is behind them. */
 	:global(body[data-nav-theme='dark']) .nav__inner {
-		background: rgba(23, 19, 15, 0.86);
-		/* Barely there. On a uniform dark the bar and the ground are the same
-		   colour, so a visible rule would draw a line across nothing; it earns
-		   its keep only while the cream card is passing underneath. */
-		border-bottom: 1px solid rgba(250, 247, 240, 0.05);
+		background: rgba(15, 20, 21, 0.86);
+		/* The bar is the same colour as the ground, so this line is the only
+		   thing marking where one ends. In teal it does that and carries the
+		   signature at the same time. */
+		border-bottom: 1px solid var(--teal);
 		-webkit-backdrop-filter: blur(12px);
 		backdrop-filter: blur(12px);
 	}

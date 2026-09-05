@@ -95,7 +95,7 @@ const year = 2026;
 <style>
 	.foot {
 		padding: clamp(3.5rem, 8vh, 5.5rem) var(--gutter) 2.5rem;
-		border-top: 1px solid rgba(44, 39, 33, 0.14);
+		border-top: 1px solid var(--rule);
 		color: var(--ink-soft);
 	}
 
@@ -109,13 +109,13 @@ const year = 2026;
 		display: flex;
 		align-items: center;
 		align-self: start;
-		color: var(--teal);
+		color: var(--accent, var(--teal));
 		/* Reach the child components by inheritance — a scoped class selector
 		   would not match their roots. */
 		--mark-h: 2.4rem;
 		--wordmark-size: 1.25rem;
 		--wordmark-name: var(--ink);
-		--wordmark-sub: var(--teal);
+		--wordmark-sub: var(--accent, var(--teal));
 	}
 
 	.foot__word {
@@ -145,7 +145,7 @@ const year = 2026;
 	}
 
 	.foot__links a:hover {
-		color: var(--teal);
+		color: var(--accent, var(--teal));
 	}
 
 	.foot__base {
@@ -155,7 +155,7 @@ const year = 2026;
 		gap: 1rem 2rem;
 		margin-top: clamp(3rem, 6vh, 4.5rem);
 		padding-top: 1.75rem;
-		border-top: 1px solid rgba(44, 39, 33, 0.14);
+		border-top: 1px solid var(--rule);
 		font-size: 0.8125rem;
 	}
 
@@ -175,7 +175,7 @@ const year = 2026;
 	}
 
 	.foot__legalese a:hover {
-		color: var(--teal);
+		color: var(--accent, var(--teal));
 	}
 
 	@media (max-width: 48rem) {

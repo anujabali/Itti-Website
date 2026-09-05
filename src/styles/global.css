@@ -16,10 +16,14 @@
 	--teal-abyss: #0a2f35;
 
 	/* Ink */
-	--ink-deep: #17130f;
+	--ink-deep: #0f1415;
 	--ink: #2c2721;
 	--ink-soft: #5d564d;
 	--ink-faint: #8d857a;
+
+	/* The one red. Errors are the only thing that uses it, and they were using
+	   three different shades of it. */
+	--danger: #9c2727;
 
 	/* Chalky accents — pigments pulled toward grey, like an old painting */
 	--ochre: #b4914f;
@@ -41,6 +45,10 @@
 	   Playfair went wrong — while still holding its own over a full-bleed
 	   picture, which is where Cormorant did. */
 	--display-weight: 450;
+
+	/* Hairlines. A token because the colour has to invert with the ground, and
+	   a hardcoded rgba cannot. */
+	--rule: rgba(44, 39, 33, 0.14);
 
 	/* Rhythm */
 	--nav-h: 5.25rem;

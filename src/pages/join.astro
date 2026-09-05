@@ -11,17 +11,28 @@ import Form1Overlay from '../components/forms/form-1/Form1Overlay.astro';
 >
 	<Form1Overlay />
 
-	<!-- The footer sets no background and its ink assumes cream, so it needs a
-	     ground. The wrapper is here rather than in the footer because an Astro
-	     scoped style never reaches a child component's root. -->
 	<div class="join-footer">
 		<SiteFooter />
 	</div>
 </Base>
 
 <style>
+	/* The footer inverts by redefining the tokens it already reads, rather than
+	   by reaching into it: custom properties inherit, and an Astro scoped
+	   selector would never match a child component's root.
+
+	   No new teal is introduced. The brand teal is the brand teal, and on a
+	   near-black ground it sinks — which is the same reason the nav drops
+	   FOUNDATION's teal on the dark arc and sets the whole lockup in one
+	   colour. The footer does what the nav does. */
 	.join-footer {
 		position: relative;
-		background: var(--cream);
+		background: var(--ink-deep);
+
+		--ink: var(--warm-white);
+		--ink-soft: rgba(250, 247, 240, 0.72);
+		--ink-faint: rgba(250, 247, 240, 0.46);
+		--accent: var(--warm-white);
+		--rule: rgba(250, 247, 240, 0.14);
 	}
 </style>

@@ -579,9 +579,9 @@
 		gap: 0.75rem;
 		padding: 0.85rem 1.1rem;
 		border-radius: 0.3rem;
-		background: #fdf2f2;
-		border: 1px solid #f2b8b5;
-		color: #9c2727;
+		background: color-mix(in srgb, var(--danger) 7%, var(--warm-white));
+		border: 1px solid color-mix(in srgb, var(--danger) 32%, transparent);
+		color: var(--danger);
 		margin-bottom: 1.75rem;
 		font-size: 0.9375rem;
 	}
@@ -592,8 +592,8 @@
 		width: 1.35rem;
 		height: 1.35rem;
 		border-radius: 999px;
-		background: #9c2727;
-		color: #fff;
+		background: var(--danger);
+		color: var(--warm-white);
 		font-size: 0.75rem;
 		font-weight: bold;
 		flex: none;
@@ -697,14 +697,14 @@
 	.f1-select:focus {
 		outline: none;
 		border-color: var(--teal);
-		box-shadow: 0 0 0 3px rgba(28, 107, 119, 0.18);
-		background: #fff;
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 18%, transparent);
+		background: var(--warm-white);
 	}
 
 	.f1-input.has-error,
 	.f1-select.has-error {
-		border-color: #c93b3b;
-		box-shadow: 0 0 0 2px rgba(201, 59, 59, 0.15);
+		border-color: var(--danger);
+		box-shadow: 0 0 0 2px color-mix(in srgb, var(--danger) 18%, transparent);
 	}
 
 	.f1-select-wrap {
@@ -740,7 +740,7 @@
 	.f1-error {
 		display: none;
 		font-size: 0.8125rem;
-		color: #b72b2b;
+		color: var(--danger);
 		margin-top: 0.2rem;
 	}
 
@@ -764,7 +764,7 @@
 	.f1-error--contact {
 		margin-top: 0.65rem;
 		padding-top: 0.55rem;
-		border-top: 1px solid rgba(183, 43, 43, 0.2);
+		border-top: 1px solid color-mix(in srgb, var(--danger) 22%, transparent);
 	}
 
 	/* ── City Autocomplete ────────────────────────────────────────────────── */
@@ -806,10 +806,10 @@
 		margin: 0;
 		padding: 0.4rem;
 		list-style: none;
-		background: #ffffff;
+		background: var(--warm-white);
 		border: 1px solid rgba(44, 39, 33, 0.16);
 		border-radius: 0.3rem;
-		box-shadow: 0 12px 28px -6px rgba(6, 7, 8, 0.25);
+		box-shadow: 0 12px 28px -6px rgba(4, 12, 14, 0.25);
 		max-height: 14rem;
 		overflow-y: auto;
 	}
@@ -859,8 +859,8 @@
 	.f1-country__button span:nth-child(2) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; text-align: left; }
 	.f1-country__menu {
 		position: absolute; z-index: 30; left: 0; top: calc(100% + 0.35rem);
-		width: min(22rem, 80vw); padding: 0.5rem; border: 1px solid rgba(44,39,33,.15);
-		border-radius: .65rem; background: var(--warm-white); box-shadow: 0 12px 30px rgba(0,0,0,.12);
+		width: min(22rem, 80vw); padding: 0.5rem; border: 1px solid rgba(44, 39, 33, 0.15);
+		border-radius: .65rem; background: var(--warm-white); box-shadow: 0 12px 30px rgba(4, 12, 14, 0.16);
 	}
 	.f1-country__search { margin-bottom: .4rem; }
 	.f1-country__list { list-style: none; margin: 0; padding: 0; max-height: 15rem; overflow: auto; }
@@ -910,7 +910,7 @@
 
 	.f1-consent:hover {
 		border-color: var(--teal);
-		background: #fff;
+		background: var(--warm-white);
 	}
 
 	.f1-consent input[type='checkbox'] {
@@ -983,7 +983,7 @@
 
 	.f1-choice-card:hover {
 		border-color: var(--teal);
-		background: #fff;
+		background: var(--warm-white);
 		transform: translateY(-1px);
 	}
 
@@ -1017,13 +1017,13 @@
 		width: 0.45rem;
 		height: 0.45rem;
 		border-radius: 999px;
-		background: #fff;
+		background: var(--warm-white);
 	}
 
 	.f1-choice-card:has(input[type='radio']:checked) {
 		border-color: var(--teal);
-		background: #fff;
-		box-shadow: 0 4px 14px -4px rgba(28, 107, 119, 0.22);
+		background: var(--warm-white);
+		box-shadow: 0 4px 14px -4px color-mix(in srgb, var(--teal) 22%, transparent);
 	}
 
 	.f1-choice-card__body {
@@ -1084,7 +1084,7 @@
 	}
 
 	.f1-pillar-card:hover .f1-pillar-card__inner {
-		background: #fff;
+		background: var(--warm-white);
 		transform: translateY(-2px);
 		box-shadow: 0 8px 20px -8px rgba(44, 39, 33, 0.25);
 	}
@@ -1092,7 +1092,7 @@
 	.f1-pillar-card:has(input[type='radio']:checked) .f1-pillar-card__inner {
 		border-color: var(--card-accent);
 		border-top-width: 4px;
-		background: #fff;
+		background: var(--warm-white);
 		box-shadow: 0 10px 24px -8px rgba(44, 39, 33, 0.3);
 	}
 
@@ -1152,14 +1152,14 @@
 			background 200ms var(--ease),
 			transform 200ms var(--ease),
 			box-shadow 200ms var(--ease);
-		box-shadow: 0 4px 14px rgba(28, 107, 119, 0.32);
+		box-shadow: 0 4px 14px color-mix(in srgb, var(--teal) 32%, transparent);
 			width: 100%;
 	}
 
 	.f1-submit-btn:hover {
 		background: var(--teal-abyss);
 		transform: translateY(-2px);
-		box-shadow: 0 8px 20px rgba(28, 107, 119, 0.4);
+		box-shadow: 0 8px 20px color-mix(in srgb, var(--teal) 40%, transparent);
 	}
 
 	.f1-submit-btn:active {
