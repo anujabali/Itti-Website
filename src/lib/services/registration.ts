@@ -145,243 +145,140 @@ export const validateMemberPayload = (
 };
 
 /**
- * Registers basic user identity (Form 1) into the Supabase database.
- * 1. Validates mandatory and optional fields.
- * 2. Authenticates (optional if auth is not being used yet).
- * 3. Inserts row into `person` table.
- * 4. If selectedPillar is provided, creates `subject` and initial `health_intake`
- *    record storing the area in the intake/pillar structure without medical questions.
- * 5. Logs audit entry in `consent_record`.
+ * Registers a visitor (Form 1).
+ *
+ * The whole write is one call to the `register_member` database function. That
+ * function runs as its owner, so the tables themselves stay closed to anonymous
+ * visitors — see 0004. It validates everything again on its own side, because
+ * the REST endpoint is reachable without ever loading this page, and it returns
+ * ids only, never a row of anybody's details.
  */
 export const registerMember = async (
 	payload: Form1RegistrationPayload,
 ): Promise<RegistrationResult> => {
-	// 1. Client-side input validation
 	const validation = validateMemberPayload(payload);
 	if (!validation.valid) {
 		return {
 			success: false,
-			message: 'Validation failed. Please check form inputs.',
+			message: 'Please check the highlighted fields.',
 			errors: validation.errors,
 		};
 	}
 
-	const formattedPhone = formatPhoneNumber(payload.phone);
-	const normalizedEmail = payload.email?.toLowerCase().trim() || null;
-	const policyVersion = payload.policyVersion || 'v1.0';
-
-	// 2. Dev / Mock Fallback if Supabase credentials are not yet configured in .env
+	// Local development without a project of your own. Never in a build: a
+	// misconfigured deploy has to fail loudly rather than thank people for
+	// details it quietly dropped.
 	if (!isSupabaseConfigured()) {
-		console.info('[@itti/registration] Mock Form 1 Registration Executed:', {
-			fullName: payload.fullName,
+		if (!import.meta.env.DEV) {
+			return {
+				success: false,
+				message: 'We could not reach the registry just now. Please try again shortly.',
+				errors: { config: 'Supabase environment variables are not set for this build.' },
+			};
+		}
+
+		console.info('[itti/registration] mock submit — no Supabase configured', {
 			city: payload.city,
 			role: payload.role,
-			email: normalizedEmail,
-			phone: formattedPhone,
-			selectedPillar: payload.selectedPillar || 'not specified',
+			selectedPillar: payload.selectedPillar ?? null,
 		});
 
 		return {
 			success: true,
 			isMock: true,
-			personId: `mock-person-${Math.random().toString(36).substring(2, 9)}`,
-			authUserId: payload.password
-				? `mock-auth-${Math.random().toString(36).substring(2, 9)}`
-				: undefined,
-			subjectId: payload.selectedPillar
-				? `mock-subject-${Math.random().toString(36).substring(2, 9)}`
-				: undefined,
-			message: 'Form 1 registered successfully (Development Mock Mode).',
+			personId: `mock-person-${Math.random().toString(36).slice(2, 9)}`,
+			message: 'Registration recorded (local mock — nothing was saved).',
 		};
 	}
 
 	try {
-		// 3. Optional Authentication
-		let authUserId: string | null = null;
-
-		// Check if user is already signed in
-		const { data: sessionData } = await supabase.auth.getUser();
-		if (sessionData.user) {
-			authUserId = sessionData.user.id;
-		} else if (normalizedEmail && payload.password) {
-			// Sign up new auth user if password is provided
-			const { data: authData, error: authError } = await supabase.auth.signUp({
-				email: normalizedEmail,
-				password: payload.password,
-				options: {
-					data: {
-						full_name: payload.fullName.trim(),
-					},
-				},
-			});
-
-			if (authError) {
+		// An optional account. Done first so the row the function writes is bound
+		// to the auth user via auth.uid(), rather than the client asserting an id
+		// it could just as easily make up.
+		if (payload.password) {
+			const email = payload.email?.toLowerCase().trim();
+			if (!email) {
 				return {
 					success: false,
-					message: authError.message,
-					errors: { auth: authError.message },
+					message: 'An email address is needed to create an account.',
+					errors: { email: 'An email address is needed to create an account.' },
 				};
 			}
 
-			authUserId = authData.user?.id || null;
-		}
+			const { data: session } = await supabase.auth.getUser();
+			if (!session.user) {
+				const { error: authError } = await supabase.auth.signUp({
+					email,
+					password: payload.password,
+					options: { data: { full_name: payload.fullName.trim() } },
+				});
 
-		// 4. Insert into `person` table (auth_user_id is nullable if auth is not being used yet)
-		const { data: personData, error: personError } = await supabase
-			.from('person')
-			.insert({
-				auth_user_id: authUserId,
-				full_name: payload.fullName.trim(),
-				city: payload.city.trim(),
-				role: payload.role,
-				phone: formattedPhone,
-				email: normalizedEmail,
-				date_of_birth: payload.dateOfBirth || null,
-				gender: payload.gender || null,
-				gender_self_described:
-					payload.gender === 'self_described'
-						? payload.genderSelfDescribed?.trim() || null
-						: null,
-				pincode: payload.pincode?.trim() || null,
-				preferred_language: payload.preferredLanguage || null,
-				contact_preferred: payload.preferredContactChannel || null,
-				consent_whatsapp: payload.consentWhatsapp ?? null,
-				consent_sms: payload.consentSms ?? null,
-				consent_email: payload.consentEmail ?? null,
-				heard_from: payload.heardFrom || null,
-				heard_from_other:
-					payload.heardFrom === 'other' ? payload.heardFromOther?.trim() || null : null,
-				referrer_name: payload.referrerName?.trim() || null,
-				referrer_code: payload.referrerCode?.trim() || null,
-				utm: payload.utm || {},
-			})
-			.select('id')
-			.single();
-
-		if (personError) {
-			let errorMsg = personError.message;
-			if (
-				personError.code === '23505' ||
-				personError.message.includes('unique constraint') ||
-				personError.message.includes('duplicate key')
-			) {
-				if (personError.message.includes('phone')) {
-					errorMsg = 'This mobile number is already registered with us. Your registration is already on file!';
-				} else if (personError.message.includes('email')) {
-					errorMsg = 'This email address is already registered with us. Your registration is already on file!';
-				} else {
-					errorMsg = 'A record with this contact information is already registered with us.';
+				if (authError) {
+					return {
+						success: false,
+						message: authError.message,
+						errors: { auth: authError.message },
+					};
 				}
 			}
+		}
+
+		const { data, error } = await supabase.rpc('register_member', {
+			payload: {
+				fullName: payload.fullName.trim(),
+				city: payload.city.trim(),
+				role: payload.role,
+				phone: formatPhoneNumber(payload.phone),
+				email: payload.email?.toLowerCase().trim() || null,
+				dateOfBirth: payload.dateOfBirth || null,
+				gender: payload.gender || null,
+				genderSelfDescribed: payload.genderSelfDescribed?.trim() || null,
+				pincode: payload.pincode?.trim() || null,
+				preferredLanguage: payload.preferredLanguage || null,
+				preferredContactChannel: payload.preferredContactChannel || null,
+				consentWhatsapp: payload.consentWhatsapp ?? null,
+				consentSms: payload.consentSms ?? null,
+				consentEmail: payload.consentEmail ?? null,
+				heardFrom: payload.heardFrom || null,
+				heardFromOther: payload.heardFromOther?.trim() || null,
+				referrerName: payload.referrerName?.trim() || null,
+				referrerCode: payload.referrerCode?.trim() || null,
+				utm: payload.utm || {},
+				policyVersion: payload.policyVersion || 'v1.0',
+			},
+		});
+
+		if (error) {
+			// Transport or permission failure. The detail goes to the console for
+			// whoever is debugging; the visitor gets a sentence they can act on.
+			console.error('[itti/registration]', error);
 			return {
 				success: false,
-				message: errorMsg,
-				errors: { database: errorMsg },
+				message: 'We could not save that just now. Please try again shortly.',
+				errors: { server: error.message },
 			};
 		}
 
-		const personId = personData.id;
-		let subjectId: string | undefined;
-
-		// 5. Area/Pillar selection: store in existing intake/pillar structure (subject + health_intake)
-		// without any clinical/medical questions
-		if (payload.selectedPillar) {
-			const { data: subjectData, error: subjectError } = await supabase
-				.from('subject')
-				.insert({
-					person_id: personId,
-					relationship: 'self',
-				})
-				.select('id')
-				.single();
-
-			if (subjectError) {
-				console.warn('[@itti/registration] Subject creation error:', subjectError);
-			} else if (subjectData) {
-				subjectId = subjectData.id;
-				const { error: intakeError } = await supabase.from('health_intake').insert({
-					subject_id: subjectId,
-					pillar: payload.selectedPillar,
-					modalities: [],
-					source: 'self',
-				});
-
-				if (intakeError) {
-					console.warn(
-						'[@itti/registration] Initial intake creation error:',
-						intakeError,
-					);
-				}
-			}
-		}
-
-		// 6. Record consents in `consent_record` audit table
-		const consentsToInsert: ConsentRecordInsert[] = [
-			{
-				person_id: personId,
-				purpose: 'account',
-				granted: true,
-				policy_version: policyVersion,
-				channel: 'web',
-				granted_by: authUserId,
-			},
-		];
-
-		if (payload.consentWhatsapp) {
-			consentsToInsert.push({
-				person_id: personId,
-				purpose: 'whatsapp',
-				granted: true,
-				policy_version: policyVersion,
-				channel: 'web',
-				granted_by: authUserId,
-			});
-		}
-
-		if (payload.consentEmail) {
-			consentsToInsert.push({
-				person_id: personId,
-				purpose: 'email',
-				granted: true,
-				policy_version: policyVersion,
-				channel: 'web',
-				granted_by: authUserId,
-			});
-		}
-
-		if (payload.consentSms) {
-			consentsToInsert.push({
-				person_id: personId,
-				purpose: 'sms',
-				granted: true,
-				policy_version: policyVersion,
-				channel: 'web',
-				granted_by: authUserId,
-			});
-		}
-
-		const { error: consentError } = await supabase
-			.from('consent_record')
-			.insert(consentsToInsert);
-
-		if (consentError) {
-			console.warn('[@itti/registration] Consent record log error:', consentError);
+		// The function reports its own refusals in the payload, so that a bad
+		// field arrives as a field error rather than as a 500.
+		if (!data?.ok) {
+			const field = data?.field || 'form';
+			const message = data?.message || 'Please check your details and try again.';
+			return { success: false, message, errors: { [field]: message } };
 		}
 
 		return {
 			success: true,
-			personId,
-			authUserId: authUserId || undefined,
-			subjectId,
-			message: 'Registration completed successfully!',
+			personId: data.personId,
+			subjectId: data.subjectId ?? undefined,
+			message: 'Thank you — you are on our list.',
 		};
 	} catch (err: unknown) {
-		const errorMsg =
-			err instanceof Error ? err.message : 'Unknown registration error occurred';
+		console.error('[itti/registration]', err);
 		return {
 			success: false,
-			message: errorMsg,
-			errors: { server: errorMsg },
+			message: 'Something went wrong on our side. Please try again shortly.',
+			errors: { server: err instanceof Error ? err.message : 'Unknown error' },
 		};
 	}
 };

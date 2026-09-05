@@ -31,7 +31,7 @@ export type PillarKind =
 /**
  * person table — basic user identity and registration information.
  */
-export interface Person {
+export type Person = {
 	id: string; // uuid primary key
 	auth_user_id: string | null; // uuid, nullable if auth is not used yet
 
@@ -69,7 +69,7 @@ export interface Person {
 
 	created_at: string;
 	updated_at: string;
-}
+};
 
 export type PersonInsert = Omit<Person, 'id' | 'created_at' | 'updated_at'> & {
 	id?: string;
@@ -80,12 +80,12 @@ export type PersonInsert = Omit<Person, 'id' | 'created_at' | 'updated_at'> & {
 /**
  * subject table — links intake/pillar data to a person
  */
-export interface Subject {
+export type Subject = {
 	id: string; // uuid
 	person_id: string; // uuid references person.id
 	relationship: 'self' | 'cared_for';
 	created_at: string;
-}
+};
 
 export type SubjectInsert = Omit<Subject, 'id' | 'created_at'> & {
 	id?: string;
@@ -95,7 +95,7 @@ export type SubjectInsert = Omit<Subject, 'id' | 'created_at'> & {
 /**
  * health_intake table — records area/pillar and subsequent stage-two intake
  */
-export interface HealthIntake {
+export type HealthIntake = {
 	id: number;
 	subject_id: string;
 	version: number;
@@ -110,7 +110,7 @@ export interface HealthIntake {
 	source: 'self' | 'staff_assisted' | 'import';
 	recorded_by: string | null;
 	created_at: string;
-}
+};
 
 export type HealthIntakeInsert = Omit<HealthIntake, 'id' | 'version' | 'created_at'> & {
 	id?: number;
@@ -118,7 +118,7 @@ export type HealthIntakeInsert = Omit<HealthIntake, 'id' | 'version' | 'created_
 	created_at?: string;
 };
 
-export interface ConsentRecord {
+export type ConsentRecord = {
 	id: number;
 	person_id: string;
 	purpose: string; // 'account' | 'privacy_policy' | 'whatsapp' | 'sms' | 'email'
@@ -127,7 +127,7 @@ export interface ConsentRecord {
 	channel: 'web' | 'in_person' | 'phone';
 	granted_by: string | null;
 	created_at: string;
-}
+};
 
 export type ConsentRecordInsert = Omit<ConsentRecord, 'id' | 'created_at'> & {
 	id?: number;
@@ -157,7 +157,9 @@ export interface Form1RegistrationPayload {
 	pincode?: string; // 6-digit Indian postal PIN
 	preferredLanguage?: string; // 'en-IN', 'ta', 'hi', etc.
 
-	// Optional account credentials (if user creates password at signup)
+	// Optional. If present, an auth.users account is created via Supabase Auth
+	// before the row is written; it is never stored on `person`, which has no
+	// password column and never should.
 	password?: string;
 
 	// Communication Preferences
@@ -196,6 +198,18 @@ export interface RegistrationResult {
 }
 
 /**
+ * What `register_member` returns. Ids only, so a refusal and a success travel
+ * the same path and neither carries anybody's details back to the browser.
+ */
+export interface RegisterMemberResult {
+	ok: boolean;
+	personId?: string;
+	subjectId?: string | null;
+	field?: string;
+	message?: string;
+}
+
+/**
  * Complete Database Schema for Supabase client typing
  */
 export interface Database {
@@ -205,25 +219,33 @@ export interface Database {
 				Row: Person;
 				Insert: PersonInsert;
 				Update: Partial<PersonInsert>;
+				Relationships: [];
 			};
 			subject: {
 				Row: Subject;
 				Insert: SubjectInsert;
 				Update: Partial<SubjectInsert>;
+				Relationships: [];
 			};
 			health_intake: {
 				Row: HealthIntake;
 				Insert: HealthIntakeInsert;
 				Update: Partial<HealthIntakeInsert>;
+				Relationships: [];
 			};
 			consent_record: {
 				Row: ConsentRecord;
 				Insert: ConsentRecordInsert;
 				Update: Partial<ConsentRecordInsert>;
+				Relationships: [];
 			};
 		};
 		Views: Record<string, never>;
 		Functions: {
+			register_member: {
+				Args: { payload: Record<string, unknown> };
+				Returns: RegisterMemberResult;
+			};
 			person_age: {
 				Args: { p: Person };
 				Returns: number;
@@ -237,6 +259,7 @@ export interface Database {
 				Returns: boolean;
 			};
 		};
+		CompositeTypes: Record<string, never>;
 		Enums: {
 			role_kind: RoleKind;
 			gender_kind: GenderKind;
