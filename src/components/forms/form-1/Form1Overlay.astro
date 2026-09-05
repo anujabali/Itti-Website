@@ -1962,7 +1962,13 @@ const { initiallyOpen = false } = Astro.props;
 					gender: data.gender ? (data.gender as any) : undefined,
 					genderSelfDescribed: data.genderSelfDescribed || undefined,
 					pincode: data.pincode || undefined,
-					preferredLanguage: data.preferredLanguage || undefined,
+					// "other" is the select's own bookkeeping, not an answer. Send what
+					// they actually typed, or `preferred_language` stores the word
+					// "other" and the language is lost.
+					preferredLanguage:
+						(data.preferredLanguage === 'other'
+							? data.languageOther?.trim()
+							: data.preferredLanguage) || undefined,
 					selectedPillar: data.pillar ? (data.pillar as any) : undefined,
 					consentWhatsapp: data.consentWhatsapp,
 					consentSms: data.consentSms,
