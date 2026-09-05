@@ -1,4 +1,12 @@
 import { supabase, isSupabaseConfigured } from '../supabase';
+import {
+	LIMITS,
+	checkDateOfBirth,
+	isValidE164,
+	isValidEmail,
+	isValidIndianPincode,
+	toE164,
+} from '../validation/rules';
 import type {
 	Form1RegistrationPayload,
 	RegistrationResult,
@@ -16,26 +24,8 @@ const VALID_PILLARS: PillarKind[] = [
 	'other',
 ];
 
-/**
- * Normalizes Indian phone numbers into E.164 format (+91XXXXXXXXXX).
- * If already E.164 (+...), keeps it as is.
- */
-export const formatPhoneNumber = (phone?: string): string | null => {
-	if (!phone) return null;
-	const trimmed = phone.trim().replace(/[\s-()]/g, '');
-	if (!trimmed) return null;
-
-	if (trimmed.startsWith('+')) {
-		return trimmed;
-	}
-
-	// If 10 digits provided (e.g. 9876543210), default to Indian country code +91
-	if (/^[6-9]\d{9}$/.test(trimmed)) {
-		return `+91${trimmed}`;
-	}
-
-	return trimmed;
-};
+/** Kept as a named export; the rule itself lives in `lib/validation/rules`. */
+export const formatPhoneNumber = (phone?: string): string | null => toE164(phone);
 
 /**
  * Validates Form 1 registration inputs before submission.
@@ -54,16 +44,16 @@ export const validateMemberPayload = (
 	const trimmedName = payload.fullName?.trim() || '';
 	if (!trimmedName) {
 		errors.fullName = 'Full name is required.';
-	} else if (trimmedName.length > 120) {
-		errors.fullName = 'Full name must be 120 characters or fewer.';
+	} else if (trimmedName.length > LIMITS.fullName) {
+		errors.fullName = `Full name must be ${LIMITS.fullName} characters or fewer.`;
 	}
 
 	// 2. Mandatory field: city
 	const trimmedCity = payload.city?.trim() || '';
 	if (!trimmedCity) {
 		errors.city = 'City is required.';
-	} else if (trimmedCity.length > 100) {
-		errors.city = 'City must be 100 characters or fewer.';
+	} else if (trimmedCity.length > LIMITS.city) {
+		errors.city = `City must be ${LIMITS.city} characters or fewer.`;
 	}
 
 	// 3. Mandatory field: role
@@ -81,46 +71,23 @@ export const validateMemberPayload = (
 		errors.contact = 'At least one of phone or email must be provided.';
 	}
 
-	// Validate email format if provided
-	if (hasEmail) {
-		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-		if (!emailRegex.test(payload.email!.trim())) {
-			errors.email = 'Please provide a valid email address.';
-		}
+	if (hasEmail && !isValidEmail(payload.email!)) {
+		errors.email = 'Please provide a valid email address.';
 	}
 
-	// Validate phone format if provided
-	if (formattedPhone) {
-		const e164Regex = /^\+[1-9][0-9]{7,14}$/;
-		if (!e164Regex.test(formattedPhone)) {
-			errors.phone =
-				'Phone number must be valid with country code (e.g. +91 9876543210).';
-		}
+	if (formattedPhone && !isValidE164(formattedPhone)) {
+		errors.phone =
+			'Phone number must be valid with country code (e.g. +91 9876543210).';
 	}
 
-	// Optional: PIN code check (6-digit Indian PIN)
-	if (payload.pincode && payload.pincode.trim()) {
-		const pin = payload.pincode.trim();
-		if (!/^[1-9][0-9]{5}$/.test(pin)) {
-			errors.pincode =
-				'Pincode must be a valid 6-digit Indian postal code (e.g. 600001).';
-		}
+	if (payload.pincode?.trim() && !isValidIndianPincode(payload.pincode)) {
+		errors.pincode =
+			'Pincode must be a valid 6-digit Indian postal code (e.g. 600001).';
 	}
 
-	// Optional: Date of birth check
 	if (payload.dateOfBirth) {
-		const dob = new Date(payload.dateOfBirth);
-		const now = new Date();
-		const minDate = new Date();
-		minDate.setFullYear(now.getFullYear() - 120);
-
-		if (isNaN(dob.getTime())) {
-			errors.dateOfBirth = 'Invalid date of birth.';
-		} else if (dob > now) {
-			errors.dateOfBirth = 'Date of birth cannot be in the future.';
-		} else if (dob < minDate) {
-			errors.dateOfBirth = 'Date of birth cannot be more than 120 years ago.';
-		}
+		const dob = checkDateOfBirth(payload.dateOfBirth);
+		if (!dob.valid && dob.error) errors.dateOfBirth = dob.error;
 	}
 
 	// Optional: Self-described gender check

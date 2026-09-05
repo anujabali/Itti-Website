@@ -3,66 +3,38 @@
  * Corresponds directly to Supabase check constraints defined in `supabase/migrations/0001_identity.sql`.
  */
 import type { Form1Data, Form1Errors } from './types';
+import {
+	LIMITS,
+	checkDateOfBirth,
+	isValidE164,
+	isValidEmail as isEmail,
+	isValidIndianPincode,
+	toE164,
+} from '../../../lib/validation/rules';
 
 /**
  * Normalizes a phone number string to an E.164-compatible format.
  * Country-specific calling codes are combined with local numbers in Form1Overlay before validation.
  */
 export function normalizePhone(raw: string): string {
-	const cleaned = raw.replace(/[^\d+]/g, '');
-	if (!cleaned) return '';
-	return cleaned.startsWith('+') ? cleaned : `+${cleaned}`;
+	return toE164(raw) ?? '';
 }
 
 export function isValidPhone(phone: string): boolean {
-	const normalized = normalizePhone(phone);
-	return /^\+[1-9]\d{7,14}$/.test(normalized);
+	return isValidE164(normalizePhone(phone));
 }
 
-/**
- * Validates email format.
- */
 export function isValidEmail(email: string): boolean {
-	const trimmed = email.trim();
-	if (!trimmed) return false;
-	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
-	return emailRegex.test(trimmed);
+	return isEmail(email);
 }
 
-/**
- * Validates Indian 6-digit postal pincode.
- * Matches SQL: pincode ~ '^[1-9][0-9]{5}$'
- */
 export function isValidPincode(pincode: string): boolean {
-	const trimmed = pincode.trim();
-	return /^[1-9]\d{5}$/.test(trimmed);
+	return isValidIndianPincode(pincode);
 }
 
-/**
- * Validates date of birth string (YYYY-MM-DD).
- * Matches SQL: date_of_birth > current_date - interval '120 years' and date_of_birth <= current_date
- */
 export function isValidDateOfBirth(dobStr: string): { valid: boolean; error?: string } {
 	if (!dobStr) return { valid: false, error: 'Date of birth is required.' };
-	const dob = new Date(dobStr);
-	if (isNaN(dob.getTime())) {
-		return { valid: false, error: 'Please enter a valid date.' };
-	}
-
-	const today = new Date();
-	today.setHours(0, 0, 0, 0);
-
-	if (dob > today) {
-		return { valid: false, error: 'Date of birth cannot be in the future.' };
-	}
-
-	const minDate = new Date();
-	minDate.setFullYear(today.getFullYear() - 120);
-	if (dob < minDate) {
-		return { valid: false, error: 'Please enter a date within the last 120 years.' };
-	}
-
-	return { valid: true };
+	return checkDateOfBirth(dobStr);
 }
 
 /**
@@ -79,8 +51,8 @@ export function validateForm1(data: Form1Data): {
 	const trimmedName = data.fullName.trim();
 	if (!trimmedName) {
 		errors.fullName = 'Full name is required.';
-	} else if (trimmedName.length > 120) {
-		errors.fullName = 'Full name must be 120 characters or fewer.';
+	} else if (trimmedName.length > LIMITS.fullName) {
+		errors.fullName = `Full name must be ${LIMITS.fullName} characters or fewer.`;
 	}
 
 	// 2 & 3. Phone OR Email validation rule
