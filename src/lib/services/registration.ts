@@ -159,37 +159,6 @@ export const registerMember = async (
 	}
 
 	try {
-		// An optional account. Done first so the row the function writes is bound
-		// to the auth user via auth.uid(), rather than the client asserting an id
-		// it could just as easily make up.
-		if (payload.password) {
-			const email = payload.email?.toLowerCase().trim();
-			if (!email) {
-				return {
-					success: false,
-					message: 'An email address is needed to create an account.',
-					errors: { email: 'An email address is needed to create an account.' },
-				};
-			}
-
-			const { data: session } = await supabase.auth.getUser();
-			if (!session.user) {
-				const { error: authError } = await supabase.auth.signUp({
-					email,
-					password: payload.password,
-					options: { data: { full_name: payload.fullName.trim() } },
-				});
-
-				if (authError) {
-					return {
-						success: false,
-						message: authError.message,
-						errors: { auth: authError.message },
-					};
-				}
-			}
-		}
-
 		const { data, error } = await supabase.rpc('register_member', {
 			payload: {
 				fullName: payload.fullName.trim(),

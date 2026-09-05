@@ -157,10 +157,6 @@ export interface Form1RegistrationPayload {
 	pincode?: string; // 6-digit Indian postal PIN
 	preferredLanguage?: string; // 'en-IN', 'ta', 'hi', etc.
 
-	// Optional. If present, an auth.users account is created via Supabase Auth
-	// before the row is written; it is never stored on `person`, which has no
-	// password column and never should.
-	password?: string;
 
 	// Communication Preferences
 	preferredContactChannel?: ContactChannel;
