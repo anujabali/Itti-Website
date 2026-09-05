@@ -6,88 +6,24 @@ import Form1Overlay from '../components/forms/form-1/Form1Overlay.astro';
 
 <Base
 	title="Join Us — The Itti Foundation"
-	description="Register to join The Itti Foundation community."
+	description="Tell us a little about yourself, and we will point you to the right part of the foundation."
 >
-	<div class="join-page">
-		<header class="join-page__header">
-			<p class="join-page__eyebrow">Registration — Form 1</p>
-			<h1 class="join-page__title">Join the Community</h1>
-			<p class="join-page__subtitle">
-				Connect with our initiatives, volunteer, or access guidance across our
-				neurodivergence, cancer care, and community pillars.
-			</p>
-		</header>
+	<!-- The form is the page. It keeps the look of a card lifted off a dark
+	     ground — which is what made the overlay feel considered — without
+	     landing on top of anything a visitor was in the middle of reading. -->
+	<Form1Overlay />
 
-		<!-- The form opens over this page on arrival. This is what a visitor
-		     returns to if they close it, and the way back in. -->
-		<p class="join-page__reopen">
-			<button class="join-page__button" type="button" data-f1-reopen>
-				Open the registration form
-			</button>
-		</p>
+	<!-- The footer sets no background of its own and its ink colours assume
+	     cream, so it needs a ground to sit on. Without one it renders dark on
+	     dark and cannot be read. The wrapper is here rather than in the footer
+	     because an Astro scoped style never reaches a child component's root. -->
+	<div class="join-footer">
+		<SiteFooter />
 	</div>
-
-	<SiteFooter />
 </Base>
 
-<!-- One Form 1, not two. This page used to carry its own copy of the form,
-     which had already drifted from this one: no country code, no city
-     autocomplete, no postal lookup, and a different set of fields. Everywhere
-     the form appears it is now this component. -->
-<Form1Overlay initiallyOpen />
-
 <style>
-	.join-page {
-		max-width: 46rem;
-		margin: 0 auto;
-		padding: clamp(7rem, 14vh, 9rem) var(--gutter) clamp(4rem, 8vh, 6rem);
-		min-height: 60svh;
-	}
-
-	.join-page__header {
-		text-align: center;
-	}
-
-	.join-page__eyebrow {
-		font-size: 0.75rem;
-		font-weight: 600;
-		letter-spacing: 0.2em;
-		text-transform: uppercase;
-		color: var(--teal);
-	}
-
-	.join-page__title {
-		margin-top: 0.75rem;
-		font-family: var(--display);
-		font-size: clamp(2.25rem, 5vw, 3.5rem);
-		line-height: 1.1;
-		color: var(--ink);
-	}
-
-	.join-page__subtitle {
-		margin: 1rem auto 0;
-		max-width: 32rem;
-		font-size: 1.0625rem;
-		line-height: 1.6;
-		color: var(--ink-soft);
-	}
-
-	.join-page__reopen {
-		margin-top: clamp(2.5rem, 5vh, 3.5rem);
-		text-align: center;
-	}
-
-	.join-page__button {
-		padding: 0.85rem 1.75rem;
-		border-radius: 999px;
-		background: var(--teal);
-		color: var(--warm-white);
-		font-size: 0.9375rem;
-		letter-spacing: 0.02em;
-		transition: background-color 200ms var(--ease);
-	}
-
-	.join-page__button:hover {
-		background: var(--teal-deep);
+	.join-footer {
+		background: var(--cream);
 	}
 </style>

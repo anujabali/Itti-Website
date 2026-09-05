@@ -1,63 +1,36 @@
 ---
 /**
- * The Itti Foundation — Form 1: Basic Information / Get Started Overlay
+ * The Itti Foundation — Form 1: basic information.
  *
- * Appears as an elegant, accessible modal overlay on top of the live website,
- * adhering directly to the project's design tokens, typography, and Supabase identity schema.
+ * Presented as a card floating over a dark ground, which is where the overlay
+ * look comes from — but it is the content of its own page, not a dialog thrown
+ * over another one. It used to mount on the homepage and open on load, which
+ * put a registration form in front of the opening arc before a visitor had
+ * been told anything.
  *
  * Folder: src/components/forms/form-1/
  */
-import Mark from '../../brand/Mark.astro';
-
-interface Props {
-	/** If true, starts visible on page load. Defaults to true for instant evaluation. */
-	initiallyOpen?: boolean;
-}
-
-const { initiallyOpen = false } = Astro.props;
 ---
 
-<div
-	class="f1-overlay"
-	id="form1-modal"
-	role="dialog"
-	aria-modal="true"
-	aria-labelledby="f1-heading"
-	data-form1-overlay
-	data-initially-open={initiallyOpen ? 'true' : 'false'}
-	hidden
->
-	<!-- Backdrop scrim with subtle blur -->
-	<div class="f1-backdrop" data-f1-backdrop aria-hidden="true"></div>
-
-	<!-- Scrollable viewport frame -->
+<section class="f1-overlay" id="form1-modal" aria-labelledby="f1-heading" data-form1-overlay>
 	<div class="f1-scroller" data-f1-scroller>
 		<div class="f1-card" data-f1-card>
-			<!-- Top utility bar: brand mark and close button -->
 			<div class="f1-topbar">
-				<div class="f1-brand" aria-hidden="true">
-					<Mark height="1.6rem" />
-					<span class="f1-brand__label">The Itti Foundation &middot; Intake</span>
-				</div>
-				<button
-					class="f1-close"
-					type="button"
-					aria-label="Close Get Started form"
-					data-f1-close
-				>
-					<span class="f1-close__icon" aria-hidden="true">&times;</span>
-				</button>
+				<a class="f1-back" href="/">
+					<span class="f1-back__arrow" aria-hidden="true">&larr;</span>
+					<span>Back to the site</span>
+				</a>
 			</div>
 
 			<!-- Main Form Content -->
 			<form class="f1-form" id="form1-element" novalidate data-f1-form>
 				<!-- Header section -->
 				<header class="f1-header">
-					<p class="f1-eyebrow">Form 1 &middot; Intake Step 1 of 2</p>
-					<h1 class="f1-title" id="f1-heading">Let's Get Started</h1>
+					<p class="f1-eyebrow">Step one of two</p>
+					<h1 class="f1-title" id="f1-heading">Tell us who you are.</h1>
 					<p class="f1-subtitle">
-						Tell us a little about yourself so we can connect you with the right Itti
-						Foundation program.
+						Enough to reach you, and enough to point you to the right part of the
+						foundation. Nothing here goes anywhere else.
 					</p>
 				</header>
 
@@ -71,7 +44,7 @@ const { initiallyOpen = false } = Astro.props;
 				<fieldset class="f1-section">
 					<legend class="f1-section__legend">
 						<span class="f1-section__num">01</span>
-						<span class="f1-section__text">About You</span>
+						<span class="f1-section__text">About you</span>
 					</legend>
 
 					<!-- 1. Full Name * -->
@@ -94,12 +67,9 @@ const { initiallyOpen = false } = Astro.props;
 
 					<!-- Contact Method Group (Phone OR Email rule) -->
 					<div class="f1-contact-group">
-						<div class="f1-contact-note">
-							<span class="f1-contact-note__badge">Contact Method</span>
-							<span
-								>Please provide at least <strong>one</strong> of phone number or email address.</span
-							>
-						</div>
+						<p class="f1-contact-note">
+							A phone number or an email address &mdash; either one is enough.
+						</p>
 
 						<div class="f1-grid f1-grid--2col">
 							<!-- 2. Phone Number -->
@@ -123,7 +93,7 @@ const { initiallyOpen = false } = Astro.props;
 										id="f1-phone"
 										name="phone"
 										type="tel"
-										placeholder="XXXXXXXXXX"
+										placeholder="00000 00000"
 										inputmode="tel"
 										autocomplete="tel-national"
 										data-phone-input
@@ -205,7 +175,7 @@ const { initiallyOpen = false } = Astro.props;
 								class="f1-input"
 								id="f1-city-input"
 								type="text"
-								placeholder="Search your city (e.g. Pune, Mumbai, Nagpur)"
+								placeholder="Search your city"
 								data-city-free
 								autocomplete="off"
 								data-city-input
@@ -293,7 +263,7 @@ const { initiallyOpen = false } = Astro.props;
 				<fieldset class="f1-section">
 					<legend class="f1-section__legend">
 						<span class="f1-section__num">02</span>
-						<span class="f1-section__text">Your Connection with Itti Foundation</span>
+						<span class="f1-section__text">Your connection</span>
 					</legend>
 
 					<!-- 9. I am joining as * -->
@@ -355,7 +325,7 @@ const { initiallyOpen = false } = Astro.props;
 				<fieldset class="f1-section">
 					<legend class="f1-section__legend">
 						<span class="f1-section__num">03</span>
-						<span class="f1-section__text">Area of Interest</span>
+						<span class="f1-section__text">Area of interest</span>
 					</legend>
 
 					<!-- 10. Which area would you like to connect with? * -->
@@ -414,8 +384,15 @@ const { initiallyOpen = false } = Astro.props;
 						<p class="f1-error" data-error="pillar" role="alert"></p>
 					</div>
 
-					<!-- 11. How we may contact you. Separate consents, none assumed. -->
-					<div class="f1-field" data-field="consent">
+				</fieldset>
+
+				<fieldset class="f1-section">
+					<legend class="f1-section__legend">
+						<span class="f1-section__num">04</span>
+						<span class="f1-section__text">Staying in touch</span>
+					</legend>
+
+										<div class="f1-field" data-field="consent">
 						<label class="f1-label f1-label--standalone">
 							How may we contact you?
 						</label>
@@ -455,8 +432,8 @@ const { initiallyOpen = false } = Astro.props;
 						</button>
 					</div>
 					<p class="f1-footer__disclaimer">
-						Your information is handled with care under the Itti Foundation Privacy
-						Charter. Step 1 creates your foundational intake profile.
+						We keep these details to reach you and to route you well. We do not sell
+						them, and we do not pass them on.
 					</p>
 				</footer>
 			</form>
@@ -476,70 +453,39 @@ const { initiallyOpen = false } = Astro.props;
 				</div>
 
 				<div class="f1-success__actions">
-					<button class="f1-submit-btn" type="button" data-f1-close-success>
-						<span>Done &amp; Return to Website</span>
-					</button>
+					<a class="f1-submit-btn" href="/">
+						<span>Back to the site</span>
+					</a>
 					<button class="f1-btn-secondary" type="button" data-f1-reset>
-						<span>Edit / Start Over</span>
+						<span>Register someone else</span>
 					</button>
 				</div>
 			</div>
 		</div>
 	</div>
-</div>
-
-<!-- Reopen Trigger Pill for convenience when overlay is dismissed -->
-<button
-	class="f1-reopen-pill"
-	type="button"
-	data-f1-reopen
-	title="Open Get Started form"
->
-	<span class="f1-reopen-pill__dot" aria-hidden="true"></span>
-	<span>Get Started Form</span>
-</button>
+</section>
 
 <style>
 	/* ── Scrim & Overlay Container ────────────────────────────────────────── */
 	.f1-overlay {
-		position: fixed;
-		inset: 0;
-		z-index: 9999;
-		display: grid;
-		place-items: center;
-		overflow: hidden;
-		opacity: 0;
-		visibility: hidden;
-		transition:
-			opacity 320ms var(--ease),
-			visibility 320ms var(--ease);
-	}
-
-	.f1-overlay.is-active {
-		opacity: 1;
-		visibility: visible;
-	}
-
-	.f1-backdrop {
-		position: absolute;
-		inset: 0;
-		background: rgba(10, 12, 13, 0.74);
-		-webkit-backdrop-filter: blur(10px) saturate(120%);
-		backdrop-filter: blur(10px) saturate(120%);
-		cursor: pointer;
+		/* The overlay look without the overlay behaviour: a card lifted off a
+		   dark ground, on a page of its own. */
+		display: block;
+		min-height: 100svh;
+		background:
+			radial-gradient(
+				120% 90% at 50% 0%,
+				rgba(28, 107, 119, 0.22),
+				rgba(10, 47, 53, 0) 70%
+			),
+			var(--teal-abyss);
 	}
 
 	.f1-scroller {
-		position: relative;
-		z-index: 2;
-		width: 100%;
-		height: 100%;
 		display: grid;
-		place-items: center;
-		padding: clamp(1rem, 3.5vh, 2.75rem) var(--gutter);
-		overflow-y: auto;
-		overflow-x: hidden;
-		-webkit-overflow-scrolling: touch;
+		place-items: start center;
+		padding: calc(var(--nav-h) + clamp(1.5rem, 5vh, 3.5rem)) var(--gutter)
+			clamp(3rem, 8vh, 6rem);
 	}
 
 	/* ── Main Modal Card ──────────────────────────────────────────────────── */
@@ -547,20 +493,29 @@ const { initiallyOpen = false } = Astro.props;
 		position: relative;
 		width: min(45rem, 100%);
 		margin: auto;
-		background: #e8e0d1;
+		background: var(--cream-deep);
 		color: var(--ink);
 		border: 1px solid rgba(44, 39, 33, 0.12);
-		border-radius: 1.25rem;
+		border-radius: 0.5rem;
 		box-shadow:
 			0 4px 16px rgba(6, 7, 8, 0.18),
 			0 28px 72px -16px rgba(6, 7, 8, 0.55);
 		padding: clamp(1.75rem, 4.5vw, 3rem);
-		transform: scale(0.97) translateY(12px);
-		transition: transform 380ms cubic-bezier(0.16, 1, 0.3, 1);
+		/* Arrives once, on load, rather than on an open that no longer happens. */
+		animation: f1-rise 620ms cubic-bezier(0.16, 1, 0.3, 1) both;
 	}
 
-	.f1-overlay.is-active .f1-card {
-		transform: none;
+	@keyframes f1-rise {
+		from {
+			opacity: 0;
+			transform: translateY(14px) scale(0.985);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.f1-card {
+			animation: none;
+		}
 	}
 
 	/* ── Topbar (Brand & Close) ────────────────────────────────────────────── */
@@ -574,43 +529,26 @@ const { initiallyOpen = false } = Astro.props;
 		margin-bottom: 1.75rem;
 	}
 
-	.f1-brand {
-		display: flex;
+	.f1-back {
+		display: inline-flex;
 		align-items: center;
-		gap: 0.75rem;
+		gap: 0.55rem;
+		font-size: 0.8125rem;
+		letter-spacing: 0.02em;
+		color: var(--ink-faint);
+		transition: color 200ms var(--ease);
+	}
+
+	.f1-back:hover {
 		color: var(--teal);
 	}
 
-	.f1-brand__label {
-		font-family: var(--body);
-		font-size: 0.75rem;
-		font-weight: 500;
-		letter-spacing: 0.16em;
-		text-transform: uppercase;
-		color: var(--ink-faint);
+	.f1-back__arrow {
+		transition: transform 200ms var(--ease);
 	}
 
-	.f1-close {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 2.25rem;
-		height: 2.25rem;
-		border-radius: 999px;
-		background: rgba(44, 39, 33, 0.06);
-		color: var(--ink-soft);
-		font-size: 1.5rem;
-		line-height: 1;
-		transition:
-			background 200ms var(--ease),
-			color 200ms var(--ease),
-			transform 200ms var(--ease);
-	}
-
-	.f1-close:hover {
-		background: var(--teal);
-		color: var(--warm-white);
-		transform: scale(1.05);
+	.f1-back:hover .f1-back__arrow {
+		transform: translateX(-3px);
 	}
 
 	/* ── Header ───────────────────────────────────────────────────────────── */
@@ -651,7 +589,7 @@ const { initiallyOpen = false } = Astro.props;
 		align-items: center;
 		gap: 0.75rem;
 		padding: 0.85rem 1.1rem;
-		border-radius: 0.6rem;
+		border-radius: 0.3rem;
 		background: #fdf2f2;
 		border: 1px solid #f2b8b5;
 		color: #9c2727;
@@ -823,32 +761,15 @@ const { initiallyOpen = false } = Astro.props;
 
 	/* ── Contact Mutual Note & Errors ─────────────────────────────────────── */
 	.f1-contact-group {
-		margin-bottom: 1.25rem;
-		padding: 1rem 1.15rem 0.6rem;
-		border-radius: 0.75rem;
-		background: rgba(44, 39, 33, 0.035);
-		border: 1px solid rgba(44, 39, 33, 0.08);
+		/* No inner panel. Two fields do not need a room of their own; the note
+		   above them already says how the pair works. */
+		margin-block: 0.35rem 0.25rem;
 	}
 
 	.f1-contact-note {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		gap: 0.5rem;
-		font-size: 0.8438rem;
+		margin-bottom: 1rem;
+		font-size: 0.9375rem;
 		color: var(--ink-soft);
-		margin-bottom: 0.9rem;
-	}
-
-	.f1-contact-note__badge {
-		font-size: 0.6875rem;
-		font-weight: 600;
-		letter-spacing: 0.14em;
-		text-transform: uppercase;
-		background: var(--teal);
-		color: var(--cream);
-		padding: 0.2rem 0.5rem;
-		border-radius: 999px;
 	}
 
 	.f1-error--contact {
@@ -898,7 +819,7 @@ const { initiallyOpen = false } = Astro.props;
 		list-style: none;
 		background: #ffffff;
 		border: 1px solid rgba(44, 39, 33, 0.16);
-		border-radius: 0.6rem;
+		border-radius: 0.3rem;
 		box-shadow: 0 12px 28px -6px rgba(6, 7, 8, 0.25);
 		max-height: 14rem;
 		overflow-y: auto;
@@ -990,7 +911,7 @@ const { initiallyOpen = false } = Astro.props;
 		gap: 0.6rem;
 		padding: 0.6rem 0.95rem;
 		border: 1px solid rgba(44, 39, 33, 0.15);
-		border-radius: 0.65rem;
+		border-radius: 0.3rem;
 		background: var(--warm-white);
 		cursor: pointer;
 		transition:
@@ -1062,7 +983,7 @@ const { initiallyOpen = false } = Astro.props;
 		gap: 0.85rem;
 		padding: 1rem 1.1rem;
 		border: 1px solid rgba(44, 39, 33, 0.15);
-		border-radius: 0.65rem;
+		border-radius: 0.3rem;
 		background: var(--warm-white);
 		cursor: pointer;
 		transition:
@@ -1220,12 +1141,11 @@ const { initiallyOpen = false } = Astro.props;
 	}
 
 	.f1-footer__action {
-		display: flex;
-		justify-content: flex-end;
+		display: grid;
 	}
 
 	.f1-submit-btn {
-		display: inline-flex;
+		display: flex;
 		align-items: center;
 		justify-content: center;
 		gap: 0.75rem;
@@ -1244,6 +1164,7 @@ const { initiallyOpen = false } = Astro.props;
 			transform 200ms var(--ease),
 			box-shadow 200ms var(--ease);
 		box-shadow: 0 4px 14px rgba(28, 107, 119, 0.32);
+			width: 100%;
 	}
 
 	.f1-submit-btn:hover {
@@ -1292,7 +1213,8 @@ const { initiallyOpen = false } = Astro.props;
 		line-height: 1.5;
 		color: var(--ink-faint);
 		text-align: center;
-		margin: 0;
+		max-width: 30rem;
+		margin-inline: auto;
 	}
 
 	/* ── Success Screen ───────────────────────────────────────────────────── */
@@ -1355,56 +1277,13 @@ const { initiallyOpen = false } = Astro.props;
 	}
 
 	/* ── Reopen Pill (Bottom Right) ────────────────────────────────────────── */
-	.f1-reopen-pill {
-		position: fixed;
-		bottom: 2rem;
-		right: 2rem;
-		z-index: 50;
-		display: inline-flex;
-		align-items: center;
-		gap: 0.6rem;
-		padding: 0.65rem 1.25rem;
-		border-radius: 999px;
-		background: var(--teal);
-		color: var(--warm-white);
-		font-family: var(--display);
-		font-size: 0.9375rem;
-		letter-spacing: 0.02em;
-		box-shadow: 0 8px 24px -4px rgba(6, 7, 8, 0.4);
-		cursor: pointer;
-		transition:
-			transform 250ms var(--ease),
-			box-shadow 250ms var(--ease),
-			background 200ms var(--ease);
-	}
-
-	.f1-reopen-pill:hover {
-		transform: translateY(-2px);
-		background: var(--teal-abyss);
-		box-shadow: 0 12px 30px -4px rgba(6, 7, 8, 0.5);
-	}
-
-	.f1-reopen-pill__dot {
-		width: 0.55rem;
-		height: 0.55rem;
-		border-radius: 999px;
-		background: #8cf0cc;
-		box-shadow: 0 0 6px #8cf0cc;
-	}
-
 	@media (max-width: 48rem) {
 		.f1-card {
 			padding: 1.5rem 1.25rem;
 			border-radius: 1rem;
 		}
 
-		.f1-reopen-pill {
-			bottom: 1.25rem;
-			right: 1.25rem;
-			padding: 0.55rem 1rem;
-			font-size: 0.875rem;
 		}
-	}
 </style>
 
 <script>
@@ -1443,97 +1322,15 @@ const { initiallyOpen = false } = Astro.props;
 	const languageSelect = document.getElementById('f1-language') as HTMLSelectElement | null;
 	const languageOtherContainer = document.querySelector<HTMLElement>('[data-language-other-container]');
 	const languageOther = document.querySelector<HTMLInputElement>('[data-language-other]');
-	const reopenBtn = document.querySelector<HTMLButtonElement>('[data-f1-reopen]');
 	const globalAlert = document.getElementById('f1-global-alert');
 	const globalAlertText = document.querySelector<HTMLElement>('[data-f1-global-error]');
 	const successView = document.querySelector<HTMLElement>('[data-f1-success]');
 
 	if (modal && form) {
-		// ── Open / Close Management ──────────────────────────────────────────
-		let lastFocused: HTMLElement | null = null;
-
-		const FOCUSABLE =
-			'a[href], button:not([disabled]), input:not([type="hidden"]):not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
-
-		const focusable = () =>
-			Array.from(modal.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
-				(el) => el.offsetParent !== null || el === document.activeElement,
-			);
-
-		const openModal = () => {
-			lastFocused = document.activeElement as HTMLElement | null;
-			modal.hidden = false;
-			requestAnimationFrame(() => modal.classList.add('is-active'));
-			document.body.style.overflow = 'hidden';
-			const firstInput = form.querySelector<HTMLInputElement>(
-				'input:not([type="hidden"])',
-			);
-			firstInput?.focus();
-		};
-
-		const closeModal = () => {
-			modal.classList.remove('is-active');
-			const settle = () => {
-				modal.hidden = true;
-				document.body.style.removeProperty('overflow');
-				// Back where they were, so the keyboard does not lose its place.
-				lastFocused?.focus();
-			};
-			if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) settle();
-			else setTimeout(settle, 320);
-		};
-
-		// Keep Tab inside the dialog for as long as it is open.
-		modal.addEventListener('keydown', (e) => {
-			if (e.key !== 'Tab') return;
-			const items = focusable();
-			if (items.length === 0) return;
-			const first = items[0]!;
-			const last = items[items.length - 1]!;
-			if (e.shiftKey && document.activeElement === first) {
-				e.preventDefault();
-				last.focus();
-			} else if (!e.shiftKey && document.activeElement === last) {
-				e.preventDefault();
-				first.focus();
-			}
-		});
-
-		// Check initially-open attribute or URL hash
-		const shouldOpen =
-			modal.getAttribute('data-initially-open') === 'true' ||
-			window.location.hash === '#get-started' ||
-			window.location.hash === '#join';
-
-		if (shouldOpen) {
-			openModal();
-		}
-
-		// Close listeners
-		modal.querySelectorAll('[data-f1-close]').forEach((btn) => {
-			btn.addEventListener('click', closeModal);
-		});
-
-		modal.querySelector('[data-f1-backdrop]')?.addEventListener('click', closeModal);
-
-		document.addEventListener('keydown', (e) => {
-			if (e.key === 'Escape' && !modal.hidden) {
-				closeModal();
-			}
-		});
-
-		// Re-open pill
-		reopenBtn?.addEventListener('click', () => {
-			openModal();
-		});
-
-		// Wire any existing 'Join Us' buttons across the site to open Form 1
-		document.querySelectorAll('a[href="/join"], a[href="#join"]').forEach((el) => {
-			el.addEventListener('click', (ev) => {
-				ev.preventDefault();
-				openModal();
-			});
-		});
+		// No open/close, no focus trap, no scroll lock: the form is the page.
+		// It used to intercept every `a[href="/join"]` on the site and open over
+		// whatever the visitor was reading, which is why the link never took
+		// anyone here.
 
 		// ── Form State & Live Validation ──────────────────────────────────────
 		const getFormData = (): Form1Data => {
@@ -1631,7 +1428,7 @@ const { initiallyOpen = false } = Astro.props;
 			}
 			if (cityInput) {
 				cityInput.placeholder = isIndia
-					? 'Search your city (e.g. Pune, Mumbai, Nagpur)'
+					? 'Search your city'
 					: 'Enter your city';
 			}
 		};
@@ -2074,10 +1871,7 @@ const { initiallyOpen = false } = Astro.props;
 			}
 		});
 
-		// Success screen actions
-		modal
-			.querySelector('[data-f1-close-success]')
-			?.addEventListener('click', closeModal);
+		// A caregiver registering more than one person should not have to reload.
 		modal.querySelector('[data-f1-reset]')?.addEventListener('click', () => {
 			if (successView) successView.hidden = true;
 			form.hidden = false;

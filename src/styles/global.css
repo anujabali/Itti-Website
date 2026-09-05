@@ -125,6 +125,14 @@ svg {
 	border-radius: 2px;
 }
 
+/* An author `display` declaration overrides the user-agent's
+   `[hidden] { display: none }`, whatever its specificity — so any component
+   that sets `display` on a class also has to remember not to break `hidden`.
+   They do not remember. This makes the attribute mean what it says. */
+[hidden] {
+	display: none !important;
+}
+
 /* ── Utility ────────────────────────────────────────────────────────────── */
 
 .u-visually-hidden {
