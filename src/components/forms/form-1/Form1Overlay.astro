@@ -35,9 +35,10 @@
 				</header>
 
 				<!-- Global error banner (hidden by default) -->
-				<div class="f1-alert" id="f1-global-alert" role="alert" hidden>
-					<span class="f1-alert__icon" aria-hidden="true">!</span>
-					<span class="f1-alert__text" data-f1-global-error></span>
+				<div class="f1-alert-wrap">
+					<div class="f1-alert" id="f1-global-alert" role="alert" hidden>
+						<span class="f1-alert__text" data-f1-global-error></span>
+					</div>
 				</div>
 
 				<!-- ════════════ SECTION 1: ABOUT YOU ════════════ -->
@@ -440,25 +441,25 @@
 						</button>
 					</div>
 					<p class="f1-footer__disclaimer">
-						We keep these details to reach you and to route you well. We do not sell
-						them, and we do not pass them on.
+						We keep these details to reach you and to route you well.
 					</p>
 				</footer>
 			</form>
 
 			<!-- ════════ SUCCESS / HANDOFF CONFIRMATION SCREEN ════════ -->
 			<div class="f1-success" data-f1-success hidden>
-				<div class="f1-success__icon" aria-hidden="true">&#10003;</div>
-				<h2 class="f1-success__title">Step 1 Complete</h2>
-				<p class="f1-success__name" data-success-name></p>
+				<p class="f1-eyebrow f1-success__eyebrow">Step one of two</p>
+				<h2 class="f1-success__title">
+					Thank you<span class="f1-success__name" data-success-name></span>
+				</h2>
 				<p class="f1-success__message">
-					Your basic profile has been formatted according to the Itti Foundation intake
-					schema and safely preserved for the health intake step.
+					We have what we need to reach you. Someone from the right part of the
+					foundation will be in touch.
 				</p>
 
-				<div class="f1-success__summary" data-success-summary>
-					<!-- Generated details injected here -->
-				</div>
+				<dl class="f1-success__summary" data-success-summary>
+					<!-- Written by the script once the registration is accepted. -->
+				</dl>
 
 				<div class="f1-success__actions">
 					<a class="f1-submit-btn" href="/">
@@ -588,30 +589,35 @@
 	}
 
 	/* ── Global Alert ─────────────────────────────────────────────────────── */
-	.f1-alert {
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-		padding: 0.85rem 1.1rem;
-		border-radius: 0.3rem;
-		background: color-mix(in srgb, var(--danger) 7%, var(--warm-white));
-		border: 1px solid color-mix(in srgb, var(--danger) 32%, transparent);
-		color: var(--danger);
-		margin-bottom: 1.75rem;
-		font-size: 0.9375rem;
+	.f1-alert-wrap {
+		display: grid;
+		grid-template-columns: minmax(6rem, 20%) 1fr;
+		column-gap: clamp(1.5rem, 4vw, 3.5rem);
 	}
 
-	.f1-alert__icon {
-		display: grid;
-		place-items: center;
-		width: 1.35rem;
-		height: 1.35rem;
-		border-radius: 999px;
-		background: var(--danger);
-		color: var(--warm-white);
-		font-size: 0.75rem;
-		font-weight: bold;
-		flex: none;
+	@media (max-width: 46rem) {
+		.f1-alert-wrap {
+			grid-template-columns: 1fr;
+		}
+
+		.f1-alert {
+			grid-column: 1;
+		}
+	}
+
+	.f1-alert {
+		display: flex;
+		align-items: baseline;
+		gap: 0.75rem;
+		grid-column: 2;
+		padding: 0.9rem 0 0.9rem 1rem;
+		border: 0;
+		border-left: 2px solid var(--danger);
+		border-radius: 0;
+		background: transparent;
+		color: var(--danger);
+		margin-bottom: 2.5rem;
+		font-size: 1rem;
 	}
 
 	/* ── Fieldsets & Sections ─────────────────────────────────────────────── */
@@ -858,10 +864,11 @@
 		color: var(--ink-soft);
 	}
 
+	/* It belongs to the pair above it, not to the field below, and needs the
+	   space to say so. */
 	.f1-error--contact {
-		margin-top: 0.65rem;
-		padding-top: 0.55rem;
-		border-top: 1px solid color-mix(in srgb, var(--danger) 22%, transparent);
+		margin-top: 0.85rem;
+		margin-bottom: 1.5rem;
 	}
 
 	/* ── City Autocomplete ────────────────────────────────────────────────── */
@@ -1354,61 +1361,107 @@
 
 	/* ── Success Screen ───────────────────────────────────────────────────── */
 	.f1-success {
-		text-align: center;
-		padding: 1.5rem 0.5rem;
-	}
-
-	.f1-success__icon {
 		display: grid;
-		place-items: center;
-		width: 3.75rem;
-		height: 3.75rem;
-		margin: 0 auto 1.25rem;
-		border-radius: 999px;
-		background: var(--teal);
-		color: var(--cream);
-		font-size: 2rem;
+		grid-template-columns: minmax(6rem, 20%) 1fr;
+		column-gap: clamp(1.5rem, 4vw, 3.5rem);
+		text-align: left;
 	}
 
 	.f1-success__title {
+		grid-column: 2;
 		font-family: var(--face-bodoni);
-		font-size: 2.25rem;
+		font-size: clamp(2.25rem, 4.6vw, 3.25rem);
+		font-weight: 450;
+		line-height: 1.05;
+		letter-spacing: -0.015em;
 		color: var(--ink);
 	}
 
 	.f1-success__name {
-		font-size: 1.2rem;
-		font-weight: 500;
 		color: var(--teal);
-		margin-top: 0.25rem;
 	}
 
 	.f1-success__message {
-		margin: 0.9rem auto 1.75rem;
-		max-width: 32rem;
-		font-size: 1.0625rem;
-		line-height: 1.6;
+		grid-column: 2;
+		margin-top: 1rem;
+		font-size: 1.125rem;
+		line-height: 1.55;
 		color: var(--ink-soft);
+		max-width: 32rem;
 	}
 
 	.f1-success__summary {
-		text-align: left;
-		margin: 1.5rem auto 2.25rem;
-		max-width: 34rem;
-		padding: 1.25rem 1.5rem;
-		border-radius: 0.75rem;
-		background: var(--cream-deep);
-		border: 1px solid rgba(44, 39, 33, 0.12);
+		grid-column: 2;
 		display: grid;
-		gap: 0.55rem;
-		font-size: 0.9375rem;
+		grid-template-columns: minmax(9rem, auto) 1fr;
+		align-items: baseline;
+		/* No column gap: the two cells each draw the rule under them, and a gap
+		   would break the line between the label and its value. */
+		column-gap: 0;
+		margin: 2.75rem 0 0;
+		border-top: 1px solid rgba(44, 39, 33, 0.16);
+	}
+
+	.f1-success__eyebrow {
+		grid-column: 1;
+		margin-bottom: 0;
+	}
+
+	.f1-success__summary :global(dt) {
+		padding: 0.85rem 1.5rem 0.85rem 0;
+		border-bottom: 1px solid rgba(44, 39, 33, 0.1);
+		font-size: 0.6875rem;
+		font-weight: 600;
+		letter-spacing: 0.15em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+	}
+
+	.f1-success__summary :global(dd) {
+		margin: 0;
+		padding: 0.85rem 0 0.85rem;
+		border-bottom: 1px solid rgba(44, 39, 33, 0.1);
+		font-size: 1.0625rem;
+		color: var(--ink);
+	}
+
+	.f1-success .f1-submit-btn {
+		width: auto;
+	}
+
+	@media (max-width: 46rem) {
+		.f1-success {
+			grid-template-columns: 1fr;
+		}
+
+		.f1-success__eyebrow,
+		.f1-success__title,
+		.f1-success__message,
+		.f1-success__summary,
+		.f1-success__actions {
+			grid-column: 1;
+		}
+
+		.f1-success__eyebrow {
+			margin-bottom: 0.65rem;
+		}
+
+		.f1-success__summary {
+			grid-template-columns: 1fr;
+		}
+
+		.f1-success__summary :global(dt) {
+			padding-bottom: 0;
+			border-bottom: 0;
+		}
 	}
 
 	.f1-success__actions {
+		grid-column: 2;
 		display: flex;
 		flex-wrap: wrap;
-		justify-content: center;
-		gap: 1rem;
+		gap: 0.85rem;
+		margin-top: 2.5rem;
 	}
 
 	/* ── Reopen Pill (Bottom Right) ────────────────────────────────────────── */
@@ -1978,7 +2031,10 @@
 			if (successView) {
 				successView.hidden = false;
 				const nameEl = successView.querySelector('[data-success-name]');
-				if (nameEl) nameEl.textContent = payload.full_name;
+				// Completes the sentence rather than standing alone under it, and
+				// uses whatever they gave as a first name.
+				const firstName = payload.full_name.trim().split(/\s+/)[0];
+				if (nameEl) nameEl.textContent = firstName ? `, ${firstName}.` : '.';
 
 				const summaryEl = successView.querySelector('[data-success-summary]');
 				if (summaryEl) {
@@ -1998,12 +2054,12 @@
 					];
 
 					summaryEl.replaceChildren(
-						...rows.map(([label, value]) => {
-							const row = document.createElement('div');
-							const strong = document.createElement('strong');
-							strong.textContent = `${label}: `;
-							row.append(strong, document.createTextNode(value));
-							return row;
+						...rows.flatMap(([label, value]) => {
+							const dt = document.createElement('dt');
+							dt.textContent = label;
+							const dd = document.createElement('dd');
+							dd.textContent = value;
+							return [dt, dd];
 						}),
 					);
 				}
