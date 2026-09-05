@@ -489,7 +489,7 @@
 		background: var(--cream-deep);
 		color: var(--ink);
 		border: 1px solid rgba(44, 39, 33, 0.12);
-		border-radius: 0.5rem;
+		border-radius: 3px;
 		box-shadow:
 			0 2px 8px rgba(4, 12, 14, 0.3),
 			0 18px 40px -12px rgba(4, 12, 14, 0.55),
@@ -649,39 +649,45 @@
 	/* ── Form Controls & Fields ───────────────────────────────────────────── */
 	.f1-field {
 		display: grid;
-		gap: 0.45rem;
-		margin-bottom: 1.25rem;
+		gap: 0.55rem;
+		margin-bottom: 1.5rem;
 	}
 
 	.f1-label {
 		display: block;
-		font-size: 0.9375rem;
-		font-weight: 500;
-		color: var(--ink);
+		font-size: 0.6875rem;
+		font-weight: 600;
+		letter-spacing: 0.15em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
 	}
 
 	.f1-label--standalone {
-		margin-bottom: 0.75rem;
+		margin-bottom: 0.9rem;
 	}
 
 
 	.f1-opt {
-		font-size: 0.8125rem;
+		font-size: 0.6875rem;
 		font-weight: 400;
+		letter-spacing: 0.04em;
+		text-transform: none;
+		font-style: italic;
 		color: var(--ink-faint);
-		margin-left: 0.25rem;
+		opacity: 0.85;
 	}
+
 
 	.f1-input,
 	.f1-select {
 		width: 100%;
-		padding: 0.75rem 0.95rem;
+		padding: 0.85rem 1rem;
 		font-family: var(--body);
 		font-size: 1.0625rem;
 		color: var(--ink);
 		background: var(--warm-white);
-		border: 1px solid rgba(44, 39, 33, 0.22);
-		border-radius: 0.5rem;
+		border: 1px solid rgba(44, 39, 33, 0.16);
+		border-radius: 2px;
 		transition:
 			border-color 200ms var(--ease),
 			box-shadow 200ms var(--ease),
@@ -693,12 +699,16 @@
 		opacity: 0.85;
 	}
 
+	.f1-input:hover,
+	.f1-select:hover {
+		border-color: rgba(44, 39, 33, 0.32);
+	}
+
 	.f1-input:focus,
 	.f1-select:focus {
 		outline: none;
 		border-color: var(--teal);
-		box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 18%, transparent);
-		background: var(--warm-white);
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 14%, transparent);
 	}
 
 	.f1-input.has-error,
@@ -718,8 +728,8 @@
 		top: 50%;
 		width: 0.45rem;
 		height: 0.45rem;
-		border-right: 2px solid var(--ink-soft);
-		border-bottom: 2px solid var(--ink-soft);
+		border-right: 1px solid var(--ink-soft);
+		border-bottom: 1px solid var(--ink-soft);
 		transform: translateY(-65%) rotate(45deg);
 		pointer-events: none;
 	}
@@ -845,14 +855,28 @@
 	/* ── Country + phone selector ─────────────────────────────────────────── */
 	.f1-phone-group {
 		display: grid;
-		grid-template-columns: minmax(10rem, 42%) 1fr;
-		gap: 0.5rem;
+		grid-template-columns: minmax(9.5rem, 40%) 1fr;
 		position: relative;
+	}
+
+	/* One field, divided — not two fields side by side. */
+	.f1-phone-group .f1-country__button {
+		border-right-color: transparent;
+		border-radius: 2px 0 0 2px;
+	}
+
+	.f1-phone-group .f1-input {
+		border-left: 1px solid rgba(44, 39, 33, 0.16);
+		border-radius: 0 2px 2px 0;
+	}
+
+	.f1-phone-group .f1-input:focus {
+		border-left-color: var(--teal);
 	}
 	.f1-country { position: relative; }
 	.f1-country__button {
 		width: 100%; min-height: 3rem; padding: 0.75rem 0.8rem;
-		border: 1px solid rgba(44, 39, 33, 0.15); border-radius: 0.5rem;
+		border: 1px solid rgba(44, 39, 33, 0.16); border-radius: 2px;
 		background: var(--warm-white); color: var(--ink); cursor: pointer;
 		display: flex; align-items: center; gap: 0.4rem; font: inherit;
 	}
@@ -867,8 +891,23 @@
 	.f1-country__item, .f1-country__empty { padding: .65rem .7rem; border-radius: .4rem; cursor: pointer; }
 	.f1-country__item:hover { background: var(--cream-deep); }
 	.f1-reveal { margin-top: .75rem; }
+	/* Stacked, the two halves are no longer halves of anything, so they take
+	   their own borders and corners back. */
 	@media (max-width: 40rem) {
-		.f1-phone-group { grid-template-columns: 1fr; }
+		.f1-phone-group {
+			grid-template-columns: 1fr;
+			gap: 0.5rem;
+		}
+
+		.f1-phone-group .f1-country__button {
+			border-right-color: rgba(44, 39, 33, 0.16);
+			border-radius: 2px;
+		}
+
+		.f1-phone-group .f1-input {
+			border-left: 1px solid rgba(44, 39, 33, 0.16);
+			border-radius: 2px;
+		}
 	}
 
 	/* ── Role Choice Cards ────────────────────────────────────────────────── */
@@ -898,9 +937,9 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 0.6rem;
-		padding: 0.6rem 0.95rem;
-		border: 1px solid rgba(44, 39, 33, 0.15);
-		border-radius: 0.3rem;
+		padding: 0.7rem 1rem;
+		border: 1px solid rgba(44, 39, 33, 0.16);
+		border-radius: 2px;
 		background: var(--warm-white);
 		cursor: pointer;
 		transition:
@@ -909,8 +948,14 @@
 	}
 
 	.f1-consent:hover {
+		border-color: rgba(44, 39, 33, 0.34);
+	}
+
+	/* A ticked box should be legible as ticked from across the form, not only
+	   by the mark inside it. */
+	.f1-consent:has(input[type='checkbox']:checked) {
 		border-color: var(--teal);
-		background: var(--warm-white);
+		background: color-mix(in srgb, var(--teal) 5%, var(--warm-white));
 	}
 
 	.f1-consent input[type='checkbox'] {
@@ -921,10 +966,10 @@
 
 	.f1-consent__indicator {
 		flex: none;
-		width: 1.1rem;
-		height: 1.1rem;
-		border: 1.5px solid rgba(44, 39, 33, 0.35);
-		border-radius: 0.25rem;
+		width: 1rem;
+		height: 1rem;
+		border: 1px solid rgba(44, 39, 33, 0.38);
+		border-radius: 1px;
 		display: grid;
 		place-items: center;
 		transition:
@@ -970,21 +1015,18 @@
 		display: flex;
 		align-items: flex-start;
 		gap: 0.85rem;
-		padding: 1rem 1.1rem;
-		border: 1px solid rgba(44, 39, 33, 0.15);
-		border-radius: 0.3rem;
+		padding: 1.05rem 1.15rem;
+		border: 1px solid rgba(44, 39, 33, 0.16);
+		border-radius: 2px;
 		background: var(--warm-white);
 		cursor: pointer;
 		transition:
-			border-color 200ms var(--ease),
-			background-color 200ms var(--ease),
-			transform 200ms var(--ease);
+			border-color 180ms var(--ease),
+			background-color 180ms var(--ease);
 	}
 
 	.f1-choice-card:hover {
-		border-color: var(--teal);
-		background: var(--warm-white);
-		transform: translateY(-1px);
+		border-color: rgba(44, 39, 33, 0.34);
 	}
 
 	.f1-choice-card input[type='radio'] {
@@ -995,10 +1037,10 @@
 
 	.f1-choice-card__indicator {
 		flex: none;
-		width: 1.2rem;
-		height: 1.2rem;
-		margin-top: 0.15rem;
-		border: 1.5px solid rgba(44, 39, 33, 0.35);
+		width: 1.05rem;
+		height: 1.05rem;
+		margin-top: 0.2rem;
+		border: 1px solid rgba(44, 39, 33, 0.38);
 		border-radius: 999px;
 		display: grid;
 		place-items: center;
@@ -1022,8 +1064,7 @@
 
 	.f1-choice-card:has(input[type='radio']:checked) {
 		border-color: var(--teal);
-		background: var(--warm-white);
-		box-shadow: 0 4px 14px -4px color-mix(in srgb, var(--teal) 22%, transparent);
+		background: color-mix(in srgb, var(--teal) 5%, var(--warm-white));
 	}
 
 	.f1-choice-card__body {
@@ -1033,7 +1074,8 @@
 
 	.f1-choice-card__title {
 		font-weight: 500;
-		font-size: 1rem;
+		font-size: 1.0625rem;
+		line-height: 1.25;
 		color: var(--ink);
 	}
 
@@ -1071,8 +1113,8 @@
 	.f1-pillar-card__inner {
 		display: grid;
 		gap: 0.35rem;
-		padding: 1.15rem 1.25rem;
-		border-radius: 0.75rem;
+		padding: 1.2rem 1.3rem;
+		border-radius: 2px;
 		background: var(--warm-white);
 		border: 1px solid rgba(44, 39, 33, 0.15);
 		border-top: 3px solid var(--card-accent);
@@ -1084,16 +1126,12 @@
 	}
 
 	.f1-pillar-card:hover .f1-pillar-card__inner {
-		background: var(--warm-white);
-		transform: translateY(-2px);
-		box-shadow: 0 8px 20px -8px rgba(44, 39, 33, 0.25);
+		border-color: rgba(44, 39, 33, 0.34);
 	}
 
 	.f1-pillar-card:has(input[type='radio']:checked) .f1-pillar-card__inner {
 		border-color: var(--card-accent);
-		border-top-width: 4px;
-		background: var(--warm-white);
-		box-shadow: 0 10px 24px -8px rgba(44, 39, 33, 0.3);
+		background: color-mix(in srgb, var(--card-accent) 7%, var(--warm-white));
 	}
 
 	.f1-pillar-card__tag {
@@ -1138,22 +1176,19 @@
 		align-items: center;
 		justify-content: center;
 		gap: 0.75rem;
-		padding: 0.85rem 2.25rem;
-		border-radius: 999px;
+		width: 100%;
+		padding: 1rem 2.25rem;
+		border-radius: 2px;
 		background: var(--teal);
 		color: var(--cream);
-		font-family: var(--display);
-		font-size: 1.125rem;
-		letter-spacing: 0.02em;
-		font-weight: 500;
+		font-family: var(--body);
+		font-size: 0.8125rem;
+		font-weight: 600;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
 		border: none;
 		cursor: pointer;
-		transition:
-			background 200ms var(--ease),
-			transform 200ms var(--ease),
-			box-shadow 200ms var(--ease);
-		box-shadow: 0 4px 14px color-mix(in srgb, var(--teal) 32%, transparent);
-			width: 100%;
+		transition: background 180ms var(--ease);
 	}
 
 	.f1-submit-btn:hover {
@@ -1179,12 +1214,15 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		padding: 0.85rem 1.75rem;
-		border-radius: 999px;
+		padding: 1rem 1.75rem;
+		border-radius: 2px;
 		background: transparent;
 		color: var(--ink-soft);
 		font-family: var(--body);
-		font-size: 1rem;
+		font-size: 0.8125rem;
+		font-weight: 600;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
 		border: 1px solid rgba(44, 39, 33, 0.2);
 		cursor: pointer;
 		transition:
