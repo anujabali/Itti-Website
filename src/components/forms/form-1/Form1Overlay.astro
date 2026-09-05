@@ -468,42 +468,13 @@
 <style>
 	/* ── Scrim & Overlay Container ────────────────────────────────────────── */
 	.f1-overlay {
-		/* The form is the page, laid over the site's own ground rather than over
-		   another page. The ground is fixed and the card is not, so scrolling
-		   moves the form while the plate behind it stays — which is what makes it
-		   read as overlaid instead of merely placed on a colour. */
+		/* The form is the page, on a plain dark ground. */
 		position: relative;
-		isolation: isolate;
 		display: block;
 		min-height: 100svh;
 		padding: calc(var(--nav-h) + clamp(1.5rem, 5vh, 3.5rem)) var(--gutter)
 			clamp(3rem, 9vh, 6rem);
-		background: var(--teal-abyss);
-	}
-
-	.f1-overlay::before {
-		content: '';
-		position: fixed;
-		inset: 0;
-		z-index: -2;
-		/* The plate the homepage opens on. Behind a scrim it is depth rather than
-		   decoration — you are over the site, not on a blue rectangle. */
-		background: url('/plates/ground.jpg') center / cover no-repeat;
-		transform: scale(1.06);
-		filter: blur(2.5px) brightness(0.62) saturate(0.8);
-	}
-
-	.f1-overlay::after {
-		content: '';
-		position: fixed;
-		inset: 0;
-		z-index: -1;
-		background:
-			radial-gradient(
-				78% 68% at 50% 40%,
-				rgba(14, 62, 69, 0.4),
-				rgba(10, 47, 53, 0.72) 88%
-			);
+		background: var(--ink-deep);
 	}
 
 	.f1-scroller {
