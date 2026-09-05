@@ -649,8 +649,16 @@
 	/* ── Form Controls & Fields ───────────────────────────────────────────── */
 	.f1-field {
 		display: grid;
-		gap: 0.55rem;
-		margin-bottom: 1.5rem;
+		gap: 0.35rem;
+		margin-bottom: 1.9rem;
+	}
+
+	/* Every field ships an error line and some ship a hint line, both empty
+	   until they have something to say. Empty, they were still taking a row of
+	   the grid and its gap, which is why the rhythm between fields wandered. */
+	.f1-error:empty,
+	.f1-hint:empty {
+		display: none;
 	}
 
 	.f1-label {
@@ -681,17 +689,15 @@
 	.f1-input,
 	.f1-select {
 		width: 100%;
-		padding: 0.85rem 1rem;
+		padding: 0.6rem 0 0.55rem;
 		font-family: var(--body);
-		font-size: 1.0625rem;
+		font-size: 1.125rem;
 		color: var(--ink);
-		background: var(--warm-white);
-		border: 1px solid rgba(44, 39, 33, 0.16);
-		border-radius: 2px;
-		transition:
-			border-color 200ms var(--ease),
-			box-shadow 200ms var(--ease),
-			background-color 200ms var(--ease);
+		background: transparent;
+		border: 0;
+		border-bottom: 1px solid rgba(44, 39, 33, 0.22);
+		border-radius: 0;
+		transition: border-color 200ms var(--ease), box-shadow 200ms var(--ease);
 	}
 
 	.f1-input::placeholder {
@@ -701,20 +707,26 @@
 
 	.f1-input:hover,
 	.f1-select:hover {
-		border-color: rgba(44, 39, 33, 0.32);
+		border-bottom-color: rgba(44, 39, 33, 0.45);
 	}
 
+	/* The rule thickens by painting a second one under it, so nothing shifts. */
 	.f1-input:focus,
 	.f1-select:focus {
 		outline: none;
-		border-color: var(--teal);
-		box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 14%, transparent);
+		border-bottom-color: var(--teal);
+		box-shadow: 0 1px 0 0 var(--teal);
+	}
+
+	/* The field a person is in says so at its label as well as its rule. */
+	.f1-field:focus-within .f1-label {
+		color: var(--teal);
 	}
 
 	.f1-input.has-error,
 	.f1-select.has-error {
-		border-color: var(--danger);
-		box-shadow: 0 0 0 2px color-mix(in srgb, var(--danger) 18%, transparent);
+		border-bottom-color: var(--danger);
+		box-shadow: 0 1px 0 0 var(--danger);
 	}
 
 	.f1-select-wrap {
@@ -724,8 +736,8 @@
 	.f1-select-wrap::after {
 		content: '';
 		position: absolute;
-		right: 1rem;
-		top: 50%;
+		right: 0.25rem;
+		top: 45%;
 		width: 0.45rem;
 		height: 0.45rem;
 		border-right: 1px solid var(--ink-soft);
@@ -736,7 +748,7 @@
 
 	.f1-select {
 		appearance: none;
-		padding-right: 2.2rem;
+		padding-right: 1.75rem;
 		cursor: pointer;
 	}
 
@@ -853,32 +865,52 @@
 
 
 	/* ── Country + phone selector ─────────────────────────────────────────── */
+	/* One rule under both, so the code and the number are one field. */
 	.f1-phone-group {
 		display: grid;
-		grid-template-columns: minmax(9.5rem, 40%) 1fr;
+		grid-template-columns: auto 1fr;
+		align-items: center;
+		column-gap: 0.85rem;
 		position: relative;
+		border-bottom: 1px solid rgba(44, 39, 33, 0.22);
+		transition: border-color 200ms var(--ease), box-shadow 200ms var(--ease);
 	}
 
-	/* One field, divided — not two fields side by side. */
-	.f1-phone-group .f1-country__button {
-		border-right-color: transparent;
-		border-radius: 2px 0 0 2px;
+	.f1-phone-group:hover {
+		border-bottom-color: rgba(44, 39, 33, 0.45);
 	}
 
-	.f1-phone-group .f1-input {
-		border-left: 1px solid rgba(44, 39, 33, 0.16);
-		border-radius: 0 2px 2px 0;
+	.f1-phone-group:focus-within {
+		border-bottom-color: var(--teal);
+		box-shadow: 0 1px 0 0 var(--teal);
 	}
 
-	.f1-phone-group .f1-input:focus {
-		border-left-color: var(--teal);
+	.f1-phone-group .f1-input,
+	.f1-phone-group .f1-input:focus,
+	.f1-phone-group .f1-input:hover {
+		border-bottom-color: transparent;
+		box-shadow: none;
 	}
 	.f1-country { position: relative; }
+	/* The flag and the country's name both say what the dial code says, in a
+	   control whose whole job is the dial code. */
+	.f1-country__button [data-country-flag],
+	.f1-country__button [data-country-name] {
+		display: none;
+	}
+
 	.f1-country__button {
-		width: 100%; min-height: 3rem; padding: 0.75rem 0.8rem;
-		border: 1px solid rgba(44, 39, 33, 0.16); border-radius: 2px;
-		background: var(--warm-white); color: var(--ink); cursor: pointer;
-		display: flex; align-items: center; gap: 0.4rem; font: inherit;
+		padding: 0.6rem 0 0.55rem;
+		border: 0;
+		background: transparent;
+		color: var(--ink);
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		gap: 0.35rem;
+		font-family: var(--body);
+		font-size: 1.125rem;
+		white-space: nowrap;
 	}
 	.f1-country__button span:nth-child(2) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; text-align: left; }
 	.f1-country__menu {
@@ -891,30 +923,14 @@
 	.f1-country__item, .f1-country__empty { padding: .65rem .7rem; border-radius: .4rem; cursor: pointer; }
 	.f1-country__item:hover { background: var(--cream-deep); }
 	.f1-reveal { margin-top: .75rem; }
-	/* Stacked, the two halves are no longer halves of anything, so they take
-	   their own borders and corners back. */
-	@media (max-width: 40rem) {
-		.f1-phone-group {
-			grid-template-columns: 1fr;
-			gap: 0.5rem;
-		}
-
-		.f1-phone-group .f1-country__button {
-			border-right-color: rgba(44, 39, 33, 0.16);
-			border-radius: 2px;
-		}
-
-		.f1-phone-group .f1-input {
-			border-left: 1px solid rgba(44, 39, 33, 0.16);
-			border-radius: 2px;
-		}
-	}
+	/* No stacking rule any more. Once the control is "+91" and a chevron rather
+	   than a flag, a name and a code in a box, it fits beside the number at any
+	   width — and stacking it left two rules where the field has one. */
 
 	/* ── Role Choice Cards ────────────────────────────────────────────────── */
 	.f1-choice-grid {
 		display: grid;
-		gap: 0.75rem;
-		grid-template-columns: 1fr 1fr;
+		border-top: 1px solid rgba(44, 39, 33, 0.12);
 	}
 
 	@media (max-width: 40rem) {
@@ -928,8 +944,8 @@
 	.f1-consent-grid {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.6rem;
-		margin-top: 0.75rem;
+		gap: 0.4rem 2rem;
+		margin-top: 0.9rem;
 	}
 
 	.f1-consent {
@@ -937,25 +953,19 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 0.6rem;
-		padding: 0.7rem 1rem;
-		border: 1px solid rgba(44, 39, 33, 0.16);
-		border-radius: 2px;
-		background: var(--warm-white);
+		padding: 0.5rem 0;
+		border: 0;
+		background: transparent;
 		cursor: pointer;
-		transition:
-			border-color 200ms var(--ease),
-			background-color 200ms var(--ease);
+		transition: color 180ms var(--ease);
 	}
 
-	.f1-consent:hover {
-		border-color: rgba(44, 39, 33, 0.34);
+	.f1-consent:hover .f1-consent__text {
+		color: var(--teal);
 	}
 
-	/* A ticked box should be legible as ticked from across the form, not only
-	   by the mark inside it. */
-	.f1-consent:has(input[type='checkbox']:checked) {
-		border-color: var(--teal);
-		background: color-mix(in srgb, var(--teal) 5%, var(--warm-white));
+	.f1-consent:has(input[type='checkbox']:checked) .f1-consent__text {
+		color: var(--teal);
 	}
 
 	.f1-consent input[type='checkbox'] {
@@ -1015,18 +1025,16 @@
 		display: flex;
 		align-items: flex-start;
 		gap: 0.85rem;
-		padding: 1.05rem 1.15rem;
-		border: 1px solid rgba(44, 39, 33, 0.16);
-		border-radius: 2px;
-		background: var(--warm-white);
+		padding: 1rem 0.35rem;
+		border: 0;
+		border-bottom: 1px solid rgba(44, 39, 33, 0.12);
+		background: transparent;
 		cursor: pointer;
-		transition:
-			border-color 180ms var(--ease),
-			background-color 180ms var(--ease);
+		transition: color 180ms var(--ease);
 	}
 
-	.f1-choice-card:hover {
-		border-color: rgba(44, 39, 33, 0.34);
+	.f1-choice-card:hover .f1-choice-card__title {
+		color: var(--teal);
 	}
 
 	.f1-choice-card input[type='radio'] {
@@ -1062,9 +1070,8 @@
 		background: var(--warm-white);
 	}
 
-	.f1-choice-card:has(input[type='radio']:checked) {
-		border-color: var(--teal);
-		background: color-mix(in srgb, var(--teal) 5%, var(--warm-white));
+	.f1-choice-card:has(input[type='radio']:checked) .f1-choice-card__title {
+		color: var(--teal);
 	}
 
 	.f1-choice-card__body {
@@ -1113,10 +1120,10 @@
 	.f1-pillar-card__inner {
 		display: grid;
 		gap: 0.35rem;
-		padding: 1.2rem 1.3rem;
+		padding: 1.25rem 1.3rem;
 		border-radius: 2px;
-		background: var(--warm-white);
-		border: 1px solid rgba(44, 39, 33, 0.15);
+		background: transparent;
+		border: 1px solid rgba(44, 39, 33, 0.14);
 		border-top: 3px solid var(--card-accent);
 		transition:
 			border-color 200ms var(--ease),
@@ -1126,7 +1133,8 @@
 	}
 
 	.f1-pillar-card:hover .f1-pillar-card__inner {
-		border-color: rgba(44, 39, 33, 0.34);
+		border-color: rgba(44, 39, 33, 0.3);
+		background: color-mix(in srgb, var(--card-accent) 4%, transparent);
 	}
 
 	.f1-pillar-card:has(input[type='radio']:checked) .f1-pillar-card__inner {
