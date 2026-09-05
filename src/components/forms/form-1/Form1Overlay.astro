@@ -41,11 +41,12 @@
 				</div>
 
 				<!-- ════════════ SECTION 1: ABOUT YOU ════════════ -->
-				<fieldset class="f1-section">
-					<legend class="f1-section__legend">
+				<section class="f1-section" aria-labelledby="f1-sec-01">
+					<h2 class="f1-section__legend" id="f1-sec-01">
 						<span class="f1-section__num">01</span>
 						<span class="f1-section__text">About you</span>
-					</legend>
+					</h2>
+					<div class="f1-section__body">
 
 					<!-- 1. Full Name * -->
 					<div class="f1-field" data-field="fullName">
@@ -257,22 +258,24 @@
 							<input class="f1-input" id="f1-language-other" name="languageOther" type="text" placeholder="Type your language" autocomplete="off" autocapitalize="words" spellcheck="true" data-language-other />
 						</div>
 					</div>
-				</fieldset>
+				</div>
+				</section>
 
 				<!-- ════════ SECTION 2: CONNECTION WITH ITTI FOUNDATION ════════ -->
-				<fieldset class="f1-section">
-					<legend class="f1-section__legend">
+				<section class="f1-section" aria-labelledby="f1-sec-02">
+					<h2 class="f1-section__legend" id="f1-sec-02">
 						<span class="f1-section__num">02</span>
 						<span class="f1-section__text">Your connection</span>
-					</legend>
+					</h2>
+					<div class="f1-section__body">
 
 					<!-- 9. I am joining as * -->
 					<div class="f1-field" data-field="role">
-						<label class="f1-label f1-label--standalone">
+						<label class="f1-label f1-label--standalone" id="f1-role-label">
 							I am joining as
 						</label>
 
-						<div class="f1-choice-grid">
+						<div class="f1-choice-grid" role="radiogroup" aria-labelledby="f1-role-label">
 							<label class="f1-choice-card">
 								<input type="radio" name="role" value="patient" required />
 								<span class="f1-choice-card__indicator"></span>
@@ -319,22 +322,24 @@
 						</div>
 						<p class="f1-error" data-error="role" role="alert"></p>
 					</div>
-				</fieldset>
+				</div>
+				</section>
 
 				<!-- ════════ SECTION 3: AREA OF INTEREST ════════ -->
-				<fieldset class="f1-section">
-					<legend class="f1-section__legend">
+				<section class="f1-section" aria-labelledby="f1-sec-03">
+					<h2 class="f1-section__legend" id="f1-sec-03">
 						<span class="f1-section__num">03</span>
 						<span class="f1-section__text">Area of interest</span>
-					</legend>
+					</h2>
+					<div class="f1-section__body">
 
 					<!-- 10. Which area would you like to connect with? * -->
 					<div class="f1-field" data-field="pillar">
-						<label class="f1-label f1-label--standalone">
+						<label class="f1-label f1-label--standalone" id="f1-pillar-label">
 							Which area would you like to connect with?
 						</label>
 
-						<div class="f1-pillar-grid">
+						<div class="f1-pillar-grid" role="radiogroup" aria-labelledby="f1-pillar-label">
 							<!-- Neurodivergence -->
 							<label class="f1-pillar-card" style="--card-accent: var(--ochre);">
 								<input type="radio" name="pillar" value="neurodivergence" required />
@@ -384,16 +389,18 @@
 						<p class="f1-error" data-error="pillar" role="alert"></p>
 					</div>
 
-				</fieldset>
+				</div>
+				</section>
 
-				<fieldset class="f1-section">
-					<legend class="f1-section__legend">
+				<section class="f1-section" aria-labelledby="f1-sec-04">
+					<h2 class="f1-section__legend" id="f1-sec-04">
 						<span class="f1-section__num">04</span>
 						<span class="f1-section__text">Staying in touch</span>
-					</legend>
+					</h2>
+					<div class="f1-section__body">
 
 										<div class="f1-field" data-field="consent">
-						<label class="f1-label f1-label--standalone">
+						<label class="f1-label f1-label--standalone" id="f1-consent-label">
 							How may we contact you?
 						</label>
 						<p class="f1-hint">
@@ -401,7 +408,7 @@
 							reply to what you send us either way.
 						</p>
 
-						<div class="f1-consent-grid">
+						<div class="f1-consent-grid" role="group" aria-labelledby="f1-consent-label">
 							<label class="f1-consent" data-consent-needs="phone">
 								<input type="checkbox" name="consentWhatsapp" value="yes" />
 								<span class="f1-consent__indicator" aria-hidden="true"></span>
@@ -421,7 +428,8 @@
 							</label>
 						</div>
 					</div>
-				</fieldset>
+				</div>
+				</section>
 
 				<!-- ════════ SUBMIT / CONTINUE CTA ════════ -->
 				<footer class="f1-footer">
@@ -484,17 +492,17 @@
 	/* ── Main Modal Card ──────────────────────────────────────────────────── */
 	.f1-card {
 		position: relative;
-		width: min(44rem, 100%);
+		width: min(56rem, 100%);
 		margin-inline: auto;
 		background: var(--cream-deep);
 		color: var(--ink);
-		border: 1px solid rgba(44, 39, 33, 0.12);
+		border: 0;
 		border-radius: 3px;
 		box-shadow:
 			0 2px 8px rgba(4, 12, 14, 0.3),
 			0 18px 40px -12px rgba(4, 12, 14, 0.55),
 			0 60px 120px -40px rgba(4, 12, 14, 0.78);
-		padding: clamp(1.5rem, 3.5vw, 2.5rem);
+		padding: clamp(2rem, 4.5vw, 3.75rem);
 		animation: f1-rise 620ms cubic-bezier(0.16, 1, 0.3, 1) both;
 	}
 
@@ -542,34 +550,41 @@
 
 	/* ── Header ───────────────────────────────────────────────────────────── */
 	.f1-header {
-		margin-bottom: 2.25rem;
+		display: grid;
+		grid-template-columns: minmax(6rem, 20%) 1fr;
+		column-gap: clamp(1.5rem, 4vw, 3.5rem);
+		margin-bottom: 3.5rem;
 	}
 
 	.f1-eyebrow {
-		font-family: var(--body);
+		grid-column: 1;
+		font-family: var(--face-cinzel);
 		font-size: 0.6875rem;
-		font-weight: 600;
-		letter-spacing: 0.22em;
+		font-weight: 500;
+		letter-spacing: 0.18em;
+		line-height: 1.4;
 		text-transform: uppercase;
 		color: var(--teal);
-		margin-bottom: 0.5rem;
+		padding-top: 0.65rem;
 	}
 
 	.f1-title {
+		grid-column: 2;
 		font-family: var(--face-bodoni);
-		font-size: clamp(1.875rem, 3.4vw, 2.5rem);
+		font-size: clamp(2.25rem, 4.6vw, 3.25rem);
 		font-weight: 450;
-		line-height: 1.1;
-		letter-spacing: -0.01em;
+		line-height: 1.05;
+		letter-spacing: -0.015em;
 		color: var(--ink);
 	}
 
 	.f1-subtitle {
-		margin-top: 0.65rem;
-		font-size: 1.0625rem;
+		grid-column: 2;
+		margin-top: 1rem;
+		font-size: 1.125rem;
 		line-height: 1.55;
 		color: var(--ink-soft);
-		max-width: 38rem;
+		max-width: 34rem;
 	}
 
 	/* ── Global Alert ─────────────────────────────────────────────────────── */
@@ -601,9 +616,13 @@
 
 	/* ── Fieldsets & Sections ─────────────────────────────────────────────── */
 	.f1-section {
-		border: none;
-		margin: 0 0 3.5rem 0;
-		padding: 0;
+		display: grid;
+		grid-template-columns: minmax(6rem, 20%) 1fr;
+		column-gap: clamp(1.5rem, 4vw, 3.5rem);
+		border: 0;
+		border-top: 1px solid rgba(44, 39, 33, 0.16);
+		margin: 0;
+		padding: 2.75rem 0 0;
 	}
 
 	.f1-section + .f1-section {
@@ -613,25 +632,77 @@
 
 	/* The inscriptional face the arc is set in, so the form reads in the same
 	   voice as the page it came from. */
+	/* The last section carries no rule under it; the submit does that. */
+	.f1-section:last-of-type {
+		padding-bottom: 0.5rem;
+	}
+
+	.f1-section__body {
+		min-width: 0;
+	}
+
+	/* Stacked, the number and its name sit on one line above the fields — a
+	   margin no longer exists to put them in. */
 	.f1-section__legend {
-		display: flex;
-		align-items: baseline;
-		gap: 0.9rem;
+		display: block;
+		margin: 0;
 		font-family: var(--face-cinzel);
-		font-size: 0.9375rem;
+		font-size: 0.8125rem;
 		font-weight: 500;
-		letter-spacing: 0.2em;
+		letter-spacing: 0.16em;
+		line-height: 1.35;
 		text-transform: uppercase;
 		color: var(--teal);
-		margin-bottom: 2rem;
 	}
 
 	.f1-section__num {
+		display: block;
+		margin-bottom: 0.5rem;
 		font-family: var(--face-bodoni);
-		font-size: 1.25rem;
+		font-size: 2.25rem;
 		font-style: italic;
+		font-weight: 400;
 		letter-spacing: 0;
-		opacity: 0.6;
+		line-height: 1;
+		color: var(--ink);
+		opacity: 0.28;
+	}
+
+	@media (max-width: 46rem) {
+		.f1-header,
+		.f1-footer {
+			grid-template-columns: 1fr;
+		}
+
+		.f1-eyebrow,
+		.f1-title,
+		.f1-subtitle,
+		.f1-footer__action,
+		.f1-footer__disclaimer {
+			grid-column: 1;
+		}
+
+		.f1-eyebrow {
+			padding-top: 0;
+			margin-bottom: 0.65rem;
+		}
+
+		.f1-section {
+			grid-template-columns: 1fr;
+			padding-top: 2rem;
+		}
+
+		.f1-section__legend {
+			display: flex;
+			align-items: baseline;
+			gap: 0.75rem;
+			margin-bottom: 1.75rem;
+		}
+
+		.f1-section__num {
+			margin-bottom: 0;
+			font-size: 1.4rem;
+		}
 	}
 
 	/* ── Grid Layouts ─────────────────────────────────────────────────────── */
@@ -1195,14 +1266,17 @@
 
 	/* ── Footer & Submit CTA ──────────────────────────────────────────────── */
 	.f1-footer {
-		margin-top: 2rem;
-		padding-top: 1.75rem;
-		border-top: 1px solid rgba(44, 39, 33, 0.12);
 		display: grid;
-		gap: 1.25rem;
+		grid-template-columns: minmax(6rem, 20%) 1fr;
+		column-gap: clamp(1.5rem, 4vw, 3.5rem);
+		row-gap: 1.25rem;
+		margin-top: 3rem;
+		padding-top: 2.25rem;
+		border-top: 1px solid rgba(44, 39, 33, 0.16);
 	}
 
 	.f1-footer__action {
+		grid-column: 2;
 		display: grid;
 	}
 
@@ -1271,12 +1345,11 @@
 	}
 
 	.f1-footer__disclaimer {
+		grid-column: 2;
 		font-size: 0.8125rem;
 		line-height: 1.5;
 		color: var(--ink-faint);
-		text-align: center;
-		max-width: 30rem;
-		margin-inline: auto;
+		max-width: 32rem;
 	}
 
 	/* ── Success Screen ───────────────────────────────────────────────────── */
