@@ -26,7 +26,7 @@
 			<form class="f1-form" id="form1-element" novalidate data-f1-form>
 				<!-- Header section -->
 				<header class="f1-header">
-					<p class="f1-eyebrow">Step one of two</p>
+					<p class="f1-eyebrow">Registration</p>
 					<h1 class="f1-title" id="f1-heading">Tell us who you are.</h1>
 					<p class="f1-subtitle">
 						Enough to reach you, and enough to point you to the right part of the
@@ -153,16 +153,18 @@
 									<option value="undisclosed">Prefer not to say</option>
 								</select>
 							</div>
-							<input
-								class="f1-input f1-input--follow"
-								name="genderSelfDescribed"
-								type="text"
-								maxlength="60"
-								placeholder="How would you describe it?"
-								aria-label="Describe your gender"
-								data-gender-self
-								hidden
-							/>
+							<div class="f1-reveal" data-gender-self-container hidden>
+								<label class="f1-label" for="f1-gender-self">In your own words</label>
+								<input
+									class="f1-input"
+									id="f1-gender-self"
+									name="genderSelfDescribed"
+									type="text"
+									maxlength="60"
+									placeholder="How would you describe it?"
+									data-gender-self
+								/>
+							</div>
 							<p class="f1-error" data-error="gender" role="alert"></p>
 						</div>
 					</div>
@@ -448,7 +450,7 @@
 
 			<!-- ════════ SUCCESS / HANDOFF CONFIRMATION SCREEN ════════ -->
 			<div class="f1-success" data-f1-success hidden>
-				<p class="f1-eyebrow f1-success__eyebrow">Step one of two</p>
+				<p class="f1-eyebrow f1-success__eyebrow">Registered</p>
 				<h2 class="f1-success__title">
 					Thank you<span class="f1-success__name" data-success-name></span>
 				</h2>
@@ -714,7 +716,8 @@
 	/* ── Grid Layouts ─────────────────────────────────────────────────────── */
 	.f1-grid {
 		display: grid;
-		gap: 1.25rem;
+		align-items: start;
+		gap: 1.25rem 2rem;
 	}
 
 	.f1-grid--2col {
@@ -779,6 +782,24 @@
 		border-bottom: 1px solid rgba(44, 39, 33, 0.22);
 		border-radius: 0;
 		transition: border-color 200ms var(--ease), box-shadow 200ms var(--ease);
+	}
+
+	.f1-input[type='date']::-webkit-calendar-picker-indicator {
+		opacity: 0.32;
+		cursor: pointer;
+		transition: opacity 180ms var(--ease);
+	}
+
+	.f1-input[type='date']:hover::-webkit-calendar-picker-indicator,
+	.f1-input[type='date']:focus::-webkit-calendar-picker-indicator {
+		opacity: 0.65;
+	}
+
+	/* An empty date shows dd/mm/yyyy at full strength, which reads as a filled
+	   field beside placeholders that do not. */
+	.f1-input[type='date']:not(:focus):invalid,
+	.f1-input[type='date']:not(:focus):placeholder-shown {
+		color: var(--ink-faint);
 	}
 
 	.f1-input::placeholder {
@@ -1018,7 +1039,11 @@
 		background: color-mix(in srgb, var(--teal) 8%, transparent);
 		color: var(--teal-deep);
 	}
-	.f1-reveal { margin-top: .75rem; }
+	.f1-reveal {
+		display: grid;
+		gap: 0.35rem;
+		margin-top: 1.25rem;
+	}
 	/* No stacking rule any more. Once the control is "+91" and a chevron rather
 	   than a flag, a name and a code in a box, it fits beside the number at any
 	   width — and stacking it left two rules where the field has one. */
@@ -1284,7 +1309,7 @@
 
 	.f1-footer__action {
 		grid-column: 2;
-		display: grid;
+		display: flex;
 	}
 
 	.f1-submit-btn {
@@ -1292,8 +1317,7 @@
 		align-items: center;
 		justify-content: center;
 		gap: 0.75rem;
-		width: 100%;
-		padding: 1rem 2.25rem;
+		padding: 1.05rem 3rem;
 		border-radius: 2px;
 		background: var(--teal);
 		color: var(--cream);
@@ -1423,10 +1447,6 @@
 		border-bottom: 1px solid rgba(44, 39, 33, 0.1);
 		font-size: 1.0625rem;
 		color: var(--ink);
-	}
-
-	.f1-success .f1-submit-btn {
-		width: auto;
 	}
 
 	@media (max-width: 46rem) {
@@ -1831,10 +1851,15 @@
 		const genderSelect = document.getElementById('f1-gender') as HTMLSelectElement | null;
 		const genderSelf = document.querySelector<HTMLInputElement>('[data-gender-self]');
 
+		const genderSelfContainer = document.querySelector<HTMLElement>(
+			'[data-gender-self-container]',
+		);
+
 		const syncGenderSelf = () => {
 			const show = genderSelect?.value === 'self_described';
+			if (genderSelfContainer) genderSelfContainer.hidden = !show;
 			if (genderSelf) {
-				genderSelf.hidden = !show;
+				genderSelf.required = !!show;
 				if (!show) genderSelf.value = '';
 			}
 		};
