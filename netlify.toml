@@ -38,9 +38,7 @@
   [headers.values]
     Cache-Control = "public, max-age=604800, must-revalidate"
 
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-    X-Frame-Options = "SAMEORIGIN"
+# Security headers, including the Content-Security-Policy, are written to
+# dist/_headers by scripts/generate-headers.mjs during the build. They live
+# there rather than here because the policy names a hash for every inline
+# script that shipped, and those change with the source.

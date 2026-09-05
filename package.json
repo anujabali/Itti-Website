@@ -1,28 +1,28 @@
 {
-	"name": "itti-website",
-	"type": "module",
-	"version": "0.0.1",
-	"engines": {
-		"node": ">=22.12.0"
-	},
-	"scripts": {
-		"dev": "astro dev",
-		"build": "astro build",
-		"preview": "astro preview",
-		"astro": "astro",
-		"format": "prettier --write .",
-		"format:check": "prettier --check ."
-	},
-	"dependencies": {
-		"@astrojs/netlify": "^8.2.0",
-		"@fontsource-variable/bodoni-moda": "^5.3.0",
-		"@fontsource-variable/cinzel": "^5.3.0",
-		"@fontsource-variable/eb-garamond": "^5.3.0",
-		"@supabase/supabase-js": "^2.112.2",
-		"astro": "^7.1.5"
-	},
-	"devDependencies": {
-		"prettier": "^3.9.6",
-		"prettier-plugin-astro": "^0.14.1"
-	}
+  "name": "itti-website",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build && node scripts/generate-headers.mjs",
+    "preview": "astro preview",
+    "astro": "astro",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "dependencies": {
+    "@astrojs/netlify": "^8.2.0",
+    "@fontsource-variable/bodoni-moda": "^5.3.0",
+    "@fontsource-variable/cinzel": "^5.3.0",
+    "@fontsource-variable/eb-garamond": "^5.3.0",
+    "@supabase/supabase-js": "^2.112.2",
+    "astro": "^7.1.5"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.6",
+    "prettier-plugin-astro": "^0.14.1"
+  }
 }
