@@ -1,9 +1,11 @@
 /**
- * Form 1 — Basic Information / Get Started module entry point
- * Folder: src/components/forms/form-1/
+ * Form 1 — basic information.
+ *
+ * The overlay itself is imported directly from its `.astro` file; a TypeScript
+ * barrel cannot re-export an Astro component, and pretending otherwise is what
+ * made this module fail to typecheck.
  */
 
-export { default as Form1Overlay } from './Form1Overlay.astro';
 export * from './types';
 export * from './validation';
 export * from './schema';
