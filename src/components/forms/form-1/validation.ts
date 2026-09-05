@@ -5,28 +5,18 @@
 import type { Form1Data, Form1Errors } from './types';
 
 /**
- * Normalizes an Indian phone number string to E.164 format.
- * E.g. '98765 43210' -> '+919876543210', '+919876543210' -> '+919876543210'
+ * Normalizes a phone number string to an E.164-compatible format.
+ * Country-specific calling codes are combined with local numbers in Form1Overlay before validation.
  */
 export function normalizePhone(raw: string): string {
 	const cleaned = raw.replace(/[^\d+]/g, '');
 	if (!cleaned) return '';
-	if (cleaned.startsWith('+')) return cleaned;
-	if (cleaned.startsWith('91') && cleaned.length === 12) return `+${cleaned}`;
-	if (cleaned.length === 10) return `+91${cleaned}`;
-	return `+${cleaned}`;
+	return cleaned.startsWith('+') ? cleaned : `+${cleaned}`;
 }
 
-/**
- * Tests if a phone number matches E.164 and has standard Indian mobile digits (10 digits).
- */
 export function isValidPhone(phone: string): boolean {
 	const normalized = normalizePhone(phone);
-	// Supabase check: phone ~ '^\+[1-9][0-9]{7,14}$'
-	// Indian mobile: +91 followed by 10 digits starting with 6-9
-	const indianMobileRegex = /^\+91[6-9]\d{9}$/;
-	const generalE164Regex = /^\+[1-9]\d{7,14}$/;
-	return indianMobileRegex.test(normalized) || generalE164Regex.test(normalized);
+	return /^\+[1-9]\d{7,14}$/.test(normalized);
 }
 
 /**
@@ -53,7 +43,7 @@ export function isValidPincode(pincode: string): boolean {
  * Matches SQL: date_of_birth > current_date - interval '120 years' and date_of_birth <= current_date
  */
 export function isValidDateOfBirth(dobStr: string): { valid: boolean; error?: string } {
-	if (!dobStr) return { valid: true };
+	if (!dobStr) return { valid: false, error: 'Date of birth is required.' };
 	const dob = new Date(dobStr);
 	if (isNaN(dob.getTime())) {
 		return { valid: false, error: 'Please enter a valid date.' };
@@ -103,15 +93,17 @@ export function validateForm1(data: Form1Data): {
 			'Please provide at least one contact method (phone number or email).';
 	} else {
 		if (hasPhone && !isValidPhone(data.phone)) {
-			errors.phone = 'Please enter a valid 10-digit mobile number (+91 XXXXX XXXXX).';
+			errors.phone = 'Please enter a valid phone number for the selected country.';
 		}
 		if (hasEmail && !isValidEmail(data.email)) {
 			errors.email = 'Please enter a valid email address.';
 		}
 	}
 
-	// 4. Date of Birth (Optional)
-	if (data.dateOfBirth) {
+	// 4. Date of Birth (Required)
+	if (!data.dateOfBirth) {
+		errors.dateOfBirth = 'Date of birth is required.';
+	} else {
 		const dobCheck = isValidDateOfBirth(data.dateOfBirth);
 		if (!dobCheck.valid && dobCheck.error) {
 			errors.dateOfBirth = dobCheck.error;
@@ -123,11 +115,16 @@ export function validateForm1(data: Form1Data): {
 		errors.city = 'Please search and select your city.';
 	}
 
-	// 7. Pincode (Optional, but if entered must be 6 digits)
-	if (data.pincode && data.pincode.trim().length > 0) {
-		if (!isValidPincode(data.pincode)) {
-			errors.pincode = 'Pincode must be a 6-digit Indian postal code (e.g. 411001).';
-		}
+	// 7. Pincode (Required)
+	if (!data.pincode || !data.pincode.trim()) {
+		errors.pincode = 'Pincode is required.';
+	} else if (!isValidPincode(data.pincode)) {
+		errors.pincode = 'Pincode must be a 6-digit Indian postal code (e.g. 411001).';
+	}
+
+	// Gender (Required)
+	if (!data.gender) {
+		errors.gender = 'Please select your gender.';
 	}
 
 	// 9. I am joining as * (Required)

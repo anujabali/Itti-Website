@@ -6,11 +6,12 @@
 export type RoleKind = 'patient' | 'caregiver' | 'supporter';
 export type GenderKind = 'woman' | 'man' | 'non_binary' | 'undisclosed';
 export type PillarKind = 'neurodivergence' | 'cancer_care' | 'claw' | 'other';
-export type PreferredLanguage = 'en' | 'hi' | 'mr' | 'other';
+export type PreferredLanguage = 'en' | 'hi' | 'mr' | 'gu' | 'bn' | 'ta' | 'te' | 'kn' | 'ml' | 'pa' | 'ur' | 'or' | 'as' | 'other';
 
 export interface Form1Data {
 	fullName: string;
 	phone: string;
+	countryIso2: string;
 	email: string;
 	dateOfBirth: string;
 	gender: GenderKind | '';
@@ -18,6 +19,7 @@ export interface Form1Data {
 	state: string;
 	pincode: string;
 	preferredLanguage: PreferredLanguage | '';
+	languageOther?: string;
 	role: RoleKind | '';
 	pillar: PillarKind | '';
 }
@@ -30,6 +32,7 @@ export interface Form1Errors {
 	phone?: string;
 	email?: string;
 	dateOfBirth?: string;
+	gender?: string;
 	city?: string;
 	pincode?: string;
 	role?: string;

@@ -8,7 +8,6 @@
  * Folder: src/components/forms/form-1/
  */
 import Mark from '../../brand/Mark.astro';
-import { INDIAN_CITIES } from './cities';
 
 interface Props {
 	/** If true, starts visible on page load. Defaults to true for instant evaluation. */
@@ -78,7 +77,7 @@ const { initiallyOpen = false } = Astro.props;
 					<!-- 1. Full Name * -->
 					<div class="f1-field" data-field="fullName">
 						<label class="f1-label" for="f1-fullName">
-							Full Name <span class="f1-req" aria-hidden="true">*</span>
+							Full Name
 						</label>
 						<input
 							class="f1-input"
@@ -106,16 +105,31 @@ const { initiallyOpen = false } = Astro.props;
 							<!-- 2. Phone Number -->
 							<div class="f1-field" data-field="phone">
 								<label class="f1-label" for="f1-phone"> Phone Number </label>
-								<div class="f1-input-affix">
+								<div class="f1-phone-group" data-phone-group>
+									<div class="f1-country" data-country-picker>
+										<button class="f1-country__button" type="button" data-country-button aria-haspopup="listbox" aria-expanded="false">
+											<span data-country-flag>🇮🇳</span>
+											<span data-country-name>India</span>
+											<span data-country-dial>+91</span>
+											<span aria-hidden="true">▾</span>
+										</button>
+										<div class="f1-country__menu" data-country-menu hidden>
+											<input class="f1-input f1-country__search" type="search" placeholder="Search country or code" autocomplete="off" data-country-search aria-label="Search country" />
+											<ul class="f1-country__list" data-country-list role="listbox"></ul>
+										</div>
+									</div>
 									<input
-										class="f1-input"
+										class="f1-input f1-phone-input"
 										id="f1-phone"
 										name="phone"
 										type="tel"
-										placeholder="+91 XXXXX XXXXX"
-										autocomplete="tel"
+										placeholder="XXXXXXXXXX"
+										inputmode="tel"
+										autocomplete="tel-national"
+										data-phone-input
 									/>
 								</div>
+								<input type="hidden" name="countryIso2" data-country-iso value="IN" />
 								<p class="f1-error" data-error="phone" role="alert"></p>
 							</div>
 
@@ -140,27 +154,25 @@ const { initiallyOpen = false } = Astro.props;
 					<div class="f1-grid f1-grid--2col">
 						<!-- 4. Date of Birth -->
 						<div class="f1-field" data-field="dateOfBirth">
-							<label class="f1-label" for="f1-dob"> Date of Birth </label>
+							<label class="f1-label" for="f1-dob"> Date of Birth</label>
 							<input
 								class="f1-input f1-input--date"
 								id="f1-dob"
 								name="dateOfBirth"
+								required
 								type="date"
 								autocomplete="bday"
 							/>
-							<p class="f1-hint">
-								Used only to compute age and provide age-appropriate care.
-							</p>
 							<p class="f1-error" data-error="dateOfBirth" role="alert"></p>
 						</div>
 
-						<!-- 5. Gender (Optional) -->
+						<!-- 5. Gender (Required) -->
 						<div class="f1-field" data-field="gender">
 							<label class="f1-label" for="f1-gender">
-								Gender <span class="f1-opt">(Optional)</span>
+								Gender
 							</label>
 							<div class="f1-select-wrap">
-								<select class="f1-select" id="f1-gender" name="gender">
+								<select class="f1-select" id="f1-gender" name="gender" required>
 									<option value="">Select gender</option>
 									<option value="woman">Female</option>
 									<option value="man">Male</option>
@@ -168,13 +180,14 @@ const { initiallyOpen = false } = Astro.props;
 									<option value="undisclosed">Prefer not to say</option>
 								</select>
 							</div>
+							<p class="f1-error" data-error="gender" role="alert"></p>
 						</div>
 					</div>
 
 					<!-- 6. City * (Searchable Autocomplete) -->
 					<div class="f1-field f1-autocomplete" data-field="city" data-f1-autocomplete>
 						<label class="f1-label" for="f1-city-input">
-							City <span class="f1-req" aria-hidden="true">*</span>
+							City
 						</label>
 						<div class="f1-autocomplete__box">
 							<input
@@ -210,15 +223,10 @@ const { initiallyOpen = false } = Astro.props;
 						<p class="f1-error" data-error="city" role="alert"></p>
 					</div>
 
-					<!-- 7. Pincode (Optional - revealed naturally after city is selected) -->
-					<div
-						class="f1-field f1-pincode-reveal"
-						id="f1-pincode-container"
-						data-field="pincode"
-						data-pincode-container
-					>
+					<!-- 7. Pincode (Required) -->
+					<div class="f1-field" data-field="pincode">
 						<label class="f1-label" for="f1-pincode">
-							Pincode <span class="f1-opt">(Optional)</span>
+							Pincode
 						</label>
 						<input
 							class="f1-input"
@@ -229,10 +237,11 @@ const { initiallyOpen = false } = Astro.props;
 							pattern="[1-9][0-9]{5}"
 							maxlength="6"
 							placeholder="Enter your 6-digit pincode"
+							required
+							autocomplete="postal-code"
+							data-pincode-input
 						/>
-						<p class="f1-hint">
-							Assists us with local clinic and volunteer network serviceability.
-						</p>
+						<p class="f1-hint" data-pincode-status></p>
 						<p class="f1-error" data-error="pincode" role="alert"></p>
 					</div>
 
@@ -247,8 +256,22 @@ const { initiallyOpen = false } = Astro.props;
 								<option value="en">English</option>
 								<option value="hi">Hindi</option>
 								<option value="mr">Marathi</option>
+								<option value="gu">Gujarati</option>
+								<option value="bn">Bengali</option>
+								<option value="ta">Tamil</option>
+								<option value="te">Telugu</option>
+								<option value="kn">Kannada</option>
+								<option value="ml">Malayalam</option>
+								<option value="pa">Punjabi</option>
+								<option value="ur">Urdu</option>
+								<option value="or">Odia</option>
+								<option value="as">Assamese</option>
 								<option value="other">Other</option>
 							</select>
+						</div>
+						<div class="f1-reveal" data-language-other-container hidden>
+							<label class="f1-label" for="f1-language-other">Other Language</label>
+							<input class="f1-input" id="f1-language-other" name="languageOther" type="text" placeholder="Type your language" autocomplete="off" autocapitalize="words" spellcheck="true" data-language-other />
 						</div>
 					</div>
 				</fieldset>
@@ -263,7 +286,7 @@ const { initiallyOpen = false } = Astro.props;
 					<!-- 9. I am joining as * -->
 					<div class="f1-field" data-field="role">
 						<label class="f1-label f1-label--standalone">
-							I am joining as <span class="f1-req" aria-hidden="true">*</span>
+							I am joining as
 						</label>
 
 						<div class="f1-choice-grid">
@@ -325,10 +348,7 @@ const { initiallyOpen = false } = Astro.props;
 					<!-- 10. Which area would you like to connect with? * -->
 					<div class="f1-field" data-field="pillar">
 						<label class="f1-label f1-label--standalone">
-							Which area would you like to connect with? <span
-								class="f1-req"
-								aria-hidden="true">*</span
-							>
+							Which area would you like to connect with?
 						</label>
 
 						<div class="f1-pillar-grid">
@@ -673,11 +693,6 @@ const { initiallyOpen = false } = Astro.props;
 		margin-bottom: 0.75rem;
 	}
 
-	.f1-req {
-		color: var(--rose);
-		font-weight: bold;
-		margin-left: 0.15rem;
-	}
 
 	.f1-opt {
 		font-size: 0.8125rem;
@@ -872,22 +887,34 @@ const { initiallyOpen = false } = Astro.props;
 		color: var(--ink-faint);
 	}
 
-	/* ── Pincode Smooth Revelation ────────────────────────────────────────── */
-	.f1-pincode-reveal {
-		max-height: 0;
-		opacity: 0;
-		overflow: hidden;
-		margin-bottom: 0;
-		transition:
-			max-height 380ms var(--ease),
-			opacity 300ms var(--ease),
-			margin-bottom 300ms var(--ease);
-	}
 
-	.f1-pincode-reveal.is-revealed {
-		max-height: 8rem;
-		opacity: 1;
-		margin-bottom: 1.25rem;
+	/* ── Country + phone selector ─────────────────────────────────────────── */
+	.f1-phone-group {
+		display: grid;
+		grid-template-columns: minmax(10rem, 42%) 1fr;
+		gap: 0.5rem;
+		position: relative;
+	}
+	.f1-country { position: relative; }
+	.f1-country__button {
+		width: 100%; min-height: 3rem; padding: 0.75rem 0.8rem;
+		border: 1px solid rgba(44, 39, 33, 0.15); border-radius: 0.5rem;
+		background: var(--warm-white); color: var(--ink); cursor: pointer;
+		display: flex; align-items: center; gap: 0.4rem; font: inherit;
+	}
+	.f1-country__button span:nth-child(2) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; text-align: left; }
+	.f1-country__menu {
+		position: absolute; z-index: 30; left: 0; top: calc(100% + 0.35rem);
+		width: min(22rem, 80vw); padding: 0.5rem; border: 1px solid rgba(44,39,33,.15);
+		border-radius: .65rem; background: var(--warm-white); box-shadow: 0 12px 30px rgba(0,0,0,.12);
+	}
+	.f1-country__search { margin-bottom: .4rem; }
+	.f1-country__list { list-style: none; margin: 0; padding: 0; max-height: 15rem; overflow: auto; }
+	.f1-country__item, .f1-country__empty { padding: .65rem .7rem; border-radius: .4rem; cursor: pointer; }
+	.f1-country__item:hover { background: var(--cream-deep); }
+	.f1-reveal { margin-top: .75rem; }
+	@media (max-width: 40rem) {
+		.f1-phone-group { grid-template-columns: 1fr; }
 	}
 
 	/* ── Role Choice Cards ────────────────────────────────────────────────── */
@@ -1259,6 +1286,8 @@ const { initiallyOpen = false } = Astro.props;
 	import { searchCities } from './cities';
 	import { validateForm1 } from './validation';
 	import { persistForm1Data } from './schema';
+	import { COUNTRIES, findCountry, searchCountries, detectCountryFromInternationalNumber } from './countries';
+	import { lookupPincode } from './pincode';
 	import { registerMember } from '../../../lib/services/registration';
 	import type { Form1Data, Form1Field, Form1Errors } from './types';
 
@@ -1275,9 +1304,20 @@ const { initiallyOpen = false } = Astro.props;
 	const suggestionsList = document.querySelector<HTMLUListElement>(
 		'[data-city-suggestions]',
 	);
-	const pincodeContainer = document.querySelector<HTMLElement>(
-		'[data-pincode-container]',
-	);
+	const pincodeInput = document.querySelector<HTMLInputElement>('[data-pincode-input]');
+	const pincodeStatus = document.querySelector<HTMLElement>('[data-pincode-status]');
+	const phoneInput = document.querySelector<HTMLInputElement>('[data-phone-input]');
+	const countryButton = document.querySelector<HTMLButtonElement>('[data-country-button]');
+	const countryMenu = document.querySelector<HTMLElement>('[data-country-menu]');
+	const countrySearch = document.querySelector<HTMLInputElement>('[data-country-search]');
+	const countryList = document.querySelector<HTMLUListElement>('[data-country-list]');
+	const countryIso = document.querySelector<HTMLInputElement>('[data-country-iso]');
+	const countryFlag = document.querySelector<HTMLElement>('[data-country-flag]');
+	const countryName = document.querySelector<HTMLElement>('[data-country-name]');
+	const countryDial = document.querySelector<HTMLElement>('[data-country-dial]');
+	const languageSelect = document.getElementById('f1-language') as HTMLSelectElement | null;
+	const languageOtherContainer = document.querySelector<HTMLElement>('[data-language-other-container]');
+	const languageOther = document.querySelector<HTMLInputElement>('[data-language-other]');
 	const reopenBtn = document.querySelector<HTMLButtonElement>('[data-f1-reopen]');
 	const globalAlert = document.getElementById('f1-global-alert');
 	const globalAlertText = document.querySelector<HTMLElement>('[data-f1-global-error]');
@@ -1344,7 +1384,14 @@ const { initiallyOpen = false } = Astro.props;
 			const data = new FormData(form);
 			return {
 				fullName: (data.get('fullName') as string) || '',
-				phone: (data.get('phone') as string) || '',
+				phone: (() => {
+					const raw = ((data.get('phone') as string) || '').trim();
+					const country = findCountry((data.get('countryIso2') as string) || 'IN');
+					if (!raw) return '';
+					if (raw.startsWith('+') || raw.startsWith('00')) return raw.replace(/^00/, '+');
+					return `${country.dialCode}${raw.replace(/\D/g, '')}`;
+				})(),
+				countryIso2: (data.get('countryIso2') as string) || 'IN',
 				email: (data.get('email') as string) || '',
 				dateOfBirth: (data.get('dateOfBirth') as string) || '',
 				gender: (data.get('gender') as any) || '',
@@ -1352,6 +1399,7 @@ const { initiallyOpen = false } = Astro.props;
 				state: (data.get('state') as string) || '',
 				pincode: (data.get('pincode') as string) || '',
 				preferredLanguage: (data.get('preferredLanguage') as any) || '',
+				languageOther: (data.get('languageOther') as string) || '',
 				role: (data.get('role') as any) || '',
 				pillar: (data.get('pillar') as any) || '',
 			};
@@ -1392,33 +1440,93 @@ const { initiallyOpen = false } = Astro.props;
 			}
 		};
 
-		// ── City Autocomplete Implementation ──────────────────────────────────
+		// ── Country + phone selector ───────────────────────────────────────────
+		let selectedCountry = findCountry(countryIso?.value || 'IN');
+
+		const setCountry = (country: typeof selectedCountry) => {
+			selectedCountry = country;
+			if (countryIso) countryIso.value = country.iso2;
+			if (countryFlag) countryFlag.textContent = country.flag;
+			if (countryName) countryName.textContent = country.name;
+			if (countryDial) countryDial.textContent = country.dialCode;
+			if (countryButton) countryButton.setAttribute('aria-expanded', 'false');
+			if (countryMenu) countryMenu.hidden = true;
+		};
+
+		const renderCountries = (query = '') => {
+			if (!countryList) return;
+			countryList.innerHTML = '';
+			const matches = searchCountries(query).slice(0, 40);
+			matches.forEach((country) => {
+				const li = document.createElement('li');
+				li.className = 'f1-country__item';
+				li.setAttribute('role', 'option');
+				li.textContent = `${country.flag}  ${country.name} (${country.dialCode})`;
+				li.addEventListener('mousedown', (event) => {
+					event.preventDefault();
+					setCountry(country);
+				});
+				countryList.appendChild(li);
+			});
+			if (!matches.length) {
+				const empty = document.createElement('li');
+				empty.className = 'f1-country__empty';
+				empty.textContent = 'No country found';
+				countryList.appendChild(empty);
+			}
+		};
+
+		renderCountries();
+		setCountry(selectedCountry);
+
+		countryButton?.addEventListener('click', () => {
+			const opening = !!countryMenu?.hidden;
+			if (countryMenu) countryMenu.hidden = !opening;
+			countryButton.setAttribute('aria-expanded', String(opening));
+			if (opening) {
+				renderCountries(countrySearch?.value || '');
+				setTimeout(() => countrySearch?.focus(), 0);
+			}
+		});
+
+		countrySearch?.addEventListener('input', () => renderCountries(countrySearch.value));
+		document.addEventListener('click', (event) => {
+			if (!countryMenu || !countryButton) return;
+			const target = event.target as Node;
+			if (!countryMenu.contains(target) && !countryButton.contains(target)) {
+				countryMenu.hidden = true;
+				countryButton.setAttribute('aria-expanded', 'false');
+			}
+		});
+
+		phoneInput?.addEventListener('input', () => {
+			const value = phoneInput.value.trim();
+			const detected = detectCountryFromInternationalNumber(value);
+			if (detected && detected.iso2 !== selectedCountry.iso2) setCountry(detected);
+		});
+
+		// ── City autocomplete + pincode lookup ───────────────────────────────
 		let activeSuggestionIndex = -1;
 
-		const updatePincodeVisibility = (hasCity: boolean) => {
-			if (pincodeContainer) {
-				pincodeContainer.classList.toggle('is-revealed', hasCity);
+		const closeSuggestions = () => {
+			if (suggestionsList) {
+				suggestionsList.hidden = true;
+				suggestionsList.innerHTML = '';
+				activeSuggestionIndex = -1;
 			}
 		};
 
 		const selectCity = (city: string, state: string) => {
 			if (cityInput && cityHidden && stateHidden) {
-				cityInput.value = `${city}, ${state}`;
+				cityInput.value = state ? `${city}, ${state}` : city;
 				cityHidden.value = city;
 				stateHidden.value = state;
 				if (cityClear) cityClear.hidden = false;
 				closeSuggestions();
-				updatePincodeVisibility(true);
-
-				// Clear city error if present
 				const cityError = form.querySelector('[data-error="city"]');
 				cityError?.classList.remove('is-visible');
 				cityInput.classList.remove('has-error');
-
-				// Focus pincode smoothly
-				setTimeout(() => {
-					document.getElementById('f1-pincode')?.focus();
-				}, 150);
+				setTimeout(() => pincodeInput?.focus(), 150);
 			}
 		};
 
@@ -1429,47 +1537,25 @@ const { initiallyOpen = false } = Astro.props;
 				stateHidden.value = '';
 				if (cityClear) cityClear.hidden = true;
 				closeSuggestions();
-				updatePincodeVisibility(false);
-				const pinInput = document.getElementById(
-					'f1-pincode',
-				) as HTMLInputElement | null;
-				if (pinInput) pinInput.value = '';
 				cityInput.focus();
-			}
-		};
-
-		const closeSuggestions = () => {
-			if (suggestionsList) {
-				suggestionsList.hidden = true;
-				suggestionsList.innerHTML = '';
-				activeSuggestionIndex = -1;
 			}
 		};
 
 		const renderSuggestions = (query: string) => {
 			if (!suggestionsList) return;
 			const matches = searchCities(query);
-
 			if (matches.length === 0) {
-				suggestionsList.innerHTML = `
-					<li class="f1-suggestion-item" style="color: var(--ink-faint); font-style: italic; cursor: default;">
-						No matching Indian city found. You can type your city and select it.
-					</li>
-				`;
+				suggestionsList.innerHTML = `<li class="f1-suggestion-item" style="color: var(--ink-faint); font-style: italic; cursor: default;">No matching Indian city found. You can type your city.</li>`;
 				suggestionsList.hidden = false;
 				return;
 			}
-
 			suggestionsList.innerHTML = '';
 			matches.forEach((item, index) => {
 				const li = document.createElement('li');
 				li.className = 'f1-suggestion-item';
 				li.setAttribute('role', 'option');
 				li.setAttribute('data-index', String(index));
-				li.innerHTML = `
-					<span class="f1-suggestion-item__city">${item.city}</span>
-					<span class="f1-suggestion-item__state">${item.state}</span>
-				`;
+				li.innerHTML = `<span class="f1-suggestion-item__city">${item.city}</span><span class="f1-suggestion-item__state">${item.state}</span>`;
 				li.addEventListener('mousedown', (e) => {
 					e.preventDefault();
 					selectCity(item.city, item.state);
@@ -1482,56 +1568,119 @@ const { initiallyOpen = false } = Astro.props;
 		cityInput?.addEventListener('input', () => {
 			const val = cityInput.value.trim();
 			if (cityClear) cityClear.hidden = val.length === 0;
-
-			if (val.length >= 1) {
-				renderSuggestions(val);
-			} else {
-				closeSuggestions();
-				updatePincodeVisibility(false);
-				if (cityHidden) cityHidden.value = '';
-				if (stateHidden) stateHidden.value = '';
-			}
+			if (cityHidden) cityHidden.value = '';
+			if (stateHidden) stateHidden.value = '';
+			if (val.length >= 1) renderSuggestions(val);
+			else closeSuggestions();
 		});
-
 		cityClear?.addEventListener('click', clearCity);
 
 		cityInput?.addEventListener('keydown', (e) => {
 			if (!suggestionsList || suggestionsList.hidden) return;
-			const items = [
-				...suggestionsList.querySelectorAll<HTMLElement>(
-					'.f1-suggestion-item[data-index]',
-				),
-			];
+			const items = [...suggestionsList.querySelectorAll<HTMLElement>('.f1-suggestion-item[data-index]')];
 			if (!items.length) return;
-
 			if (e.key === 'ArrowDown') {
 				e.preventDefault();
 				activeSuggestionIndex = (activeSuggestionIndex + 1) % items.length;
-				items.forEach((item, i) =>
-					item.classList.toggle('is-selected', i === activeSuggestionIndex),
-				);
-				items[activeSuggestionIndex]?.scrollIntoView({ block: 'nearest' });
 			} else if (e.key === 'ArrowUp') {
 				e.preventDefault();
-				activeSuggestionIndex =
-					(activeSuggestionIndex - 1 + items.length) % items.length;
-				items.forEach((item, i) =>
-					item.classList.toggle('is-selected', i === activeSuggestionIndex),
-				);
-				items[activeSuggestionIndex]?.scrollIntoView({ block: 'nearest' });
-			} else if (e.key === 'Enter') {
-				if (activeSuggestionIndex >= 0 && items[activeSuggestionIndex]) {
-					e.preventDefault();
-					items[activeSuggestionIndex].click();
-				}
+				activeSuggestionIndex = (activeSuggestionIndex - 1 + items.length) % items.length;
+			} else if (e.key === 'Enter' && activeSuggestionIndex >= 0) {
+				e.preventDefault();
+				items[activeSuggestionIndex]?.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }));
+				return;
 			} else if (e.key === 'Escape') {
 				closeSuggestions();
-			}
+				return;
+			} else return;
+			items.forEach((item, i) => item.classList.toggle('is-selected', i === activeSuggestionIndex));
+			items[activeSuggestionIndex]?.scrollIntoView({ block: 'nearest' });
+		});
+		cityInput?.addEventListener('blur', () => setTimeout(closeSuggestions, 200));
+
+		let pincodeTimer: ReturnType<typeof setTimeout> | undefined;
+		let pincodeRequest = 0;
+		pincodeInput?.addEventListener('input', () => {
+			pincodeInput.value = pincodeInput.value.replace(/\D/g, '').slice(0, 6);
+			if (pincodeStatus) pincodeStatus.textContent = '';
+			if (pincodeTimer) clearTimeout(pincodeTimer);
+			if (pincodeInput.value.length !== 6) return;
+
+			const requestId = ++pincodeRequest;
+			pincodeTimer = setTimeout(async () => {
+				if (pincodeStatus) pincodeStatus.textContent = 'Finding your area…';
+				const result = await lookupPincode(pincodeInput.value);
+				if (requestId !== pincodeRequest) return;
+				if (!result) {
+					if (pincodeStatus) pincodeStatus.textContent = 'We could not find that pincode. Please check it or enter your city manually.';
+					return;
+				}
+				if (cityInput && cityHidden && stateHidden) {
+					cityInput.value = result.city;
+					cityHidden.value = result.city;
+					stateHidden.value = result.state;
+					if (cityClear) cityClear.hidden = false;
+				}
+				if (pincodeStatus) pincodeStatus.textContent = result.state ? `Location detected: ${result.city}, ${result.state}` : `Location detected: ${result.city}`;
+				form.querySelector('[data-error="pincode"]')?.classList.remove('is-visible');
+				pincodeInput.classList.remove('has-error');
+				cityInput?.classList.remove('has-error');
+			}, 450);
 		});
 
-		cityInput?.addEventListener('blur', () => {
-			setTimeout(closeSuggestions, 200);
-		});
+		// ── Other language ────────────────────────────────────────────────────
+		const syncOtherLanguage = () => {
+			const show = languageSelect?.value === 'other';
+			if (languageOtherContainer) languageOtherContainer.hidden = !show;
+			if (languageOther) {
+				languageOther.required = !!show;
+				if (!show) languageOther.value = '';
+			}
+		};
+		languageSelect?.addEventListener('change', syncOtherLanguage);
+		syncOtherLanguage();
+
+		// Browser spellcheck can underline misspellings, but it does not reliably
+		// autocorrect free-form language names. Add a small, conservative
+		// autocorrection layer for common typos and supported language names.
+		const languageCorrections: Record<string, string> = {
+			anglish: 'English',
+			englsh: 'English',
+			engish: 'English',
+			hindii: 'Hindi',
+			hind: 'Hindi',
+			marathii: 'Marathi',
+			gujrati: 'Gujarati',
+			gujarathi: 'Gujarati',
+			bengali: 'Bengali',
+			telgu: 'Telugu',
+			teluguu: 'Telugu',
+			kannada: 'Kannada',
+			malayalam: 'Malayalam',
+			punjabi: 'Punjabi',
+			panjabi: 'Punjabi',
+			urdu: 'Urdu',
+			odia: 'Odia',
+			oriya: 'Odia',
+			assamese: 'Assamese',
+		};
+
+		const normaliseLanguageKey = (value: string) =>
+			value.trim().toLowerCase().replace(/\s+/g, ' ');
+
+		const correctLanguageInput = () => {
+			if (!languageOther || languageSelect?.value !== 'other') return;
+			const original = languageOther.value;
+			const key = normaliseLanguageKey(original);
+			const correction = languageCorrections[key];
+			if (correction && original !== correction) {
+				languageOther.value = correction;
+				languageOther.setSelectionRange(correction.length, correction.length);
+			}
+		};
+
+		languageOther?.addEventListener('input', correctLanguageInput);
+		languageOther?.addEventListener('blur', correctLanguageInput);
 
 		// ── Live clearing of errors on user input ──────────────────────────────
 		form.addEventListener('input', (e) => {

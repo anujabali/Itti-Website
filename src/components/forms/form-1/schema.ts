@@ -25,7 +25,7 @@ export function mapForm1ToSupabase(data: Form1Data): SupabasePersonPayload {
 		gender: data.gender ? data.gender : null,
 		pincode:
 			data.pincode && data.pincode.trim().length === 6 ? data.pincode.trim() : null,
-		preferred_language: data.preferredLanguage ? data.preferredLanguage : null,
+		preferred_language: data.preferredLanguage === 'other' ? (data.languageOther?.trim() || 'other') : (data.preferredLanguage ? data.preferredLanguage : null),
 		role: data.role ? data.role : null,
 		meta: {
 			city: data.city,
