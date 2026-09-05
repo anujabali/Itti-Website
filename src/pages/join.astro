@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import SiteFooter from '../components/layout/SiteFooter.astro';
+import Form1Overlay from '../components/forms/form-1/Form1Overlay.astro';
 ---
 
 <Base
@@ -17,180 +18,34 @@ import SiteFooter from '../components/layout/SiteFooter.astro';
 			</p>
 		</header>
 
-		<section class="join-card" aria-labelledby="form-title">
-			<form class="register-form" data-form-1 novalidate>
-				<!-- Mandatory: Full Name -->
-				<div class="form-group">
-					<label class="form-label" for="reg-fullname">
-						Full Name <span class="required" aria-hidden="true">*</span>
-					</label>
-					<input
-						class="form-input"
-						id="reg-fullname"
-						name="fullName"
-						type="text"
-						placeholder="Your full name"
-						required
-						maxlength="120"
-					/>
-					<p class="field-error" data-error="fullName" aria-live="polite"></p>
-				</div>
-
-				<!-- Mandatory: City -->
-				<div class="form-group">
-					<label class="form-label" for="reg-city">
-						City <span class="required" aria-hidden="true">*</span>
-					</label>
-					<input
-						class="form-input"
-						id="reg-city"
-						name="city"
-						type="text"
-						placeholder="e.g. Chennai, Mumbai, Bengaluru"
-						required
-						maxlength="100"
-					/>
-					<p class="field-error" data-error="city" aria-live="polite"></p>
-				</div>
-
-				<!-- Mandatory: Role -->
-				<div class="form-group">
-					<label class="form-label" for="reg-role">
-						Role <span class="required" aria-hidden="true">*</span>
-					</label>
-					<select class="form-select" id="reg-role" name="role" required>
-						<option value="">Select your role...</option>
-						<option value="patient">Patient (Person seeking care)</option>
-						<option value="caregiver">Caregiver (Family / Guardian)</option>
-						<option value="volunteer">Volunteer / Supporter</option>
-						<option value="other">Other Community Member</option>
-					</select>
-					<p class="field-error" data-error="role" aria-live="polite"></p>
-				</div>
-
-				<!-- Contact Reachability: At least one required -->
-				<div class="form-row">
-					<div class="form-group form-group--half">
-						<label class="form-label" for="reg-email">Email Address</label>
-						<input
-							class="form-input"
-							id="reg-email"
-							name="email"
-							type="email"
-							autocomplete="email"
-							placeholder="you@example.com"
-						/>
-						<p class="field-error" data-error="email" aria-live="polite"></p>
-					</div>
-
-					<div class="form-group form-group--half">
-						<label class="form-label" for="reg-phone">Phone Number</label>
-						<input
-							class="form-input"
-							id="reg-phone"
-							name="phone"
-							type="tel"
-							autocomplete="tel"
-							placeholder="+91 9876543210"
-						/>
-						<p class="field-error" data-error="phone" aria-live="polite"></p>
-					</div>
-				</div>
-				<p
-					class="field-error field-error--contact"
-					data-error="contact"
-					aria-live="polite"
-				>
-				</p>
-
-				<!-- Area / Pillar Selection -->
-				<div class="form-group">
-					<label class="form-label" for="reg-pillar"
-						>Which area would you like to connect with?</label
-					>
-					<select class="form-select" id="reg-pillar" name="selectedPillar">
-						<option value="not_sure">Not sure yet</option>
-						<option value="neurodivergence">Neurodivergence</option>
-						<option value="cancer_care">Cancer Care</option>
-						<option value="claw">CLAW</option>
-					</select>
-				</div>
-
-				<!-- Optional: Pincode & Date of Birth -->
-				<div class="form-row">
-					<div class="form-group form-group--half">
-						<label class="form-label" for="reg-pincode">Pincode (Optional)</label>
-						<input
-							class="form-input"
-							id="reg-pincode"
-							name="pincode"
-							type="text"
-							placeholder="6-digit Indian PIN"
-							maxlength="6"
-						/>
-						<p class="field-error" data-error="pincode" aria-live="polite"></p>
-					</div>
-
-					<div class="form-group form-group--half">
-						<label class="form-label" for="reg-dob">Date of Birth (Optional)</label>
-						<input class="form-input" id="reg-dob" name="dateOfBirth" type="date" />
-						<p class="field-error" data-error="dateOfBirth" aria-live="polite"></p>
-					</div>
-				</div>
-
-				<!-- Optional: Gender -->
-				<div class="form-group">
-					<label class="form-label" for="reg-gender">Gender (Optional)</label>
-					<select class="form-select" id="reg-gender" name="gender">
-						<option value="">Prefer not to disclose</option>
-						<option value="woman">Woman</option>
-						<option value="man">Man</option>
-						<option value="non_binary">Non-binary</option>
-						<option value="self_described">Self-described</option>
-					</select>
-				</div>
-
-				<div class="form-group" id="gender-self-group" style="display: none;">
-					<label class="form-label" for="reg-gender-self"
-						>Please specify gender identity</label
-					>
-					<input
-						class="form-input"
-						id="reg-gender-self"
-						name="genderSelfDescribed"
-						type="text"
-					/>
-					<p class="field-error" data-error="genderSelfDescribed" aria-live="polite">
-					</p>
-				</div>
-
-				<!-- Consent Checkbox -->
-				<div class="form-checkbox">
-					<input id="reg-consent-wa" name="consentWhatsapp" type="checkbox" />
-					<label for="reg-consent-wa">
-						I would like to receive updates and community notices via WhatsApp.
-					</label>
-				</div>
-
-				<button class="submit-button" type="submit" data-submit-btn> Register </button>
-
-				<div class="form-status" data-form-status aria-live="polite"></div>
-			</form>
-		</section>
+		<!-- The form opens over this page on arrival. This is what a visitor
+		     returns to if they close it, and the way back in. -->
+		<p class="join-page__reopen">
+			<button class="join-page__button" type="button" data-f1-reopen>
+				Open the registration form
+			</button>
+		</p>
 	</div>
+
 	<SiteFooter />
 </Base>
+
+<!-- One Form 1, not two. This page used to carry its own copy of the form,
+     which had already drifted from this one: no country code, no city
+     autocomplete, no postal lookup, and a different set of fields. Everywhere
+     the form appears it is now this component. -->
+<Form1Overlay initiallyOpen />
 
 <style>
 	.join-page {
 		max-width: 46rem;
 		margin: 0 auto;
 		padding: clamp(7rem, 14vh, 9rem) var(--gutter) clamp(4rem, 8vh, 6rem);
+		min-height: 60svh;
 	}
 
 	.join-page__header {
 		text-align: center;
-		margin-bottom: clamp(2.5rem, 5vh, 3.5rem);
 	}
 
 	.join-page__eyebrow {
@@ -217,222 +72,22 @@ import SiteFooter from '../components/layout/SiteFooter.astro';
 		color: var(--ink-soft);
 	}
 
-	.join-card {
-		background: var(--cream);
-		border: 1px solid rgba(44, 39, 33, 0.14);
-		border-radius: 1rem;
-		padding: clamp(1.75rem, 4vw, 2.75rem);
-		box-shadow: 0 4px 20px rgba(44, 39, 33, 0.04);
+	.join-page__reopen {
+		margin-top: clamp(2.5rem, 5vh, 3.5rem);
+		text-align: center;
 	}
 
-	.register-form {
-		display: grid;
-		gap: 1.4rem;
-	}
-
-	.form-row {
-		display: flex;
-		gap: 1rem;
-		flex-wrap: wrap;
-	}
-
-	.form-group {
-		display: grid;
-		gap: 0.4rem;
-	}
-
-	.form-group--half {
-		flex: 1 1 calc(50% - 0.5rem);
-		min-width: 14rem;
-	}
-
-	.form-label {
-		font-size: 0.9375rem;
-		font-weight: 500;
-		color: var(--ink);
-	}
-
-	.required {
-		color: #b33927;
-	}
-
-	.form-input,
-	.form-select {
-		width: 100%;
-		padding: 0.75rem 1rem;
-		border: 1px solid rgba(44, 39, 33, 0.2);
-		border-radius: 0.5rem;
-		background: var(--cream-deep);
-		color: var(--ink);
-		font-family: var(--body);
-		font-size: 1rem;
-		transition:
-			border-color 200ms var(--ease),
-			box-shadow 200ms var(--ease);
-	}
-
-	.form-input:focus-visible,
-	.form-select:focus-visible {
-		outline: none;
-		border-color: var(--teal);
-		box-shadow: 0 0 0 3px rgba(28, 107, 119, 0.15);
-	}
-
-	.form-checkbox {
-		display: flex;
-		align-items: flex-start;
-		gap: 0.75rem;
-		font-size: 0.9375rem;
-		line-height: 1.4;
-		color: var(--ink-soft);
-		margin-top: 0.25rem;
-	}
-
-	.form-checkbox input {
-		margin-top: 0.2rem;
-		accent-color: var(--teal);
-		width: 1.1rem;
-		height: 1.1rem;
-	}
-
-	.field-error {
-		font-size: 0.8125rem;
-		color: #b33927;
-		margin-top: 0.2rem;
-		min-height: 1rem;
-	}
-
-	.field-error--contact {
-		margin-top: -0.5rem;
-	}
-
-	.submit-button {
-		margin-top: 0.5rem;
-		padding: 0.9rem 1.8rem;
+	.join-page__button {
+		padding: 0.85rem 1.75rem;
+		border-radius: 999px;
 		background: var(--teal);
-		color: var(--cream);
-		border: none;
-		border-radius: 0.5rem;
-		font-family: var(--body);
-		font-size: 1.0625rem;
-		font-weight: 600;
-		cursor: pointer;
-		transition:
-			background-color 200ms var(--ease),
-			transform 200ms var(--ease);
-	}
-
-	.submit-button:hover {
-		background: var(--teal-deep);
-		transform: translateY(-1px);
-	}
-
-	.submit-button:disabled {
-		opacity: 0.6;
-		cursor: not-allowed;
-		transform: none;
-	}
-
-	.form-status {
-		margin-top: 0.5rem;
-		padding: 0.9rem 1.2rem;
-		border-radius: 0.5rem;
+		color: var(--warm-white);
 		font-size: 0.9375rem;
-		display: none;
+		letter-spacing: 0.02em;
+		transition: background-color 200ms var(--ease);
 	}
 
-	.form-status.is-success {
-		display: block;
-		background: rgba(127, 144, 112, 0.15);
-		border: 1px solid var(--sage);
-		color: var(--teal-deep);
-	}
-
-	.form-status.is-error {
-		display: block;
-		background: rgba(179, 57, 39, 0.1);
-		border: 1px solid rgba(179, 57, 39, 0.3);
-		color: #b33927;
+	.join-page__button:hover {
+		background: var(--teal-deep);
 	}
 </style>
-
-<script>
-	import { registerMember, validateMemberPayload } from '../lib/services/registration';
-	import type { Form1RegistrationPayload } from '../types/database';
-
-	const form = document.querySelector<HTMLFormElement>('[data-form-1]');
-	const statusEl = document.querySelector<HTMLElement>('[data-form-status]');
-	const submitBtn = document.querySelector<HTMLButtonElement>('[data-submit-btn]');
-	const genderSelect = document.querySelector<HTMLSelectElement>('#reg-gender');
-	const genderSelfGroup = document.querySelector<HTMLElement>('#gender-self-group');
-
-	genderSelect?.addEventListener('change', () => {
-		if (genderSelfGroup) {
-			genderSelfGroup.style.display =
-				genderSelect.value === 'self_described' ? 'grid' : 'none';
-		}
-	});
-
-	form?.addEventListener('submit', async (e) => {
-		e.preventDefault();
-		if (!form || !statusEl || !submitBtn) return;
-
-		// Clear previous error messages
-		form.querySelectorAll('.field-error').forEach((el) => {
-			el.textContent = '';
-		});
-		statusEl.className = 'form-status';
-		statusEl.textContent = '';
-
-		const formData = new FormData(form);
-		const payload: Form1RegistrationPayload = {
-			fullName: (formData.get('fullName') as string) || '',
-			city: (formData.get('city') as string) || '',
-			role: formData.get('role') as any,
-			email: (formData.get('email') as string) || undefined,
-			phone: (formData.get('phone') as string) || undefined,
-			selectedPillar: (formData.get('selectedPillar') as any) || undefined,
-			pincode: (formData.get('pincode') as string) || undefined,
-			dateOfBirth: (formData.get('dateOfBirth') as string) || undefined,
-			gender: (formData.get('gender') as any) || undefined,
-			genderSelfDescribed: (formData.get('genderSelfDescribed') as string) || undefined,
-			consentWhatsapp: formData.get('consentWhatsapp') === 'on',
-		};
-
-		// 1. Client-side validation check
-		const validation = validateMemberPayload(payload);
-		if (!validation.valid) {
-			for (const [key, msg] of Object.entries(validation.errors)) {
-				const errorEl = form.querySelector(`[data-error="${key}"]`);
-				if (errorEl) errorEl.textContent = msg;
-			}
-			return;
-		}
-
-		// 2. Submit to database service
-		submitBtn.disabled = true;
-		submitBtn.textContent = 'Registering...';
-
-		try {
-			const result = await registerMember(payload);
-			submitBtn.disabled = false;
-			submitBtn.textContent = 'Register';
-
-			if (result.success) {
-				statusEl.classList.add('is-success');
-				statusEl.textContent =
-					'Registration successful! Welcome to The Itti Foundation.';
-				form.reset();
-				if (genderSelfGroup) genderSelfGroup.style.display = 'none';
-			} else {
-				statusEl.classList.add('is-error');
-				statusEl.textContent = result.message || 'Registration could not be completed.';
-			}
-		} catch {
-			submitBtn.disabled = false;
-			submitBtn.textContent = 'Register';
-			statusEl.classList.add('is-error');
-			statusEl.textContent = 'An unexpected error occurred. Please try again.';
-		}
-	});
-</script>
