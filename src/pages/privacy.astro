@@ -1,0 +1,301 @@
+---
+import Base from '../layouts/Base.astro';
+import SiteFooter from '../components/layout/SiteFooter.astro';
+
+/**
+ * What this page says about the system is taken from the system: the columns
+ * are the columns `person` actually has, the third parties are the only hosts
+ * the browser and the database actually talk to, and the retention rule for
+ * the rate-limit table is the one in migration 0005.
+ *
+ * Everything the code cannot answer — how long registrations are kept, who the
+ * grievance officer is, what address to write to — is marked `TO CONFIRM` and
+ * renders visibly as an unfinished line. None of it is invented.
+ */
+
+const POLICY_VERSION = 'v1.0';
+const LAST_UPDATED = '6 September 2026';
+
+const collected = [
+	{
+		group: 'To reach you',
+		items: 'Your name, and a phone number or an email address — one of the two is required, both are optional individually. Your city, and in India your PIN code.',
+	},
+	{
+		group: 'To route you well',
+		items: 'How you are joining us — as someone seeking support, a caregiver, a volunteer, or otherwise — and which of our three areas you want to connect with.',
+	},
+	{
+		group: 'If you offer them',
+		items: 'Date of birth, gender, and preferred language. None of these is required, and the form works without them.',
+	},
+	{
+		group: 'What you agreed to',
+		items: 'Whether you asked us to contact you by WhatsApp, SMS or email, recorded separately for each, with the version of this policy that was in force when you agreed and the date you did.',
+	},
+];
+---
+
+<Base
+	title="Privacy — The Itti Foundation"
+	description="What The Itti Foundation collects when you register, why, and what you can ask us to do about it."
+>
+	<div class="page">
+		<article class="doc">
+		<header class="doc__head">
+			<p class="doc__eyebrow">Privacy</p>
+			<h1 class="doc__title">What we hold, and why.</h1>
+			<p class="doc__lede">
+				This describes what happens to what you give us when you register. It covers
+				this website only.
+			</p>
+			<p class="doc__stamp">
+				Version {POLICY_VERSION} · Last updated {LAST_UPDATED}
+			</p>
+		</header>
+
+		<section class="doc__section">
+			<h2 class="doc__h">What we collect</h2>
+			<div class="doc__body">
+				<dl class="doc__list">
+					{
+						collected.map((c) => (
+							<>
+								<dt>{c.group}</dt>
+								<dd>{c.items}</dd>
+							</>
+						))
+					}
+				</dl>
+				<p>
+					We do not ask for anything about your health beyond which area of our work
+					you want to reach. We do not use cookies to track you, and there is no
+					analytics or advertising code on this site.
+				</p>
+			</div>
+		</section>
+
+		<section class="doc__section">
+			<h2 class="doc__h">Who else touches it</h2>
+			<div class="doc__body">
+				<p>
+					<strong>Supabase</strong> stores the registry. Our database currently sits in
+					their Seoul region, which means your details are held outside India.
+				</p>
+				<p>
+					<strong>Netlify</strong> serves this website and sees the ordinary request
+					information any web host sees.
+				</p>
+				<p>
+					<strong>India Post's PIN code service</strong> is asked to name the district
+					for a PIN code you type, so the form can fill in your city. Your PIN code
+					reaches them; nothing else does, and only if you enter one.
+				</p>
+				<p>
+					We do not sell your details, and we do not pass them to anyone else.
+				</p>
+			</div>
+		</section>
+
+		<section class="doc__section">
+			<h2 class="doc__h">How long we keep it</h2>
+			<div class="doc__body">
+				<p class="doc__todo">
+					TO CONFIRM — how long a registration is kept if nothing comes of it, and what
+					happens to it if you ask us to stop contacting you.
+				</p>
+				<p>
+					One thing we can be exact about: to stop the form being abused we count
+					registrations per hour against a one-way hash of the address you connect
+					from. We do not store the address itself, and the counts are deleted after a
+					day.
+				</p>
+			</div>
+		</section>
+
+		<section class="doc__section">
+			<h2 class="doc__h">What you can ask us to do</h2>
+			<div class="doc__body">
+				<p>
+					Under India's Digital Personal Data Protection Act you can ask us for a copy
+					of what we hold about you, ask us to correct it, ask us to delete it, and
+					withdraw a consent you gave. Withdrawing a consent does not undo what we did
+					while it stood, and we will still reply to anything you send us directly.
+				</p>
+				<p class="doc__todo">
+					TO CONFIRM — the address to write to, and the name of the person responsible
+					for answering these requests. The Act requires both to be published.
+				</p>
+			</div>
+		</section>
+
+		<section class="doc__section">
+			<h2 class="doc__h">If this changes</h2>
+			<div class="doc__body">
+				<p>
+					Every consent is stored with the version of this policy that was in force
+					when it was given, so a change here does not quietly reinterpret something
+					you agreed to under an earlier version.
+				</p>
+			</div>
+		</section>
+		</article>
+
+		<SiteFooter />
+	</div>
+</Base>
+
+<style>
+	/* The ground runs the width of the page, so the footer — which sets no
+	   background of its own and whose ink assumes cream — has something to sit
+	   on. Without it, it renders dark on dark. */
+	.page {
+		background: var(--cream);
+	}
+
+	.doc {
+		max-width: 62rem;
+		margin: 0 auto;
+		padding: calc(var(--nav-h) + clamp(2.5rem, 7vh, 5rem)) var(--gutter)
+			clamp(3rem, 8vh, 5rem);
+	}
+
+	.doc__head {
+		display: grid;
+		grid-template-columns: minmax(7rem, 22%) 1fr;
+		column-gap: clamp(1.5rem, 4vw, 3.5rem);
+		padding-bottom: clamp(2.5rem, 6vh, 4rem);
+	}
+
+	.doc__eyebrow {
+		grid-column: 1;
+		padding-top: 0.65rem;
+		font-family: var(--face-cinzel);
+		font-size: 0.6875rem;
+		font-weight: 500;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: var(--teal);
+	}
+
+	.doc__title {
+		grid-column: 2;
+		font-family: var(--face-bodoni);
+		font-size: clamp(2.25rem, 4.6vw, 3.25rem);
+		font-weight: 450;
+		line-height: 1.05;
+		letter-spacing: -0.015em;
+	}
+
+	.doc__lede {
+		grid-column: 2;
+		margin-top: 1rem;
+		font-size: 1.125rem;
+		line-height: 1.55;
+		color: var(--ink-soft);
+		max-width: 34rem;
+	}
+
+	.doc__stamp {
+		grid-column: 2;
+		margin-top: 1.5rem;
+		font-size: 0.6875rem;
+		font-weight: 600;
+		letter-spacing: 0.15em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+	}
+
+	.doc__section {
+		display: grid;
+		grid-template-columns: minmax(7rem, 22%) 1fr;
+		column-gap: clamp(1.5rem, 4vw, 3.5rem);
+		border-top: 1px solid var(--rule);
+		padding: 2.75rem 0 0;
+		margin-bottom: 3rem;
+	}
+
+	.doc__h {
+		grid-column: 1;
+		margin: 0;
+		font-family: var(--face-cinzel);
+		font-size: 0.8125rem;
+		font-weight: 500;
+		letter-spacing: 0.16em;
+		line-height: 1.35;
+		text-transform: uppercase;
+		color: var(--teal);
+	}
+
+	.doc__body {
+		grid-column: 2;
+		display: grid;
+		gap: 1.15rem;
+		max-width: 36rem;
+		font-size: 1.0625rem;
+		line-height: 1.65;
+		color: var(--ink-soft);
+	}
+
+	.doc__body strong {
+		font-weight: 600;
+		color: var(--ink);
+	}
+
+	.doc__list {
+		display: grid;
+		margin: 0;
+		border-top: 1px solid var(--rule);
+	}
+
+	.doc__list dt {
+		padding: 1rem 0 0.35rem;
+		font-size: 0.6875rem;
+		font-weight: 600;
+		letter-spacing: 0.15em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+	}
+
+	.doc__list dd {
+		margin: 0;
+		padding: 0 0 1rem;
+		border-bottom: 1px solid var(--rule);
+		color: var(--ink-soft);
+	}
+
+	/* Deliberately conspicuous. These are the lines only the foundation can
+	   write, and a privacy policy that ships with them still in it is worse
+	   than one that is late. */
+	.doc__todo {
+		padding: 0.9rem 0 0.9rem 1rem;
+		border-left: 2px solid var(--ochre);
+		color: var(--ink);
+		font-size: 1rem;
+	}
+
+	@media (max-width: 46rem) {
+		.doc__head,
+		.doc__section {
+			grid-template-columns: 1fr;
+		}
+
+		.doc__eyebrow,
+		.doc__title,
+		.doc__lede,
+		.doc__stamp,
+		.doc__h,
+		.doc__body {
+			grid-column: 1;
+		}
+
+		.doc__eyebrow {
+			padding-top: 0;
+			margin-bottom: 0.65rem;
+		}
+
+		.doc__h {
+			margin-bottom: 1.5rem;
+		}
+	}
+</style>

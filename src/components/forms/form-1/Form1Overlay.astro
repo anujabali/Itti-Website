@@ -443,7 +443,10 @@
 						</button>
 					</div>
 					<p class="f1-footer__disclaimer">
-						We keep these details to reach you and to route you well.
+						We keep these details to reach you and to route you well. <a
+							class="f1-footer__link"
+							href="/privacy">What we hold, and why</a
+						>.
 					</p>
 				</footer>
 			</form>
@@ -686,7 +689,20 @@
 		.f1-title,
 		.f1-subtitle,
 		.f1-footer__action,
-		.f1-footer__disclaimer {
+		.f1-footer__link {
+		color: var(--teal);
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
+		text-decoration-thickness: 1px;
+		text-decoration-color: color-mix(in srgb, var(--teal) 40%, transparent);
+		transition: text-decoration-color 180ms var(--ease);
+	}
+
+	.f1-footer__link:hover {
+		text-decoration-color: var(--teal);
+	}
+
+	.f1-footer__disclaimer {
 			grid-column: 1;
 		}
 
