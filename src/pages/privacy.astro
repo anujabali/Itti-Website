@@ -63,10 +63,21 @@ const collected = [
 			<section class="doc__section">
 				<h2 class="doc__h">Who we are</h2>
 				<div class="doc__body">
+					<p>
+						The Itti Foundation is the working name of <strong
+							>Itti&rsquo;s Skill School Foundation</strong
+						>, a Section 8 not-for-profit registered in India. We are the data fiduciary
+						for everything described here.
+					</p>
+					<p>
+						Write to <a class="doc__link" href="mailto:hello@itti.org.in"
+							>hello@itti.org.in</a
+						> about anything on this page, including a request to see, correct or delete what
+						we hold.
+					</p>
 					<p class="doc__todo">
-						TO CONFIRM &mdash; the registered name and address of the foundation, and
-						the person who answers privacy requests. The DPDP Act requires both to be
-						published.
+						TO CONFIRM &mdash; our registered address, and the name of the person
+						answering these requests. The Act requires both to be published.
 					</p>
 				</div>
 			</section>
@@ -96,8 +107,8 @@ const collected = [
 				<h2 class="doc__h">Who else holds it</h2>
 				<div class="doc__body">
 					<p>
-						<strong>Supabase</strong> stores the registry, in their Seoul region &mdash; so
-						outside India.
+						<strong>Supabase</strong> stores the registry, in their Mumbai region &mdash;
+						so within India.
 					</p>
 					<p>
 						<strong>Netlify</strong> serves this site and sees ordinary request logs.
@@ -113,9 +124,15 @@ const collected = [
 			<section class="doc__section">
 				<h2 class="doc__h">How long</h2>
 				<div class="doc__body">
-					<p class="doc__todo">
-						TO CONFIRM &mdash; how long a registration is kept, and what happens to it
-						if you ask us to stop.
+					<p>
+						We keep what you give us for as long as you are in touch with us. If three
+						years pass with no contact either way, we delete it.
+					</p>
+					<p>
+						If you ask us to stop contacting you, we keep only enough to honour that
+						&mdash; your contact details and the fact that you asked &mdash; so we do
+						not write to you again by mistake. Ask us to delete everything instead and
+						we will.
 					</p>
 					<p>
 						Abuse counts are held against a one-way hash of your address, never the
@@ -142,9 +159,10 @@ const collected = [
 						If your date of birth puts you under 18, we ask for a parent or guardian's
 						phone number or email address and will not register you without one.
 					</p>
-					<p class="doc__todo">
-						TO CONFIRM &mdash; we contact them to confirm before acting on the
-						registration. Someone has to be doing that.
+					<p>
+						We write to them the moment you register, and we do not act on the
+						registration until they reply to say we may. If you gave a phone number
+						rather than an email address, we call instead.
 					</p>
 				</div>
 			</section>
@@ -301,6 +319,19 @@ const collected = [
 	/* Deliberately conspicuous. These are the lines only the foundation can
 	   write, and a privacy policy that ships with them still in it is worse
 	   than one that is late. */
+	.doc__link {
+		color: var(--teal);
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
+		text-decoration-thickness: 1px;
+		text-decoration-color: color-mix(in srgb, var(--teal) 40%, transparent);
+		transition: text-decoration-color 180ms var(--ease);
+	}
+
+	.doc__link:hover {
+		text-decoration-color: var(--teal);
+	}
+
 	.doc__todo {
 		padding: 0.9rem 0 0.9rem 1rem;
 		border-left: 2px solid var(--ochre);
