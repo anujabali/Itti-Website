@@ -737,16 +737,25 @@ Let us create a world where no one struggles in silence.`,
 				const overrun = (-r.top - r.travel) / r.stageH;
 				const lag =
 					overrun > 0 && r.exits_dark ? ease(clamp(overrun)) * r.stageH * 0.12 : 0;
-				r.stage.style.transform = lag ? `translate3d(0, ${lag.toFixed(1)}px, 0)` : '';
+				// Always written, never cleared. Setting a transform back to '' drops
+				// the compositor layer and takes it again a frame later, which lands as
+				// a jolt exactly when the handover is on screen.
+				r.stage.style.transform = `translate3d(0, ${lag.toFixed(1)}px, 0)`;
 
 				// Dark on the way in and on the way out, so the handover happens
-				// in shadow rather than on a visible seam.
-				// Wider ramps and a shade short of full black: a long, shallow fall
-				// into shadow reads as the picture receding, where a fast one to
-				// pure black reads as a blackout.
+				// in shadow rather than on a visible seam. Both ramps are scaled to
+				// peak at the join, so the outgoing and incoming pictures are
+				// equally shaded where they meet.
+				//
+				// The peak is a shadow, not a blackout. At 0.94 the two dips sat at
+				// full strength together and the screen went black and stayed there
+				// for about a hundred pixels of scroll, which reads as a fault
+				// rather than as a cut. The grade already lays a heavy hold on each
+				// plate's top and bottom edge, so the join arrives half-darkened
+				// before the dip touches it and does not need much more.
 				const arriving = clamp(r.top / (r.stageH * 0.5));
-				const leaving = r.exits_dark ? clamp(overrun / 0.42) : 0;
-				const dark = ease(Math.max(arriving, leaving)) * 0.94;
+				const leaving = r.exits_dark ? clamp(overrun / 0.5) : 0;
+				const dark = ease(Math.max(arriving, leaving)) * 0.58;
 				if (r.dip) r.dip.style.opacity = dark.toFixed(3);
 				// The wall label sits above the dip, so it has to go into shadow
 				// with its own picture rather than hanging over the black.
@@ -755,9 +764,7 @@ Let us create a world where no one struggles in silence.`,
 				// Bourgery pushes in, the heron lifts. One move repeated three
 				// times is an effect; three different moves is cinematography.
 				for (const exit of r.exits) {
-					exit.el.style.transform = exit.by
-						? `translate3d(0, ${-exit.by.toFixed(1)}px, 0)`
-						: '';
+					exit.el.style.transform = `translate3d(0, ${-exit.by.toFixed(1)}px, 0)`;
 					// Words land one after another, the last one home just as the
 					// frame settles.
 					const stagger = 0.17;
