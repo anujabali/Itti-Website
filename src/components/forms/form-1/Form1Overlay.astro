@@ -929,7 +929,11 @@
 		margin-bottom: 0.9rem;
 	}
 
+	/* An aside to the label, not part of its name. The only thing separating the
+	   two was a collapsed newline carrying the label's own tracking, which is
+	   not enough at this size. */
 	.f1-opt {
+		margin-left: 0.5em;
 		font-size: 0.6875rem;
 		font-weight: 400;
 		letter-spacing: 0.04em;
@@ -1626,14 +1630,18 @@
 
 	.f1-success__summary {
 		grid-column: 2;
-		display: grid;
-		grid-template-columns: minmax(9rem, auto) 1fr;
-		align-items: baseline;
-		/* No column gap: the two cells each draw the rule under them, and a gap
-		   would break the line between the label and its value. */
-		column-gap: 0;
 		margin: 2.75rem 0 0;
 		border-top: 1px solid rgba(44, 39, 33, 0.16);
+	}
+
+	.f1-success__summary :global(.f1-success__row) {
+		display: grid;
+		/* Fixed, not auto: each row is its own grid, so an `auto` first column is
+		   sized by that row's own label and the values step in and out down the
+		   list. The width fits the longest label. */
+		grid-template-columns: 11rem 1fr;
+		align-items: baseline;
+		border-bottom: 1px solid rgba(44, 39, 33, 0.1);
 	}
 
 	.f1-success__eyebrow {
@@ -1643,7 +1651,6 @@
 
 	.f1-success__summary :global(dt) {
 		padding: 0.85rem 1.5rem 0.85rem 0;
-		border-bottom: 1px solid rgba(44, 39, 33, 0.1);
 		font-size: 0.6875rem;
 		font-weight: 600;
 		letter-spacing: 0.15em;
@@ -1654,7 +1661,6 @@
 	.f1-success__summary :global(dd) {
 		margin: 0;
 		padding: 0.85rem 0 0.85rem;
-		border-bottom: 1px solid rgba(44, 39, 33, 0.1);
 		font-size: 1.0625rem;
 		color: var(--ink);
 	}
@@ -1676,13 +1682,12 @@
 			margin-bottom: 0.65rem;
 		}
 
-		.f1-success__summary {
+		.f1-success__summary :global(.f1-success__row) {
 			grid-template-columns: 1fr;
 		}
 
 		.f1-success__summary :global(dt) {
 			padding-bottom: 0;
-			border-bottom: 0;
 		}
 	}
 
@@ -2385,6 +2390,20 @@
 					// textContent, not innerHTML: `full_name` and `city` are free text
 					// the visitor typed, and a name containing markup would otherwise
 					// be parsed as markup.
+					// The stored values are enum members. A receipt should read back what
+					// the person chose, in the words the form used.
+					const SAID: Record<string, string> = {
+						patient: 'Patient or beneficiary',
+						caregiver: 'Caregiver or family member',
+						volunteer: 'Volunteer or supporter',
+						other: 'Other',
+						neurodivergence: 'Neurodivergence',
+						cancer_care: 'Cancer Care',
+						claw: 'CLAW',
+						not_sure: 'Not sure yet',
+					};
+					const say = (v: string) => SAID[v] ?? v.replace(/_/g, ' ');
+
 					const rows: Array<[string, string]> = [
 						['Name', payload.full_name],
 						['Contact', payload.phone || payload.email || 'None'],
@@ -2393,7 +2412,7 @@
 							[payload.meta.city, payload.meta.state].filter(Boolean).join(', ') +
 								(payload.pincode ? ` (${payload.pincode})` : ''),
 						],
-						['Role', payload.role || 'Not specified'],
+						['Role', payload.role ? say(payload.role) : 'Not specified'],
 						[
 							// Plural since areas became a set. Reading the old singular key
 							// here threw on every successful registration, which emptied the
@@ -2401,19 +2420,24 @@
 							(payload.meta.selected_pillars?.length ?? 0) === 1
 								? 'Area of interest'
 								: 'Areas of interest',
-							(payload.meta.selected_pillars ?? [])
-								.map((p) => p.replace(/_/g, ' '))
-								.join(', ') || 'None chosen',
+							(payload.meta.selected_pillars ?? []).map(say).join(', ') ||
+								'None chosen',
 						],
 					];
 
+					// Each pair is wrapped, so the rule belongs to the row rather than
+					// to each cell. Two cells of different type sizes each drawing
+					// their own border put a step in the middle of every line.
 					summaryEl.replaceChildren(
-						...rows.flatMap(([label, value]) => {
+						...rows.map(([label, value]) => {
+							const row = document.createElement('div');
+							row.className = 'f1-success__row';
 							const dt = document.createElement('dt');
 							dt.textContent = label;
 							const dd = document.createElement('dd');
 							dd.textContent = value;
-							return [dt, dd];
+							row.append(dt, dd);
+							return row;
 						}),
 					);
 				}
