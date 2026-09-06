@@ -81,8 +81,7 @@ export const validateMemberPayload = (
 	}
 
 	if (payload.pincode?.trim() && !isValidIndianPincode(payload.pincode)) {
-		errors.pincode =
-			'Pincode must be a valid 6-digit Indian postal code (e.g. 600001).';
+		errors.pincode = 'A PIN code is six digits (e.g. 600001).';
 	}
 
 	if (payload.dateOfBirth) {

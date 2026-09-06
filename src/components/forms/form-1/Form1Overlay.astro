@@ -55,7 +55,7 @@
 					<div class="f1-section__body">
 						<!-- 1. Full Name * -->
 						<div class="f1-field" data-field="fullName">
-							<label class="f1-label" for="f1-fullName"> Full Name </label>
+							<label class="f1-label" for="f1-fullName">Full name</label>
 							<input
 								class="f1-input"
 								id="f1-fullName"
@@ -78,7 +78,7 @@
 							<div class="f1-grid f1-grid--2col">
 								<!-- 2. Phone Number -->
 								<div class="f1-field" data-field="phone">
-									<label class="f1-label" for="f1-phone"> Phone Number </label>
+									<label class="f1-label" for="f1-phone">Phone number</label>
 									<div class="f1-phone-group" data-phone-group>
 										<div class="f1-country" data-country-picker>
 											<button
@@ -88,8 +88,8 @@
 												aria-haspopup="listbox"
 												aria-expanded="false"
 											>
-												<span data-country-flag>🇮🇳</span>
-												<span data-country-name>India</span>
+												<span aria-hidden="true" data-country-flag>🇮🇳</span>
+												<span aria-hidden="true" data-country-name>India</span>
 												<span data-country-dial>+91</span>
 												<span aria-hidden="true">▾</span>
 											</button>
@@ -123,7 +123,7 @@
 
 								<!-- 3. Email Address -->
 								<div class="f1-field" data-field="email">
-									<label class="f1-label" for="f1-email"> Email Address </label>
+									<label class="f1-label" for="f1-email">Email address</label>
 									<input
 										class="f1-input"
 										id="f1-email"
@@ -143,7 +143,7 @@
 						<div class="f1-grid f1-grid--2col">
 							<!-- 4. Date of Birth -->
 							<div class="f1-field" data-field="dateOfBirth">
-								<label class="f1-label" for="f1-dob"> Date of Birth</label>
+								<label class="f1-label" for="f1-dob">Date of birth</label>
 								<input
 									class="f1-input f1-input--date"
 									id="f1-dob"
@@ -264,11 +264,12 @@
 									data-city-input
 									required
 								/>
-								<span
+								<button
 									class="f1-autocomplete__clear"
+									type="button"
 									data-city-clear
-									title="Clear city"
-									hidden>&times;</span
+									aria-label="Clear city"
+									hidden><span aria-hidden="true">&times;</span></button
 								>
 							</div>
 							<!-- Hidden inputs for canonical city & state -->
@@ -291,7 +292,7 @@
 						<!-- 7. Pincode (Required) -->
 						<div class="f1-field" data-field="pincode">
 							<label class="f1-label" for="f1-pincode">
-								<span data-pincode-label>Pincode</span>
+								<span data-pincode-label>PIN code</span>
 							</label>
 							<input
 								class="f1-input"
@@ -301,7 +302,7 @@
 								inputmode="numeric"
 								pattern="[1-9][0-9]{5}"
 								maxlength="6"
-								placeholder="Enter your 6-digit pincode"
+								placeholder="Enter your 6-digit PIN code"
 								required
 								autocomplete="postal-code"
 								data-pincode-field
@@ -314,7 +315,7 @@
 						<!-- 8. Preferred Language (Optional) -->
 						<div class="f1-field" data-field="preferredLanguage">
 							<label class="f1-label" for="f1-language">
-								Preferred Language <span class="f1-opt">(Optional)</span>
+								Preferred language <span class="f1-opt">(Optional)</span>
 							</label>
 							<div class="f1-select-wrap">
 								<select class="f1-select" id="f1-language" name="preferredLanguage">
@@ -336,7 +337,7 @@
 								</select>
 							</div>
 							<div class="f1-reveal" data-language-other-container hidden>
-								<label class="f1-label" for="f1-language-other">Other Language</label>
+								<label class="f1-label" for="f1-language-other">Other language</label>
 								<input
 									class="f1-input"
 									id="f1-language-other"
@@ -755,16 +756,6 @@
 		column-gap: clamp(1.5rem, 4vw, 3.5rem);
 	}
 
-	@media (max-width: 46rem) {
-		.f1-alert-wrap {
-			grid-template-columns: 1fr;
-		}
-
-		.f1-alert {
-			grid-column: 1;
-		}
-	}
-
 	.f1-alert {
 		display: flex;
 		align-items: baseline;
@@ -832,56 +823,6 @@
 		line-height: 1;
 		color: var(--ink);
 		opacity: 0.28;
-	}
-
-	@media (max-width: 46rem) {
-		.f1-header,
-		.f1-footer {
-			grid-template-columns: 1fr;
-		}
-
-		.f1-eyebrow,
-		.f1-title,
-		.f1-subtitle,
-		.f1-footer__action,
-		.f1-footer__link {
-			color: var(--teal);
-			text-decoration: underline;
-			text-underline-offset: 0.2em;
-			text-decoration-thickness: 1px;
-			text-decoration-color: color-mix(in srgb, var(--teal) 40%, transparent);
-			transition: text-decoration-color 180ms var(--ease);
-		}
-
-		.f1-footer__link:hover {
-			text-decoration-color: var(--teal);
-		}
-
-		.f1-footer__disclaimer {
-			grid-column: 1;
-		}
-
-		.f1-eyebrow {
-			padding-top: 0;
-			margin-bottom: 0.65rem;
-		}
-
-		.f1-section {
-			grid-template-columns: 1fr;
-			padding-top: 2rem;
-		}
-
-		.f1-section__legend {
-			display: flex;
-			align-items: baseline;
-			gap: 0.75rem;
-			margin-bottom: 1.75rem;
-		}
-
-		.f1-section__num {
-			margin-bottom: 0;
-			font-size: 1.4rem;
-		}
 	}
 
 	/* ── Grid Layouts ─────────────────────────────────────────────────────── */
@@ -1665,6 +1606,86 @@
 		color: var(--ink);
 	}
 
+	.f1-success__actions {
+		grid-column: 2;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.85rem;
+		margin-top: 2.5rem;
+	}
+
+	/* ── Reopen Pill (Bottom Right) ────────────────────────────────────────── */
+	@media (max-width: 48rem) {
+		.f1-card {
+			padding: 1.5rem 1.25rem;
+			border-radius: 1rem;
+		}
+	}
+
+	/* ── Narrow ─────────────────────────────────────────────────────────────
+	   Last in the sheet on purpose. These override rules of equal specificity,
+	   so placed earlier they lose to them — which is how the header, the alert
+	   and the footer all went on spanning two columns at 360px. */
+	@media (max-width: 46rem) {
+		.f1-alert-wrap {
+			grid-template-columns: 1fr;
+		}
+
+		.f1-alert {
+			grid-column: 1;
+		}
+	}
+
+	@media (max-width: 46rem) {
+		.f1-header,
+		.f1-footer {
+			grid-template-columns: 1fr;
+		}
+
+		.f1-eyebrow,
+		.f1-title,
+		.f1-subtitle,
+		.f1-footer__action,
+		.f1-footer__link {
+			color: var(--teal);
+			text-decoration: underline;
+			text-underline-offset: 0.2em;
+			text-decoration-thickness: 1px;
+			text-decoration-color: color-mix(in srgb, var(--teal) 40%, transparent);
+			transition: text-decoration-color 180ms var(--ease);
+		}
+
+		.f1-footer__link:hover {
+			text-decoration-color: var(--teal);
+		}
+
+		.f1-footer__disclaimer {
+			grid-column: 1;
+		}
+
+		.f1-eyebrow {
+			padding-top: 0;
+			margin-bottom: 0.65rem;
+		}
+
+		.f1-section {
+			grid-template-columns: 1fr;
+			padding-top: 2rem;
+		}
+
+		.f1-section__legend {
+			display: flex;
+			align-items: baseline;
+			gap: 0.75rem;
+			margin-bottom: 1.75rem;
+		}
+
+		.f1-section__num {
+			margin-bottom: 0;
+			font-size: 1.4rem;
+		}
+	}
+
 	@media (max-width: 46rem) {
 		.f1-success {
 			grid-template-columns: 1fr;
@@ -1688,22 +1709,6 @@
 
 		.f1-success__summary :global(dt) {
 			padding-bottom: 0;
-		}
-	}
-
-	.f1-success__actions {
-		grid-column: 2;
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.85rem;
-		margin-top: 2.5rem;
-	}
-
-	/* ── Reopen Pill (Bottom Right) ────────────────────────────────────────── */
-	@media (max-width: 48rem) {
-		.f1-card {
-			padding: 1.5rem 1.25rem;
-			border-radius: 1rem;
 		}
 	}
 </style>
@@ -1861,11 +1866,11 @@
 		const syncPostalCode = () => {
 			const isIndia = selectedCountry.iso2 === 'IN';
 			if (pincodeLabel) {
-				pincodeLabel.textContent = isIndia ? 'Pincode' : 'Postal code (optional)';
+				pincodeLabel.textContent = isIndia ? 'PIN code' : 'Postal code (optional)';
 			}
 			if (pincodeField) {
 				pincodeField.required = isIndia;
-				pincodeField.placeholder = isIndia ? 'Enter your 6-digit pincode' : 'Optional';
+				pincodeField.placeholder = isIndia ? 'Enter your 6-digit PIN code' : 'Optional';
 				if (!isIndia) {
 					pincodeField.value = '';
 					if (pincodeStatus) pincodeStatus.textContent = '';
@@ -2086,7 +2091,7 @@
 				if (pincodeStatus) {
 					const place = [result.city, result.state].filter(Boolean).join(', ');
 					pincodeStatus.textContent = cityAlreadyGiven
-						? `Pincode matches ${place}.`
+						? `PIN code matches ${place}.`
 						: `Location detected: ${place}`;
 				}
 				form.querySelector('[data-error="pincode"]')?.classList.remove('is-visible');
@@ -2393,9 +2398,9 @@
 					// The stored values are enum members. A receipt should read back what
 					// the person chose, in the words the form used.
 					const SAID: Record<string, string> = {
-						patient: 'Patient or beneficiary',
-						caregiver: 'Caregiver or family member',
-						volunteer: 'Volunteer or supporter',
+						patient: 'Patient / Beneficiary',
+						caregiver: 'Caregiver / Family Member',
+						volunteer: 'Volunteer / Supporter',
 						other: 'Other',
 						neurodivergence: 'Neurodivergence',
 						cancer_care: 'Cancer Care',

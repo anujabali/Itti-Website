@@ -577,8 +577,19 @@ const MENUS = [
 		padding: 0.7rem 1.75rem;
 	}
 
+	/* Below this the full lockup cannot fit beside the menu button. */
+	@media (max-width: 26rem) {
+		.brand {
+			--mark-h: 1.9rem;
+			--wordmark-size: 0.9rem;
+		}
+	}
+
 	@media (max-width: 60rem) {
-		.nav__list,
+		/* The menu's wrapper, not just its list: a zero-width flex item still
+		   draws the gaps either side of it, which is 32px the bar does not have
+		   at 360. */
+		.nav__menu,
 		.nav__inner > .pill {
 			display: none;
 		}
@@ -589,6 +600,9 @@ const MENUS = [
 
 		.brand {
 			margin-right: auto;
+			/* Lets the lockup give way rather than push the bar wider than the
+			   screen. */
+			min-width: 0;
 		}
 
 		/* On mobile the drawer is cream, so the bar must read as light while

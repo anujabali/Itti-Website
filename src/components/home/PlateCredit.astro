@@ -106,14 +106,16 @@ const id = `label-${plate.toLowerCase().replace(/\W+/g, '-')}`;
 		text-align: right;
 	}
 
+	/* The overshoot runs into the gutter, so it can never be longer than one.
+	   At 3rem against a 2.4rem gutter it ran off the side of the screen. */
 	.credit--right .credit__programme::before {
 		right: 0;
-		left: -3rem;
+		left: calc(-1 * min(3rem, var(--gutter)));
 	}
 
 	.credit--left .credit__programme::before {
 		left: 0;
-		right: -3rem;
+		right: calc(-1 * min(3rem, var(--gutter)));
 	}
 
 	.credit__programme:hover {

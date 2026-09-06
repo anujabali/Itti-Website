@@ -94,12 +94,12 @@ export function validateForm1(data: Form1Data): {
 	const isIndia = (data.countryIso2 || 'IN') === 'IN';
 	if (isIndia) {
 		if (!data.pincode || !data.pincode.trim()) {
-			errors.pincode = 'Pincode is required.';
+			errors.pincode = 'A PIN code is required.';
 		} else if (!isValidPincode(data.pincode)) {
-			errors.pincode = 'Pincode must be a 6-digit Indian postal code (e.g. 411001).';
+			errors.pincode = 'A PIN code is six digits (e.g. 411001).';
 		}
 	} else if (data.pincode && data.pincode.trim() && !isValidPincode(data.pincode)) {
-		errors.pincode = 'Leave this blank unless you have a 6-digit Indian pincode.';
+		errors.pincode = 'Leave this blank unless you have an Indian PIN code.';
 	}
 
 	// Under 18 the Act needs a parent or guardian reachable. The database
