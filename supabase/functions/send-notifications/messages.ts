@@ -69,7 +69,7 @@ export const welcome = (p: Record<string, unknown>): Message => {
 			'',
 			chose,
 			'',
-			'If anything here is wrong, or you would rather we did not keep it, reply to this message and we will put it right.',
+			'If anything here is wrong, or you would rather we not keep it, reply to this message and we will put it right.',
 			'',
 			'The Itti Foundation',
 			'https://itti.org.in/privacy',
@@ -79,7 +79,7 @@ export const welcome = (p: Record<string, unknown>): Message => {
       <p style="margin:0 0 18px;">We have your details, and someone from the right part of the
         foundation will be in touch.</p>
       <p style="margin:0 0 18px;">${esc(chose)}</p>
-      <p style="margin:0;">If anything here is wrong, or you would rather we did not keep it,
+      <p style="margin:0;">If anything here is wrong, or you would rather we not keep it,
         reply to this message and we will put it right.</p>`),
 	};
 };
