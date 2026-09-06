@@ -19,7 +19,10 @@
 	--ink-deep: #0f1415;
 	--ink: #2c2721;
 	--ink-soft: #5d564d;
-	--ink-faint: #8d857a;
+	/* 4.72:1 on --cream-deep. The old #8d857a was 3.17:1, which is under the
+	   4.5:1 that small text needs — and it is the colour every field label on
+	   the form is set in. */
+	--ink-faint: #70695f;
 
 	/* The one red. Errors are the only thing that uses it, and they were using
 	   three different shades of it. */
