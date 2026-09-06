@@ -176,11 +176,6 @@ const id = `label-${plate.toLowerCase().replace(/\W+/g, '-')}`;
 		/* Frosted rather than solid, so the plate is still faintly present
 		   behind its own label. */
 		background: rgba(251, 248, 240, 0.46);
-		/* Thin glass, so the brightness lift does the work the opacity used to.
-		   Blurring and lifting what is behind keeps the panel light enough for
-		   ink no matter how dark the plate under it happens to be. */
-		-webkit-backdrop-filter: blur(36px) saturate(135%) brightness(1.5);
-		backdrop-filter: blur(36px) saturate(135%) brightness(1.5);
 		border: 1px solid rgba(251, 248, 240, 0.35);
 		color: var(--ink);
 		text-align: left;
@@ -200,6 +195,15 @@ const id = `label-${plate.toLowerCase().replace(/\W+/g, '-')}`;
 	.label[data-open] {
 		opacity: 1;
 		transform: none;
+		/* Thin glass, so the brightness lift does the work the opacity used to.
+		   Blurring and lifting what is behind keeps the panel light enough for
+		   ink no matter how dark the plate under it happens to be.
+
+		   Only while open. A backdrop-filter is not switched off by opacity 0,
+		   so leaving it on the base rule kept a blurred copy of the plate alive
+		   behind every closed label, on every frame the page scrolled. */
+		-webkit-backdrop-filter: blur(36px) saturate(135%) brightness(1.5);
+		backdrop-filter: blur(36px) saturate(135%) brightness(1.5);
 	}
 
 	.label__title {

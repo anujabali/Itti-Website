@@ -1,4 +1,5 @@
 ---
+import PLATES from '../data/plates.json';
 import Base from '../layouts/Base.astro';
 import PlateCredit from '../components/home/PlateCredit.astro';
 import PillarCard from '../components/home/PillarCard.astro';
@@ -25,10 +26,32 @@ import SiteFooter from '../components/layout/SiteFooter.astro';
  * Copy below the poem is PLACEHOLDER. The poem is locked; see docs/DECISIONS.md.
  */
 
+// Which widths of each plate exist on disk. Written by scripts/build-plates.mjs
+// when it generates them, so the srcsets below cannot come to name a file that
+// was never built.
+const PLATE_WIDTHS: Record<string, number[]> = PLATES;
+
+const plateWidths = (plate: string) => {
+	const widths = PLATE_WIDTHS[plate];
+	if (!widths) throw new Error(`No plate variants built for "${plate}" — run scripts/build-plates.mjs.`);
+	return widths;
+};
+
+const plateSet = (plate: string, ext: string) =>
+	plateWidths(plate)
+		.map((w) => `/plates/${plate}-${w}.${ext} ${w}w`)
+		.join(', ');
+
+// Largest JPEG, for anything that understands neither AVIF nor WebP.
+const plateFallback = (plate: string) => {
+	const widths = plateWidths(plate);
+	return `/plates/${plate}-${widths[widths.length - 1]}.jpg`;
+};
+
 const MOVEMENTS = [
 	{
 		id: 'mind',
-		plate: '/plates/cajal.jpg',
+		plate: 'cajal',
 		// A descent with a real push behind it. The travel is the point, but at
 		// 3% the zoom was invisible.
 		pan: 1,
@@ -69,7 +92,7 @@ const MOVEMENTS = [
 	},
 	{
 		id: 'body',
-		plate: '/plates/thorax.jpg',
+		plate: 'thorax',
 		// A push in. Barely any travel, a slow close on the chest — the camera
 		// leaning toward the thing rather than moving past it.
 		pan: 0.3,
@@ -102,7 +125,7 @@ const MOVEMENTS = [
 	},
 	{
 		id: 'forest',
-		plate: '/plates/bird.jpg',
+		plate: 'bird',
 		// A lift. The only photograph in the arc, and the only living thing in
 		// it — a drawing, a drawing, then something with a pulse. Middling
 		// travel and a gentle push, so the frame closes on the bird as the arc
@@ -193,12 +216,19 @@ Let us create a world where no one struggles in silence.`,
 				<section class="mv" id={mv.id} data-mv data-pan={mv.pan} data-zoom={mv.zoom}>
 					<div class="mv__stage">
 						<div class="mv__plate" data-plate aria-hidden="true">
-							<img
-								src={mv.plate}
-								alt=""
-								loading={i === 0 ? 'eager' : 'lazy'}
-								decoding="async"
-							/>
+							<picture>
+								<source type="image/avif" srcset={plateSet(mv.plate, 'avif')} sizes="100vw" />
+								<source type="image/webp" srcset={plateSet(mv.plate, 'webp')} sizes="100vw" />
+								<img
+									src={plateFallback(mv.plate)}
+									srcset={plateSet(mv.plate, 'jpg')}
+									sizes="100vw"
+									alt=""
+									loading={i === 0 ? 'eager' : 'lazy'}
+									fetchpriority={i === 0 ? 'high' : 'auto'}
+									decoding="async"
+								/>
+							</picture>
 						</div>
 						<div class="mv__scrim" aria-hidden="true" />
 						<div class="mv__grade" aria-hidden="true" />
@@ -317,6 +347,10 @@ Let us create a world where no one struggles in silence.`,
 		inset: 0 0 auto;
 		transform-origin: 50% 40%;
 		will-change: transform;
+	}
+
+	.mv__plate picture {
+		display: block;
 	}
 
 	.mv__plate img {
@@ -438,9 +472,8 @@ Let us create a world where no one struggles in silence.`,
 		position: absolute;
 		inset: 0;
 		pointer-events: none;
-		opacity: 0.14;
-		mix-blend-mode: overlay;
-		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+		opacity: 0.22;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='1 0 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
 	}
 
 	.beat__text {
