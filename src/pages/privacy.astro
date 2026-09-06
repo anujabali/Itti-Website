@@ -13,32 +13,34 @@ import SiteFooter from '../components/layout/SiteFooter.astro';
  * renders visibly as an unfinished line. None of it is invented.
  */
 
-const POLICY_VERSION = 'v1.0';
-const LAST_UPDATED = '6 September 2026';
+const POLICY_VERSION = '1.0';
+const LAST_UPDATED = '7 September 2026';
 
 const collected = [
 	{
 		group: 'To reach you',
 		items:
-			'Your name; a phone number or an email address; your city, and in India your PIN code.',
+			'Your name; a phone number or an email address; your city; and, in India, your PIN code.',
 	},
 	{
-		group: 'To route you',
+		group: 'To point you the right way',
 		items:
-			'Whether you are seeking support, caring for someone, volunteering or otherwise; and which of our three areas you want.',
+			'Whether you are seeking support, caring for someone, volunteering or joining us some other way; and which of our three areas you want to connect with.',
 	},
 	{
-		group: 'If you offer them',
-		items: 'Date of birth, gender, preferred language. None is required.',
+		group: 'Only if you offer them',
+		items:
+			'Your date of birth, gender and preferred language. None of the three is required.',
 	},
 	{
 		group: 'What you agreed to',
-		items: 'Each contact permission separately, with the policy version and date.',
+		items:
+			'Which ways we may contact you, recorded one by one, each with the version of this policy and the date you agreed.',
 	},
 	{
 		group: 'How you got here',
 		items:
-			'If you told us, how you heard of us. Either way: any campaign tags in the link you followed, and the site that linked you — its name only, not the page.',
+			'How you heard of us, if you chose to tell us. Whether you did or not: any campaign tags in the link you followed, and the name of the site that linked you — not the page you came from.',
 	},
 ];
 ---
@@ -53,7 +55,7 @@ const collected = [
 				<p class="doc__eyebrow">Privacy</p>
 				<h1 class="doc__title">What we hold, and why.</h1>
 				<p class="doc__lede">
-					What happens to what you give us when you register here.
+					What happens to the details you give us when you register.
 				</p>
 				<p class="doc__stamp">
 					Version {POLICY_VERSION} &middot; Last updated {LAST_UPDATED}
@@ -92,33 +94,33 @@ const collected = [
 						}
 					</dl>
 					<p>
-						We ask nothing about your health beyond which area you want. No cookies, no
-						analytics, no advertising, and nothing is kept about a visit that does not
-						end in a registration.
+						We ask nothing about your health beyond which area you want to connect with.
+						No cookies, no analytics, no advertising, and nothing is kept about a visit
+						that does not end in a registration.
 					</p>
 				</div>
 			</section>
 
 			<section class="doc__section">
-				<h2 class="doc__h">Who else holds it</h2>
+				<h2 class="doc__h">Who else sees it</h2>
 				<div class="doc__body">
 					<p>
-						<strong>Supabase</strong> stores the registry, in their Mumbai region &mdash;
-						so within India.
+						<strong>Supabase</strong> stores the registry in their Mumbai region, which is
+						within India.
 					</p>
 					<p>
 						<strong>Netlify</strong> serves this site and sees ordinary request logs.
 					</p>
 					<p>
-						<strong>India Post</strong> receives a PIN code you type, to name its district.
-						Nothing else reaches them.
+						<strong>India Post</strong> is sent a PIN code you enter, so we can fill in your
+						district. Nothing else about you reaches them.
 					</p>
 					<p>We do not sell your details or pass them to anyone else.</p>
 				</div>
 			</section>
 
 			<section class="doc__section">
-				<h2 class="doc__h">How long</h2>
+				<h2 class="doc__h">How long we keep it</h2>
 				<div class="doc__body">
 					<p>
 						We keep what you give us for as long as you are in touch with us. If three
@@ -131,19 +133,20 @@ const collected = [
 						we will.
 					</p>
 					<p>
-						Abuse counts are held against a one-way hash of your address, never the
-						address, and deleted after a day.
+						To stop the form being abused, we count registrations against a one-way hash
+						of the internet address you connect from. The address itself is never
+						stored, and the counts are deleted after a day.
 					</p>
 				</div>
 			</section>
 
 			<section class="doc__section">
-				<h2 class="doc__h">How it is held</h2>
+				<h2 class="doc__h">How we protect it</h2>
 				<div class="doc__body">
 					<p>
 						The registry cannot be read through this website. Registration reaches it
-						through a single function that only writes; every table refuses to be read
-						by anyone who is not signed in as the person concerned.
+						through a single function that only writes; no table can be read by anyone
+						who is not signed in as the person it describes.
 					</p>
 				</div>
 			</section>
@@ -152,8 +155,9 @@ const collected = [
 				<h2 class="doc__h">Under 18</h2>
 				<div class="doc__body">
 					<p>
-						If your date of birth puts you under 18, we ask for a parent or guardian's
-						phone number or email address and will not register you without one.
+						If your date of birth puts you under 18, we ask for a parent or
+						guardian&rsquo;s phone number or email address and will not register you
+						without one.
 					</p>
 					<p>
 						We write to them the moment you register, and we do not act on the
@@ -167,9 +171,9 @@ const collected = [
 				<h2 class="doc__h">What you can ask</h2>
 				<div class="doc__body">
 					<p>
-						For a copy of what we hold; that we correct it; that we delete it; that a
-						consent be withdrawn. You may nominate someone to exercise these for you if
-						you cannot.
+						You can ask for a copy of what we hold, ask us to correct it, ask us to
+						delete it, or withdraw a consent you gave. If you are unable to do these
+						yourself, you may nominate someone to do them for you.
 					</p>
 					<p>
 						Withdrawing a consent does not undo what was done while it stood. If we do
