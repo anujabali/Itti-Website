@@ -154,3 +154,30 @@ describe('every option the form offers is one the database accepts', () => {
 		}
 	});
 });
+
+describe('the success screen reads keys the payload actually has', () => {
+	const overlay = readFileSync(
+		join(process.cwd(), 'src', 'components', 'forms', 'form-1', 'Form1Overlay.astro'),
+		'utf8',
+	);
+	const schema = readFileSync(
+		join(process.cwd(), 'src', 'components', 'forms', 'form-1', 'schema.ts'),
+		'utf8',
+	);
+
+	/**
+	 * `mapForm1ToSupabase` builds the object the success summary reads. Renaming
+	 * a key in one and not the other throws on every successful registration —
+	 * which is exactly what happened when `selected_pillar` became plural: the
+	 * summary rendered empty and left an uncaught error behind it.
+	 */
+	it('every payload.meta.* the overlay reads is one the mapper writes', () => {
+		const written = new Set([...schema.matchAll(/^\t{3}(\w+):/gm)].map((m) => m[1]!));
+		const read = [...overlay.matchAll(/payload\.meta\.(\w+)/g)].map((m) => m[1]!);
+
+		expect(read.length, 'the summary reads nothing from meta').toBeGreaterThan(0);
+		for (const key of read) {
+			expect([...written], `payload.meta.${key}`).toContain(key);
+		}
+	});
+});

@@ -2384,7 +2384,17 @@
 								(payload.pincode ? ` (${payload.pincode})` : ''),
 						],
 						['Role', payload.role || 'Not specified'],
-						['Area of interest', payload.meta.selected_pillar.replace(/_/g, ' ')],
+						[
+							// Plural since areas became a set. Reading the old singular key
+							// here threw on every successful registration, which emptied the
+							// summary and left an uncaught error behind it.
+							(payload.meta.selected_pillars?.length ?? 0) === 1
+								? 'Area of interest'
+								: 'Areas of interest',
+							(payload.meta.selected_pillars ?? [])
+								.map((p) => p.replace(/_/g, ' '))
+								.join(', ') || 'None chosen',
+						],
 					];
 
 					summaryEl.replaceChildren(
