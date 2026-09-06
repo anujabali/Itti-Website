@@ -31,6 +31,9 @@ export interface Form1Data {
 	// Separate consents because they are separate consents in law, and separate
 	// columns on `person`. Absent means not given, never assumed.
 	// Required below 18: the Act needs a parent or guardian reachable.
+	heardFrom?: string;
+	heardFromOther?: string;
+	referrerName?: string;
 	guardianName?: string;
 	guardianPhone?: string;
 	guardianEmail?: string;

@@ -484,8 +484,60 @@
 							</label>
 						</div>
 					</div>
+
+					<!-- 12. How they found us. Optional; the referrer the page arrived
+					     with is captured either way, and catches what this misses. -->
+					<div class="f1-field" data-field="heardFrom">
+						<label class="f1-label" for="f1-heard">
+							How did you hear about us? <span class="f1-opt">(Optional)</span>
+						</label>
+						<div class="f1-select-wrap">
+							<select class="f1-select" id="f1-heard" name="heardFrom">
+								<option value="">Select one</option>
+								<option value="friend_family">A friend or family member</option>
+								<option value="doctor_hospital">A doctor or hospital</option>
+								<option value="volunteer_staff">Someone from the foundation</option>
+								<option value="event">An event</option>
+								<option value="instagram">Instagram</option>
+								<option value="youtube">YouTube</option>
+								<option value="whatsapp_group">A WhatsApp group</option>
+								<option value="podcast">A podcast</option>
+								<option value="news">The news</option>
+								<option value="search">A search engine</option>
+								<option value="other">Somewhere else</option>
+							</select>
+						</div>
+
+						<div class="f1-reveal" data-referrer hidden>
+							<label class="f1-label" for="f1-referrer">
+								Who should we thank? <span class="f1-opt">(Optional)</span>
+							</label>
+							<input
+								class="f1-input"
+								id="f1-referrer"
+								name="referrerName"
+								type="text"
+								maxlength="120"
+								placeholder="Their name"
+								autocomplete="off"
+							/>
+						</div>
+
+						<div class="f1-reveal" data-heard-other hidden>
+							<label class="f1-label" for="f1-heard-other">Where?</label>
+							<input
+								class="f1-input"
+								id="f1-heard-other"
+								name="heardFromOther"
+								type="text"
+								maxlength="120"
+								placeholder="However you came across us"
+								autocomplete="off"
+							/>
+						</div>
+					</div>
 				</div>
-				</section>
+			</section>
 
 				<!-- ════════ SUBMIT / CONTINUE CTA ════════ -->
 				<footer class="f1-footer">
@@ -1582,6 +1634,7 @@
 	import { searchCities } from './cities';
 	import { validateForm1 } from './validation';
 	import { isMinor } from '../../../lib/validation/rules';
+	import { readAcquisition } from '../../../lib/validation/acquisition';
 	import { persistForm1Data, clearForm1Data } from './schema';
 	import { COUNTRIES, findCountry, searchCountries, detectCountryFromInternationalNumber } from './countries';
 	import { lookupPincode } from './pincode';
@@ -1656,6 +1709,9 @@
 				languageOther: (data.get('languageOther') as string) || '',
 				role: (data.get('role') as any) || '',
 				pillar: (data.get('pillar') as any) || '',
+				heardFrom: (data.get('heardFrom') as any) || '',
+				heardFromOther: (data.get('heardFromOther') as string) || '',
+				referrerName: (data.get('referrerName') as string) || '',
 				consentWhatsapp: data.get('consentWhatsapp') === 'yes',
 				consentSms: data.get('consentSms') === 'yes',
 				consentEmail: data.get('consentEmail') === 'yes',
@@ -1953,6 +2009,24 @@
 		dobInput?.addEventListener('input', syncGuardian);
 		syncGuardian();
 
+		// ── How they found us ─────────────────────────────────────────────────
+		const heardSelect = document.getElementById('f1-heard') as HTMLSelectElement | null;
+		const referrerBox = document.querySelector<HTMLElement>('[data-referrer]');
+		const heardOtherBox = document.querySelector<HTMLElement>('[data-heard-other]');
+
+		const syncHeard = () => {
+			const v = heardSelect?.value || '';
+			const toggle = (box: HTMLElement | null, show: boolean) => {
+				if (!box) return;
+				box.hidden = !show;
+				if (!show) box.querySelectorAll('input').forEach((el) => (el.value = ''));
+			};
+			toggle(referrerBox, v === 'friend_family');
+			toggle(heardOtherBox, v === 'other');
+		};
+		heardSelect?.addEventListener('change', syncHeard);
+		syncHeard();
+
 		// ── Self-described gender ─────────────────────────────────────────────
 		const genderSelect = document.getElementById('f1-gender') as HTMLSelectElement | null;
 		const genderSelf = document.querySelector<HTMLInputElement>('[data-gender-self]');
@@ -2095,6 +2169,11 @@
 							? data.languageOther?.trim()
 							: data.preferredLanguage) || undefined,
 					selectedPillar: data.pillar ? (data.pillar as any) : undefined,
+					heardFrom: data.heardFrom || undefined,
+					heardFromOther: data.heardFromOther || undefined,
+					referrerName: data.referrerName || undefined,
+					// Silent: what the page was arrived with, which self-report misses.
+					...readAcquisition(),
 					consentWhatsapp: data.consentWhatsapp,
 					consentSms: data.consentSms,
 					consentEmail: data.consentEmail,
