@@ -31,7 +31,9 @@ if (pages.length === 0) throw new Error('no pages in dist — run astro build fi
 const hashes = new Set();
 for (const page of pages) {
 	const html = await readFile(page, 'utf8');
-	for (const [, body] of html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)) {
+	for (const [, body] of html.matchAll(
+		/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g,
+	)) {
 		hashes.add(`'sha256-${createHash('sha256').update(body).digest('base64')}'`);
 	}
 }

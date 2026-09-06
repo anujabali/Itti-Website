@@ -5,13 +5,23 @@
 
 export type RoleKind = 'patient' | 'caregiver' | 'supporter' | 'other';
 export type GenderKind =
-	| 'woman'
-	| 'man'
-	| 'non_binary'
-	| 'self_described'
-	| 'undisclosed';
+	'woman' | 'man' | 'non_binary' | 'self_described' | 'undisclosed';
 export type PillarKind = 'neurodivergence' | 'cancer_care' | 'claw' | 'not_sure';
-export type PreferredLanguage = 'en' | 'hi' | 'mr' | 'gu' | 'bn' | 'ta' | 'te' | 'kn' | 'ml' | 'pa' | 'ur' | 'or' | 'as' | 'other';
+export type PreferredLanguage =
+	| 'en'
+	| 'hi'
+	| 'mr'
+	| 'gu'
+	| 'bn'
+	| 'ta'
+	| 'te'
+	| 'kn'
+	| 'ml'
+	| 'pa'
+	| 'ur'
+	| 'or'
+	| 'as'
+	| 'other';
 
 export interface Form1Data {
 	fullName: string;

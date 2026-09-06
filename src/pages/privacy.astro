@@ -19,11 +19,13 @@ const LAST_UPDATED = '6 September 2026';
 const collected = [
 	{
 		group: 'To reach you',
-		items: 'Your name; a phone number or an email address; your city, and in India your PIN code.',
+		items:
+			'Your name; a phone number or an email address; your city, and in India your PIN code.',
 	},
 	{
 		group: 'To route you',
-		items: 'Whether you are seeking support, caring for someone, volunteering or otherwise; and which of our three areas you want.',
+		items:
+			'Whether you are seeking support, caring for someone, volunteering or otherwise; and which of our three areas you want.',
 	},
 	{
 		group: 'If you offer them',
@@ -35,7 +37,8 @@ const collected = [
 	},
 	{
 		group: 'How you got here',
-		items: 'If you told us, how you heard of us. Either way: any campaign tags in the link you followed, and the site that linked you — its name only, not the page.',
+		items:
+			'If you told us, how you heard of us. Either way: any campaign tags in the link you followed, and the site that linked you — its name only, not the page.',
 	},
 ];
 ---
@@ -46,127 +49,130 @@ const collected = [
 >
 	<div class="page">
 		<article class="doc">
-		<header class="doc__head">
-			<p class="doc__eyebrow">Privacy</p>
-			<h1 class="doc__title">What we hold, and why.</h1>
-			<p class="doc__lede">What happens to what you give us when you register here.</p>
-			<p class="doc__stamp">
-				Version {POLICY_VERSION} &middot; Last updated {LAST_UPDATED}
-			</p>
-		</header>
+			<header class="doc__head">
+				<p class="doc__eyebrow">Privacy</p>
+				<h1 class="doc__title">What we hold, and why.</h1>
+				<p class="doc__lede">
+					What happens to what you give us when you register here.
+				</p>
+				<p class="doc__stamp">
+					Version {POLICY_VERSION} &middot; Last updated {LAST_UPDATED}
+				</p>
+			</header>
 
-		<section class="doc__section">
-			<h2 class="doc__h">Who we are</h2>
-			<div class="doc__body">
-				<p class="doc__todo">
-					TO CONFIRM &mdash; the registered name and address of the foundation, and the
-					person who answers privacy requests. The DPDP Act requires both to be
-					published.
-				</p>
-			</div>
-		</section>
+			<section class="doc__section">
+				<h2 class="doc__h">Who we are</h2>
+				<div class="doc__body">
+					<p class="doc__todo">
+						TO CONFIRM &mdash; the registered name and address of the foundation, and
+						the person who answers privacy requests. The DPDP Act requires both to be
+						published.
+					</p>
+				</div>
+			</section>
 
-		<section class="doc__section">
-			<h2 class="doc__h">What we collect</h2>
-			<div class="doc__body">
-				<dl class="doc__list">
-					{
-						collected.map((c) => (
-							<>
-								<dt>{c.group}</dt>
-								<dd>{c.items}</dd>
-							</>
-						))
-					}
-				</dl>
-				<p>
-					We ask nothing about your health beyond which area you want. No cookies, no
-					analytics, no advertising, and nothing is kept about a visit that does not
-					end in a registration.
-				</p>
-			</div>
-		</section>
+			<section class="doc__section">
+				<h2 class="doc__h">What we collect</h2>
+				<div class="doc__body">
+					<dl class="doc__list">
+						{
+							collected.map((c) => (
+								<>
+									<dt>{c.group}</dt>
+									<dd>{c.items}</dd>
+								</>
+							))
+						}
+					</dl>
+					<p>
+						We ask nothing about your health beyond which area you want. No cookies, no
+						analytics, no advertising, and nothing is kept about a visit that does not
+						end in a registration.
+					</p>
+				</div>
+			</section>
 
-		<section class="doc__section">
-			<h2 class="doc__h">Who else holds it</h2>
-			<div class="doc__body">
-				<p>
-					<strong>Supabase</strong> stores the registry, in their Seoul region &mdash;
-					so outside India.
-				</p>
-				<p><strong>Netlify</strong> serves this site and sees ordinary request logs.</p>
-				<p>
-					<strong>India Post</strong> receives a PIN code you type, to name its
-					district. Nothing else reaches them.
-				</p>
-				<p>We do not sell your details or pass them to anyone else.</p>
-			</div>
-		</section>
+			<section class="doc__section">
+				<h2 class="doc__h">Who else holds it</h2>
+				<div class="doc__body">
+					<p>
+						<strong>Supabase</strong> stores the registry, in their Seoul region &mdash; so
+						outside India.
+					</p>
+					<p>
+						<strong>Netlify</strong> serves this site and sees ordinary request logs.
+					</p>
+					<p>
+						<strong>India Post</strong> receives a PIN code you type, to name its district.
+						Nothing else reaches them.
+					</p>
+					<p>We do not sell your details or pass them to anyone else.</p>
+				</div>
+			</section>
 
-		<section class="doc__section">
-			<h2 class="doc__h">How long</h2>
-			<div class="doc__body">
-				<p class="doc__todo">
-					TO CONFIRM &mdash; how long a registration is kept, and what happens to it if
-					you ask us to stop.
-				</p>
-				<p>
-					Abuse counts are held against a one-way hash of your address, never the
-					address, and deleted after a day.
-				</p>
-			</div>
-		</section>
+			<section class="doc__section">
+				<h2 class="doc__h">How long</h2>
+				<div class="doc__body">
+					<p class="doc__todo">
+						TO CONFIRM &mdash; how long a registration is kept, and what happens to it
+						if you ask us to stop.
+					</p>
+					<p>
+						Abuse counts are held against a one-way hash of your address, never the
+						address, and deleted after a day.
+					</p>
+				</div>
+			</section>
 
-		<section class="doc__section">
-			<h2 class="doc__h">How it is held</h2>
-			<div class="doc__body">
-				<p>
-					The registry cannot be read through this website. Registration reaches it
-					through a single function that only writes; every table refuses to be read
-					by anyone who is not signed in as the person concerned.
-				</p>
-			</div>
-		</section>
+			<section class="doc__section">
+				<h2 class="doc__h">How it is held</h2>
+				<div class="doc__body">
+					<p>
+						The registry cannot be read through this website. Registration reaches it
+						through a single function that only writes; every table refuses to be read
+						by anyone who is not signed in as the person concerned.
+					</p>
+				</div>
+			</section>
 
-		<section class="doc__section">
-			<h2 class="doc__h">Under 18</h2>
-			<div class="doc__body">
-				<p>
-					If your date of birth puts you under 18, we ask for a parent or guardian's
-					phone number or email address and will not register you without one.
-				</p>
-				<p class="doc__todo">
-					TO CONFIRM &mdash; we contact them to confirm before acting on the
-					registration. Someone has to be doing that.
-				</p>
-			</div>
-		</section>
+			<section class="doc__section">
+				<h2 class="doc__h">Under 18</h2>
+				<div class="doc__body">
+					<p>
+						If your date of birth puts you under 18, we ask for a parent or guardian's
+						phone number or email address and will not register you without one.
+					</p>
+					<p class="doc__todo">
+						TO CONFIRM &mdash; we contact them to confirm before acting on the
+						registration. Someone has to be doing that.
+					</p>
+				</div>
+			</section>
 
-		<section class="doc__section">
-			<h2 class="doc__h">What you can ask</h2>
-			<div class="doc__body">
-				<p>
-					For a copy of what we hold; that we correct it; that we delete it; that a
-					consent be withdrawn. You may nominate someone to exercise these for you if
-					you cannot.
-				</p>
-				<p>
-					Withdrawing a consent does not undo what was done while it stood. If we do
-					not answer, you may complain to the Data Protection Board of India.
-				</p>
-			</div>
-		</section>
+			<section class="doc__section">
+				<h2 class="doc__h">What you can ask</h2>
+				<div class="doc__body">
+					<p>
+						For a copy of what we hold; that we correct it; that we delete it; that a
+						consent be withdrawn. You may nominate someone to exercise these for you if
+						you cannot.
+					</p>
+					<p>
+						Withdrawing a consent does not undo what was done while it stood. If we do
+						not answer, you may complain to the Data Protection Board of India.
+					</p>
+				</div>
+			</section>
 
-		<section class="doc__section">
-			<h2 class="doc__h">If this changes</h2>
-			<div class="doc__body">
-				<p>
-					Each consent is stored with the policy version in force when you gave it, so
-					a change here cannot reinterpret it.
-				</p>
-			</div>
-		</section>
-
+			<section class="doc__section">
+				<h2 class="doc__h">If this changes</h2>
+				<div class="doc__body">
+					<p>
+						Each consent is stored with the policy version in force when you gave it, so
+						a change here cannot reinterpret it.
+					</p>
+				</div>
+			</section>
 		</article>
 
 		<SiteFooter />

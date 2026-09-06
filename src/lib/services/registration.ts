@@ -140,7 +140,9 @@ export const registerMember = async (
 			return {
 				success: false,
 				message: 'We could not reach the registry just now. Please try again shortly.',
-				errors: { config: 'Supabase environment variables are not set for this build.' },
+				errors: {
+					config: 'Supabase environment variables are not set for this build.',
+				},
 			};
 		}
 

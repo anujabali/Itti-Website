@@ -161,7 +161,6 @@ export interface Form1RegistrationPayload {
 	guardianEmail?: string;
 	preferredLanguage?: string; // 'en-IN', 'ta', 'hi', etc.
 
-
 	// Communication Preferences
 	preferredContactChannel?: ContactChannel;
 	consentWhatsapp?: boolean;

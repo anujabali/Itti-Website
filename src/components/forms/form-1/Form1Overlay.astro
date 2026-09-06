@@ -12,7 +12,12 @@
  */
 ---
 
-<section class="f1-overlay" id="form1-modal" aria-labelledby="f1-heading" data-form1-overlay>
+<section
+	class="f1-overlay"
+	id="form1-modal"
+	aria-labelledby="f1-heading"
+	data-form1-overlay
+>
 	<div class="f1-scroller" data-f1-scroller>
 		<div class="f1-card" data-f1-card>
 			<div class="f1-topbar">
@@ -48,273 +53,304 @@
 						<span class="f1-section__text">About you</span>
 					</h2>
 					<div class="f1-section__body">
+						<!-- 1. Full Name * -->
+						<div class="f1-field" data-field="fullName">
+							<label class="f1-label" for="f1-fullName"> Full Name </label>
+							<input
+								class="f1-input"
+								id="f1-fullName"
+								name="fullName"
+								type="text"
+								placeholder="Enter your full name"
+								autocomplete="name"
+								maxlength="120"
+								required
+							/>
+							<p class="f1-error" data-error="fullName" role="alert"></p>
+						</div>
 
-					<!-- 1. Full Name * -->
-					<div class="f1-field" data-field="fullName">
-						<label class="f1-label" for="f1-fullName">
-							Full Name
-						</label>
-						<input
-							class="f1-input"
-							id="f1-fullName"
-							name="fullName"
-							type="text"
-							placeholder="Enter your full name"
-							autocomplete="name"
-							maxlength="120"
-							required
-						/>
-						<p class="f1-error" data-error="fullName" role="alert"></p>
-					</div>
+						<!-- Contact Method Group (Phone OR Email rule) -->
+						<div class="f1-contact-group">
+							<p class="f1-contact-note">
+								A phone number or an email address &mdash; either one is enough.
+							</p>
 
-					<!-- Contact Method Group (Phone OR Email rule) -->
-					<div class="f1-contact-group">
-						<p class="f1-contact-note">
-							A phone number or an email address &mdash; either one is enough.
-						</p>
-
-						<div class="f1-grid f1-grid--2col">
-							<!-- 2. Phone Number -->
-							<div class="f1-field" data-field="phone">
-								<label class="f1-label" for="f1-phone"> Phone Number </label>
-								<div class="f1-phone-group" data-phone-group>
-									<div class="f1-country" data-country-picker>
-										<button class="f1-country__button" type="button" data-country-button aria-haspopup="listbox" aria-expanded="false">
-											<span data-country-flag>🇮🇳</span>
-											<span data-country-name>India</span>
-											<span data-country-dial>+91</span>
-											<span aria-hidden="true">▾</span>
-										</button>
-										<div class="f1-country__menu" data-country-menu hidden>
-											<input class="f1-input f1-country__search" type="search" placeholder="Search country or code" autocomplete="off" data-country-search aria-label="Search country" />
-											<ul class="f1-country__list" data-country-list role="listbox"></ul>
+							<div class="f1-grid f1-grid--2col">
+								<!-- 2. Phone Number -->
+								<div class="f1-field" data-field="phone">
+									<label class="f1-label" for="f1-phone"> Phone Number </label>
+									<div class="f1-phone-group" data-phone-group>
+										<div class="f1-country" data-country-picker>
+											<button
+												class="f1-country__button"
+												type="button"
+												data-country-button
+												aria-haspopup="listbox"
+												aria-expanded="false"
+											>
+												<span data-country-flag>🇮🇳</span>
+												<span data-country-name>India</span>
+												<span data-country-dial>+91</span>
+												<span aria-hidden="true">▾</span>
+											</button>
+											<div class="f1-country__menu" data-country-menu hidden>
+												<input
+													class="f1-input f1-country__search"
+													type="search"
+													placeholder="Search country or code"
+													autocomplete="off"
+													data-country-search
+													aria-label="Search country"
+												/>
+												<ul class="f1-country__list" data-country-list role="listbox">
+												</ul>
+											</div>
 										</div>
+										<input
+											class="f1-input f1-phone-input"
+											id="f1-phone"
+											name="phone"
+											type="tel"
+											placeholder="00000 00000"
+											inputmode="tel"
+											autocomplete="tel-national"
+											data-phone-input
+										/>
 									</div>
+									<input type="hidden" name="countryIso2" data-country-iso value="IN" />
+									<p class="f1-error" data-error="phone" role="alert"></p>
+								</div>
+
+								<!-- 3. Email Address -->
+								<div class="f1-field" data-field="email">
+									<label class="f1-label" for="f1-email"> Email Address </label>
 									<input
-										class="f1-input f1-phone-input"
-										id="f1-phone"
-										name="phone"
-										type="tel"
-										placeholder="00000 00000"
-										inputmode="tel"
-										autocomplete="tel-national"
-										data-phone-input
+										class="f1-input"
+										id="f1-email"
+										name="email"
+										type="email"
+										placeholder="name@example.com"
+										autocomplete="email"
+									/>
+									<p class="f1-error" data-error="email" role="alert"></p>
+								</div>
+							</div>
+							<p class="f1-error f1-error--contact" data-error="contact" role="alert">
+							</p>
+						</div>
+
+						<!-- 4. Date of Birth & 5. Gender (2 Column Grid) -->
+						<div class="f1-grid f1-grid--2col">
+							<!-- 4. Date of Birth -->
+							<div class="f1-field" data-field="dateOfBirth">
+								<label class="f1-label" for="f1-dob"> Date of Birth</label>
+								<input
+									class="f1-input f1-input--date"
+									id="f1-dob"
+									name="dateOfBirth"
+									required
+									type="date"
+									autocomplete="bday"
+								/>
+								<p class="f1-error" data-error="dateOfBirth" role="alert"></p>
+							</div>
+
+							<!-- 5. Gender (Required) -->
+							<div class="f1-field" data-field="gender">
+								<label class="f1-label" for="f1-gender"> Gender </label>
+								<div class="f1-select-wrap">
+									<select class="f1-select" id="f1-gender" name="gender" required>
+										<option value="">Select gender</option>
+										<option value="woman">Female</option>
+										<option value="man">Male</option>
+										<option value="non_binary">Non-binary</option>
+										<option value="self_described">Prefer to self-describe</option>
+										<option value="undisclosed">Prefer not to say</option>
+									</select>
+								</div>
+								<div class="f1-reveal" data-gender-self-container hidden>
+									<label class="f1-label" for="f1-gender-self">In your own words</label>
+									<input
+										class="f1-input"
+										id="f1-gender-self"
+										name="genderSelfDescribed"
+										type="text"
+										maxlength="60"
+										placeholder="How would you describe it?"
+										data-gender-self
 									/>
 								</div>
-								<input type="hidden" name="countryIso2" data-country-iso value="IN" />
-								<p class="f1-error" data-error="phone" role="alert"></p>
+								<p class="f1-error" data-error="gender" role="alert"></p>
 							</div>
+						</div>
 
-							<!-- 3. Email Address -->
-							<div class="f1-field" data-field="email">
-								<label class="f1-label" for="f1-email"> Email Address </label>
+						<!-- Guardian — revealed only when the date of birth is under 18. -->
+						<div class="f1-guardian" data-guardian hidden>
+							<p class="f1-guardian__note">
+								You are under 18, so we need a parent or guardian we can reach.
+							</p>
+
+							<div class="f1-field" data-field="guardianName">
+								<label class="f1-label" for="f1-guardian-name">
+									Parent or guardian's name <span class="f1-opt">(Optional)</span>
+								</label>
 								<input
 									class="f1-input"
-									id="f1-email"
-									name="email"
-									type="email"
-									placeholder="name@example.com"
-									autocomplete="email"
+									id="f1-guardian-name"
+									name="guardianName"
+									type="text"
+									maxlength="120"
+									placeholder="Their full name"
+									autocomplete="off"
 								/>
-								<p class="f1-error" data-error="email" role="alert"></p>
 							</div>
-						</div>
-						<p class="f1-error f1-error--contact" data-error="contact" role="alert"></p>
-					</div>
 
-					<!-- 4. Date of Birth & 5. Gender (2 Column Grid) -->
-					<div class="f1-grid f1-grid--2col">
-						<!-- 4. Date of Birth -->
-						<div class="f1-field" data-field="dateOfBirth">
-							<label class="f1-label" for="f1-dob"> Date of Birth</label>
+							<div class="f1-grid f1-grid--2col">
+								<div class="f1-field" data-field="guardianPhone">
+									<label class="f1-label" for="f1-guardian-phone"
+										>Their phone number</label
+									>
+									<input
+										class="f1-input"
+										id="f1-guardian-phone"
+										name="guardianPhone"
+										type="tel"
+										inputmode="tel"
+										placeholder="+91 00000 00000"
+										autocomplete="off"
+									/>
+									<p class="f1-error" data-error="guardianPhone" role="alert"></p>
+								</div>
+
+								<div class="f1-field" data-field="guardianEmail">
+									<label class="f1-label" for="f1-guardian-email"
+										>Their email address</label
+									>
+									<input
+										class="f1-input"
+										id="f1-guardian-email"
+										name="guardianEmail"
+										type="email"
+										placeholder="name@example.com"
+										autocomplete="off"
+									/>
+									<p class="f1-error" data-error="guardianEmail" role="alert"></p>
+								</div>
+							</div>
+
+							<p
+								class="f1-error f1-error--contact"
+								data-error="guardianContact"
+								role="alert"
+							>
+							</p>
+						</div>
+
+						<!-- 6. City * (Searchable Autocomplete) -->
+						<div
+							class="f1-field f1-autocomplete"
+							data-field="city"
+							data-f1-autocomplete
+						>
+							<label class="f1-label" for="f1-city-input"> City </label>
+							<div class="f1-autocomplete__box">
+								<input
+									class="f1-input"
+									id="f1-city-input"
+									type="text"
+									placeholder="Search your city"
+									data-city-free
+									autocomplete="off"
+									data-city-input
+									required
+								/>
+								<span
+									class="f1-autocomplete__clear"
+									data-city-clear
+									title="Clear city"
+									hidden>&times;</span
+								>
+							</div>
+							<!-- Hidden inputs for canonical city & state -->
+							<input type="hidden" name="city" id="f1-city-hidden" data-city-val />
+							<input type="hidden" name="state" id="f1-state-hidden" data-state-val />
+
+							<!-- Autocomplete suggestions dropdown -->
+							<ul
+								class="f1-suggestions"
+								id="f1-city-list"
+								role="listbox"
+								aria-label="City suggestions"
+								data-city-suggestions
+								hidden
+							>
+							</ul>
+							<p class="f1-error" data-error="city" role="alert"></p>
+						</div>
+
+						<!-- 7. Pincode (Required) -->
+						<div class="f1-field" data-field="pincode">
+							<label class="f1-label" for="f1-pincode">
+								<span data-pincode-label>Pincode</span>
+							</label>
 							<input
-								class="f1-input f1-input--date"
-								id="f1-dob"
-								name="dateOfBirth"
+								class="f1-input"
+								id="f1-pincode"
+								name="pincode"
+								type="text"
+								inputmode="numeric"
+								pattern="[1-9][0-9]{5}"
+								maxlength="6"
+								placeholder="Enter your 6-digit pincode"
 								required
-								type="date"
-								autocomplete="bday"
+								autocomplete="postal-code"
+								data-pincode-field
+								data-pincode-input
 							/>
-							<p class="f1-error" data-error="dateOfBirth" role="alert"></p>
+							<p class="f1-hint" data-pincode-status></p>
+							<p class="f1-error" data-error="pincode" role="alert"></p>
 						</div>
 
-						<!-- 5. Gender (Required) -->
-						<div class="f1-field" data-field="gender">
-							<label class="f1-label" for="f1-gender">
-								Gender
+						<!-- 8. Preferred Language (Optional) -->
+						<div class="f1-field" data-field="preferredLanguage">
+							<label class="f1-label" for="f1-language">
+								Preferred Language <span class="f1-opt">(Optional)</span>
 							</label>
 							<div class="f1-select-wrap">
-								<select class="f1-select" id="f1-gender" name="gender" required>
-									<option value="">Select gender</option>
-									<option value="woman">Female</option>
-									<option value="man">Male</option>
-									<option value="non_binary">Non-binary</option>
-									<option value="self_described">Prefer to self-describe</option>
-									<option value="undisclosed">Prefer not to say</option>
+								<select class="f1-select" id="f1-language" name="preferredLanguage">
+									<option value="">Select language</option>
+									<option value="en">English</option>
+									<option value="hi">Hindi</option>
+									<option value="mr">Marathi</option>
+									<option value="gu">Gujarati</option>
+									<option value="bn">Bengali</option>
+									<option value="ta">Tamil</option>
+									<option value="te">Telugu</option>
+									<option value="kn">Kannada</option>
+									<option value="ml">Malayalam</option>
+									<option value="pa">Punjabi</option>
+									<option value="ur">Urdu</option>
+									<option value="or">Odia</option>
+									<option value="as">Assamese</option>
+									<option value="other">Other</option>
 								</select>
 							</div>
-							<div class="f1-reveal" data-gender-self-container hidden>
-								<label class="f1-label" for="f1-gender-self">In your own words</label>
+							<div class="f1-reveal" data-language-other-container hidden>
+								<label class="f1-label" for="f1-language-other">Other Language</label>
 								<input
 									class="f1-input"
-									id="f1-gender-self"
-									name="genderSelfDescribed"
+									id="f1-language-other"
+									name="languageOther"
 									type="text"
-									maxlength="60"
-									placeholder="How would you describe it?"
-									data-gender-self
-								/>
-							</div>
-							<p class="f1-error" data-error="gender" role="alert"></p>
-						</div>
-					</div>
-
-					<!-- Guardian — revealed only when the date of birth is under 18. -->
-					<div class="f1-guardian" data-guardian hidden>
-						<p class="f1-guardian__note">
-							You are under 18, so we need a parent or guardian we can reach.
-						</p>
-
-						<div class="f1-field" data-field="guardianName">
-							<label class="f1-label" for="f1-guardian-name">
-								Parent or guardian's name <span class="f1-opt">(Optional)</span>
-							</label>
-							<input
-								class="f1-input"
-								id="f1-guardian-name"
-								name="guardianName"
-								type="text"
-								maxlength="120"
-								placeholder="Their full name"
-								autocomplete="off"
-							/>
-						</div>
-
-						<div class="f1-grid f1-grid--2col">
-							<div class="f1-field" data-field="guardianPhone">
-								<label class="f1-label" for="f1-guardian-phone">Their phone number</label>
-								<input
-									class="f1-input"
-									id="f1-guardian-phone"
-									name="guardianPhone"
-									type="tel"
-									inputmode="tel"
-									placeholder="+91 00000 00000"
+									placeholder="Type your language"
 									autocomplete="off"
+									autocapitalize="words"
+									spellcheck="true"
+									data-language-other
 								/>
-								<p class="f1-error" data-error="guardianPhone" role="alert"></p>
-							</div>
-
-							<div class="f1-field" data-field="guardianEmail">
-								<label class="f1-label" for="f1-guardian-email">Their email address</label>
-								<input
-									class="f1-input"
-									id="f1-guardian-email"
-									name="guardianEmail"
-									type="email"
-									placeholder="name@example.com"
-									autocomplete="off"
-								/>
-								<p class="f1-error" data-error="guardianEmail" role="alert"></p>
 							</div>
 						</div>
-
-						<p class="f1-error f1-error--contact" data-error="guardianContact" role="alert"></p>
 					</div>
-
-					<!-- 6. City * (Searchable Autocomplete) -->
-					<div class="f1-field f1-autocomplete" data-field="city" data-f1-autocomplete>
-						<label class="f1-label" for="f1-city-input">
-							City
-						</label>
-						<div class="f1-autocomplete__box">
-							<input
-								class="f1-input"
-								id="f1-city-input"
-								type="text"
-								placeholder="Search your city"
-								data-city-free
-								autocomplete="off"
-								data-city-input
-								required
-							/>
-							<span
-								class="f1-autocomplete__clear"
-								data-city-clear
-								title="Clear city"
-								hidden>&times;</span
-							>
-						</div>
-						<!-- Hidden inputs for canonical city & state -->
-						<input type="hidden" name="city" id="f1-city-hidden" data-city-val />
-						<input type="hidden" name="state" id="f1-state-hidden" data-state-val />
-
-						<!-- Autocomplete suggestions dropdown -->
-						<ul
-							class="f1-suggestions"
-							id="f1-city-list"
-							role="listbox"
-							aria-label="City suggestions"
-							data-city-suggestions
-							hidden
-						>
-						</ul>
-						<p class="f1-error" data-error="city" role="alert"></p>
-					</div>
-
-					<!-- 7. Pincode (Required) -->
-					<div class="f1-field" data-field="pincode">
-						<label class="f1-label" for="f1-pincode">
-							<span data-pincode-label>Pincode</span>
-						</label>
-						<input
-							class="f1-input"
-							id="f1-pincode"
-							name="pincode"
-							type="text"
-							inputmode="numeric"
-							pattern="[1-9][0-9]{5}"
-							maxlength="6"
-							placeholder="Enter your 6-digit pincode"
-							required
-							autocomplete="postal-code"
-							data-pincode-field
-							data-pincode-input
-						/>
-						<p class="f1-hint" data-pincode-status></p>
-						<p class="f1-error" data-error="pincode" role="alert"></p>
-					</div>
-
-					<!-- 8. Preferred Language (Optional) -->
-					<div class="f1-field" data-field="preferredLanguage">
-						<label class="f1-label" for="f1-language">
-							Preferred Language <span class="f1-opt">(Optional)</span>
-						</label>
-						<div class="f1-select-wrap">
-							<select class="f1-select" id="f1-language" name="preferredLanguage">
-								<option value="">Select language</option>
-								<option value="en">English</option>
-								<option value="hi">Hindi</option>
-								<option value="mr">Marathi</option>
-								<option value="gu">Gujarati</option>
-								<option value="bn">Bengali</option>
-								<option value="ta">Tamil</option>
-								<option value="te">Telugu</option>
-								<option value="kn">Kannada</option>
-								<option value="ml">Malayalam</option>
-								<option value="pa">Punjabi</option>
-								<option value="ur">Urdu</option>
-								<option value="or">Odia</option>
-								<option value="as">Assamese</option>
-								<option value="other">Other</option>
-							</select>
-						</div>
-						<div class="f1-reveal" data-language-other-container hidden>
-							<label class="f1-label" for="f1-language-other">Other Language</label>
-							<input class="f1-input" id="f1-language-other" name="languageOther" type="text" placeholder="Type your language" autocomplete="off" autocapitalize="words" spellcheck="true" data-language-other />
-						</div>
-					</div>
-				</div>
 				</section>
 
 				<!-- ════════ SECTION 2: CONNECTION WITH ITTI FOUNDATION ════════ -->
@@ -324,61 +360,64 @@
 						<span class="f1-section__text">Your connection</span>
 					</h2>
 					<div class="f1-section__body">
-
-					<!-- 9. I am joining as * -->
-					<div class="f1-field" data-field="role">
-						<label class="f1-label f1-label--standalone" id="f1-role-label">
-							I am joining as
-						</label>
-
-						<div class="f1-choice-grid" role="radiogroup" aria-labelledby="f1-role-label">
-							<label class="f1-choice-card">
-								<input type="radio" name="role" value="patient" required />
-								<span class="f1-choice-card__indicator"></span>
-								<span class="f1-choice-card__body">
-									<span class="f1-choice-card__title">Patient / Beneficiary</span>
-									<span class="f1-choice-card__desc"
-										>I am seeking support or guidance for myself</span
-									>
-								</span>
+						<!-- 9. I am joining as * -->
+						<div class="f1-field" data-field="role">
+							<label class="f1-label f1-label--standalone" id="f1-role-label">
+								I am joining as
 							</label>
 
-							<label class="f1-choice-card">
-								<input type="radio" name="role" value="caregiver" />
-								<span class="f1-choice-card__indicator"></span>
-								<span class="f1-choice-card__body">
-									<span class="f1-choice-card__title">Caregiver / Family Member</span>
-									<span class="f1-choice-card__desc"
-										>I am supporting a child, parent, spouse, or loved one</span
-									>
-								</span>
-							</label>
+							<div
+								class="f1-choice-grid"
+								role="radiogroup"
+								aria-labelledby="f1-role-label"
+							>
+								<label class="f1-choice-card">
+									<input type="radio" name="role" value="patient" required />
+									<span class="f1-choice-card__indicator"></span>
+									<span class="f1-choice-card__body">
+										<span class="f1-choice-card__title">Patient / Beneficiary</span>
+										<span class="f1-choice-card__desc"
+											>I am seeking support or guidance for myself</span
+										>
+									</span>
+								</label>
 
-							<label class="f1-choice-card">
-								<input type="radio" name="role" value="supporter" />
-								<span class="f1-choice-card__indicator"></span>
-								<span class="f1-choice-card__body">
-									<span class="f1-choice-card__title">Volunteer / Supporter</span>
-									<span class="f1-choice-card__desc"
-										>I want to contribute time, expertise, or resources</span
-									>
-								</span>
-							</label>
+								<label class="f1-choice-card">
+									<input type="radio" name="role" value="caregiver" />
+									<span class="f1-choice-card__indicator"></span>
+									<span class="f1-choice-card__body">
+										<span class="f1-choice-card__title">Caregiver / Family Member</span>
+										<span class="f1-choice-card__desc"
+											>I am supporting a child, parent, spouse, or loved one</span
+										>
+									</span>
+								</label>
 
-							<label class="f1-choice-card">
-								<input type="radio" name="role" value="other" />
-								<span class="f1-choice-card__indicator"></span>
-								<span class="f1-choice-card__body">
-									<span class="f1-choice-card__title">Other</span>
-									<span class="f1-choice-card__desc"
-										>General community member or interested partner</span
-									>
-								</span>
-							</label>
+								<label class="f1-choice-card">
+									<input type="radio" name="role" value="supporter" />
+									<span class="f1-choice-card__indicator"></span>
+									<span class="f1-choice-card__body">
+										<span class="f1-choice-card__title">Volunteer / Supporter</span>
+										<span class="f1-choice-card__desc"
+											>I want to contribute time, expertise, or resources</span
+										>
+									</span>
+								</label>
+
+								<label class="f1-choice-card">
+									<input type="radio" name="role" value="other" />
+									<span class="f1-choice-card__indicator"></span>
+									<span class="f1-choice-card__body">
+										<span class="f1-choice-card__title">Other</span>
+										<span class="f1-choice-card__desc"
+											>General community member or interested partner</span
+										>
+									</span>
+								</label>
+							</div>
+							<p class="f1-error" data-error="role" role="alert"></p>
 						</div>
-						<p class="f1-error" data-error="role" role="alert"></p>
 					</div>
-				</div>
 				</section>
 
 				<!-- ════════ SECTION 3: AREA OF INTEREST ════════ -->
@@ -388,65 +427,72 @@
 						<span class="f1-section__text">Areas of interest</span>
 					</h2>
 					<div class="f1-section__body">
-
-					<!-- 10. Which areas would you like to connect with? * -->
-					<div class="f1-field" data-field="pillar">
-						<label class="f1-label f1-label--standalone" id="f1-pillar-label">
-							Which areas would you like to connect with?
-							<span class="f1-opt">(Choose any)</span>
-						</label>
-
-						<div class="f1-pillar-grid" role="group" aria-labelledby="f1-pillar-label">
-							<!-- Neurodivergence -->
-							<label class="f1-pillar-card" style="--card-accent: var(--ochre);">
-								<input type="checkbox" name="pillars" value="neurodivergence" />
-								<div class="f1-pillar-card__inner">
-									<span class="f1-pillar-card__tag">Pillar I</span>
-									<span class="f1-pillar-card__title">Neurodivergence</span>
-									<span class="f1-pillar-card__motto">"A mind met, not mended."</span>
-								</div>
+						<!-- 10. Which areas would you like to connect with? * -->
+						<div class="f1-field" data-field="pillar">
+							<label class="f1-label f1-label--standalone" id="f1-pillar-label">
+								Which areas would you like to connect with?
+								<span class="f1-opt">(Choose any)</span>
 							</label>
 
-							<!-- Cancer Care -->
-							<label class="f1-pillar-card" style="--card-accent: var(--rose);">
-								<input type="checkbox" name="pillars" value="cancer_care" />
-								<div class="f1-pillar-card__inner">
-									<span class="f1-pillar-card__tag">Pillar II</span>
-									<span class="f1-pillar-card__title">Cancer Care</span>
-									<span class="f1-pillar-card__motto"
-										>"A cancer caught, not carried."</span
-									>
-								</div>
-							</label>
+							<div
+								class="f1-pillar-grid"
+								role="group"
+								aria-labelledby="f1-pillar-label"
+							>
+								<!-- Neurodivergence -->
+								<label class="f1-pillar-card" style="--card-accent: var(--ochre);">
+									<input type="checkbox" name="pillars" value="neurodivergence" />
+									<div class="f1-pillar-card__inner">
+										<span class="f1-pillar-card__tag">Pillar I</span>
+										<span class="f1-pillar-card__title">Neurodivergence</span>
+										<span class="f1-pillar-card__motto">"A mind met, not mended."</span>
+									</div>
+								</label>
 
-							<!-- CLAW -->
-							<label class="f1-pillar-card" style="--card-accent: var(--sage);">
-								<input type="checkbox" name="pillars" value="claw" />
-								<div class="f1-pillar-card__inner">
-									<span class="f1-pillar-card__tag">Pillar III</span>
-									<span class="f1-pillar-card__title">CLAW</span>
-									<span class="f1-pillar-card__motto"
-										>"A forest saved, not mourned."</span
-									>
-								</div>
-							</label>
+								<!-- Cancer Care -->
+								<label class="f1-pillar-card" style="--card-accent: var(--rose);">
+									<input type="checkbox" name="pillars" value="cancer_care" />
+									<div class="f1-pillar-card__inner">
+										<span class="f1-pillar-card__tag">Pillar II</span>
+										<span class="f1-pillar-card__title">Cancer Care</span>
+										<span class="f1-pillar-card__motto"
+											>"A cancer caught, not carried."</span
+										>
+									</div>
+								</label>
 
-							<!-- I'm not sure yet (maps to 'other' in DB) -->
-							<label class="f1-pillar-card" style="--card-accent: var(--teal);">
-								<input type="checkbox" name="pillars" value="not_sure" data-pillar-exclusive />
-								<div class="f1-pillar-card__inner">
-									<span class="f1-pillar-card__tag">General</span>
-									<span class="f1-pillar-card__title">I'm not sure yet</span>
-									<span class="f1-pillar-card__motto"
-										>Help guide me to the right team</span
-									>
-								</div>
-							</label>
+								<!-- CLAW -->
+								<label class="f1-pillar-card" style="--card-accent: var(--sage);">
+									<input type="checkbox" name="pillars" value="claw" />
+									<div class="f1-pillar-card__inner">
+										<span class="f1-pillar-card__tag">Pillar III</span>
+										<span class="f1-pillar-card__title">CLAW</span>
+										<span class="f1-pillar-card__motto"
+											>"A forest saved, not mourned."</span
+										>
+									</div>
+								</label>
+
+								<!-- I'm not sure yet (maps to 'other' in DB) -->
+								<label class="f1-pillar-card" style="--card-accent: var(--teal);">
+									<input
+										type="checkbox"
+										name="pillars"
+										value="not_sure"
+										data-pillar-exclusive
+									/>
+									<div class="f1-pillar-card__inner">
+										<span class="f1-pillar-card__tag">General</span>
+										<span class="f1-pillar-card__title">I'm not sure yet</span>
+										<span class="f1-pillar-card__motto"
+											>Help guide me to the right team</span
+										>
+									</div>
+								</label>
+							</div>
+							<p class="f1-error" data-error="pillars" role="alert"></p>
 						</div>
-						<p class="f1-error" data-error="pillars" role="alert"></p>
 					</div>
-
-				</div>
 				</section>
 
 				<section class="f1-section" aria-labelledby="f1-sec-04">
@@ -455,90 +501,93 @@
 						<span class="f1-section__text">Staying in touch</span>
 					</h2>
 					<div class="f1-section__body">
-
-										<div class="f1-field" data-field="consent">
-						<label class="f1-label f1-label--standalone" id="f1-consent-label">
-							How may we contact you?
-						</label>
-						<p class="f1-hint">
-							Optional, and you can change your mind at any time. We will always
-							reply to what you send us either way.
-						</p>
-
-						<div class="f1-consent-grid" role="group" aria-labelledby="f1-consent-label">
-							<label class="f1-consent" data-consent-needs="phone">
-								<input type="checkbox" name="consentWhatsapp" value="yes" />
-								<span class="f1-consent__indicator" aria-hidden="true"></span>
-								<span class="f1-consent__text">WhatsApp</span>
+						<div class="f1-field" data-field="consent">
+							<label class="f1-label f1-label--standalone" id="f1-consent-label">
+								How may we contact you?
 							</label>
+							<p class="f1-hint">
+								Optional, and you can change your mind at any time. We will always reply
+								to what you send us either way.
+							</p>
 
-							<label class="f1-consent" data-consent-needs="phone">
-								<input type="checkbox" name="consentSms" value="yes" />
-								<span class="f1-consent__indicator" aria-hidden="true"></span>
-								<span class="f1-consent__text">SMS</span>
-							</label>
+							<div
+								class="f1-consent-grid"
+								role="group"
+								aria-labelledby="f1-consent-label"
+							>
+								<label class="f1-consent" data-consent-needs="phone">
+									<input type="checkbox" name="consentWhatsapp" value="yes" />
+									<span class="f1-consent__indicator" aria-hidden="true"></span>
+									<span class="f1-consent__text">WhatsApp</span>
+								</label>
 
-							<label class="f1-consent" data-consent-needs="email">
-								<input type="checkbox" name="consentEmail" value="yes" />
-								<span class="f1-consent__indicator" aria-hidden="true"></span>
-								<span class="f1-consent__text">Email</span>
-							</label>
+								<label class="f1-consent" data-consent-needs="phone">
+									<input type="checkbox" name="consentSms" value="yes" />
+									<span class="f1-consent__indicator" aria-hidden="true"></span>
+									<span class="f1-consent__text">SMS</span>
+								</label>
+
+								<label class="f1-consent" data-consent-needs="email">
+									<input type="checkbox" name="consentEmail" value="yes" />
+									<span class="f1-consent__indicator" aria-hidden="true"></span>
+									<span class="f1-consent__text">Email</span>
+								</label>
+							</div>
 						</div>
-					</div>
 
-					<!-- 12. How they found us. Optional; the referrer the page arrived
+						<!-- 12. How they found us. Optional; the referrer the page arrived
 					     with is captured either way, and catches what this misses. -->
-					<div class="f1-field" data-field="heardFrom">
-						<label class="f1-label" for="f1-heard">
-							How did you hear about us? <span class="f1-opt">(Optional)</span>
-						</label>
-						<div class="f1-select-wrap">
-							<select class="f1-select" id="f1-heard" name="heardFrom">
-								<option value="">Select one</option>
-								<option value="friend_family">A friend or family member</option>
-								<option value="doctor_hospital">A doctor or hospital</option>
-								<option value="volunteer_staff">Someone from the foundation</option>
-								<option value="event">An event</option>
-								<option value="instagram">Instagram</option>
-								<option value="youtube">YouTube</option>
-								<option value="whatsapp_group">A WhatsApp group</option>
-								<option value="podcast">A podcast</option>
-								<option value="news">The news</option>
-								<option value="search">A search engine</option>
-								<option value="other">Somewhere else</option>
-							</select>
-						</div>
-
-						<div class="f1-reveal" data-referrer hidden>
-							<label class="f1-label" for="f1-referrer">
-								Who should we thank? <span class="f1-opt">(Optional)</span>
+						<div class="f1-field" data-field="heardFrom">
+							<label class="f1-label" for="f1-heard">
+								How did you hear about us? <span class="f1-opt">(Optional)</span>
 							</label>
-							<input
-								class="f1-input"
-								id="f1-referrer"
-								name="referrerName"
-								type="text"
-								maxlength="120"
-								placeholder="Their name"
-								autocomplete="off"
-							/>
-						</div>
+							<div class="f1-select-wrap">
+								<select class="f1-select" id="f1-heard" name="heardFrom">
+									<option value="">Select one</option>
+									<option value="friend_family">A friend or family member</option>
+									<option value="doctor_hospital">A doctor or hospital</option>
+									<option value="volunteer_staff">Someone from the foundation</option>
+									<option value="event">An event</option>
+									<option value="instagram">Instagram</option>
+									<option value="youtube">YouTube</option>
+									<option value="whatsapp_group">A WhatsApp group</option>
+									<option value="podcast">A podcast</option>
+									<option value="news">The news</option>
+									<option value="search">A search engine</option>
+									<option value="other">Somewhere else</option>
+								</select>
+							</div>
 
-						<div class="f1-reveal" data-heard-other hidden>
-							<label class="f1-label" for="f1-heard-other">Where?</label>
-							<input
-								class="f1-input"
-								id="f1-heard-other"
-								name="heardFromOther"
-								type="text"
-								maxlength="120"
-								placeholder="However you came across us"
-								autocomplete="off"
-							/>
+							<div class="f1-reveal" data-referrer hidden>
+								<label class="f1-label" for="f1-referrer">
+									Who should we thank? <span class="f1-opt">(Optional)</span>
+								</label>
+								<input
+									class="f1-input"
+									id="f1-referrer"
+									name="referrerName"
+									type="text"
+									maxlength="120"
+									placeholder="Their name"
+									autocomplete="off"
+								/>
+							</div>
+
+							<div class="f1-reveal" data-heard-other hidden>
+								<label class="f1-label" for="f1-heard-other">Where?</label>
+								<input
+									class="f1-input"
+									id="f1-heard-other"
+									name="heardFromOther"
+									type="text"
+									maxlength="120"
+									placeholder="However you came across us"
+									autocomplete="off"
+								/>
+							</div>
 						</div>
 					</div>
-				</div>
-			</section>
+				</section>
 
 				<!-- ════════ SUBMIT / CONTINUE CTA ════════ -->
 				<footer class="f1-footer">
@@ -796,19 +845,19 @@
 		.f1-subtitle,
 		.f1-footer__action,
 		.f1-footer__link {
-		color: var(--teal);
-		text-decoration: underline;
-		text-underline-offset: 0.2em;
-		text-decoration-thickness: 1px;
-		text-decoration-color: color-mix(in srgb, var(--teal) 40%, transparent);
-		transition: text-decoration-color 180ms var(--ease);
-	}
+			color: var(--teal);
+			text-decoration: underline;
+			text-underline-offset: 0.2em;
+			text-decoration-thickness: 1px;
+			text-decoration-color: color-mix(in srgb, var(--teal) 40%, transparent);
+			transition: text-decoration-color 180ms var(--ease);
+		}
 
-	.f1-footer__link:hover {
-		text-decoration-color: var(--teal);
-	}
+		.f1-footer__link:hover {
+			text-decoration-color: var(--teal);
+		}
 
-	.f1-footer__disclaimer {
+		.f1-footer__disclaimer {
 			grid-column: 1;
 		}
 
@@ -880,7 +929,6 @@
 		margin-bottom: 0.9rem;
 	}
 
-
 	.f1-opt {
 		font-size: 0.6875rem;
 		font-weight: 400;
@@ -890,7 +938,6 @@
 		color: var(--ink-faint);
 		opacity: 0.85;
 	}
-
 
 	.f1-input,
 	.f1-select {
@@ -903,7 +950,9 @@
 		border: 0;
 		border-bottom: 1px solid rgba(44, 39, 33, 0.22);
 		border-radius: 0;
-		transition: border-color 200ms var(--ease), box-shadow 200ms var(--ease);
+		transition:
+			border-color 200ms var(--ease),
+			box-shadow 200ms var(--ease);
 	}
 
 	.f1-input[type='date']::-webkit-calendar-picker-indicator {
@@ -1092,7 +1141,6 @@
 		color: var(--ink-faint);
 	}
 
-
 	/* ── Country + phone selector ─────────────────────────────────────────── */
 	/* One rule under both, so the code and the number are one field. */
 	.f1-phone-group {
@@ -1102,7 +1150,9 @@
 		column-gap: 0.85rem;
 		position: relative;
 		border-bottom: 1px solid rgba(44, 39, 33, 0.22);
-		transition: border-color 200ms var(--ease), box-shadow 200ms var(--ease);
+		transition:
+			border-color 200ms var(--ease),
+			box-shadow 200ms var(--ease);
 	}
 
 	.f1-phone-group:hover {
@@ -1120,7 +1170,9 @@
 		border-bottom-color: transparent;
 		box-shadow: none;
 	}
-	.f1-country { position: relative; }
+	.f1-country {
+		position: relative;
+	}
 	/* The flag and the country's name both say what the dial code says, in a
 	   control whose whole job is the dial code. */
 	.f1-country__button [data-country-flag],
@@ -1141,14 +1193,35 @@
 		font-size: 1.125rem;
 		white-space: nowrap;
 	}
-	.f1-country__button span:nth-child(2) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; text-align: left; }
-	.f1-country__menu {
-		position: absolute; z-index: 30; left: 0; top: calc(100% + 0.35rem);
-		width: min(22rem, 80vw); padding: 0.5rem; border: 1px solid rgba(44, 39, 33, 0.15);
-		border-radius: .65rem; background: var(--warm-white); box-shadow: 0 12px 30px rgba(4, 12, 14, 0.16);
+	.f1-country__button span:nth-child(2) {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		flex: 1;
+		text-align: left;
 	}
-	.f1-country__search { margin-bottom: .4rem; }
-	.f1-country__list { list-style: none; margin: 0; padding: 0; max-height: 15rem; overflow: auto; }
+	.f1-country__menu {
+		position: absolute;
+		z-index: 30;
+		left: 0;
+		top: calc(100% + 0.35rem);
+		width: min(22rem, 80vw);
+		padding: 0.5rem;
+		border: 1px solid rgba(44, 39, 33, 0.15);
+		border-radius: 0.65rem;
+		background: var(--warm-white);
+		box-shadow: 0 12px 30px rgba(4, 12, 14, 0.16);
+	}
+	.f1-country__search {
+		margin-bottom: 0.4rem;
+	}
+	.f1-country__list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		max-height: 15rem;
+		overflow: auto;
+	}
 	.f1-country__list :global(.f1-country__item),
 	.f1-country__list :global(.f1-country__empty) {
 		padding: 0.6rem 0.75rem;
@@ -1627,8 +1700,7 @@
 			padding: 1.5rem 1.25rem;
 			border-radius: 1rem;
 		}
-
-		}
+	}
 </style>
 
 <script>
@@ -1637,7 +1709,12 @@
 	import { isMinor } from '../../../lib/validation/rules';
 	import { readAcquisition } from '../../../lib/validation/acquisition';
 	import { persistForm1Data, clearForm1Data } from './schema';
-	import { COUNTRIES, findCountry, searchCountries, detectCountryFromInternationalNumber } from './countries';
+	import {
+		COUNTRIES,
+		findCountry,
+		searchCountries,
+		detectCountryFromInternationalNumber,
+	} from './countries';
 	import { lookupPincode } from './pincode';
 	import { registerMember } from '../../../lib/services/registration';
 	import type { Form1Data, Form1Field, Form1Errors } from './types';
@@ -1658,17 +1735,27 @@
 	const pincodeInput = document.querySelector<HTMLInputElement>('[data-pincode-input]');
 	const pincodeStatus = document.querySelector<HTMLElement>('[data-pincode-status]');
 	const phoneInput = document.querySelector<HTMLInputElement>('[data-phone-input]');
-	const countryButton = document.querySelector<HTMLButtonElement>('[data-country-button]');
+	const countryButton = document.querySelector<HTMLButtonElement>(
+		'[data-country-button]',
+	);
 	const countryMenu = document.querySelector<HTMLElement>('[data-country-menu]');
-	const countrySearch = document.querySelector<HTMLInputElement>('[data-country-search]');
+	const countrySearch = document.querySelector<HTMLInputElement>(
+		'[data-country-search]',
+	);
 	const countryList = document.querySelector<HTMLUListElement>('[data-country-list]');
 	const countryIso = document.querySelector<HTMLInputElement>('[data-country-iso]');
 	const countryFlag = document.querySelector<HTMLElement>('[data-country-flag]');
 	const countryName = document.querySelector<HTMLElement>('[data-country-name]');
 	const countryDial = document.querySelector<HTMLElement>('[data-country-dial]');
-	const languageSelect = document.getElementById('f1-language') as HTMLSelectElement | null;
-	const languageOtherContainer = document.querySelector<HTMLElement>('[data-language-other-container]');
-	const languageOther = document.querySelector<HTMLInputElement>('[data-language-other]');
+	const languageSelect = document.getElementById(
+		'f1-language',
+	) as HTMLSelectElement | null;
+	const languageOtherContainer = document.querySelector<HTMLElement>(
+		'[data-language-other-container]',
+	);
+	const languageOther = document.querySelector<HTMLInputElement>(
+		'[data-language-other]',
+	);
 	const globalAlert = document.getElementById('f1-global-alert');
 	const globalAlertText = document.querySelector<HTMLElement>('[data-f1-global-error]');
 	const successView = document.querySelector<HTMLElement>('[data-f1-success]');
@@ -1688,7 +1775,8 @@
 					const raw = ((data.get('phone') as string) || '').trim();
 					const country = findCountry((data.get('countryIso2') as string) || 'IN');
 					if (!raw) return '';
-					if (raw.startsWith('+') || raw.startsWith('00')) return raw.replace(/^00/, '+');
+					if (raw.startsWith('+') || raw.startsWith('00'))
+						return raw.replace(/^00/, '+');
 					return `${country.dialCode}${raw.replace(/\D/g, '')}`;
 				})(),
 				countryIso2: (data.get('countryIso2') as string) || 'IN',
@@ -1757,7 +1845,8 @@
 		// ── Country + phone selector ───────────────────────────────────────────
 		let selectedCountry = findCountry(countryIso?.value || 'IN');
 
-		const pincodeField = document.querySelector<HTMLInputElement>('[data-pincode-field]');
+		const pincodeField =
+			document.querySelector<HTMLInputElement>('[data-pincode-field]');
 		const pincodeLabel = document.querySelector<HTMLElement>('[data-pincode-label]');
 
 		// `pincode` is validated as a six-digit Indian PIN, in the browser and
@@ -1771,18 +1860,14 @@
 			}
 			if (pincodeField) {
 				pincodeField.required = isIndia;
-				pincodeField.placeholder = isIndia
-					? 'Enter your 6-digit pincode'
-					: 'Optional';
+				pincodeField.placeholder = isIndia ? 'Enter your 6-digit pincode' : 'Optional';
 				if (!isIndia) {
 					pincodeField.value = '';
 					if (pincodeStatus) pincodeStatus.textContent = '';
 				}
 			}
 			if (cityInput) {
-				cityInput.placeholder = isIndia
-					? 'Search your city'
-					: 'Enter your city';
+				cityInput.placeholder = isIndia ? 'Search your city' : 'Enter your city';
 			}
 		};
 
@@ -1835,7 +1920,9 @@
 			}
 		});
 
-		countrySearch?.addEventListener('input', () => renderCountries(countrySearch.value));
+		countrySearch?.addEventListener('input', () =>
+			renderCountries(countrySearch.value),
+		);
 		document.addEventListener('click', (event) => {
 			if (!countryMenu || !countryButton) return;
 			const target = event.target as Node;
@@ -1929,23 +2016,32 @@
 
 		cityInput?.addEventListener('keydown', (e) => {
 			if (!suggestionsList || suggestionsList.hidden) return;
-			const items = [...suggestionsList.querySelectorAll<HTMLElement>('.f1-suggestion-item[data-index]')];
+			const items = [
+				...suggestionsList.querySelectorAll<HTMLElement>(
+					'.f1-suggestion-item[data-index]',
+				),
+			];
 			if (!items.length) return;
 			if (e.key === 'ArrowDown') {
 				e.preventDefault();
 				activeSuggestionIndex = (activeSuggestionIndex + 1) % items.length;
 			} else if (e.key === 'ArrowUp') {
 				e.preventDefault();
-				activeSuggestionIndex = (activeSuggestionIndex - 1 + items.length) % items.length;
+				activeSuggestionIndex =
+					(activeSuggestionIndex - 1 + items.length) % items.length;
 			} else if (e.key === 'Enter' && activeSuggestionIndex >= 0) {
 				e.preventDefault();
-				items[activeSuggestionIndex]?.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }));
+				items[activeSuggestionIndex]?.dispatchEvent(
+					new MouseEvent('mousedown', { bubbles: true, cancelable: true }),
+				);
 				return;
 			} else if (e.key === 'Escape') {
 				closeSuggestions();
 				return;
 			} else return;
-			items.forEach((item, i) => item.classList.toggle('is-selected', i === activeSuggestionIndex));
+			items.forEach((item, i) =>
+				item.classList.toggle('is-selected', i === activeSuggestionIndex),
+			);
 			items[activeSuggestionIndex]?.scrollIntoView({ block: 'nearest' });
 		});
 		cityInput?.addEventListener('blur', () => setTimeout(closeSuggestions, 200));
@@ -1964,7 +2060,9 @@
 				const result = await lookupPincode(pincodeInput.value);
 				if (requestId !== pincodeRequest) return;
 				if (!result) {
-					if (pincodeStatus) pincodeStatus.textContent = 'We could not find that pincode. Please check it or enter your city manually.';
+					if (pincodeStatus)
+						pincodeStatus.textContent =
+							'We could not find that pincode. Please check it or enter your city manually.';
 					return;
 				}
 				// Fill the city only if it is still empty. Someone who has already
@@ -2048,7 +2146,9 @@
 		syncHeard();
 
 		// ── Self-described gender ─────────────────────────────────────────────
-		const genderSelect = document.getElementById('f1-gender') as HTMLSelectElement | null;
+		const genderSelect = document.getElementById(
+			'f1-gender',
+		) as HTMLSelectElement | null;
 		const genderSelf = document.querySelector<HTMLInputElement>('[data-gender-self]');
 
 		const genderSelfContainer = document.querySelector<HTMLElement>(
@@ -2237,7 +2337,8 @@
 				if (globalAlert && globalAlertText) {
 					globalAlert.hidden = false;
 					globalAlertText.textContent =
-						err?.message || 'Network error occurred while connecting to database. Please try again.';
+						err?.message ||
+						'Network error occurred while connecting to database. Please try again.';
 					globalAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
 				}
 				return;
