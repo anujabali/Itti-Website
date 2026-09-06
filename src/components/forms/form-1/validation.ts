@@ -6,6 +6,7 @@ import type { Form1Data, Form1Errors } from './types';
 import {
 	LIMITS,
 	checkDateOfBirth,
+	isMinor,
 	isValidE164,
 	isValidEmail as isEmail,
 	isValidIndianPincode,
@@ -99,6 +100,24 @@ export function validateForm1(data: Form1Data): {
 		}
 	} else if (data.pincode && data.pincode.trim() && !isValidPincode(data.pincode)) {
 		errors.pincode = 'Leave this blank unless you have a 6-digit Indian pincode.';
+	}
+
+	// Under 18 the Act needs a parent or guardian reachable. The database
+	// enforces the same rule; this is here so it is said before a round trip.
+	if (isMinor(data.dateOfBirth)) {
+		const gPhone = data.guardianPhone?.trim() || '';
+		const gEmail = data.guardianEmail?.trim() || '';
+
+		if (gPhone && !isValidPhone(gPhone)) {
+			errors.guardianPhone = 'Please enter a valid number with country code.';
+		}
+		if (gEmail && !isValidEmail(gEmail)) {
+			errors.guardianEmail = 'Please enter a valid email address.';
+		}
+		if (!gPhone && !gEmail) {
+			errors.guardianContact =
+				'Please give us a phone number or an email address for your parent or guardian.';
+		}
 	}
 
 	// Gender (Required)

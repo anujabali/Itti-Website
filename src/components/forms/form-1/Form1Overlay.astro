@@ -169,6 +169,59 @@
 						</div>
 					</div>
 
+					<!-- Guardian — revealed only when the date of birth is under 18. -->
+					<div class="f1-guardian" data-guardian hidden>
+						<p class="f1-guardian__note">
+							You are under 18, so we need a parent or guardian we can reach.
+						</p>
+
+						<div class="f1-field" data-field="guardianName">
+							<label class="f1-label" for="f1-guardian-name">
+								Parent or guardian's name <span class="f1-opt">(Optional)</span>
+							</label>
+							<input
+								class="f1-input"
+								id="f1-guardian-name"
+								name="guardianName"
+								type="text"
+								maxlength="120"
+								placeholder="Their full name"
+								autocomplete="off"
+							/>
+						</div>
+
+						<div class="f1-grid f1-grid--2col">
+							<div class="f1-field" data-field="guardianPhone">
+								<label class="f1-label" for="f1-guardian-phone">Their phone number</label>
+								<input
+									class="f1-input"
+									id="f1-guardian-phone"
+									name="guardianPhone"
+									type="tel"
+									inputmode="tel"
+									placeholder="+91 00000 00000"
+									autocomplete="off"
+								/>
+								<p class="f1-error" data-error="guardianPhone" role="alert"></p>
+							</div>
+
+							<div class="f1-field" data-field="guardianEmail">
+								<label class="f1-label" for="f1-guardian-email">Their email address</label>
+								<input
+									class="f1-input"
+									id="f1-guardian-email"
+									name="guardianEmail"
+									type="email"
+									placeholder="name@example.com"
+									autocomplete="off"
+								/>
+								<p class="f1-error" data-error="guardianEmail" role="alert"></p>
+							</div>
+						</div>
+
+						<p class="f1-error f1-error--contact" data-error="guardianContact" role="alert"></p>
+					</div>
+
 					<!-- 6. City * (Searchable Autocomplete) -->
 					<div class="f1-field f1-autocomplete" data-field="city" data-f1-autocomplete>
 						<label class="f1-label" for="f1-city-input">
@@ -1055,6 +1108,21 @@
 		background: color-mix(in srgb, var(--teal) 8%, transparent);
 		color: var(--teal-deep);
 	}
+	/* Set apart, because it is a condition on the answer above rather than
+	   another field in the run. */
+	.f1-guardian {
+		margin: 0 0 1.9rem;
+		padding: 1.25rem 0 0.25rem 1.25rem;
+		border-left: 2px solid var(--ochre);
+	}
+
+	.f1-guardian__note {
+		margin-bottom: 1.25rem;
+		font-size: 0.9375rem;
+		line-height: 1.5;
+		color: var(--ink-soft);
+	}
+
 	.f1-reveal {
 		display: grid;
 		gap: 0.35rem;
@@ -1513,6 +1581,7 @@
 <script>
 	import { searchCities } from './cities';
 	import { validateForm1 } from './validation';
+	import { isMinor } from '../../../lib/validation/rules';
 	import { persistForm1Data, clearForm1Data } from './schema';
 	import { COUNTRIES, findCountry, searchCountries, detectCountryFromInternationalNumber } from './countries';
 	import { lookupPincode } from './pincode';
@@ -1573,6 +1642,9 @@
 				dateOfBirth: (data.get('dateOfBirth') as string) || '',
 				gender: (data.get('gender') as any) || '',
 				genderSelfDescribed: (data.get('genderSelfDescribed') as string) || '',
+				guardianName: (data.get('guardianName') as string) || '',
+				guardianPhone: (data.get('guardianPhone') as string) || '',
+				guardianEmail: (data.get('guardianEmail') as string) || '',
 				// The hidden input holds a chosen suggestion; outside India there are
 				// no suggestions to choose, so fall back to what was typed.
 				city:
@@ -1863,6 +1935,24 @@
 			}, 450);
 		});
 
+		// ── Guardian, below 18 ────────────────────────────────────────────────
+		const dobInput = document.querySelector<HTMLInputElement>('#f1-dob');
+		const guardian = document.querySelector<HTMLElement>('[data-guardian]');
+
+		const syncGuardian = () => {
+			const show = isMinor(dobInput?.value || '');
+			if (guardian) guardian.hidden = !show;
+			if (!show) {
+				guardian?.querySelectorAll('input').forEach((el) => {
+					el.value = '';
+					el.classList.remove('has-error');
+				});
+			}
+		};
+		dobInput?.addEventListener('change', syncGuardian);
+		dobInput?.addEventListener('input', syncGuardian);
+		syncGuardian();
+
 		// ── Self-described gender ─────────────────────────────────────────────
 		const genderSelect = document.getElementById('f1-gender') as HTMLSelectElement | null;
 		const genderSelf = document.querySelector<HTMLInputElement>('[data-gender-self]');
@@ -1993,6 +2083,9 @@
 					dateOfBirth: data.dateOfBirth || undefined,
 					gender: data.gender ? (data.gender as any) : undefined,
 					genderSelfDescribed: data.genderSelfDescribed || undefined,
+					guardianName: data.guardianName || undefined,
+					guardianPhone: data.guardianPhone || undefined,
+					guardianEmail: data.guardianEmail || undefined,
 					pincode: data.pincode || undefined,
 					// "other" is the select's own bookkeeping, not an answer. Send what
 					// they actually typed, or `preferred_language` stores the word

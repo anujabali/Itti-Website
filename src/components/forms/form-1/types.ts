@@ -30,6 +30,10 @@ export interface Form1Data {
 	pillar: PillarKind | '';
 	// Separate consents because they are separate consents in law, and separate
 	// columns on `person`. Absent means not given, never assumed.
+	// Required below 18: the Act needs a parent or guardian reachable.
+	guardianName?: string;
+	guardianPhone?: string;
+	guardianEmail?: string;
 	consentWhatsapp: boolean;
 	consentSms: boolean;
 	consentEmail: boolean;
@@ -48,6 +52,9 @@ export interface Form1Errors {
 	pincode?: string;
 	role?: string;
 	pillar?: string;
+	guardianContact?: string;
+	guardianPhone?: string;
+	guardianEmail?: string;
 }
 
 export interface CityOption {

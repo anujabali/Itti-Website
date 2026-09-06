@@ -20,6 +20,8 @@ export const LIMITS = {
 	city: 100,
 	genderSelfDescribed: 60,
 	maxAgeYears: 120,
+	/* The DPDP Act's threshold for needing a parent or guardian's consent. */
+	adultAge: 18,
 } as const;
 
 /** Mirrors `^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]{2,}$` in SQL. */
@@ -95,4 +97,24 @@ export const checkDateOfBirth = (value: string): { valid: boolean; error?: strin
 	}
 
 	return { valid: true };
+};
+
+/**
+ * Whether a date of birth puts someone under the age at which the Act requires
+ * a parent or guardian's consent. Compared as calendar dates, like the rest of
+ * the date handling here.
+ */
+export const isMinor = (value: string | undefined | null): boolean => {
+	if (!value) return false;
+	const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value.trim());
+	if (!match) return false;
+
+	const [, y, m, d] = match;
+	const dob = new Date(Number(y), Number(m) - 1, Number(d));
+	const eighteenth = new Date(dob);
+	eighteenth.setFullYear(dob.getFullYear() + LIMITS.adultAge);
+
+	const today = new Date();
+	today.setHours(0, 0, 0, 0);
+	return eighteenth > today;
 };

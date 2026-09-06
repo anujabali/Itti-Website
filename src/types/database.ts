@@ -155,6 +155,10 @@ export interface Form1RegistrationPayload {
 	gender?: GenderKind;
 	genderSelfDescribed?: string;
 	pincode?: string; // 6-digit Indian postal PIN
+	// Required below 18. `register_member` discards them above it.
+	guardianName?: string;
+	guardianPhone?: string;
+	guardianEmail?: string;
 	preferredLanguage?: string; // 'en-IN', 'ta', 'hi', etc.
 
 
