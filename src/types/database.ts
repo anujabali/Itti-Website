@@ -148,7 +148,7 @@ export interface Form1RegistrationPayload {
 	email?: string;
 
 	// Optional Area/Pillar selection ("Which area would you like to connect with?")
-	selectedPillar?: PillarKind; // 'neurodivergence' | 'cancer_care' | 'claw' | 'not_sure'
+	selectedPillars?: PillarKind[]; // 'neurodivergence' | 'cancer_care' | 'claw' | 'not_sure'
 
 	// Optional identity fields
 	dateOfBirth?: string; // YYYY-MM-DD

@@ -385,20 +385,21 @@
 				<section class="f1-section" aria-labelledby="f1-sec-03">
 					<h2 class="f1-section__legend" id="f1-sec-03">
 						<span class="f1-section__num">03</span>
-						<span class="f1-section__text">Area of interest</span>
+						<span class="f1-section__text">Areas of interest</span>
 					</h2>
 					<div class="f1-section__body">
 
-					<!-- 10. Which area would you like to connect with? * -->
+					<!-- 10. Which areas would you like to connect with? * -->
 					<div class="f1-field" data-field="pillar">
 						<label class="f1-label f1-label--standalone" id="f1-pillar-label">
-							Which area would you like to connect with?
+							Which areas would you like to connect with?
+							<span class="f1-opt">(Choose any)</span>
 						</label>
 
-						<div class="f1-pillar-grid" role="radiogroup" aria-labelledby="f1-pillar-label">
+						<div class="f1-pillar-grid" role="group" aria-labelledby="f1-pillar-label">
 							<!-- Neurodivergence -->
 							<label class="f1-pillar-card" style="--card-accent: var(--ochre);">
-								<input type="radio" name="pillar" value="neurodivergence" required />
+								<input type="checkbox" name="pillars" value="neurodivergence" />
 								<div class="f1-pillar-card__inner">
 									<span class="f1-pillar-card__tag">Pillar I</span>
 									<span class="f1-pillar-card__title">Neurodivergence</span>
@@ -408,7 +409,7 @@
 
 							<!-- Cancer Care -->
 							<label class="f1-pillar-card" style="--card-accent: var(--rose);">
-								<input type="radio" name="pillar" value="cancer_care" />
+								<input type="checkbox" name="pillars" value="cancer_care" />
 								<div class="f1-pillar-card__inner">
 									<span class="f1-pillar-card__tag">Pillar II</span>
 									<span class="f1-pillar-card__title">Cancer Care</span>
@@ -420,7 +421,7 @@
 
 							<!-- CLAW -->
 							<label class="f1-pillar-card" style="--card-accent: var(--sage);">
-								<input type="radio" name="pillar" value="claw" />
+								<input type="checkbox" name="pillars" value="claw" />
 								<div class="f1-pillar-card__inner">
 									<span class="f1-pillar-card__tag">Pillar III</span>
 									<span class="f1-pillar-card__title">CLAW</span>
@@ -432,7 +433,7 @@
 
 							<!-- I'm not sure yet (maps to 'other' in DB) -->
 							<label class="f1-pillar-card" style="--card-accent: var(--teal);">
-								<input type="radio" name="pillar" value="other" />
+								<input type="checkbox" name="pillars" value="not_sure" data-pillar-exclusive />
 								<div class="f1-pillar-card__inner">
 									<span class="f1-pillar-card__tag">General</span>
 									<span class="f1-pillar-card__title">I'm not sure yet</span>
@@ -442,7 +443,7 @@
 								</div>
 							</label>
 						</div>
-						<p class="f1-error" data-error="pillar" role="alert"></p>
+						<p class="f1-error" data-error="pillars" role="alert"></p>
 					</div>
 
 				</div>
@@ -1327,7 +1328,7 @@
 		background: var(--warm-white);
 	}
 
-	.f1-choice-card:has(input[type='radio']:checked) .f1-choice-card__title {
+	.f1-choice-card:has(input:checked) .f1-choice-card__title {
 		color: var(--teal);
 	}
 
@@ -1370,7 +1371,7 @@
 		display: block;
 	}
 
-	.f1-pillar-card input[type='radio'] {
+	.f1-pillar-card input {
 		position: absolute;
 		opacity: 0;
 		pointer-events: none;
@@ -1398,12 +1399,12 @@
 
 	/* The rule thickens into the pillar's own colour. Nothing is boxed, and
 	   the chosen one is still unmistakable at a glance. */
-	.f1-pillar-card:has(input[type='radio']:checked) .f1-pillar-card__inner {
+	.f1-pillar-card:has(input:checked) .f1-pillar-card__inner {
 		border-top-color: var(--card-accent);
 		box-shadow: 0 -2px 0 0 var(--card-accent);
 	}
 
-	.f1-pillar-card:has(input[type='radio']:checked) .f1-pillar-card__title {
+	.f1-pillar-card:has(input:checked) .f1-pillar-card__title {
 		color: var(--card-accent);
 	}
 
@@ -1708,7 +1709,7 @@
 				preferredLanguage: (data.get('preferredLanguage') as any) || '',
 				languageOther: (data.get('languageOther') as string) || '',
 				role: (data.get('role') as any) || '',
-				pillar: (data.get('pillar') as any) || '',
+				pillars: data.getAll('pillars') as any[],
 				heardFrom: (data.get('heardFrom') as any) || '',
 				heardFromOther: (data.get('heardFromOther') as string) || '',
 				referrerName: (data.get('referrerName') as string) || '',
@@ -2009,6 +2010,25 @@
 		dobInput?.addEventListener('input', syncGuardian);
 		syncGuardian();
 
+		// ── Areas of interest ─────────────────────────────────────────────────
+		// "Not sure yet" cannot be held alongside a definite answer; picking one
+		// clears the other, in both directions.
+		const pillarBoxes = [
+			...document.querySelectorAll<HTMLInputElement>("input[name='pillars']"),
+		];
+		for (const box of pillarBoxes) {
+			box.addEventListener('change', () => {
+				if (!box.checked) return;
+				const exclusive = box.hasAttribute('data-pillar-exclusive');
+				for (const other of pillarBoxes) {
+					if (other === box) continue;
+					if (exclusive || other.hasAttribute('data-pillar-exclusive')) {
+						other.checked = false;
+					}
+				}
+			});
+		}
+
 		// ── How they found us ─────────────────────────────────────────────────
 		const heardSelect = document.getElementById('f1-heard') as HTMLSelectElement | null;
 		const referrerBox = document.querySelector<HTMLElement>('[data-referrer]');
@@ -2168,7 +2188,7 @@
 						(data.preferredLanguage === 'other'
 							? data.languageOther?.trim()
 							: data.preferredLanguage) || undefined,
-					selectedPillar: data.pillar ? (data.pillar as any) : undefined,
+					selectedPillars: data.pillars.length > 0 ? data.pillars : undefined,
 					heardFrom: data.heardFrom || undefined,
 					heardFromOther: data.heardFromOther || undefined,
 					referrerName: data.referrerName || undefined,

@@ -30,7 +30,7 @@ export function mapForm1ToSupabase(data: Form1Data): SupabasePersonPayload {
 		meta: {
 			city: data.city,
 			state: data.state,
-			selected_pillar: data.pillar || 'other',
+			selected_pillars: data.pillars,
 			submitted_at: new Date().toISOString(),
 			client_source: 'web_form_1',
 		},

@@ -10,7 +10,7 @@ export type GenderKind =
 	| 'non_binary'
 	| 'self_described'
 	| 'undisclosed';
-export type PillarKind = 'neurodivergence' | 'cancer_care' | 'claw' | 'other';
+export type PillarKind = 'neurodivergence' | 'cancer_care' | 'claw' | 'not_sure';
 export type PreferredLanguage = 'en' | 'hi' | 'mr' | 'gu' | 'bn' | 'ta' | 'te' | 'kn' | 'ml' | 'pa' | 'ur' | 'or' | 'as' | 'other';
 
 export interface Form1Data {
@@ -27,7 +27,7 @@ export interface Form1Data {
 	preferredLanguage: PreferredLanguage | '';
 	languageOther?: string;
 	role: RoleKind | '';
-	pillar: PillarKind | '';
+	pillars: PillarKind[];
 	// Separate consents because they are separate consents in law, and separate
 	// columns on `person`. Absent means not given, never assumed.
 	// Required below 18: the Act needs a parent or guardian reachable.
@@ -54,7 +54,7 @@ export interface Form1Errors {
 	city?: string;
 	pincode?: string;
 	role?: string;
-	pillar?: string;
+	pillars?: string;
 	guardianContact?: string;
 	guardianPhone?: string;
 	guardianEmail?: string;
@@ -82,7 +82,7 @@ export interface SupabasePersonPayload {
 	meta: {
 		city: string;
 		state: string;
-		selected_pillar: PillarKind;
+		selected_pillars: PillarKind[];
 		submitted_at: string;
 		client_source: 'web_form_1';
 	};

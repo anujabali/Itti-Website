@@ -95,9 +95,9 @@ export const validateMemberPayload = (
 		errors.genderSelfDescribed = 'Please specify your gender identity.';
 	}
 
-	// Optional: Area/Pillar selection check
-	if (payload.selectedPillar && !VALID_PILLARS.includes(payload.selectedPillar)) {
-		errors.selectedPillar = `Selected area must be one of: ${VALID_PILLARS.join(', ')}.`;
+	// Optional: areas of interest
+	if (payload.selectedPillars?.some((p) => !VALID_PILLARS.includes(p))) {
+		errors.selectedPillars = `Areas must be from: ${VALID_PILLARS.join(', ')}.`;
 	}
 
 	// Optional: Heard from other check
@@ -147,7 +147,7 @@ export const registerMember = async (
 		console.info('[itti/registration] mock submit — no Supabase configured', {
 			city: payload.city,
 			role: payload.role,
-			selectedPillar: payload.selectedPillar ?? null,
+			selectedPillars: payload.selectedPillars ?? [],
 		});
 
 		return {

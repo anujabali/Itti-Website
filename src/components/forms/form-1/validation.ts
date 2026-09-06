@@ -130,9 +130,9 @@ export function validateForm1(data: Form1Data): {
 		errors.role = 'Please select how you are joining the foundation.';
 	}
 
-	// 10. Area of Interest * (Required)
-	if (!data.pillar) {
-		errors.pillar = 'Please select which area you would like to connect with.';
+	// 10. Areas of interest — at least one
+	if (!data.pillars || data.pillars.length === 0) {
+		errors.pillars = 'Please choose at least one area.';
 	}
 
 	const isValid = Object.keys(errors).length === 0;
