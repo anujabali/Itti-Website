@@ -2237,8 +2237,14 @@
 		});
 
 		// ── Form Submission Handler ──────────────────────────────────────────
+		// A disabled submit button stops a second click, and browsers decline
+		// implicit submission when it is disabled — but that is behaviour to rely
+		// on rather than a rule, and this writes a person into a database.
+		let submitting = false;
+
 		form.addEventListener('submit', async (e) => {
 			e.preventDefault();
+			if (submitting) return;
 			const data = getFormData();
 			const { isValid, errors } = validateForm1(data);
 
@@ -2256,9 +2262,10 @@
 			// Disable submit button while saving
 			const submitBtn = form.querySelector<HTMLButtonElement>('button[type="submit"]');
 			const originalBtnHtml = submitBtn ? submitBtn.innerHTML : 'Continue';
+			submitting = true;
 			if (submitBtn) {
 				submitBtn.disabled = true;
-				submitBtn.innerHTML = `<span>Saving...</span>`;
+				submitBtn.innerHTML = `<span>Saving&hellip;</span>`;
 			}
 
 			// Map & persist to safe browser session storage (matches Supabase schema)
@@ -2300,6 +2307,7 @@
 				});
 
 				if (!result.success) {
+					submitting = false;
 					if (submitBtn) {
 						submitBtn.disabled = false;
 						submitBtn.innerHTML = originalBtnHtml;
@@ -2330,6 +2338,7 @@
 					return;
 				}
 			} catch (err: any) {
+				submitting = false;
 				if (submitBtn) {
 					submitBtn.disabled = false;
 					submitBtn.innerHTML = originalBtnHtml;
@@ -2344,6 +2353,7 @@
 				return;
 			}
 
+			submitting = false;
 			if (submitBtn) {
 				submitBtn.disabled = false;
 				submitBtn.innerHTML = originalBtnHtml;
