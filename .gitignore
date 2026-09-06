@@ -37,3 +37,6 @@ pnpm-debug.log*
 docs/
 !docs/MEMBER_REGISTRATION_SPEC.md
 _local/
+
+# Local Netlify folder
+.netlify
