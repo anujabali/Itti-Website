@@ -181,3 +181,37 @@ describe('the success screen reads keys the payload actually has', () => {
 		}
 	});
 });
+
+describe('the browser sends every field the database reads', () => {
+	const sql = liveFunctionSource();
+	const service = readFileSync(
+		join(process.cwd(), 'src', 'lib', 'services', 'registration.ts'),
+		'utf8',
+	);
+
+	/**
+	 * `register_member` reads named keys out of one jsonb argument, and the
+	 * service builds that object as an explicit list. Adding a field to the form
+	 * and to SQL without adding it here drops it silently: the form collects it,
+	 * the receipt shows it, and nothing is stored.
+	 *
+	 * That is exactly what happened to `selectedPillars` and to all three
+	 * guardian fields — and the guardian one refused every registration by
+	 * someone under 18, because the function required a guardian it was never
+	 * sent.
+	 */
+	it('every payload key the function reads is one the service sends', () => {
+		const read = new Set(
+			[...sql.matchAll(/payload\s*->>?\s*'([A-Za-z]\w*)'/g)].map((m) => m[1]!),
+		);
+		// The one key the function names for itself rather than receiving.
+		read.delete('selectedPillar');
+
+		const sent = new Set([...service.matchAll(/^\t{4}(\w+):/gm)].map((m) => m[1]!));
+
+		expect(read.size, 'no payload keys found in SQL').toBeGreaterThan(10);
+		for (const key of read) {
+			expect([...sent], `payload.${key} is read by SQL but never sent`).toContain(key);
+		}
+	});
+});
