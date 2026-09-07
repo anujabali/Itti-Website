@@ -51,7 +51,7 @@ const plateFallback = (plate: string) => {
 const MOVEMENTS = [
 	{
 		id: 'mind',
-		carry: 0.6,
+		carry: 0.2,
 		plate: 'cajal',
 		// A descent with a real push behind it. The travel is the point, but at
 		// 3% the zoom was invisible.
@@ -93,7 +93,7 @@ const MOVEMENTS = [
 	},
 	{
 		id: 'body',
-		carry: 0.6,
+		carry: 0.2,
 		plate: 'thorax',
 		// A push in. Barely any travel, a slow close on the chest — the camera
 		// leaning toward the thing rather than moving past it.
@@ -127,7 +127,7 @@ const MOVEMENTS = [
 	},
 	{
 		id: 'forest',
-		carry: 0.6,
+		carry: 0.2,
 		plate: 'bird',
 		// A lift. The only photograph in the arc, and the only living thing in
 		// it — a drawing, a drawing, then something with a pulse. Middling
@@ -399,22 +399,29 @@ Let us create a world where no one struggles in silence.`,
 
 
 		/* A stage that has unpinned travels with the page, which is to say at
-		   1.00 — many times faster than either camera either side of it. Both
-		   halves of a hand-over are held back against that: the one leaving
-		   hangs down, the one arriving comes in already raised and settles. The
-		   pair of them turn a full-speed slide into a move of our own choosing.
+		   1.00 — faster than either camera either side of it. The one leaving is
+		   held back against that, which takes the speed off its half of the
+		   hand-over.
 
-		   --mv-carry is that hold, as a fraction of the viewport. The visible
-		   speed of a hand-over is 1 minus it. */
+		   Only the one leaving. Holding the arriving stage back means starting it
+		   already raised, and then the next picture is sitting on screen before
+		   the one before it has gone: they read as merged rather than as handed
+		   over. Whatever it buys in evenness is not worth that.
+
+		   Which also caps this. With the arriving stage travelling at 1.00
+		   whatever we do, a heavy hold on the leaving one buys no evenness
+		   either — it only sets the two halves of the frame moving at different
+		   speeds. So it stays what it always was: a slight hang, enough that the
+		   next picture slides over this one rather than butting against it. */
 		.mv__stage,
 		.mv__chrome-pin {
-			animation-name: mv-stage-lead, mv-stage-lag;
-			animation-duration: auto, auto;
-			animation-fill-mode: backwards, forwards;
-			animation-timeline: --mv, --mv;
-			animation-range-start: entry 0%, exit 0%;
-			animation-range-end: entry 100%, exit 100%;
-			animation-timing-function: linear, linear;
+			animation-name: mv-stage-lag;
+			animation-duration: auto;
+			animation-fill-mode: forwards;
+			animation-timeline: --mv;
+			animation-range-start: exit 0%;
+			animation-range-end: exit 100%;
+			animation-timing-function: linear;
 		}
 
 		/* The last movement hands over to the turn, not to another picture.
@@ -424,22 +431,13 @@ Let us create a world where no one struggles in silence.`,
 		   it has nothing to hang back for. It still arrives like the others. */
 		.mv[data-last] .mv__stage,
 		.mv[data-last] .mv__chrome-pin {
-			animation-name: mv-stage-lead, none;
+			animation-name: none;
 		}
 	}
 
 
 
 
-
-	@keyframes mv-stage-lead {
-		from {
-			transform: translate3d(0, calc(-1 * var(--mv-carry) * 100svh), 0);
-		}
-		to {
-			transform: translate3d(0, 0, 0);
-		}
-	}
 
 	@keyframes mv-stage-lag {
 		from {
