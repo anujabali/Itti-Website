@@ -862,7 +862,7 @@ Let us create a world where no one struggles in silence.`,
 					// still rises the way every line before it did, but it is gone
 					// within half a viewport rather than sliding out over the
 					// hand-over.
-					const leaving = past > 0 ? clamp(past / (vh * 0.5)) : 0;
+					const leaving = past > 0 ? clamp(past / (vh * 0.26)) : 0;
 					exits.push({
 						el: text,
 						by: past > 0 ? past * 0.5 : 0,
