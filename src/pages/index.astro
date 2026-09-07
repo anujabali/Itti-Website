@@ -391,10 +391,18 @@ Let us create a world where no one struggles in silence.`,
 				animation-duration: auto;
 				animation-fill-mode: both;
 				animation-timeline: --mv;
-				/* Over the whole time the picture is up, not only the pinned part, so
-				   it is still moving while it dissolves into the next one. */
-				animation-range-start: cover 0%;
-				animation-range-end: cover 100%;
+				/* From the moment the picture starts arriving to the moment its own
+				   movement ends — so it is already moving when it is revealed, and it
+				   has come to rest before it begins to fade.
+
+				   That second half matters. Run it to the end of the dissolve instead
+				   and both pictures pan while they are superimposed, at whatever rates
+				   their two movements happen to use: the one leaving travelled two
+				   hundred pixels against the other's seventy-seven, and two images
+				   sliding over each other at different speeds is what reads as shake.
+				   Only ever one of them moves now. */
+				animation-range-start: entry 0%;
+				animation-range-end: contain 100%;
 				/* Deliberately linear. Smoothstep brought the camera to a dead stop
 				   at both ends of the pinned phase, and the hand-over that follows
 				   moves at very nearly the speed of the page — so the picture crawled,
@@ -419,6 +427,25 @@ Let us create a world where no one struggles in silence.`,
 			   either — it only sets the two halves of the frame moving at different
 			   speeds. So it stays what it always was: a slight hang, enough that the
 			   next picture slides over this one rather than butting against it. */
+			/* The type is held too. Its sticky hold releases exactly when the
+			   hand-over starts, so without this it is the one thing on screen still
+			   travelling while both pictures stand still — and it travels at about
+			   one and a half times the speed of the page as it catches up, which is
+			   the shake that is left once the pictures are still. */
+			.mv__beats {
+				animation-name: mv-stage-lag;
+				animation-duration: auto;
+				animation-fill-mode: forwards;
+				animation-timeline: --mv;
+				animation-range-start: exit 0%;
+				animation-range-end: exit 100%;
+				animation-timing-function: linear;
+			}
+
+			.mv[data-last] .mv__beats {
+				animation-name: none;
+			}
+
 			.mv__stage,
 			.mv__chrome-pin {
 				animation-name: mv-stage-lead, mv-stage-lag;
@@ -860,6 +887,7 @@ Let us create a world where no one struggles in silence.`,
 					plate,
 					img,
 					stage,
+					beats: mv.querySelector<HTMLElement>('.mv__beats'),
 					chrome: mv.querySelector<HTMLElement>('.mv__chrome'),
 					// The last movement hands over to the turn, not to another
 					// picture. Dipping it to black would put a blackout right where
@@ -926,7 +954,10 @@ Let us create a world where no one struggles in silence.`,
 					st.shown += (target - st.shown) * (1 - Math.exp(-dt / SETTLE_MS));
 				}
 				if (Math.abs(target - st.shown) > 0.0015) settling = true;
-				r.stage.style.opacity = st.shown.toFixed(3);
+				const shown = st.shown.toFixed(3);
+				r.stage.style.opacity = shown;
+				// The type belongs to its picture and dissolves with it.
+				if (r.beats) r.beats.style.opacity = shown;
 
 				// The wall label hands over faster than the picture does. Two
 				// pictures may be half-present at once and read as a dissolve; two
