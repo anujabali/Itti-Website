@@ -1,0 +1,134 @@
+---
+/**
+ * Not-found page.
+ *
+ * Most of what reaches this page reaches it from our own navigation: the bar
+ * lists the site we intend to have, and much of that site is not written yet.
+ * So this says that, rather than implying the visitor mistyped something or
+ * that something has broken. Netlify serves it automatically for any path that
+ * does not resolve.
+ */
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+	title="Not here yet — The Itti Foundation"
+	description="This part of The Itti Foundation's site has not been written yet."
+	navTheme="light"
+>
+	<div class="page">
+		<article class="lost">
+			<p class="lost__eyebrow">Not found</p>
+			<h1 class="lost__title">Not here yet.</h1>
+			<p class="lost__lede">
+				This part of the site has not been written. Nothing is broken and nothing has
+				moved — we are building it a section at a time, and this one has not had its
+				turn.
+			</p>
+
+			<nav class="lost__ways" aria-label="Pages that do exist">
+				<a class="lost__way" href="/">
+					<span class="lost__way-name">The opening</span>
+					<span class="lost__way-note">Three pictures and what they are for.</span>
+				</a>
+				<a class="lost__way" href="/join">
+					<span class="lost__way-name">Join us</span>
+					<span class="lost__way-note">Tell us who you are and how to reach you.</span>
+				</a>
+				<a class="lost__way" href="/privacy">
+					<span class="lost__way-name">What we hold, and why</span>
+					<span class="lost__way-note">Everything we keep, and how to have it back.</span>
+				</a>
+			</nav>
+
+			<p class="lost__foot">
+				If you followed a link here from somewhere else, write to{' '}
+				<a href="mailto:hello@itti.org.in">hello@itti.org.in</a>{' '}
+				and we will point you the right way.
+			</p>
+		</article>
+	</div>
+</Base>
+
+<style>
+	.page {
+		background: var(--cream);
+		min-height: 100svh;
+	}
+
+	.lost {
+		max-width: 44rem;
+		margin: 0 auto;
+		padding: calc(var(--nav-h) + clamp(3rem, 12vh, 7rem)) var(--gutter)
+			clamp(3rem, 10vh, 6rem);
+	}
+
+	.lost__eyebrow {
+		margin: 0;
+		font-size: 0.75rem;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+	}
+
+	.lost__title {
+		margin: 0.6rem 0 0;
+		font-family: var(--display);
+		font-weight: var(--display-weight);
+		font-size: clamp(2.6rem, 7vw, 4.2rem);
+		line-height: 1.04;
+		color: var(--ink);
+	}
+
+	.lost__lede {
+		margin: 1.4rem 0 0;
+		max-width: 34rem;
+		font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+		line-height: 1.62;
+		color: var(--ink-soft, var(--ink));
+	}
+
+	/* The three that exist, listed plainly rather than sold. */
+	.lost__ways {
+		margin-top: clamp(2.5rem, 6vh, 4rem);
+		border-top: 1px solid var(--rule, rgba(28, 107, 119, 0.22));
+	}
+
+	.lost__way {
+		display: block;
+		padding: 1.15rem 0;
+		border-bottom: 1px solid var(--rule, rgba(28, 107, 119, 0.22));
+		text-decoration: none;
+		color: inherit;
+		transition: padding-left 260ms var(--ease);
+	}
+
+	.lost__way:hover,
+	.lost__way:focus-visible {
+		padding-left: 0.55rem;
+	}
+
+	.lost__way-name {
+		display: block;
+		font-family: var(--display);
+		font-size: 1.3rem;
+		color: var(--teal);
+	}
+
+	.lost__way-note {
+		display: block;
+		margin-top: 0.15rem;
+		font-size: 0.9375rem;
+		color: var(--ink-faint);
+	}
+
+	.lost__foot {
+		margin: clamp(2rem, 5vh, 3rem) 0 0;
+		font-size: 0.9375rem;
+		color: var(--ink-faint);
+	}
+
+	.lost__foot a {
+		color: var(--teal);
+	}
+</style>
