@@ -880,6 +880,7 @@ Let us create a world where no one struggles in silence.`,
 					img,
 					stage,
 					chrome: mv.querySelector<HTMLElement>('.mv__chrome'),
+					chromePin: mv.querySelector<HTMLElement>('.mv__chrome-pin'),
 					// The last movement hands over to the turn, not to another
 					// picture. Dipping it to black would put a blackout right where
 					// the page is supposed to open onto cream.
@@ -902,6 +903,8 @@ Let us create a world where no one struggles in silence.`,
 				const raw = clamp(-r.top / r.travel);
 				const p = ease(raw);
 				const distance = Math.min(r.room, r.stageH * r.pan);
+				const overrun = (-r.top - r.travel) / r.stageH;
+
 				if (composited) {
 					// The camera is a CSS animation on a scroll timeline: it runs on
 					// the compositor, in step with the scroll offset itself, so it
@@ -911,21 +914,32 @@ Let us create a world where no one struggles in silence.`,
 					r.mv.style.setProperty('--mv-distance', `${distance.toFixed(1)}px`);
 					r.mv.style.setProperty('--mv-scale', (1 + r.zoom).toFixed(4));
 				} else {
-					r.plate.style.transform = `translate3d(0, ${(-distance * p).toFixed(1)}px, 0) scale(${(1 + r.zoom * p).toFixed(4)})`;
-				}
+					// The same arc, written by hand, for a browser that has no scroll
+					// timelines to hang it on. It has to be the same arc: the fade
+					// only works because the next picture is held up under this one,
+					// and fading without that hold opens a window onto the black
+					// behind the arc.
+					//
+					// The camera runs from the moment the picture starts arriving to
+					// the end of its own movement, so it is already moving when it is
+					// revealed and at rest before it begins to fade.
+					const reach = vh + r.travel;
+					const q = ease(clamp((vh - r.top) / reach));
+					r.plate.style.transform = `translate3d(0, ${(-distance * q).toFixed(1)}px, 0) scale(${(1 + r.zoom * q).toFixed(4)})`;
 
-				// As a movement leaves it hangs back, so the next slides over it
-				// instead of butting straight against it.
-				const overrun = (-r.top - r.travel) / r.stageH;
-				if (!composited) {
-					const lag =
-						overrun > 0 && r.exits_dark
-							? ease(clamp(overrun)) * r.stageH * 0.12
-							: 0;
+					// And both frames are held at the top of the frame across a
+					// hand-over: the one arriving brought up before it would get
+					// there, the one leaving stopped from travelling with the page.
+					let hold = 0;
+					if (r.top > 0 && r.top <= r.stageH) hold = -r.top;
+					else if (overrun > 0 && r.exits_dark)
+						hold = Math.min(overrun, 1) * r.stageH;
 					// Always written, never cleared. Setting a transform back to ''
 					// drops the compositor layer and takes it again a frame later,
 					// which lands as a jolt exactly when the handover is on screen.
-					r.stage.style.transform = `translate3d(0, ${lag.toFixed(1)}px, 0)`;
+					const held = `translate3d(0, ${hold.toFixed(1)}px, 0)`;
+					r.stage.style.transform = held;
+					if (r.chromePin) r.chromePin.style.transform = held;
 				}
 
 				// A movement now leaves by dissolving into the one held behind it,
@@ -945,17 +959,7 @@ Let us create a world where no one struggles in silence.`,
 					st.shown += (target - st.shown) * (1 - Math.exp(-dt / SETTLE_MS));
 				}
 				if (Math.abs(target - st.shown) > 0.0015) settling = true;
-				// Only where the two frames are actually being held. A dissolve needs
-				// something solid behind the picture that is fading, and the thing
-				// behind it is the next picture, held up under it. Where the holds
-				// do not run — a browser without scroll-driven animations — the
-				// next picture is still climbing from the bottom of the frame, and
-				// fading this one just opens a window onto the black behind the
-				// arc: a band that shrinks from most of the frame to none of it as
-				// the next picture arrives, which is the page appearing to end
-				// before the fade catches up. Those browsers keep the plain scroll
-				// switch, which never shows it.
-				if (composited) r.stage.style.opacity = st.shown.toFixed(3);
+				r.stage.style.opacity = st.shown.toFixed(3);
 
 				// The wall label hands over faster than the picture does. Two
 				// pictures may be half-present at once and read as a dissolve; two
