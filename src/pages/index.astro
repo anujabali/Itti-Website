@@ -396,89 +396,6 @@ Let us create a world where no one struggles in silence.`,
 			);
 		}
 
-		/* The dip and the wall label ride the same timeline. Their two ramps sit
-		   on disjoint ranges — one while the movement is arriving, one while it
-		   is leaving — so the fills can hold the shaded value on the far side of
-		   each without the two ever fighting over the property. */
-		.mv__dip {
-			animation-name: mv-dip-in, mv-dip-out;
-			animation-duration: auto, auto;
-			animation-fill-mode: backwards, forwards;
-			animation-timeline: --mv, --mv;
-			/* Longhands again: the minifier rewrites the `animation-range`
-			   shorthand into a form that means something else. */
-			animation-range-start: entry 50%, exit 0%;
-			animation-range-end: entry 100%, exit 50%;
-			animation-timing-function: linear(
-				0,
-				0.0197,
-				0.0741,
-				0.1562,
-				0.2593,
-				0.3762,
-				0.5,
-				0.6238,
-				0.7407,
-				0.8438,
-				0.9259,
-				0.9803,
-				1
-			), linear(
-				0,
-				0.0197,
-				0.0741,
-				0.1562,
-				0.2593,
-				0.3762,
-				0.5,
-				0.6238,
-				0.7407,
-				0.8438,
-				0.9259,
-				0.9803,
-				1
-			);
-		}
-
-		.mv__chrome {
-			animation-name: mv-chrome-in, mv-chrome-out;
-			animation-duration: auto, auto;
-			animation-fill-mode: backwards, forwards;
-			animation-timeline: --mv, --mv;
-			/* Longhands again: the minifier rewrites the `animation-range`
-			   shorthand into a form that means something else. */
-			animation-range-start: entry 50%, exit 0%;
-			animation-range-end: entry 100%, exit 50%;
-			animation-timing-function: linear(
-				0,
-				0.0197,
-				0.0741,
-				0.1562,
-				0.2593,
-				0.3762,
-				0.5,
-				0.6238,
-				0.7407,
-				0.8438,
-				0.9259,
-				0.9803,
-				1
-			), linear(
-				0,
-				0.0197,
-				0.0741,
-				0.1562,
-				0.2593,
-				0.3762,
-				0.5,
-				0.6238,
-				0.7407,
-				0.8438,
-				0.9259,
-				0.9803,
-				1
-			);
-		}
 
 		/* As a movement leaves it hangs back, so the next slides over it. */
 		.mv__stage {
@@ -507,54 +424,15 @@ Let us create a world where no one struggles in silence.`,
 
 		/* The last movement hands over to the turn, not to another picture.
 		   Dipping it would put a blackout where the page opens onto cream. */
-		.mv[data-last] .mv__dip {
-			animation-name: mv-dip-in, none;
-		}
-
-		.mv[data-last] .mv__chrome {
-			animation-name: mv-chrome-in, none;
-		}
 
 		.mv[data-last] .mv__stage {
 			animation-name: none;
 		}
 	}
 
-	@keyframes mv-dip-in {
-		from {
-			opacity: 0.58;
-		}
-		to {
-			opacity: 0;
-		}
-	}
 
-	@keyframes mv-dip-out {
-		from {
-			opacity: 0;
-		}
-		to {
-			opacity: 0.58;
-		}
-	}
 
-	@keyframes mv-chrome-in {
-		from {
-			opacity: 0.42;
-		}
-		to {
-			opacity: 1;
-		}
-	}
 
-	@keyframes mv-chrome-out {
-		from {
-			opacity: 1;
-		}
-		to {
-			opacity: 0.42;
-		}
-	}
 
 	@keyframes mv-stage-lag {
 		from {
@@ -884,7 +762,26 @@ Let us create a world where no one struggles in silence.`,
 		// handler stops writing the camera transform altogether.
 		const composited = CSS.supports('animation-timeline', 'view()');
 
-		const draw = () => {
+		// Geometry stays welded to the scroll offset — a picture that lags the
+		// page reads as sliding. Brightness does not have to. Bound rigidly to
+		// scroll position, the rate the frame darkens at is whatever rate the
+		// page happens to be moving, and a wheel notch is a hundred pixels at
+		// once while the tail of a flick arrives in uneven steps. Every one of
+		// those lands as a jump in brightness.
+		//
+		// So the dip is given its own clock: each frame it closes a fixed
+		// fraction of the distance to wherever the scroll says it should be.
+		// The picture then darkens at an even rate however unevenly the page is
+		// being moved, and it keeps settling after the scroll has stopped.
+		const SETTLE_MS = 165;
+		const shade = movements.map(() => ({ dark: 0, started: false }));
+		let lastFrame = 0;
+
+		const draw = (now = performance.now()) => {
+			// Clamped, so a backgrounded tab returning does not jump the fade.
+			const elapsed = typeof now === 'number' ? now - lastFrame : NaN;
+			const dt = lastFrame && elapsed > 0 ? Math.min(64, elapsed) : 16.7;
+			lastFrame = now;
 			// Read every measurement first, then write, so scrolling never
 			// interleaves layout reads with style writes.
 			const vh = window.innerHeight;
@@ -957,8 +854,10 @@ Let us create a world where no one struggles in silence.`,
 				};
 			});
 
-			for (const r of reads) {
-				if (!r || r.travel <= 0) continue;
+			let settling = false;
+
+			reads.forEach((r, index) => {
+				if (!r || r.travel <= 0) return;
 				const raw = clamp(-r.top / r.travel);
 				const p = ease(raw);
 				const distance = Math.min(r.room, r.stageH * r.pan);
@@ -1001,11 +900,23 @@ Let us create a world where no one struggles in silence.`,
 				// before the dip touches it and does not need much more.
 				const arriving = clamp(r.top / (r.stageH * 0.5));
 				const leaving = r.exits_dark ? clamp(overrun / 0.5) : 0;
-				const dark = ease(Math.max(arriving, leaving)) * 0.58;
-				if (r.dip && !composited) r.dip.style.opacity = dark.toFixed(3);
+				const target = ease(Math.max(arriving, leaving)) * 0.58;
+				const st = shade[index];
+				// First frame lands on the answer rather than fading up to it from
+				// black, which would otherwise show as a flash on load or after a
+				// jump to an anchor.
+				if (!st.started) {
+					st.dark = target;
+					st.started = true;
+				} else {
+					st.dark += (target - st.dark) * (1 - Math.exp(-dt / SETTLE_MS));
+				}
+				if (Math.abs(target - st.dark) > 0.0015) settling = true;
+				const dark = st.dark;
+				if (r.dip) r.dip.style.opacity = dark.toFixed(3);
 				// The wall label sits above the dip, so it has to go into shadow
 				// with its own picture rather than hanging over the black.
-				if (r.chrome && !composited) r.chrome.style.opacity = (1 - dark).toFixed(3);
+				if (r.chrome) r.chrome.style.opacity = (1 - dark).toFixed(3);
 				// Each movement gets its own camera: the Cajal descends, the
 				// Bourgery pushes in, the heron lifts. One move repeated three
 				// times is an effect; three different moves is cinematography.
@@ -1020,22 +931,29 @@ Let us create a world where no one struggles in silence.`,
 						word.style.setProperty('--in', ease(v).toFixed(3));
 					});
 				}
-			}
+			});
+
+			return settling;
 		};
 
 		let queued = false;
 		const schedule = () => {
 			if (queued) return;
 			queued = true;
-			requestAnimationFrame(() => {
+			requestAnimationFrame((now) => {
 				queued = false;
-				draw();
+				// The dip is still on its way somewhere, so keep drawing even
+				// though the page has stopped moving.
+				if (draw(now)) schedule();
 			});
 		};
 
 		draw();
 		document.addEventListener('scroll', schedule, { passive: true });
 		window.addEventListener('resize', schedule);
-		document.fonts?.ready.then(draw);
+		// Called, not passed: `then(draw)` would hand draw() the FontFaceSet as
+		// its timestamp, and the frame delta computed from it is NaN — which then
+		// poisons the damped value permanently.
+		document.fonts?.ready.then(() => draw());
 	}
 </script>
