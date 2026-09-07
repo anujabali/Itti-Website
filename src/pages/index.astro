@@ -51,7 +51,7 @@ const plateFallback = (plate: string) => {
 const MOVEMENTS = [
 	{
 		id: 'mind',
-		carry: 0.2,
+		carry: 1,
 		plate: 'cajal',
 		// A descent with a real push behind it. The travel is the point, but at
 		// 3% the zoom was invisible.
@@ -93,7 +93,7 @@ const MOVEMENTS = [
 	},
 	{
 		id: 'body',
-		carry: 0.2,
+		carry: 1,
 		plate: 'thorax',
 		// A push in. Barely any travel, a slow close on the chest — the camera
 		// leaning toward the thing rather than moving past it.
@@ -127,7 +127,7 @@ const MOVEMENTS = [
 	},
 	{
 		id: 'forest',
-		carry: 0.2,
+		carry: 1,
 		plate: 'bird',
 		// A lift. The only photograph in the arc, and the only living thing in
 		// it — a drawing, a drawing, then something with a pulse. Middling
@@ -222,7 +222,7 @@ Let us create a world where no one struggles in silence.`,
 					data-mv
 					data-last={i === MOVEMENTS.length - 1 ? '' : undefined}
 					data-pan={mv.pan}
-					style={`--mv-carry:${mv.carry}`}
+					style={`--mv-carry:${mv.carry};z-index:${MOVEMENTS.length - i}`}
 					data-zoom={mv.zoom}
 				>
 					<div class="mv__stage">
@@ -244,7 +244,6 @@ Let us create a world where no one struggles in silence.`,
 						<div class="mv__scrim" aria-hidden="true" />
 						<div class="mv__grade" aria-hidden="true" />
 						<div class="mv__grain" aria-hidden="true" />
-						<div class="mv__dip" data-dip aria-hidden="true" />
 					</div>
 
 					<div class="mv__beats">
@@ -378,66 +377,84 @@ Let us create a world where no one struggles in silence.`,
 		--mv-carry: 0.55;
 	}
 
-	@supports (animation-timeline: view()) {
-		.mv__plate {
-			/* Longhands only. The CSS minifier folds a neighbouring
-			   `animation-timeline` into the `animation` shorthand, which is not
-			   valid there, and the browser then drops the whole declaration. */
-			animation-name: mv-camera;
-			animation-duration: auto;
-			animation-fill-mode: both;
-			animation-timeline: --mv;
-			animation-range-start: contain 0%;
-			animation-range-end: contain 100%;
-			/* Deliberately linear. Smoothstep brought the camera to a dead stop
-			   at both ends of the pinned phase, and the hand-over that follows
-			   moves at very nearly the speed of the page — so the picture crawled,
-			   lurched, and stopped again. A constant rate through the movement is
-			   what lets the two meet without a step in speed. */
-			animation-timing-function: linear;
-		}
+	/* All of this is motion, and none of it is offered to anyone who has asked
+	   not to be shown motion. Without the guard the hold still runs for them:
+	   the picture would stand still through a hand-over and then leave all at
+	   once, which is worse than the plain scroll they would otherwise get. */
+	@media (prefers-reduced-motion: no-preference) {
+		@supports (animation-timeline: view()) {
+			.mv__plate {
+				/* Longhands only. The CSS minifier folds a neighbouring
+				   `animation-timeline` into the `animation` shorthand, which is not
+				   valid there, and the browser then drops the whole declaration. */
+				animation-name: mv-camera;
+				animation-duration: auto;
+				animation-fill-mode: both;
+				animation-timeline: --mv;
+				/* Over the whole time the picture is up, not only the pinned part, so
+				   it is still moving while it dissolves into the next one. */
+				animation-range-start: cover 0%;
+				animation-range-end: cover 100%;
+				/* Deliberately linear. Smoothstep brought the camera to a dead stop
+				   at both ends of the pinned phase, and the hand-over that follows
+				   moves at very nearly the speed of the page — so the picture crawled,
+				   lurched, and stopped again. A constant rate through the movement is
+				   what lets the two meet without a step in speed. */
+				animation-timing-function: linear;
+			}
 
 
-		/* A stage that has unpinned travels with the page, which is to say at
-		   1.00 — faster than either camera either side of it. The one leaving is
-		   held back against that, which takes the speed off its half of the
-		   hand-over.
+			/* A stage that has unpinned travels with the page, which is to say at
+			   1.00 — faster than either camera either side of it. The one leaving is
+			   held back against that, which takes the speed off its half of the
+			   hand-over.
 
-		   Only the one leaving. Holding the arriving stage back means starting it
-		   already raised, and then the next picture is sitting on screen before
-		   the one before it has gone: they read as merged rather than as handed
-		   over. Whatever it buys in evenness is not worth that.
+			   Only the one leaving. Holding the arriving stage back means starting it
+			   already raised, and then the next picture is sitting on screen before
+			   the one before it has gone: they read as merged rather than as handed
+			   over. Whatever it buys in evenness is not worth that.
 
-		   Which also caps this. With the arriving stage travelling at 1.00
-		   whatever we do, a heavy hold on the leaving one buys no evenness
-		   either — it only sets the two halves of the frame moving at different
-		   speeds. So it stays what it always was: a slight hang, enough that the
-		   next picture slides over this one rather than butting against it. */
-		.mv__stage,
-		.mv__chrome-pin {
-			animation-name: mv-stage-lag;
-			animation-duration: auto;
-			animation-fill-mode: forwards;
-			animation-timeline: --mv;
-			animation-range-start: exit 0%;
-			animation-range-end: exit 100%;
-			animation-timing-function: linear;
-		}
+			   Which also caps this. With the arriving stage travelling at 1.00
+			   whatever we do, a heavy hold on the leaving one buys no evenness
+			   either — it only sets the two halves of the frame moving at different
+			   speeds. So it stays what it always was: a slight hang, enough that the
+			   next picture slides over this one rather than butting against it. */
+			.mv__stage,
+			.mv__chrome-pin {
+				animation-name: mv-stage-lead, mv-stage-lag;
+				animation-duration: auto, auto;
+				animation-fill-mode: backwards, forwards;
+				animation-timeline: --mv, --mv;
+				animation-range-start: entry 0%, exit 0%;
+				animation-range-end: entry 100%, exit 100%;
+				animation-timing-function: linear, linear;
+			}
 
-		/* The last movement hands over to the turn, not to another picture.
-		   Dipping it would put a blackout where the page opens onto cream. */
+			/* The last movement hands over to the turn, not to another picture.
+			   Dipping it would put a blackout where the page opens onto cream. */
 
-		/* The last movement hands over to the turn, not to another picture, so
-		   it has nothing to hang back for. It still arrives like the others. */
-		.mv[data-last] .mv__stage,
-		.mv[data-last] .mv__chrome-pin {
-			animation-name: none;
+			/* The last movement hands over to the turn, not to another picture, so
+			   it has nothing to hang back for. It still arrives like the others. */
+			.mv[data-last] .mv__stage,
+			.mv[data-last] .mv__chrome-pin {
+				animation-name: mv-stage-lead, none;
+			}
 		}
 	}
 
 
 
 
+
+
+	@keyframes mv-stage-lead {
+		from {
+			transform: translate3d(0, calc(-1 * var(--mv-carry) * 100svh), 0);
+		}
+		to {
+			transform: translate3d(0, 0, 0);
+		}
+	}
 
 	@keyframes mv-stage-lag {
 		from {
@@ -496,19 +513,6 @@ Let us create a world where no one struggles in silence.`,
 				transparent 26%
 			),
 			linear-gradient(to top, rgba(8, 9, 10, 0.8), transparent 32%);
-	}
-
-	/* Every movement falls into shadow as it leaves and lifts out of it as it
-	   arrives. A cut between two pictures always shows the join; a dip to black
-	   means you never see them meet. Not a cross-dissolve — the images never
-	   overlap, they hand over through darkness. */
-	.mv__dip {
-		position: absolute;
-		inset: 0;
-		background: #06070a;
-		opacity: 0;
-		pointer-events: none;
-		will-change: opacity;
 	}
 
 	/* ── Beats ──────────────────────────────────────────────────────────── */
@@ -777,18 +781,23 @@ Let us create a world where no one struggles in silence.`,
 		const composited = CSS.supports('animation-timeline', 'view()');
 
 		// Geometry stays welded to the scroll offset — a picture that lags the
-		// page reads as sliding. Brightness does not have to. Bound rigidly to
-		// scroll position, the rate the frame darkens at is whatever rate the
-		// page happens to be moving, and a wheel notch is a hundred pixels at
-		// once while the tail of a flick arrives in uneven steps. Every one of
-		// those lands as a jump in brightness.
+		// page reads as sliding. What the eye reads as brightness does not have
+		// to. Bound rigidly to scroll position, the rate a picture fades at is
+		// whatever rate the page happens to be moving, and a wheel notch is a
+		// hundred pixels at once while the tail of a flick arrives in uneven
+		// steps. Every one of those lands as a jump.
 		//
-		// So the dip is given its own clock: each frame it closes a fixed
-		// fraction of the distance to wherever the scroll says it should be.
-		// The picture then darkens at an even rate however unevenly the page is
-		// being moved, and it keeps settling after the scroll has stopped.
+		// So the dissolve is given its own clock: each frame it closes a fixed
+		// fraction of the distance to wherever the scroll says it should be. It
+		// then runs at an even rate however unevenly the page is being moved,
+		// and keeps settling after the scroll has stopped.
 		const SETTLE_MS = 165;
-		const shade = movements.map(() => ({ dark: 0, started: false }));
+		const shade = movements.map(() => ({
+			shown: 1,
+			started: false,
+			label: 1,
+			labelStarted: false,
+		}));
 		let lastFrame = 0;
 
 		const draw = (now = performance.now()) => {
@@ -851,7 +860,6 @@ Let us create a world where no one struggles in silence.`,
 					plate,
 					img,
 					stage,
-					dip: mv.querySelector<HTMLElement>('[data-dip]'),
 					chrome: mv.querySelector<HTMLElement>('.mv__chrome'),
 					// The last movement hands over to the turn, not to another
 					// picture. Dipping it to black would put a blackout right where
@@ -901,36 +909,41 @@ Let us create a world where no one struggles in silence.`,
 					r.stage.style.transform = `translate3d(0, ${lag.toFixed(1)}px, 0)`;
 				}
 
-				// Dark on the way in and on the way out, so the handover happens
-				// in shadow rather than on a visible seam. Both ramps are scaled to
-				// peak at the join, so the outgoing and incoming pictures are
-				// equally shaded where they meet.
-				//
-				// The peak is a shadow, not a blackout. At 0.94 the two dips sat at
-				// full strength together and the screen went black and stayed there
-				// for about a hundred pixels of scroll, which reads as a fault
-				// rather than as a cut. The grade already lays a heavy hold on each
-				// plate's top and bottom edge, so the join arrives half-darkened
-				// before the dip touches it and does not need much more.
-				const arriving = clamp(r.top / (r.stageH * 0.5));
-				const leaving = r.exits_dark ? clamp(overrun / 0.5) : 0;
-				const target = ease(Math.max(arriving, leaving)) * 0.58;
+				// A movement now leaves by dissolving into the one held behind it,
+				// so what a hand-over needs is a fade rather than a depth of
+				// shadow. It runs on the same clock as the dip did: a fade pinned
+				// to scroll position steps once per notch of the wheel, because
+				// the rate it fades at is whatever rate the page is moving.
+				const target = r.exits_dark ? 1 - ease(clamp(overrun)) : 1;
 				const st = shade[index];
-				// First frame lands on the answer rather than fading up to it from
-				// black, which would otherwise show as a flash on load or after a
-				// jump to an anchor.
+				// First frame lands on the answer rather than fading up to it,
+				// which would otherwise show as a flash on load or after a jump to
+				// an anchor.
 				if (!st.started) {
-					st.dark = target;
+					st.shown = target;
 					st.started = true;
 				} else {
-					st.dark += (target - st.dark) * (1 - Math.exp(-dt / SETTLE_MS));
+					st.shown += (target - st.shown) * (1 - Math.exp(-dt / SETTLE_MS));
 				}
-				if (Math.abs(target - st.dark) > 0.0015) settling = true;
-				const dark = st.dark;
-				if (r.dip) r.dip.style.opacity = dark.toFixed(3);
-				// The wall label sits above the dip, so it has to go into shadow
-				// with its own picture rather than hanging over the black.
-				if (r.chrome) r.chrome.style.opacity = (1 - dark).toFixed(3);
+				if (Math.abs(target - st.shown) > 0.0015) settling = true;
+				r.stage.style.opacity = st.shown.toFixed(3);
+
+				// The wall label hands over faster than the picture does. Two
+				// pictures may be half-present at once and read as a dissolve; two
+				// credits half-present at once just read as two credits. So this
+				// one is gone before the next one starts: out across the first
+				// half of the hand-over, in across the second.
+				const arriving = clamp(r.top / (r.stageH * 0.5));
+				const leaving = r.exits_dark ? clamp(overrun / 0.5) : 0;
+				const labelTarget = (1 - ease(arriving)) * (1 - ease(leaving));
+				if (!st.labelStarted) {
+					st.label = labelTarget;
+					st.labelStarted = true;
+				} else {
+					st.label += (labelTarget - st.label) * (1 - Math.exp(-dt / SETTLE_MS));
+				}
+				if (Math.abs(labelTarget - st.label) > 0.0015) settling = true;
+				if (r.chrome) r.chrome.style.opacity = st.label.toFixed(3);
 				// Each movement gets its own camera: the Cajal descends, the
 				// Bourgery pushes in, the heron lifts. One move repeated three
 				// times is an effect; three different moves is cinematography.
