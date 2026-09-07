@@ -213,7 +213,14 @@ Let us create a world where no one struggles in silence.`,
 	<div class="arc">
 		{
 			MOVEMENTS.map((mv, i) => (
-				<section class="mv" id={mv.id} data-mv data-pan={mv.pan} data-zoom={mv.zoom}>
+				<section
+					class="mv"
+					id={mv.id}
+					data-mv
+					data-last={i === MOVEMENTS.length - 1 ? '' : undefined}
+					data-pan={mv.pan}
+					data-zoom={mv.zoom}
+				>
 					<div class="mv__stage">
 						<div class="mv__plate" data-plate aria-hidden="true">
 							<picture>
@@ -347,6 +354,225 @@ Let us create a world where no one struggles in silence.`,
 		inset: 0 0 auto;
 		transform-origin: 50% 40%;
 		will-change: transform;
+	}
+
+	/* A movement taller than the viewport, holding a stage exactly one viewport
+	   tall, has a "contain" range that begins the instant the stage pins and
+	   ends the instant it unpins. That is the same interval the scroll handler
+	   used to compute by hand, so the camera move can be handed to the
+	   compositor without changing a frame of it. */
+	.mv {
+		view-timeline-name: --mv;
+		view-timeline-axis: block;
+	}
+
+	@supports (animation-timeline: view()) {
+		.mv__plate {
+			/* Longhands only. The CSS minifier folds a neighbouring
+			   `animation-timeline` into the `animation` shorthand, which is not
+			   valid there, and the browser then drops the whole declaration. */
+			animation-name: mv-camera;
+			animation-duration: auto;
+			animation-fill-mode: both;
+			animation-timeline: --mv;
+			animation-range-start: contain 0%;
+			animation-range-end: contain 100%;
+			/* Smoothstep, sampled. The handler eased its progress with n*n*(3-2n)
+			   and a linear camera move starts and stops too abruptly without it. */
+			animation-timing-function: linear(
+				0,
+				0.0197,
+				0.0741,
+				0.1562,
+				0.2593,
+				0.3762,
+				0.5,
+				0.6238,
+				0.7407,
+				0.8438,
+				0.9259,
+				0.9803,
+				1
+			);
+		}
+
+		/* The dip and the wall label ride the same timeline. Their two ramps sit
+		   on disjoint ranges — one while the movement is arriving, one while it
+		   is leaving — so the fills can hold the shaded value on the far side of
+		   each without the two ever fighting over the property. */
+		.mv__dip {
+			animation-name: mv-dip-in, mv-dip-out;
+			animation-duration: auto, auto;
+			animation-fill-mode: backwards, forwards;
+			animation-timeline: --mv, --mv;
+			/* Longhands again: the minifier rewrites the `animation-range`
+			   shorthand into a form that means something else. */
+			animation-range-start: entry 50%, exit 0%;
+			animation-range-end: entry 100%, exit 50%;
+			animation-timing-function: linear(
+				0,
+				0.0197,
+				0.0741,
+				0.1562,
+				0.2593,
+				0.3762,
+				0.5,
+				0.6238,
+				0.7407,
+				0.8438,
+				0.9259,
+				0.9803,
+				1
+			), linear(
+				0,
+				0.0197,
+				0.0741,
+				0.1562,
+				0.2593,
+				0.3762,
+				0.5,
+				0.6238,
+				0.7407,
+				0.8438,
+				0.9259,
+				0.9803,
+				1
+			);
+		}
+
+		.mv__chrome {
+			animation-name: mv-chrome-in, mv-chrome-out;
+			animation-duration: auto, auto;
+			animation-fill-mode: backwards, forwards;
+			animation-timeline: --mv, --mv;
+			/* Longhands again: the minifier rewrites the `animation-range`
+			   shorthand into a form that means something else. */
+			animation-range-start: entry 50%, exit 0%;
+			animation-range-end: entry 100%, exit 50%;
+			animation-timing-function: linear(
+				0,
+				0.0197,
+				0.0741,
+				0.1562,
+				0.2593,
+				0.3762,
+				0.5,
+				0.6238,
+				0.7407,
+				0.8438,
+				0.9259,
+				0.9803,
+				1
+			), linear(
+				0,
+				0.0197,
+				0.0741,
+				0.1562,
+				0.2593,
+				0.3762,
+				0.5,
+				0.6238,
+				0.7407,
+				0.8438,
+				0.9259,
+				0.9803,
+				1
+			);
+		}
+
+		/* As a movement leaves it hangs back, so the next slides over it. */
+		.mv__stage {
+			animation-name: mv-stage-lag;
+			animation-duration: auto;
+			animation-fill-mode: both;
+			animation-timeline: --mv;
+			animation-range-start: exit 0%;
+			animation-range-end: exit 100%;
+			animation-timing-function: linear(
+				0,
+				0.0197,
+				0.0741,
+				0.1562,
+				0.2593,
+				0.3762,
+				0.5,
+				0.6238,
+				0.7407,
+				0.8438,
+				0.9259,
+				0.9803,
+				1
+			);
+		}
+
+		/* The last movement hands over to the turn, not to another picture.
+		   Dipping it would put a blackout where the page opens onto cream. */
+		.mv[data-last] .mv__dip {
+			animation-name: mv-dip-in, none;
+		}
+
+		.mv[data-last] .mv__chrome {
+			animation-name: mv-chrome-in, none;
+		}
+
+		.mv[data-last] .mv__stage {
+			animation-name: none;
+		}
+	}
+
+	@keyframes mv-dip-in {
+		from {
+			opacity: 0.58;
+		}
+		to {
+			opacity: 0;
+		}
+	}
+
+	@keyframes mv-dip-out {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 0.58;
+		}
+	}
+
+	@keyframes mv-chrome-in {
+		from {
+			opacity: 0.42;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+
+	@keyframes mv-chrome-out {
+		from {
+			opacity: 1;
+		}
+		to {
+			opacity: 0.42;
+		}
+	}
+
+	@keyframes mv-stage-lag {
+		from {
+			transform: translate3d(0, 0, 0);
+		}
+		to {
+			transform: translate3d(0, 12svh, 0);
+		}
+	}
+
+	@keyframes mv-camera {
+		from {
+			transform: translate3d(0, 0, 0) scale(1);
+		}
+		to {
+			transform: translate3d(0, calc(-1 * var(--mv-distance, 0px)), 0)
+				scale(var(--mv-scale, 1));
+		}
 	}
 
 	.mv__plate picture {
@@ -501,9 +727,13 @@ Let us create a world where no one struggles in silence.`,
 		   words along with it. This puts the space back. */
 		margin-right: 0.32em;
 		/* Opacity only. The words arrive exactly where they will sit — nothing
-		   rises into position. */
+		   rises into position.
+
+		   No will-change. Promising a permanent layer for every word promoted
+		   all fifteen of them, and dragged their section-tall ancestors up with
+		   them: the beats, the chrome and the sections themselves each became a
+		   composited layer the height of the whole movement. */
 		opacity: var(--in, 1);
-		will-change: opacity;
 	}
 
 	/* The opening line is already in frame when the page loads, so it reveals
@@ -650,6 +880,9 @@ Let us create a world where no one struggles in silence.`,
 		// Smoothstep. Linear scroll-linked motion starts and stops abruptly;
 		// easing the progress is most of what "smoother" means here.
 		const ease = (n: number) => n * n * (3 - 2 * n);
+		// Scroll-driven CSS animations run on the compositor. Where they exist the
+		// handler stops writing the camera transform altogether.
+		const composited = CSS.supports('animation-timeline', 'view()');
 
 		const draw = () => {
 			// Read every measurement first, then write, so scrolling never
@@ -703,6 +936,7 @@ Let us create a world where no one struggles in silence.`,
 				}
 
 				return {
+					mv,
 					plate,
 					img,
 					stage,
@@ -728,19 +962,31 @@ Let us create a world where no one struggles in silence.`,
 				const raw = clamp(-r.top / r.travel);
 				const p = ease(raw);
 				const distance = Math.min(r.room, r.stageH * r.pan);
-				// Travel and push in one transform, so each movement composites a
-				// single layer rather than a scaled layer inside a translated one.
-				r.plate.style.transform = `translate3d(0, ${(-distance * p).toFixed(1)}px, 0) scale(${(1 + r.zoom * p).toFixed(4)})`;
+				if (composited) {
+					// The camera is a CSS animation on a scroll timeline: it runs on
+					// the compositor, in step with the scroll offset itself, so it
+					// cannot fall a frame behind the page the way a transform written
+					// from a scroll handler can. All this has to do is hand it the two
+					// numbers that depend on layout.
+					r.mv.style.setProperty('--mv-distance', `${distance.toFixed(1)}px`);
+					r.mv.style.setProperty('--mv-scale', (1 + r.zoom).toFixed(4));
+				} else {
+					r.plate.style.transform = `translate3d(0, ${(-distance * p).toFixed(1)}px, 0) scale(${(1 + r.zoom * p).toFixed(4)})`;
+				}
 
 				// As a movement leaves it hangs back, so the next slides over it
 				// instead of butting straight against it.
 				const overrun = (-r.top - r.travel) / r.stageH;
-				const lag =
-					overrun > 0 && r.exits_dark ? ease(clamp(overrun)) * r.stageH * 0.12 : 0;
-				// Always written, never cleared. Setting a transform back to '' drops
-				// the compositor layer and takes it again a frame later, which lands as
-				// a jolt exactly when the handover is on screen.
-				r.stage.style.transform = `translate3d(0, ${lag.toFixed(1)}px, 0)`;
+				if (!composited) {
+					const lag =
+						overrun > 0 && r.exits_dark
+							? ease(clamp(overrun)) * r.stageH * 0.12
+							: 0;
+					// Always written, never cleared. Setting a transform back to ''
+					// drops the compositor layer and takes it again a frame later,
+					// which lands as a jolt exactly when the handover is on screen.
+					r.stage.style.transform = `translate3d(0, ${lag.toFixed(1)}px, 0)`;
+				}
 
 				// Dark on the way in and on the way out, so the handover happens
 				// in shadow rather than on a visible seam. Both ramps are scaled to
@@ -756,10 +1002,10 @@ Let us create a world where no one struggles in silence.`,
 				const arriving = clamp(r.top / (r.stageH * 0.5));
 				const leaving = r.exits_dark ? clamp(overrun / 0.5) : 0;
 				const dark = ease(Math.max(arriving, leaving)) * 0.58;
-				if (r.dip) r.dip.style.opacity = dark.toFixed(3);
+				if (r.dip && !composited) r.dip.style.opacity = dark.toFixed(3);
 				// The wall label sits above the dip, so it has to go into shadow
 				// with its own picture rather than hanging over the black.
-				if (r.chrome) r.chrome.style.opacity = (1 - dark).toFixed(3);
+				if (r.chrome && !composited) r.chrome.style.opacity = (1 - dark).toFixed(3);
 				// Each movement gets its own camera: the Cajal descends, the
 				// Bourgery pushes in, the heron lifts. One move repeated three
 				// times is an effect; three different moves is cinematography.
