@@ -51,6 +51,7 @@ const plateFallback = (plate: string) => {
 const MOVEMENTS = [
 	{
 		id: 'mind',
+		carry: 0.6,
 		plate: 'cajal',
 		// A descent with a real push behind it. The travel is the point, but at
 		// 3% the zoom was invisible.
@@ -92,6 +93,7 @@ const MOVEMENTS = [
 	},
 	{
 		id: 'body',
+		carry: 0.6,
 		plate: 'thorax',
 		// A push in. Barely any travel, a slow close on the chest — the camera
 		// leaning toward the thing rather than moving past it.
@@ -125,12 +127,13 @@ const MOVEMENTS = [
 	},
 	{
 		id: 'forest',
+		carry: 0.6,
 		plate: 'bird',
 		// A lift. The only photograph in the arc, and the only living thing in
 		// it — a drawing, a drawing, then something with a pulse. Middling
 		// travel and a gentle push, so the frame closes on the bird as the arc
 		// resolves.
-		pan: 0.6,
+		pan: 0.35,
 		zoom: 0.17,
 		labelSide: 'right',
 		credit: {
@@ -219,6 +222,7 @@ Let us create a world where no one struggles in silence.`,
 					data-mv
 					data-last={i === MOVEMENTS.length - 1 ? '' : undefined}
 					data-pan={mv.pan}
+					style={`--mv-carry:${mv.carry}`}
 					data-zoom={mv.zoom}
 				>
 					<div class="mv__stage">
@@ -337,6 +341,11 @@ Let us create a world where no one struggles in silence.`,
 		/* A block formatting context, so the chrome layer's large bottom margin
 		   cannot collapse through and push the next movement down. */
 		display: flow-root;
+		/* And a stacking context, so the chrome's z-index stays inside its own
+		   movement. Without it that index is resolved against the root, and a
+		   wall label could paint over the picture that follows it rather than
+		   being covered by it. */
+		isolation: isolate;
 	}
 
 	.mv__stage {
@@ -364,6 +373,9 @@ Let us create a world where no one struggles in silence.`,
 	.mv {
 		view-timeline-name: --mv;
 		view-timeline-axis: block;
+		/* Overridden per movement: a hand-over should not travel at a speed
+		   neither of the pictures either side of it ever uses. */
+		--mv-carry: 0.55;
 	}
 
 	@supports (animation-timeline: view()) {
@@ -377,56 +389,42 @@ Let us create a world where no one struggles in silence.`,
 			animation-timeline: --mv;
 			animation-range-start: contain 0%;
 			animation-range-end: contain 100%;
-			/* Smoothstep, sampled. The handler eased its progress with n*n*(3-2n)
-			   and a linear camera move starts and stops too abruptly without it. */
-			animation-timing-function: linear(
-				0,
-				0.0197,
-				0.0741,
-				0.1562,
-				0.2593,
-				0.3762,
-				0.5,
-				0.6238,
-				0.7407,
-				0.8438,
-				0.9259,
-				0.9803,
-				1
-			);
+			/* Deliberately linear. Smoothstep brought the camera to a dead stop
+			   at both ends of the pinned phase, and the hand-over that follows
+			   moves at very nearly the speed of the page — so the picture crawled,
+			   lurched, and stopped again. A constant rate through the movement is
+			   what lets the two meet without a step in speed. */
+			animation-timing-function: linear;
 		}
 
 
-		/* As a movement leaves it hangs back, so the next slides over it. */
-		.mv__stage {
-			animation-name: mv-stage-lag;
-			animation-duration: auto;
-			animation-fill-mode: both;
-			animation-timeline: --mv;
-			animation-range-start: exit 0%;
-			animation-range-end: exit 100%;
-			animation-timing-function: linear(
-				0,
-				0.0197,
-				0.0741,
-				0.1562,
-				0.2593,
-				0.3762,
-				0.5,
-				0.6238,
-				0.7407,
-				0.8438,
-				0.9259,
-				0.9803,
-				1
-			);
+		/* A stage that has unpinned travels with the page, which is to say at
+		   1.00 — many times faster than either camera either side of it. Both
+		   halves of a hand-over are held back against that: the one leaving
+		   hangs down, the one arriving comes in already raised and settles. The
+		   pair of them turn a full-speed slide into a move of our own choosing.
+
+		   --mv-carry is that hold, as a fraction of the viewport. The visible
+		   speed of a hand-over is 1 minus it. */
+		.mv__stage,
+		.mv__chrome-pin {
+			animation-name: mv-stage-lead, mv-stage-lag;
+			animation-duration: auto, auto;
+			animation-fill-mode: backwards, forwards;
+			animation-timeline: --mv, --mv;
+			animation-range-start: entry 0%, exit 0%;
+			animation-range-end: entry 100%, exit 100%;
+			animation-timing-function: linear, linear;
 		}
 
 		/* The last movement hands over to the turn, not to another picture.
 		   Dipping it would put a blackout where the page opens onto cream. */
 
-		.mv[data-last] .mv__stage {
-			animation-name: none;
+		/* The last movement hands over to the turn, not to another picture, so
+		   it has nothing to hang back for. It still arrives like the others. */
+		.mv[data-last] .mv__stage,
+		.mv[data-last] .mv__chrome-pin {
+			animation-name: mv-stage-lead, none;
 		}
 	}
 
@@ -434,12 +432,21 @@ Let us create a world where no one struggles in silence.`,
 
 
 
+	@keyframes mv-stage-lead {
+		from {
+			transform: translate3d(0, calc(-1 * var(--mv-carry) * 100svh), 0);
+		}
+		to {
+			transform: translate3d(0, 0, 0);
+		}
+	}
+
 	@keyframes mv-stage-lag {
 		from {
 			transform: translate3d(0, 0, 0);
 		}
 		to {
-			transform: translate3d(0, 12svh, 0);
+			transform: translate3d(0, calc(var(--mv-carry) * 100svh), 0);
 		}
 	}
 
@@ -462,6 +469,15 @@ Let us create a world where no one struggles in silence.`,
 		width: 100%;
 		height: auto;
 		max-width: none;
+		/* The camera can only travel over plate that exists below the frame. A
+		   portrait plate at full width is comfortably taller than the viewport
+		   and this never binds; a landscape one is not, and the heron had 53px
+		   to lift through where its movement asks for 480. Below this height the
+		   plate is sized to the frame instead and cropped at the sides, which
+		   costs some width on one plate and buys the movement back. */
+		min-height: var(--plate-reach, 158svh);
+		object-fit: cover;
+		object-position: 50% 35%;
 	}
 
 	/* The grade. Stacked the way a colourist would: overall deepening, vignette,
@@ -949,6 +965,13 @@ Let us create a world where no one struggles in silence.`,
 		};
 
 		draw();
+		// A lazily loaded plate has no height until it arrives, and the camera's
+		// reach is measured from that height — so it must be measured again once
+		// the picture is actually there.
+		for (const mv of movements) {
+			const im = mv.querySelector<HTMLImageElement>('[data-plate] img');
+			if (im && !im.complete) im.addEventListener('load', schedule, { once: true });
+		}
 		document.addEventListener('scroll', schedule, { passive: true });
 		window.addEventListener('resize', schedule);
 		// Called, not passed: `then(draw)` would hand draw() the FontFaceSet as
