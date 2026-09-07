@@ -427,25 +427,6 @@ Let us create a world where no one struggles in silence.`,
 			   either — it only sets the two halves of the frame moving at different
 			   speeds. So it stays what it always was: a slight hang, enough that the
 			   next picture slides over this one rather than butting against it. */
-			/* The type is held too. Its sticky hold releases exactly when the
-			   hand-over starts, so without this it is the one thing on screen still
-			   travelling while both pictures stand still — and it travels at about
-			   one and a half times the speed of the page as it catches up, which is
-			   the shake that is left once the pictures are still. */
-			.mv__beats {
-				animation-name: mv-stage-lag;
-				animation-duration: auto;
-				animation-fill-mode: forwards;
-				animation-timeline: --mv;
-				animation-range-start: exit 0%;
-				animation-range-end: exit 100%;
-				animation-timing-function: linear;
-			}
-
-			.mv[data-last] .mv__beats {
-				animation-name: none;
-			}
-
 			.mv__stage,
 			.mv__chrome-pin {
 				animation-name: mv-stage-lead, mv-stage-lag;
@@ -818,7 +799,7 @@ Let us create a world where no one struggles in silence.`,
 		// fraction of the distance to wherever the scroll says it should be. It
 		// then runs at an even rate however unevenly the page is being moved,
 		// and keeps settling after the scroll has stopped.
-		const SETTLE_MS = 165;
+		const SETTLE_MS = 145;
 		const shade = movements.map(() => ({
 			shown: 1,
 			started: false,
@@ -850,6 +831,7 @@ Let us create a world where no one struggles in silence.`,
 				const exits: {
 					el: HTMLElement;
 					by: number;
+					fade: number;
 					words: HTMLElement[];
 					arrival: number;
 				}[] = [];
@@ -872,9 +854,19 @@ Let us create a world where no one struggles in silence.`,
 					const delay = lead ? vh * 0.35 : vh * -0.55;
 					const window = lead ? vh * 1 : vh * 0.5;
 					const settled = (-r.top - delay) / window;
+					// A line that has been let go is on its way out of the frame, and
+					// for the last line of a movement that journey lands on top of
+					// the dissolve — where the pictures are deliberately still. Left
+					// at full strength it is then the only thing moving, and it moves
+					// half again as fast as the page. So it leaves under a fade: it
+					// still rises the way every line before it did, but it is gone
+					// within half a viewport rather than sliding out over the
+					// hand-over.
+					const leaving = past > 0 ? clamp(past / (vh * 0.5)) : 0;
 					exits.push({
 						el: text,
 						by: past > 0 ? past * 0.5 : 0,
+						fade: 1 - ease(leaving),
 						words: beat.hasAttribute('data-first')
 							? []
 							: [...text.querySelectorAll<HTMLElement>('.word')],
@@ -887,7 +879,6 @@ Let us create a world where no one struggles in silence.`,
 					plate,
 					img,
 					stage,
-					beats: mv.querySelector<HTMLElement>('.mv__beats'),
 					chrome: mv.querySelector<HTMLElement>('.mv__chrome'),
 					// The last movement hands over to the turn, not to another
 					// picture. Dipping it to black would put a blackout right where
@@ -954,10 +945,17 @@ Let us create a world where no one struggles in silence.`,
 					st.shown += (target - st.shown) * (1 - Math.exp(-dt / SETTLE_MS));
 				}
 				if (Math.abs(target - st.shown) > 0.0015) settling = true;
-				const shown = st.shown.toFixed(3);
-				r.stage.style.opacity = shown;
-				// The type belongs to its picture and dissolves with it.
-				if (r.beats) r.beats.style.opacity = shown;
+				// Only where the two frames are actually being held. A dissolve needs
+				// something solid behind the picture that is fading, and the thing
+				// behind it is the next picture, held up under it. Where the holds
+				// do not run — a browser without scroll-driven animations — the
+				// next picture is still climbing from the bottom of the frame, and
+				// fading this one just opens a window onto the black behind the
+				// arc: a band that shrinks from most of the frame to none of it as
+				// the next picture arrives, which is the page appearing to end
+				// before the fade catches up. Those browsers keep the plain scroll
+				// switch, which never shows it.
+				if (composited) r.stage.style.opacity = st.shown.toFixed(3);
 
 				// The wall label hands over faster than the picture does. Two
 				// pictures may be half-present at once and read as a dissolve; two
@@ -980,6 +978,7 @@ Let us create a world where no one struggles in silence.`,
 				// times is an effect; three different moves is cinematography.
 				for (const exit of r.exits) {
 					exit.el.style.transform = `translate3d(0, ${-exit.by.toFixed(1)}px, 0)`;
+					exit.el.style.opacity = exit.fade.toFixed(3);
 					// Words land one after another, the last one home just as the
 					// frame settles.
 					const stagger = 0.17;
