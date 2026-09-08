@@ -24,19 +24,14 @@ import Doc from '../layouts/Doc.astro';
 /**
  * Whether the sign-in email carries a six-digit code as well as a link.
  *
- * It does not yet, and the switch is here rather than the input simply being
- * deleted, because the reason is temporary and specific. A code reaches the
- * message only if the magic-link template contains the token variable, and
- * Supabase refuses template edits on a free project using the built-in mailer:
- * "Email template modification is not available for free tier projects using
- * the default email provider." Configuring custom SMTP lifts that.
+ * It does. Both templates were rewritten once the project was pointed at
+ * Resend — custom SMTP is what lifts Supabase's refusal to edit them at all on
+ * a free plan — and both now carry the link and the code together.
  *
- * So the input is not shipped. One that silently cannot succeed is worse than
- * not offering a code at all — it invites somebody to sit waiting for a number
- * that was never sent. Turn this on in the same change that sets SMTP, and put
- * the token into the template at the same time.
+ * If the code ever stops arriving, this is the switch: check that the template
+ * still contains the token variable before blaming the page.
  */
-const CODE_SIGNIN = false;
+const CODE_SIGNIN = true;
 
 /** Kept in step with the registration form; the database accepts these. */
 const ROLES = [
