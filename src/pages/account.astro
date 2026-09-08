@@ -21,6 +21,23 @@
  */
 import Doc from '../layouts/Doc.astro';
 
+/**
+ * Whether the sign-in email carries a six-digit code as well as a link.
+ *
+ * It does not yet, and the switch is here rather than the input simply being
+ * deleted, because the reason is temporary and specific. A code reaches the
+ * message only if the magic-link template contains the token variable, and
+ * Supabase refuses template edits on a free project using the built-in mailer:
+ * "Email template modification is not available for free tier projects using
+ * the default email provider." Configuring custom SMTP lifts that.
+ *
+ * So the input is not shipped. One that silently cannot succeed is worse than
+ * not offering a code at all — it invites somebody to sit waiting for a number
+ * that was never sent. Turn this on in the same change that sets SMTP, and put
+ * the token into the template at the same time.
+ */
+const CODE_SIGNIN = false;
+
 /** Kept in step with the registration form; the database accepts these. */
 const ROLES = [
 	['patient', 'Patient / Beneficiary'],
@@ -138,8 +155,37 @@ const PILLARS = [
 					link is on its way. It works once, and it stops working after an hour.
 				</p>
 				<p>
-					Open it in this browser if you can &mdash; that is where the page is waiting
-					for you. Nothing arrived? Look in the spam folder, then{' '}
+					Open it on any device &mdash; the link carries the sign-in with it, so it does
+					not have to be the browser you asked from.
+				</p>
+				{
+					CODE_SIGNIN && (
+						<p>
+							The message carries a six-digit code as well. If you are reading it on a
+							different device from this one, type the code in here instead &mdash; it
+							does the same thing.
+						</p>
+					)
+				}
+				<form class="acct__form" data-code-form novalidate hidden={!CODE_SIGNIN}>
+					<div class="acct__field">
+						<label class="acct__label" for="acct-code">Six-digit code</label>
+						<input
+							class="acct__input acct__input--code"
+							id="acct-code"
+							name="token"
+							type="text"
+							inputmode="numeric"
+							autocomplete="one-time-code"
+							maxlength="6"
+							spellcheck="false"
+						/>
+					</div>
+					<p class="acct__error" data-code-error role="alert" hidden></p>
+					<button class="acct__go" type="submit" data-code-go>Sign me in</button>
+				</form>
+				<p class="acct__note">
+					Nothing arrived? Look in the spam folder, then{' '}
 					<button class="acct__again" type="button" data-signin-again
 						>try a different address</button
 					>.
@@ -156,9 +202,13 @@ const PILLARS = [
 					different address.
 				</p>
 				<p>
-					<a class="doc__link" href="/join">Register now</a>, or write to{' '}
-					<a class="doc__link" href="mailto:hello@itti.org.in">hello@itti.org.in</a> and we
-					will find it. You can also{' '}
+					It can also mean you registered with a phone number and no email at all. We
+					can only sign people in by email at the moment, so write to{' '}
+					<a class="doc__link" href="mailto:hello@itti.org.in">hello@itti.org.in</a> from
+					the address you would like to use and we will attach it to your record.
+				</p>
+				<p>
+					Otherwise <a class="doc__link" href="/join">register now</a>, or{' '}
 					<button class="acct__again" type="button" data-signout>sign out</button> and try
 					another address.
 				</p>
@@ -426,6 +476,15 @@ const PILLARS = [
 	select.acct__input {
 		appearance: none;
 		cursor: pointer;
+	}
+
+	/* Six characters, spaced out, so it reads as a code being checked off rather
+	   than as a word. */
+	.acct__input--code {
+		max-width: 9rem;
+		font-family: var(--face-cinzel);
+		font-size: 1.375rem;
+		letter-spacing: 0.35em;
 	}
 
 	.acct__hint {
@@ -824,6 +883,9 @@ const PILLARS = [
 
 		const signinForm = root.querySelector<HTMLFormElement>('[data-signin-form]');
 		const signinGo = root.querySelector<HTMLButtonElement>('[data-signin-go]');
+		// Verifying a code needs the address it was sent to, and the person
+		// typing it should not have to give it twice.
+		let sentTo = '';
 
 		signinForm?.addEventListener('submit', async (event) => {
 			event.preventDefault();
@@ -857,9 +919,71 @@ const PILLARS = [
 			// The same words whether or not we hold a registration for it. Which
 			// addresses are on our list is not something a stranger gets to
 			// learn by typing them in one at a time.
+			sentTo = email;
 			const shown = root.querySelector<HTMLElement>('[data-sent-address]');
 			if (shown) shown.textContent = email;
 			show('sent');
+			(root.querySelector('#acct-code') as HTMLInputElement | null)?.focus();
+		});
+
+		// ── the code, for when the link is on the wrong device ─────────────────
+		//
+		// The same message carries both. A link is one tap where it opens in the
+		// browser that asked for it, and useless where it does not — people read
+		// email on whichever device is nearest. The code does not care.
+
+		const codeForm = root.querySelector<HTMLFormElement>('[data-code-form]');
+		const codeGo = root.querySelector<HTMLButtonElement>('[data-code-go]');
+		const codeError = root.querySelector<HTMLElement>('[data-code-error]');
+
+		const sayCode = (message: string) => {
+			if (!codeError) return;
+			codeError.textContent = message;
+			codeError.hidden = false;
+		};
+
+		codeForm?.addEventListener('submit', async (event) => {
+			event.preventDefault();
+			const input = codeForm.elements.namedItem('token') as HTMLInputElement;
+			// People read a code off a screen and type it back with the spaces
+			// they saw, so take the digits and ignore the rest.
+			const token = input.value.replace(/\D/g, '');
+			if (codeError) codeError.hidden = true;
+
+			if (token.length !== 6) {
+				sayCode('The code is six digits.');
+				input.focus();
+				return;
+			}
+			if (!sentTo) {
+				sayCode('Ask for a new code and we will try again.');
+				return;
+			}
+
+			if (codeGo) {
+				codeGo.disabled = true;
+				codeGo.textContent = 'Checking';
+			}
+
+			const { error } = await supabase.auth.verifyOtp({
+				email: sentTo,
+				token,
+				type: 'email',
+			});
+
+			if (codeGo) {
+				codeGo.disabled = false;
+				codeGo.textContent = 'Sign me in';
+			}
+
+			if (error) {
+				// Wrong, already used, or older than an hour. The page cannot tell
+				// which, and guessing at it out loud would be worse than not.
+				sayCode('That code did not work. It expires after an hour and works once.');
+				input.select();
+				return;
+			}
+			// A success fires SIGNED_IN, which is already wired to open the record.
 		});
 
 		root.querySelector('[data-signin-again]')?.addEventListener('click', () => {

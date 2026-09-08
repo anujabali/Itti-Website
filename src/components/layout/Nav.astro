@@ -156,6 +156,7 @@ const MENUS = [
 		  decided by `data-who` on the header, set synchronously below.
 		*/
 		}
+		<a class="signin" href="/account" data-signed-out>Log in</a>
 		<a class="pill" href="/join" data-signed-out>Join Us</a>
 		<a class="pill" href="/donate" data-signed-in hidden>Donate</a>
 		<a class="who" href="/account" data-signed-in hidden>
@@ -204,6 +205,7 @@ const MENUS = [
 					</section>
 				))
 			}
+			<a class="drawer__who" href="/account" data-signed-out>Log in</a>
 			<a class="pill pill--drawer" href="/join" data-signed-out>Join Us</a>
 			<a class="pill pill--drawer" href="/donate" data-signed-in hidden>Donate</a>
 			<a class="drawer__who" href="/account" data-signed-in hidden>
@@ -429,6 +431,29 @@ const MENUS = [
 
 	.pill:hover {
 		transform: translateY(-1px);
+	}
+
+	/* Somebody who has already registered is not joining again, and until now
+	   the only way back to their record was a link in the footer. Set as text
+	   rather than a second pill: the pill is for the person who has not
+	   arrived yet. */
+	.signin {
+		flex: none;
+		font-size: 0.9375rem;
+		letter-spacing: 0.02em;
+		white-space: nowrap;
+		color: var(--cream);
+		transition: color var(--turn-dur) var(--ease);
+	}
+
+	.nav.is-light .signin {
+		color: var(--teal-deep);
+	}
+
+	.signin:hover {
+		text-decoration: underline;
+		text-underline-offset: 0.25em;
+		text-decoration-thickness: 1px;
 	}
 
 	/* ── Who is signed in ───────────────────────────────────────────────── */
