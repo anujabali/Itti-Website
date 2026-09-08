@@ -900,7 +900,30 @@ const PILLARS = [
 		const signinGo = root.querySelector<HTMLButtonElement>('[data-signin-go]');
 		// Verifying a code needs the address it was sent to, and the person
 		// typing it should not have to give it twice.
-		let sentTo = '';
+		//
+		// It outlives the page, because the obvious way to use a code is to go
+		// and fetch it: open the mail app, come back, and on plenty of phones
+		// coming back means a reload. Held in a variable alone, that stranded
+		// somebody holding a perfectly good code with nothing to check it
+		// against. Session storage, not local: it belongs to this attempt.
+		const SENT = 'itti.sent-to';
+		const readSentTo = () => {
+			try {
+				return sessionStorage.getItem(SENT) ?? '';
+			} catch {
+				return '';
+			}
+		};
+		let sentTo = readSentTo();
+		const rememberSentTo = (address: string) => {
+			sentTo = address;
+			try {
+				if (address) sessionStorage.setItem(SENT, address);
+				else sessionStorage.removeItem(SENT);
+			} catch {
+				/* The code still works for as long as this page stays open. */
+			}
+		};
 
 		signinForm?.addEventListener('submit', async (event) => {
 			event.preventDefault();
@@ -927,6 +950,20 @@ const PILLARS = [
 			}
 
 			if (error) {
+				// One message per address per minute. Somebody who presses the
+				// button twice is not looking at a broken site, and telling them
+				// so sends them away from a link already in their inbox.
+				if (error.status === 429) {
+					if (sentTo === email) {
+						show('sent');
+						(root.querySelector('#acct-code') as HTMLInputElement | null)?.focus();
+					} else {
+						fail(
+							'We have already sent one to that address in the last minute. Check your email, or try again shortly.',
+						);
+					}
+					return;
+				}
 				fail('We could not send that link just now.');
 				return;
 			}
@@ -934,7 +971,7 @@ const PILLARS = [
 			// The same words whether or not we hold a registration for it. Which
 			// addresses are on our list is not something a stranger gets to
 			// learn by typing them in one at a time.
-			sentTo = email;
+			rememberSentTo(email);
 			const shown = root.querySelector<HTMLElement>('[data-sent-address]');
 			if (shown) shown.textContent = email;
 			show('sent');
@@ -971,7 +1008,7 @@ const PILLARS = [
 				return;
 			}
 			if (!sentTo) {
-				sayCode('Ask for a new code and we will try again.');
+				sayCode('Give us your email address above first, and we will send you a code.');
 				return;
 			}
 
@@ -1011,6 +1048,7 @@ const PILLARS = [
 				await supabase.auth.signOut();
 				current = null;
 				remember('');
+				rememberSentTo('');
 				reopen();
 				show('signin');
 			});
@@ -1118,6 +1156,14 @@ const PILLARS = [
 			const { data } = await supabase.auth.getSession();
 			if (data.session) {
 				await afterSignIn();
+			} else if (sentTo) {
+				// Came back with a code in hand. Landing them on the email form
+				// again invites them to ask for a second one, which is throttled,
+				// and to abandon a code that is still perfectly good.
+				const shown = root.querySelector<HTMLElement>('[data-sent-address]');
+				if (shown) shown.textContent = sentTo;
+				show('sent');
+				(root.querySelector('#acct-code') as HTMLInputElement | null)?.focus();
 			} else {
 				show('signin');
 			}
