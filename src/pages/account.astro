@@ -23,18 +23,18 @@ import Doc from '../layouts/Doc.astro';
 
 /** Kept in step with the registration form; the database accepts these. */
 const ROLES = [
-	['patient', 'Living with something myself'],
-	['caregiver', 'Caring for someone'],
-	['volunteer', 'Volunteering or supporting'],
-	['other', 'Something else'],
+	['patient', 'Patient / Beneficiary'],
+	['caregiver', 'Caregiver / Family Member'],
+	['volunteer', 'Volunteer / Supporter'],
+	['other', 'Other'],
 ];
 
 const GENDERS = [
-	['', 'Prefer not to answer'],
-	['woman', 'Woman'],
-	['man', 'Man'],
+	['', 'Select gender'],
+	['woman', 'Female'],
+	['man', 'Male'],
 	['non_binary', 'Non-binary'],
-	['self_described', 'I would rather describe it'],
+	['self_described', 'Prefer to self-describe'],
 	['undisclosed', 'Prefer not to say'],
 ];
 
@@ -56,9 +56,9 @@ const LANGUAGES = [
 
 const PILLARS = [
 	['neurodivergence', 'Neurodivergence'],
-	['cancer_care', 'Cancer care'],
-	['claw', 'CLAW — conservation'],
-	['not_sure', 'Not sure yet'],
+	['cancer_care', 'Cancer Care'],
+	['claw', 'CLAW'],
+	['not_sure', "I'm not sure yet"],
 ];
 ---
 
@@ -567,18 +567,18 @@ const PILLARS = [
 		// ── the words, not the codes ───────────────────────────────────────────
 
 		const ROLE: Record<string, string> = {
-			patient: 'Living with something yourself',
-			caregiver: 'Caring for someone',
-			volunteer: 'Volunteering or supporting',
-			other: 'Something else',
+			patient: 'Patient / Beneficiary',
+			caregiver: 'Caregiver / Family Member',
+			volunteer: 'Volunteer / Supporter',
+			other: 'Other',
 		};
 
 		const GENDER: Record<string, string> = {
-			woman: 'Woman',
-			man: 'Man',
+			woman: 'Female',
+			man: 'Male',
 			non_binary: 'Non-binary',
-			self_described: 'Self-described',
-			undisclosed: 'Preferred not to say',
+			self_described: 'Prefer to self-describe',
+			undisclosed: 'Prefer not to say',
 		};
 
 		const LANG: Record<string, string> = {
@@ -599,10 +599,10 @@ const PILLARS = [
 
 		const PILLAR: Record<string, string> = {
 			neurodivergence: 'Neurodivergence',
-			cancer_care: 'Cancer care',
-			claw: 'CLAW — conservation',
-			not_sure: 'Not sure yet',
-			other: 'Something else',
+			cancer_care: 'Cancer Care',
+			claw: 'CLAW',
+			not_sure: "I'm not sure yet",
+			other: 'Other',
 		};
 
 		const HEARD: Record<string, string> = {
@@ -613,7 +613,7 @@ const PILLARS = [
 			instagram: 'Instagram',
 			youtube: 'YouTube',
 			whatsapp_group: 'A WhatsApp group',
-			search: 'A search',
+			search: 'A search engine',
 			news: 'The news',
 			volunteer_staff: 'Someone from the foundation',
 			other: 'Somewhere else',

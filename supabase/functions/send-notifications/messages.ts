@@ -29,18 +29,18 @@ const esc = (s: string) =>
 
 /** The stored value, said the way it was asked for. */
 const ROLE: Record<string, string> = {
-	patient: 'Living with something yourself',
-	caregiver: 'Caring for someone',
-	volunteer: 'Volunteering or supporting',
-	other: 'Something else',
+	patient: 'Patient / Beneficiary',
+	caregiver: 'Caregiver / Family Member',
+	volunteer: 'Volunteer / Supporter',
+	other: 'Other',
 };
 
 const GENDER: Record<string, string> = {
-	woman: 'Woman',
-	man: 'Man',
+	woman: 'Female',
+	man: 'Male',
 	non_binary: 'Non-binary',
-	self_described: 'Self-described',
-	undisclosed: 'Preferred not to say',
+	self_described: 'Prefer to self-describe',
+	undisclosed: 'Prefer not to say',
 };
 
 const LANG: Record<string, string> = {
@@ -67,7 +67,7 @@ const HEARD: Record<string, string> = {
 	instagram: 'Instagram',
 	youtube: 'YouTube',
 	whatsapp_group: 'A WhatsApp group',
-	search: 'A search',
+	search: 'A search engine',
 	news: 'The news',
 	volunteer_staff: 'Someone from the foundation',
 	other: 'Somewhere else',
@@ -170,7 +170,7 @@ export const welcome = (p: Record<string, unknown>): Message => {
 		text: [
 			greeting,
 			'',
-			'We have your details, and someone from the right part of the foundation will be in touch.',
+			'We have your details, and we will be in touch.',
 			'',
 			chose,
 			'',
@@ -178,23 +178,20 @@ export const welcome = (p: Record<string, unknown>): Message => {
 			'',
 			asText(rows),
 			'',
-			'If any line of that is wrong, change it yourself at https://itti.org.in/account — sign in with this address and no password. Or reply to this message and we will put it right.',
+			'If any of the above information is wrong, or you would rather not share it, reply to this message and we will address it.',
 			'',
 			'The Itti Foundation',
 			'https://itti.org.in/privacy',
 		].join('\n'),
 		html: wrap(`
       <p style="margin:0 0 18px;font-size:28px;line-height:1.2;">${esc(greeting)}</p>
-      <p style="margin:0 0 18px;">We have your details, and someone from the right part of the
-        foundation will be in touch.</p>
+      <p style="margin:0 0 18px;">We have your details, and we will be in touch.</p>
       <p style="margin:0 0 26px;">${esc(chose)}</p>
       <p style="margin:0 0 10px;font-size:11px;letter-spacing:0.18em;
                 text-transform:uppercase;color:#70695f;">What we wrote down</p>
       ${asTable(rows)}
-      <p style="margin:0;">If any line of that is wrong, change it yourself at
-        <a href="https://itti.org.in/account" style="color:#1c6b77;">itti.org.in/account</a> —
-        sign in with this address, and there is no password. Or reply to this message and we
-        will put it right.</p>`),
+      <p style="margin:0;">If any of the above information is wrong, or you would rather not
+        share it, reply to this message and we will address it.</p>`),
 	};
 };
 
