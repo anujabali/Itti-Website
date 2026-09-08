@@ -78,7 +78,7 @@ const MOVEMENTS = [
 				y: 52,
 				// Shorter than the beat it hands to: the thesis has one short line
 				// to land, and the wait before the poem starts should not drag.
-				hold: 105,
+				hold: 88,
 			},
 			{
 				id: 'met',
@@ -87,7 +87,7 @@ const MOVEMENTS = [
 				// keeps going.
 				side: 'left',
 				y: 34,
-				hold: 175,
+				hold: 147,
 			},
 		],
 	},
@@ -121,7 +121,7 @@ const MOVEMENTS = [
 				y: 50,
 				// A single-beat movement needs roughly the length of a double to
 				// feel like it lasted as long.
-				hold: 280,
+				hold: 235,
 			},
 		],
 	},
@@ -155,7 +155,7 @@ const MOVEMENTS = [
 				// at the bottom of the frame — which is where the turn begins.
 				side: 'left',
 				y: 62,
-				hold: 280,
+				hold: 235,
 			},
 		],
 	},
@@ -234,7 +234,6 @@ Let us create a world where no one struggles in silence.`,
 						class="mv__plate"
 						data-plate
 						aria-hidden="true"
-						style={`animation-timeline:--mv-${i}`}
 					>
 						<picture>
 							<source type="image/avif" srcset={plateSet(mv.plate, 'avif')} sizes="100vw" />
@@ -274,7 +273,6 @@ Let us create a world where no one struggles in silence.`,
 					data-last={i === MOVEMENTS.length - 1 ? '' : undefined}
 					data-pan={mv.pan}
 					data-zoom={mv.zoom}
-					style={`view-timeline-name:--mv-${i}`}
 				>
 					<div class="mv__beats">
 						{mv.beats.map((beat, bi) => (
@@ -343,10 +341,6 @@ Let us create a world where no one struggles in silence.`,
 		position: relative;
 		color: var(--warm-white);
 		background: #0a0c0d;
-		/* The pictures live in the frame; the timelines that drive them belong to
-		   the movements, which are the frame's siblings. This is what lets the
-		   one reach the other. */
-		timeline-scope: --mv-0, --mv-1, --mv-2;
 	}
 
 	/* Pinned for the whole arc and never unpinned inside it, so no hand-over is
@@ -417,62 +411,12 @@ Let us create a world where no one struggles in silence.`,
 	   ends the instant it unpins. That is the same interval the scroll handler
 	   used to compute by hand, so the camera move can be handed to the
 	   compositor without changing a frame of it. */
-	/* The name is set per movement in the markup; this is the axis it runs on. */
-	.mv {
-		view-timeline-axis: block;
-	}
-
-	/* All of this is motion, and none of it is offered to anyone who has asked
-	   not to be shown motion. Without the guard the hold still runs for them:
-	   the picture would stand still through a hand-over and then leave all at
-	   once, which is worse than the plain scroll they would otherwise get. */
-	@media (prefers-reduced-motion: no-preference) {
-		@supports (animation-timeline: view()) {
-			.mv__plate {
-				/* Longhands only. The CSS minifier folds a neighbouring
-				   `animation-timeline` into the `animation` shorthand, which is not
-				   valid there, and the browser then drops the whole declaration. */
-				animation-name: mv-camera;
-				animation-duration: auto;
-				animation-fill-mode: both;
-				/* From the moment the picture starts arriving to the moment its own
-				   movement ends — so it is already moving when it is revealed, and it
-				   has come to rest before it begins to fade.
-
-				   That second half matters. Run it to the end of the dissolve instead
-				   and both pictures pan while they are superimposed, at whatever rates
-				   their two movements happen to use: the one leaving travelled two
-				   hundred pixels against the other's seventy-seven, and two images
-				   sliding over each other at different speeds is what reads as shake.
-				   Only ever one of them moves now. */
-				animation-range-start: entry 0%;
-				animation-range-end: contain 100%;
-				/* Deliberately linear. Smoothstep brought the camera to a dead stop
-				   at both ends of the pinned phase, and the hand-over that follows
-				   moves at very nearly the speed of the page — so the picture crawled,
-				   lurched, and stopped again. A constant rate through the movement is
-				   what lets the two meet without a step in speed. */
-				animation-timing-function: linear;
-			}
-
-
-		}
-	}
 
 
 
 
 
 
-	@keyframes mv-camera {
-		from {
-			transform: translate3d(0, 0, 0) scale(1);
-		}
-		to {
-			transform: translate3d(0, calc(-1 * var(--mv-distance, 0px)), 0)
-				scale(var(--mv-scale, 1));
-		}
-	}
 
 	.mv__plate picture {
 		display: block;
@@ -768,9 +712,6 @@ Let us create a world where no one struggles in silence.`,
 		// Smoothstep. Linear scroll-linked motion starts and stops abruptly;
 		// easing the progress is most of what "smoother" means here.
 		const ease = (n: number) => n * n * (3 - 2 * n);
-		// Scroll-driven CSS animations run on the compositor. Where they exist the
-		// handler stops writing the camera transform altogether.
-		const composited = CSS.supports('animation-timeline', 'view()');
 
 		// Geometry stays welded to the scroll offset — a picture that lags the
 		// page reads as sliding. What the eye reads as brightness does not have
@@ -784,6 +725,10 @@ Let us create a world where no one struggles in silence.`,
 		// then runs at an even rate however unevenly the page is being moved,
 		// and keeps settling after the scroll has stopped.
 		const SETTLE_MS = 145;
+		// The camera settles faster than the dissolve: it is geometry, and the eye
+		// is quicker to call a picture late than a brightness late.
+		const GLIDE_MS = 160;
+		const camera = movements.map(() => ({ at: 0, started: false }));
 		const shade = movements.map(() => ({
 			shown: 1,
 			started: false,
@@ -888,31 +833,34 @@ Let us create a world where no one struggles in silence.`,
 				const distance = Math.min(r.room, r.stageH * r.pan);
 				const overrun = (-r.top - r.travel) / r.stageH;
 
-				if (composited) {
-					// The camera is a CSS animation on a scroll timeline: it runs on
-					// the compositor, in step with the scroll offset itself, so it
-					// cannot fall a frame behind the page the way a transform written
-					// from a scroll handler can. All this has to do is hand it the two
-					// numbers that depend on layout.
-					// On the layer, not the movement: the picture is no longer inside
-					// the section that drives it, so nothing would inherit from there.
-					r.layer.style.setProperty('--mv-distance', `${distance.toFixed(1)}px`);
-					r.layer.style.setProperty('--mv-scale', (1 + r.zoom).toFixed(4));
+				// The camera, on the same clock as the dissolve.
+				//
+				// It used to be a CSS animation bound to the scroll offset, which is
+				// exact but inherits whatever the scroll is doing: on a wheel the
+				// picture moved on ten frames out of a hundred and ten, in jumps of
+				// forty-one pixels. It hopped rather than travelled.
+				//
+				// It can be damped now, and could not be before. While each movement
+				// carried its own frame, that frame travelled with the page, so the
+				// picture had to stay welded to the scroll or it would read as
+				// sliding against everything around it. The frame is pinned and
+				// still now — the camera is motion inside a stationary window, with
+				// nothing on screen to be out of step with — so it can close a fixed
+				// fraction of the distance each frame and glide instead.
+				//
+				// It runs from the moment the picture starts arriving to the end of
+				// its own movement: already moving when it is revealed, at rest
+				// before it begins to fade.
+				const aim = ease(clamp((vh - r.top) / (vh + r.travel)));
+				const cam = camera[index];
+				if (!cam.started) {
+					cam.at = aim;
+					cam.started = true;
 				} else {
-					// The same arc, written by hand, for a browser that has no scroll
-					// timelines to hang it on. It has to be the same arc: the fade
-					// only works because the next picture is held up under this one,
-					// and fading without that hold opens a window onto the black
-					// behind the arc.
-					//
-					// The camera runs from the moment the picture starts arriving to
-					// the end of its own movement, so it is already moving when it is
-					// revealed and at rest before it begins to fade.
-					const reach = vh + r.travel;
-					const q = ease(clamp((vh - r.top) / reach));
-					r.plate.style.transform = `translate3d(0, ${(-distance * q).toFixed(1)}px, 0) scale(${(1 + r.zoom * q).toFixed(4)})`;
-
+					cam.at += (aim - cam.at) * (1 - Math.exp(-dt / GLIDE_MS));
 				}
+				if (Math.abs(aim - cam.at) > 0.0004) settling = true;
+				r.plate.style.transform = `translate3d(0, ${(-distance * cam.at).toFixed(2)}px, 0) scale(${(1 + r.zoom * cam.at).toFixed(4)})`;
 
 				// A movement now leaves by dissolving into the one held behind it,
 				// so what a hand-over needs is a fade rather than a depth of
