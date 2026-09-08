@@ -697,6 +697,11 @@ const PILLARS = [
 			} catch {
 				/* Nothing to do: the nav falls back to its signed-out state. */
 			}
+			// The nav decided who it was greeting before this page had signed
+			// anybody in, so telling storage is not enough — it would still read
+			// "Join Us" above a record with the person's own name on it until
+			// they happened to load another page. The nav listens for this.
+			document.dispatchEvent(new CustomEvent('itti:who', { detail: name }));
 		};
 
 		const asDate = (iso: string) => {
@@ -864,7 +869,17 @@ const PILLARS = [
 			show('record');
 		};
 
-		const afterSignIn = async () => {
+		// Supabase announces a session more than once — an initial event, a
+		// sign-in, a token refresh — and `start` looks for one as well. Left
+		// unguarded that ran the claim four times and the read three for a
+		// single sign-in: harmless, because claiming is idempotent by design,
+		// but four writes and three reads to answer a question nobody asked
+		// twice.
+		let opening: Promise<void> | null = null;
+
+		const afterSignIn = () => (opening ??= openRecord());
+
+		const openRecord = async () => {
 			const { data, error } = await supabase.rpc('claim_registration');
 			if (error) {
 				fail('We could not open your record just now.');
@@ -877,6 +892,11 @@ const PILLARS = [
 				return;
 			}
 			await load();
+		};
+
+		/** Signing out, or starting again, has to let the next sign-in through. */
+		const reopen = () => {
+			opening = null;
 		};
 
 		// ── sign in ────────────────────────────────────────────────────────────
@@ -996,11 +1016,13 @@ const PILLARS = [
 				await supabase.auth.signOut();
 				current = null;
 				remember('');
+				reopen();
 				show('signin');
 			});
 		}
 
 		root.querySelector('[data-retry]')?.addEventListener('click', () => {
+			reopen();
 			show('loading');
 			void start();
 		});

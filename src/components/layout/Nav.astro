@@ -234,30 +234,39 @@ const MENUS = [
 */
 }
 <script is:inline>
-	try {
+	(() => {
 		const nav = document.getElementById('site-nav');
-		let signedIn = false;
-		for (const key in localStorage) {
-			if (/^sb-.+-auth-token$/.test(key)) {
-				signedIn = true;
-				break;
-			}
-		}
-		const who = signedIn ? (localStorage.getItem('itti.who') || '').trim() : '';
-		if (!signedIn) localStorage.removeItem('itti.who');
 
-		if (who) {
-			const name = who.split(/\s+/)[0] || '';
+		const paint = (who) => {
+			const name = (who || '').trim().split(/\s+/)[0] || '';
 			for (const el of nav.querySelectorAll('[data-who-name]')) el.textContent = name;
 			for (const el of nav.querySelectorAll('[data-who-initial]'))
 				el.textContent = (name[0] || '').toUpperCase();
-			for (const el of nav.querySelectorAll('[data-signed-in]')) el.hidden = false;
-			for (const el of nav.querySelectorAll('[data-signed-out]')) el.hidden = true;
+			for (const el of nav.querySelectorAll('[data-signed-in]')) el.hidden = !name;
+			for (const el of nav.querySelectorAll('[data-signed-out]')) el.hidden = !!name;
+		};
+
+		try {
+			let signedIn = false;
+			for (const key in localStorage) {
+				if (/^sb-.+-auth-token$/.test(key)) {
+					signedIn = true;
+					break;
+				}
+			}
+			if (!signedIn) localStorage.removeItem('itti.who');
+			const who = signedIn ? localStorage.getItem('itti.who') : '';
+			if (who) paint(who);
+		} catch {
+			// A browser that refuses storage gets the signed-out nav, which is the
+			// one already in the markup. Nothing to do.
 		}
-	} catch {
-		// A browser that refuses storage gets the signed-out nav, which is the
-		// one already in the markup. Nothing to do.
-	}
+
+		// Signing in happens after this has already run and decided. The account
+		// page says so when it knows, and the nav catches up in place rather than
+		// leaving "Join Us" above a record with the person's own name on it.
+		document.addEventListener('itti:who', (event) => paint(event.detail));
+	})();
 </script>
 
 <style>
