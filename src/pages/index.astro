@@ -33,7 +33,10 @@ const PLATE_WIDTHS: Record<string, number[]> = PLATES;
 
 const plateWidths = (plate: string) => {
 	const widths = PLATE_WIDTHS[plate];
-	if (!widths) throw new Error(`No plate variants built for "${plate}" — run scripts/build-plates.mjs.`);
+	if (!widths)
+		throw new Error(
+			`No plate variants built for "${plate}" — run scripts/build-plates.mjs.`,
+		);
 	return widths;
 };
 
@@ -96,9 +99,12 @@ const MOVEMENTS = [
 		carry: 1,
 		plate: 'thorax',
 		// A push in. Barely any travel, a slow close on the chest — the camera
-		// leaning toward the thing rather than moving past it.
-		pan: 0.5,
-		zoom: 0.2,
+		// leaning toward the thing rather than moving past it. Pan and zoom are
+		// cut with the hold: the same journey over less scroll would be the same
+		// picture moving further per frame, which is the opposite of shorter and
+		// smoother both.
+		pan: 0.3,
+		zoom: 0.12,
 		labelSide: 'left',
 		credit: {
 			plate: 'II',
@@ -119,9 +125,10 @@ const MOVEMENTS = [
 				// page, for the plainest line in the poem.
 				side: 'right',
 				y: 50,
-				// A single-beat movement needs roughly the length of a double to
-				// feel like it lasted as long.
-				hold: 235,
+				// The whole movement, and the only number that sets its length.
+				// The line resolves inside the first half of the hold and stands
+				// still for the rest.
+				hold: 170,
 			},
 		],
 	},
@@ -133,8 +140,8 @@ const MOVEMENTS = [
 		// it — a drawing, a drawing, then something with a pulse. Middling
 		// travel and a gentle push, so the frame closes on the bird as the arc
 		// resolves.
-		pan: 0.35,
-		zoom: 0.17,
+		pan: 0.21,
+		zoom: 0.1,
 		labelSide: 'right',
 		credit: {
 			plate: 'III',
@@ -155,7 +162,7 @@ const MOVEMENTS = [
 				// at the bottom of the frame — which is where the turn begins.
 				side: 'left',
 				y: 62,
-				hold: 235,
+				hold: 170,
 			},
 		],
 	},
@@ -214,7 +221,8 @@ Let us create a world where no one struggles in silence.`,
 	description="The difference is when. The Itti Foundation works on neurodivergence, cancer care, and climate."
 >
 	<div class="arc">
-		{/* One frame, for all three pictures.
+		{
+			/* One frame, for all three pictures.
 
 		    Each movement used to carry a frame of its own, which meant that at
 		    every hand-over one frame genuinely unpinned and travelled away while
@@ -222,48 +230,53 @@ Let us create a world where no one struggles in silence.`,
 		    This frame pins at the top of the arc and stays there until the arc is
 		    over. The pictures inside it never move; one simply dissolves into the
 		    one behind it. There is no moment when the frame is between pictures,
-		    so there is nothing for the ground behind it to show through. */}
+		    so there is nothing for the ground behind it to show through. */
+		}
 		<div class="arc__frame">
-			{MOVEMENTS.map((mv, i) => (
-				<div
-					class="arc__layer"
-					data-layer
-					style={`z-index:${MOVEMENTS.length - i}`}
-				>
-					<div
-						class="mv__plate"
-						data-plate
-						aria-hidden="true"
-					>
-						<picture>
-							<source type="image/avif" srcset={plateSet(mv.plate, 'avif')} sizes="100vw" />
-							<source type="image/webp" srcset={plateSet(mv.plate, 'webp')} sizes="100vw" />
-							<img
-								src={plateFallback(mv.plate)}
-								srcset={plateSet(mv.plate, 'jpg')}
-								sizes="100vw"
-								alt=""
-								loading={i === 0 ? 'eager' : 'lazy'}
-								fetchpriority={i === 0 ? 'high' : 'auto'}
-								decoding="async"
-							/>
-						</picture>
-					</div>
-					<div class="mv__scrim" aria-hidden="true" />
-					<div class="mv__grade" aria-hidden="true" />
-					<div class="mv__grain" aria-hidden="true" />
+			{
+				MOVEMENTS.map((mv, i) => (
+					<div class="arc__layer" data-layer style={`z-index:${MOVEMENTS.length - i}`}>
+						<div class="mv__plate" data-plate aria-hidden="true">
+							<picture>
+								<source
+									type="image/avif"
+									srcset={plateSet(mv.plate, 'avif')}
+									sizes="100vw"
+								/>
+								<source
+									type="image/webp"
+									srcset={plateSet(mv.plate, 'webp')}
+									sizes="100vw"
+								/>
+								<img
+									src={plateFallback(mv.plate)}
+									srcset={plateSet(mv.plate, 'jpg')}
+									sizes="100vw"
+									alt=""
+									loading={i === 0 ? 'eager' : 'lazy'}
+									fetchpriority={i === 0 ? 'high' : 'auto'}
+									decoding="async"
+								/>
+							</picture>
+						</div>
+						<div class="mv__scrim" aria-hidden="true" />
+						<div class="mv__grade" aria-hidden="true" />
+						<div class="mv__grain" aria-hidden="true" />
 
-					{/* The wall label belongs to its picture and lives with it, so it
+						{/* The wall label belongs to its picture and lives with it, so it
 					    arrives and leaves on the same fade. */}
-					<div class="mv__label" data-label data-label-side={mv.labelSide}>
-						<PlateCredit align={mv.labelSide as 'left' | 'right'} {...mv.credit} />
+						<div class="mv__label" data-label data-label-side={mv.labelSide}>
+							<PlateCredit align={mv.labelSide as 'left' | 'right'} {...mv.credit} />
+						</div>
 					</div>
-				</div>
-			))}
+				))
+			}
 		</div>
 
-		{/* The movements themselves are now only the scroll they take and the
-		    poem laid over it. */}
+		{
+			/* The movements themselves are now only the scroll they take and the
+		    poem laid over it. */
+		}
 		{
 			MOVEMENTS.map((mv, i) => (
 				<section
@@ -411,12 +424,6 @@ Let us create a world where no one struggles in silence.`,
 	   ends the instant it unpins. That is the same interval the scroll handler
 	   used to compute by hand, so the camera move can be handed to the
 	   compositor without changing a frame of it. */
-
-
-
-
-
-
 
 	.mv__plate picture {
 		display: block;
@@ -712,6 +719,14 @@ Let us create a world where no one struggles in silence.`,
 		// Smoothstep. Linear scroll-linked motion starts and stops abruptly;
 		// easing the progress is most of what "smoother" means here.
 		const ease = (n: number) => n * n * (3 - 2 * n);
+		// Smootherstep, for the camera alone. Smoothstep arrives at rest with no
+		// speed but still with acceleration, and the moment a movement hands over
+		// is exactly where that shows: the picture stops, and the stop has a
+		// corner on it. This one has neither speed nor acceleration at either
+		// end, so the camera eases out of rest and back into it. It costs a
+		// slightly quicker middle, which is scroll the picture is already
+		// travelling through rather than a join anybody is looking at.
+		const glide = (n: number) => n * n * n * (n * (n * 6 - 15) + 10);
 
 		// Geometry stays welded to the scroll offset — a picture that lags the
 		// page reads as sliding. What the eye reads as brightness does not have
@@ -724,10 +739,19 @@ Let us create a world where no one struggles in silence.`,
 		// fraction of the distance to wherever the scroll says it should be. It
 		// then runs at an even rate however unevenly the page is being moved,
 		// and keeps settling after the scroll has stopped.
-		const SETTLE_MS = 145;
-		// The camera settles faster than the dissolve: it is geometry, and the eye
-		// is quicker to call a picture late than a brightness late.
-		const GLIDE_MS = 160;
+		// 260 rather than 145, which was measured rather than guessed: a wheel
+		// notch used to step the brightness by 0.15 and now steps it by 0.12.
+		// Lag is safe in this direction — a picture that fades late stays
+		// covering the one behind it, and only fading early could open a gap.
+		const SETTLE_MS = 260;
+		// The camera used to settle faster than the dissolve, on the reasoning
+		// that the eye is quicker to call a picture late than a brightness late.
+		// Measurement disagreed: damping the camera harder is the single thing
+		// that most reduces how far a plate moves between two frames, 41.8px to
+		// 36.1px across the arc, and none of the lag it buys is visible. The
+		// frame the camera moves inside is pinned and still, so there is nothing
+		// on screen for a late picture to be out of step with.
+		const GLIDE_MS = 280;
 		const camera = movements.map(() => ({ at: 0, started: false }));
 		const shade = movements.map(() => ({
 			shown: 1,
@@ -768,20 +792,30 @@ Let us create a world where no one struggles in silence.`,
 					const text = beat.querySelector<HTMLElement>('.beat__text');
 					if (!text) continue;
 					const r = beat.getBoundingClientRect();
-					const held = r.height - vh;
-					const past = -r.top - held;
+					const past = -r.top - (r.height - vh);
 					// 0 when the frame is a full viewport away, 1 once it has pinned.
-					// A beat that opens a movement has to wait for the dip to black
-					// to finish — otherwise it starts resolving while the previous
-					// picture is still a fifth of the way up the screen. A beat that
-					// continues the same uncut picture has nothing to wait for.
+					// A beat that opens a movement waits for the picture behind it to
+					// finish dissolving through; one that continues the same uncut
+					// picture has nothing to wait for.
 					const lead = beat.hasAttribute('data-lead');
+					// A lead line used to resolve over a fixed viewport, which set
+					// the floor on how short a movement could be: the arrival
+					// finished exactly where the pin let go, so taking scroll out
+					// of the hold started the line leaving before it had arrived.
+					//
+					// Where there is a real pin to work inside, the arrival is a
+					// fraction of it instead — resolved by halfway, still for the
+					// rest. The hold is then the only number to turn: shorten a
+					// movement and its line arrives sooner rather than overrunning
+					// the end of the movement it belongs to.
+					const held = r.height - vh;
+					const paced = lead && held > vh * 0.2;
 					// A continuing beat starts before it pins — waiting for the pin
 					// left a whole viewport of scroll with nothing on it. It still
 					// finishes in place, and the words never move, so it reads as
 					// resolving rather than as rising into frame.
-					const delay = lead ? vh * 0.35 : vh * -0.55;
-					const window = lead ? vh * 1 : vh * 0.5;
+					const delay = lead ? (paced ? held * 0.1 : vh * 0.35) : vh * -0.55;
+					const window = lead ? (paced ? held * 0.4 : vh * 1) : vh * 0.5;
 					const settled = (-r.top - delay) / window;
 					// A line that has been let go is on its way out of the frame, and
 					// for the last line of a movement that journey lands on top of
@@ -851,7 +885,7 @@ Let us create a world where no one struggles in silence.`,
 				// It runs from the moment the picture starts arriving to the end of
 				// its own movement: already moving when it is revealed, at rest
 				// before it begins to fade.
-				const aim = ease(clamp((vh - r.top) / (vh + r.travel)));
+				const aim = glide(clamp((vh - r.top) / (vh + r.travel)));
 				const cam = camera[index];
 				if (!cam.started) {
 					cam.at = aim;
