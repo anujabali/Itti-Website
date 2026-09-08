@@ -370,6 +370,11 @@ Let us create a world where no one struggles in silence.`,
 	.arc__layer {
 		position: absolute;
 		inset: 0;
+		/* A layer that has dissolved to nothing is still a full-frame box on top
+		   of the ones behind it, and it would go on catching every click. Only
+		   the wall label inside takes the pointer, and only one label is ever
+		   live — the rest are marked inert as they fade. */
+		pointer-events: none;
 	}
 
 	.light {
@@ -391,6 +396,11 @@ Let us create a world where no one struggles in silence.`,
 		/* A block formatting context, so nothing inside can collapse a margin
 		   through and push the next movement down. */
 		display: flow-root;
+		/* A movement is a tall empty block laid over the frame, and the wall
+		   labels live in the frame beneath it — so left alone it swallows every
+		   click meant for a credit. Only the poem takes the pointer; the rest of
+		   the movement lets the click through to the picture behind it. */
+		pointer-events: none;
 	}
 
 	/* The plate IS the frame: full width, natural height, always taller than the
@@ -575,6 +585,9 @@ Let us create a world where no one struggles in silence.`,
 	}
 
 	.beat__text {
+		/* Still selectable — it is the words that catch the pointer, not the
+		   empty frame around them. */
+		pointer-events: auto;
 		position: absolute;
 		top: calc(var(--text-y, 50) * 1svh);
 		translate: 0 -50%;
