@@ -16,8 +16,19 @@ const SAID: Record<string, string> = {
 
 const say = (v: string) => SAID[v] ?? v.replace(/_/g, ' ');
 
-const list = (interests: string[]): string =>
-	interests.length === 0 ? '' : interests.map(say).join(', ');
+/**
+ * A list the way it is spoken: one on its own, two joined by "and", and three
+ * or more separated by commas with "and" before the last. Joining everything
+ * with commas reads as a database field rather than as a sentence, and this is
+ * a letter.
+ */
+const sentence = (parts: string[]): string => {
+	if (parts.length === 0) return '';
+	if (parts.length === 1) return parts[0]!;
+	return `${parts.slice(0, -1).join(', ')} and ${parts[parts.length - 1]}`;
+};
+
+const list = (interests: string[]): string => sentence(interests.map(say));
 
 /** Escapes for the HTML part. The values are names people typed. */
 const esc = (s: string) =>
@@ -89,6 +100,7 @@ const snapshot = (p: Record<string, unknown>): Row[] => {
 		yes('consentSms') ? 'SMS' : '',
 		yes('consentEmail') ? 'Email' : '',
 	].filter(Boolean);
+	const by = sentence(channels);
 
 	const rows: Row[] = [
 		['Name', g('fullName')],
@@ -102,7 +114,7 @@ const snapshot = (p: Record<string, unknown>): Row[] => {
 		['Preferred language', LANG[g('language')] ?? g('language')],
 		['Areas', list((p.interests as string[]) ?? [])],
 		['How you found us', g('heardOther') || (HEARD[g('heardFrom')] ?? g('heardFrom'))],
-		['We may contact you by', channels.join(', ')],
+		['We may contact you by', by],
 		['Parent or guardian', g('guardianName')],
 		["Guardian's email", g('guardianEmail')],
 		["Guardian's phone", g('guardianPhone')],

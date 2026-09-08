@@ -634,6 +634,13 @@ const PILLARS = [
 		};
 
 		/** The same lines the receipt shows, in the same order. */
+		/** Spoken, not joined: "A and B", "A, B and C". */
+		const sentence = (parts: string[]): string => {
+			if (parts.length === 0) return '';
+			if (parts.length === 1) return parts[0]!;
+			return `${parts.slice(0, -1).join(', ')} and ${parts[parts.length - 1]}`;
+		};
+
 		const rows = (r: MyRegistration): [string, string][] => {
 			const channels = [
 				r.consentWhatsapp ? 'WhatsApp' : '',
@@ -657,9 +664,9 @@ const PILLARS = [
 						'Preferred language',
 						LANG[r.preferredLanguage] ?? r.preferredLanguage ?? '',
 					],
-					['Areas', interests.map((p) => PILLAR[p] ?? p).join(', ')],
+					['Areas', sentence(interests.map((p) => PILLAR[p] ?? p))],
 					['How you found us', r.heardFromOther || (HEARD[r.heardFrom] ?? '')],
-					['We may contact you by', channels.join(', ')],
+					['We may contact you by', sentence(channels)],
 					['Parent or guardian', r.guardianName ?? ''],
 					["Guardian's email", r.guardianEmail ?? ''],
 					["Guardian's phone", r.guardianPhone ?? ''],
