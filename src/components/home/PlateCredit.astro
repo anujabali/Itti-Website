@@ -173,10 +173,12 @@ const id = `label-${plate.toLowerCase().replace(/\W+/g, '-')}`;
 		width: min(26rem, calc(100vw - 2 * var(--gutter)));
 		padding: 1.5rem 1.6rem 1.35rem;
 		border-radius: 0.75rem;
-		/* Frosted rather than solid, so the plate is still faintly present
-		   behind its own label. */
-		background: rgba(251, 248, 240, 0.46);
-		border: 1px solid rgba(251, 248, 240, 0.35);
+		/* Frosted, but frosted enough to read on. At 0.46 the plate showed
+		   through so strongly that the note sat on whatever happened to be
+		   behind it — which on a dark plate is nearly nothing. The glass is
+		   still glass; it is just no longer competing with the words. */
+		background: rgba(251, 248, 240, 0.93);
+		border: 1px solid rgba(251, 248, 240, 0.55);
 		color: var(--ink);
 		text-align: left;
 		box-shadow: 0 22px 50px -22px rgba(6, 7, 8, 0.7);
@@ -216,14 +218,14 @@ const id = `label-${plate.toLowerCase().replace(/\W+/g, '-')}`;
 		font-size: 0.8125rem;
 		letter-spacing: 0.1em;
 		text-transform: uppercase;
-		color: var(--ink-faint);
+		color: var(--ink-soft);
 	}
 
 	.label__note {
 		margin-top: 0.9rem;
 		font-size: 0.9375rem;
 		line-height: 1.55;
-		color: var(--ink-soft);
+		color: var(--ink);
 	}
 
 	.label__facts {
