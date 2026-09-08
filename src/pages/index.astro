@@ -376,6 +376,12 @@ Let us create a world where no one struggles in silence.`,
 		background: var(--cream);
 		color: var(--ink);
 		min-height: 100svh;
+		/* The frame the arc runs in is a positioned element and stays pinned to
+		   the arc's last pixel, so without this it paints over the turn and the
+		   cards come up underneath the final picture. Cream rises over the arc
+		   instead, which is the gear-change the turn is meant to be. */
+		position: relative;
+		z-index: 1;
 	}
 
 	/* ── Movements ──────────────────────────────────────────────────────── */
