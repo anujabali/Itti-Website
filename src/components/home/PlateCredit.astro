@@ -242,17 +242,22 @@ const id = `label-${plate.toLowerCase().replace(/\W+/g, '-')}`;
 		gap: 0.6rem;
 	}
 
+	/* The panel is 93% cream over a photograph, so its rendered ground is only
+	   as light as the darkest plate allows: rgb(233,231,223) over black. At
+	   12px these are small text and owe 4.5:1, and --ink-faint returns 4.38:1
+	   against that ground. Both rows move up one step — the term stays lighter
+	   than the fact, and the worst case becomes 5.84:1 and 11.95:1. */
 	.label__facts dt {
 		flex: none;
 		width: 5.5rem;
 		letter-spacing: 0.11em;
 		text-transform: uppercase;
-		color: var(--ink-faint);
+		color: var(--ink-soft);
 	}
 
 	.label__facts dd {
 		margin: 0;
-		color: var(--ink-soft);
+		color: var(--ink);
 	}
 </style>
 
