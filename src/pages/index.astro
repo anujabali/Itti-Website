@@ -214,6 +214,57 @@ Let us create a world where no one struggles in silence.`,
 	description="The difference is when. The Itti Foundation works on neurodivergence, cancer care, and climate."
 >
 	<div class="arc">
+		{/* One frame, for all three pictures.
+
+		    Each movement used to carry a frame of its own, which meant that at
+		    every hand-over one frame genuinely unpinned and travelled away while
+		    the next arrived — and everything behind that had to be corrected for.
+		    This frame pins at the top of the arc and stays there until the arc is
+		    over. The pictures inside it never move; one simply dissolves into the
+		    one behind it. There is no moment when the frame is between pictures,
+		    so there is nothing for the ground behind it to show through. */}
+		<div class="arc__frame">
+			{MOVEMENTS.map((mv, i) => (
+				<div
+					class="arc__layer"
+					data-layer
+					style={`z-index:${MOVEMENTS.length - i}`}
+				>
+					<div
+						class="mv__plate"
+						data-plate
+						aria-hidden="true"
+						style={`animation-timeline:--mv-${i}`}
+					>
+						<picture>
+							<source type="image/avif" srcset={plateSet(mv.plate, 'avif')} sizes="100vw" />
+							<source type="image/webp" srcset={plateSet(mv.plate, 'webp')} sizes="100vw" />
+							<img
+								src={plateFallback(mv.plate)}
+								srcset={plateSet(mv.plate, 'jpg')}
+								sizes="100vw"
+								alt=""
+								loading={i === 0 ? 'eager' : 'lazy'}
+								fetchpriority={i === 0 ? 'high' : 'auto'}
+								decoding="async"
+							/>
+						</picture>
+					</div>
+					<div class="mv__scrim" aria-hidden="true" />
+					<div class="mv__grade" aria-hidden="true" />
+					<div class="mv__grain" aria-hidden="true" />
+
+					{/* The wall label belongs to its picture and lives with it, so it
+					    arrives and leaves on the same fade. */}
+					<div class="mv__label" data-label data-label-side={mv.labelSide}>
+						<PlateCredit align={mv.labelSide as 'left' | 'right'} {...mv.credit} />
+					</div>
+				</div>
+			))}
+		</div>
+
+		{/* The movements themselves are now only the scroll they take and the
+		    poem laid over it. */}
 		{
 			MOVEMENTS.map((mv, i) => (
 				<section
@@ -222,30 +273,9 @@ Let us create a world where no one struggles in silence.`,
 					data-mv
 					data-last={i === MOVEMENTS.length - 1 ? '' : undefined}
 					data-pan={mv.pan}
-					style={`--mv-carry:${mv.carry};z-index:${MOVEMENTS.length - i}`}
 					data-zoom={mv.zoom}
+					style={`view-timeline-name:--mv-${i}`}
 				>
-					<div class="mv__stage">
-						<div class="mv__plate" data-plate aria-hidden="true">
-							<picture>
-								<source type="image/avif" srcset={plateSet(mv.plate, 'avif')} sizes="100vw" />
-								<source type="image/webp" srcset={plateSet(mv.plate, 'webp')} sizes="100vw" />
-								<img
-									src={plateFallback(mv.plate)}
-									srcset={plateSet(mv.plate, 'jpg')}
-									sizes="100vw"
-									alt=""
-									loading={i === 0 ? 'eager' : 'lazy'}
-									fetchpriority={i === 0 ? 'high' : 'auto'}
-									decoding="async"
-								/>
-							</picture>
-						</div>
-						<div class="mv__scrim" aria-hidden="true" />
-						<div class="mv__grade" aria-hidden="true" />
-						<div class="mv__grain" aria-hidden="true" />
-					</div>
-
 					<div class="mv__beats">
 						{mv.beats.map((beat, bi) => (
 							<div
@@ -275,18 +305,6 @@ Let us create a world where no one struggles in silence.`,
 								</div>
 							</div>
 						))}
-					</div>
-
-					{/* Its own layer, pulled back to the movement's start so it pins
-					    for exactly as long as the plate does, and painted after the
-					    beats so the wall label opens over the poem rather than
-					    under it. */}
-					<div class="mv__chrome">
-						<div class="mv__chrome-pin">
-							<div class="mv__label" data-label-side={mv.labelSide}>
-								<PlateCredit align={mv.labelSide as 'left' | 'right'} {...mv.credit} />
-							</div>
-						</div>
 					</div>
 				</section>
 			))
@@ -325,6 +343,33 @@ Let us create a world where no one struggles in silence.`,
 		position: relative;
 		color: var(--warm-white);
 		background: #0a0c0d;
+		/* The pictures live in the frame; the timelines that drive them belong to
+		   the movements, which are the frame's siblings. This is what lets the
+		   one reach the other. */
+		timeline-scope: --mv-0, --mv-1, --mv-2;
+	}
+
+	/* Pinned for the whole arc and never unpinned inside it, so no hand-over is
+	   ever a frame arriving and a frame leaving. The negative margin takes back
+	   the height it occupies, so putting it here costs the arc no scroll. */
+	.arc__frame {
+		position: sticky;
+		top: 0;
+		height: 100svh;
+		margin-bottom: -100svh;
+		overflow: clip;
+		background: #0a0c0d;
+		/* A stacking context of its own, so the layers inside can be ordered
+		   against each other without the frame itself rising above the poem —
+		   which is laid over it by the movements that follow it in the markup. */
+		isolation: isolate;
+	}
+
+	/* One picture. They are stacked with the first on top, so a movement ends by
+	   dissolving to show the one that was behind it all along. */
+	.arc__layer {
+		position: absolute;
+		inset: 0;
 	}
 
 	.light {
@@ -337,22 +382,9 @@ Let us create a world where no one struggles in silence.`,
 
 	.mv {
 		position: relative;
-		/* A block formatting context, so the chrome layer's large bottom margin
-		   cannot collapse through and push the next movement down. */
+		/* A block formatting context, so nothing inside can collapse a margin
+		   through and push the next movement down. */
 		display: flow-root;
-		/* And a stacking context, so the chrome's z-index stays inside its own
-		   movement. Without it that index is resolved against the root, and a
-		   wall label could paint over the picture that follows it rather than
-		   being covered by it. */
-		isolation: isolate;
-	}
-
-	.mv__stage {
-		position: sticky;
-		top: 0;
-		height: 100svh;
-		overflow: clip;
-		background: #0a0c0d;
 	}
 
 	/* The plate IS the frame: full width, natural height, always taller than the
@@ -369,12 +401,9 @@ Let us create a world where no one struggles in silence.`,
 	   ends the instant it unpins. That is the same interval the scroll handler
 	   used to compute by hand, so the camera move can be handed to the
 	   compositor without changing a frame of it. */
+	/* The name is set per movement in the markup; this is the axis it runs on. */
 	.mv {
-		view-timeline-name: --mv;
 		view-timeline-axis: block;
-		/* Overridden per movement: a hand-over should not travel at a speed
-		   neither of the pictures either side of it ever uses. */
-		--mv-carry: 0.55;
 	}
 
 	/* All of this is motion, and none of it is offered to anyone who has asked
@@ -390,7 +419,6 @@ Let us create a world where no one struggles in silence.`,
 				animation-name: mv-camera;
 				animation-duration: auto;
 				animation-fill-mode: both;
-				animation-timeline: --mv;
 				/* From the moment the picture starts arriving to the moment its own
 				   movement ends — so it is already moving when it is revealed, and it
 				   has come to rest before it begins to fade.
@@ -412,41 +440,6 @@ Let us create a world where no one struggles in silence.`,
 			}
 
 
-			/* A stage that has unpinned travels with the page, which is to say at
-			   1.00 — faster than either camera either side of it. The one leaving is
-			   held back against that, which takes the speed off its half of the
-			   hand-over.
-
-			   Only the one leaving. Holding the arriving stage back means starting it
-			   already raised, and then the next picture is sitting on screen before
-			   the one before it has gone: they read as merged rather than as handed
-			   over. Whatever it buys in evenness is not worth that.
-
-			   Which also caps this. With the arriving stage travelling at 1.00
-			   whatever we do, a heavy hold on the leaving one buys no evenness
-			   either — it only sets the two halves of the frame moving at different
-			   speeds. So it stays what it always was: a slight hang, enough that the
-			   next picture slides over this one rather than butting against it. */
-			.mv__stage,
-			.mv__chrome-pin {
-				animation-name: mv-stage-lead, mv-stage-lag;
-				animation-duration: auto, auto;
-				animation-fill-mode: backwards, forwards;
-				animation-timeline: --mv, --mv;
-				animation-range-start: entry 0%, exit 0%;
-				animation-range-end: entry 100%, exit 100%;
-				animation-timing-function: linear, linear;
-			}
-
-			/* The last movement hands over to the turn, not to another picture.
-			   Dipping it would put a blackout where the page opens onto cream. */
-
-			/* The last movement hands over to the turn, not to another picture, so
-			   it has nothing to hang back for. It still arrives like the others. */
-			.mv[data-last] .mv__stage,
-			.mv[data-last] .mv__chrome-pin {
-				animation-name: mv-stage-lead, none;
-			}
 		}
 	}
 
@@ -454,24 +447,6 @@ Let us create a world where no one struggles in silence.`,
 
 
 
-
-	@keyframes mv-stage-lead {
-		from {
-			transform: translate3d(0, calc(-1 * var(--mv-carry) * 100svh), 0);
-		}
-		to {
-			transform: translate3d(0, 0, 0);
-		}
-	}
-
-	@keyframes mv-stage-lag {
-		from {
-			transform: translate3d(0, 0, 0);
-		}
-		to {
-			transform: translate3d(0, calc(var(--mv-carry) * 100svh), 0);
-		}
-	}
 
 	@keyframes mv-camera {
 		from {
@@ -528,7 +503,6 @@ Let us create a world where no one struggles in silence.`,
 	/* Laid back over the stage, so the type is on the picture, not after it. */
 	.mv__beats {
 		position: relative;
-		margin-top: -100svh;
 	}
 
 	/* Taller than the viewport: the surplus is the hold, the stretch of scroll
@@ -565,24 +539,12 @@ Let us create a world where no one struggles in silence.`,
 	   Restoring the flow with a large bottom margin instead shrinks the area a
 	   sticky element is allowed to travel in — to zero, in this case — so the
 	   label never pinned and simply scrolled away. */
-	.mv__chrome {
-		position: absolute;
-		inset: 0;
-		z-index: 3;
-		pointer-events: none;
-	}
-
-	.mv__chrome-pin {
-		position: sticky;
-		top: 0;
-		height: 100svh;
-	}
-
 	/* Positioned on the element itself, not on its child. A scoped selector
 	   cannot reach into a child component's root, so `.mv__label > *` silently
 	   matched nothing and the label sat wherever it landed. */
 	.mv__label {
 		position: absolute;
+		z-index: 3;
 		bottom: 2.5rem;
 		max-width: min(38rem, 54%);
 		pointer-events: auto;
@@ -777,6 +739,9 @@ Let us create a world where no one struggles in silence.`,
 	// The only motion in the arc: each plate travelling down inside its own
 	// movement. No fades — one movement scrolls off, the next scrolls on.
 	const movements = [...document.querySelectorAll<HTMLElement>('[data-mv]')];
+	// The pictures live in the one frame, in the same order as the movements
+	// that drive them.
+	const layers = [...document.querySelectorAll<HTMLElement>('[data-layer]')];
 	const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 	if (movements.length && !reduced.matches) {
@@ -820,10 +785,10 @@ Let us create a world where no one struggles in silence.`,
 			const last = movements.length - 1;
 
 			const reads = movements.map((mv, index) => {
-				const plate = mv.querySelector<HTMLElement>('[data-plate]');
-				const stage = mv.querySelector<HTMLElement>('.mv__stage');
+				const layer = layers[index];
+				const plate = layer?.querySelector<HTMLElement>('[data-plate]');
 				const img = plate?.querySelector('img');
-				if (!plate || !stage || !img) return null;
+				if (!layer || !plate || !img) return null;
 
 				// Once a line's hold releases it is shepherded out a little faster
 				// than the page scrolls, so it has cleared the frame before the
@@ -878,19 +843,18 @@ Let us create a world where no one struggles in silence.`,
 					mv,
 					plate,
 					img,
-					stage,
-					chrome: mv.querySelector<HTMLElement>('.mv__chrome'),
-					chromePin: mv.querySelector<HTMLElement>('.mv__chrome-pin'),
+					layer,
+					label: layer.querySelector<HTMLElement>('[data-label]'),
 					// The last movement hands over to the turn, not to another
 					// picture. Dipping it to black would put a blackout right where
 					// the page is supposed to open onto cream.
 					exits_dark: index !== last,
 					exits,
 					top: mv.getBoundingClientRect().top,
-					travel: mv.offsetHeight - stage.offsetHeight,
-					stageH: stage.offsetHeight,
+					travel: mv.offsetHeight - vh,
+					stageH: vh,
 					// Never pan past the bottom of the picture.
-					room: Math.max(0, plate.offsetHeight - stage.offsetHeight),
+					room: Math.max(0, plate.offsetHeight - vh),
 					pan: Number(mv.dataset.pan ?? 0.5),
 					zoom: Number(mv.dataset.zoom ?? 0.05),
 				};
@@ -911,8 +875,10 @@ Let us create a world where no one struggles in silence.`,
 					// cannot fall a frame behind the page the way a transform written
 					// from a scroll handler can. All this has to do is hand it the two
 					// numbers that depend on layout.
-					r.mv.style.setProperty('--mv-distance', `${distance.toFixed(1)}px`);
-					r.mv.style.setProperty('--mv-scale', (1 + r.zoom).toFixed(4));
+					// On the layer, not the movement: the picture is no longer inside
+					// the section that drives it, so nothing would inherit from there.
+					r.layer.style.setProperty('--mv-distance', `${distance.toFixed(1)}px`);
+					r.layer.style.setProperty('--mv-scale', (1 + r.zoom).toFixed(4));
 				} else {
 					// The same arc, written by hand, for a browser that has no scroll
 					// timelines to hang it on. It has to be the same arc: the fade
@@ -927,19 +893,6 @@ Let us create a world where no one struggles in silence.`,
 					const q = ease(clamp((vh - r.top) / reach));
 					r.plate.style.transform = `translate3d(0, ${(-distance * q).toFixed(1)}px, 0) scale(${(1 + r.zoom * q).toFixed(4)})`;
 
-					// And both frames are held at the top of the frame across a
-					// hand-over: the one arriving brought up before it would get
-					// there, the one leaving stopped from travelling with the page.
-					let hold = 0;
-					if (r.top > 0 && r.top <= r.stageH) hold = -r.top;
-					else if (overrun > 0 && r.exits_dark)
-						hold = Math.min(overrun, 1) * r.stageH;
-					// Always written, never cleared. Setting a transform back to ''
-					// drops the compositor layer and takes it again a frame later,
-					// which lands as a jolt exactly when the handover is on screen.
-					const held = `translate3d(0, ${hold.toFixed(1)}px, 0)`;
-					r.stage.style.transform = held;
-					if (r.chromePin) r.chromePin.style.transform = held;
 				}
 
 				// A movement now leaves by dissolving into the one held behind it,
@@ -959,7 +912,7 @@ Let us create a world where no one struggles in silence.`,
 					st.shown += (target - st.shown) * (1 - Math.exp(-dt / SETTLE_MS));
 				}
 				if (Math.abs(target - st.shown) > 0.0015) settling = true;
-				r.stage.style.opacity = st.shown.toFixed(3);
+				r.layer.style.opacity = st.shown.toFixed(3);
 
 				// The wall label hands over faster than the picture does. Two
 				// pictures may be half-present at once and read as a dissolve; two
@@ -976,7 +929,13 @@ Let us create a world where no one struggles in silence.`,
 					st.label += (labelTarget - st.label) * (1 - Math.exp(-dt / SETTLE_MS));
 				}
 				if (Math.abs(labelTarget - st.label) > 0.0015) settling = true;
-				if (r.chrome) r.chrome.style.opacity = st.label.toFixed(3);
+				if (r.label) {
+					r.label.style.opacity = st.label.toFixed(3);
+					// A faded label is still a button in the tab order and still
+					// something a screen reader will read out, so take it out of both
+					// while its picture is not the one on screen.
+					r.label.inert = st.label < 0.05;
+				}
 				// Each movement gets its own camera: the Cajal descends, the
 				// Bourgery pushes in, the heron lifts. One move repeated three
 				// times is an effect; three different moves is cinematography.
@@ -1023,5 +982,41 @@ Let us create a world where no one struggles in silence.`,
 		// its timestamp, and the frame delta computed from it is NaN — which then
 		// poisons the damped value permanently.
 		document.fonts?.ready.then(() => draw());
+	} else if (movements.length && layers.length) {
+		// Motion is off, but the arc still has three pictures in it and a reader
+		// who has asked not to be shown motion should still be shown all three.
+		// Which one is up changes at the join instead of dissolving across it:
+		// no camera, no fade, nothing that moves. The pictures are stacked with
+		// the first on top, so hiding the ones already past reveals the current.
+		const cut = () => {
+			const middle = window.innerHeight / 2;
+			let current = 0;
+			movements.forEach((mv, i) => {
+				const r = mv.getBoundingClientRect();
+				if (r.top <= middle && r.bottom > middle) current = i;
+				else if (r.bottom <= middle) current = Math.max(current, i);
+			});
+			layers.forEach((layer, i) => {
+				layer.style.opacity = i < current ? '0' : '1';
+				const label = layer.querySelector<HTMLElement>('[data-label]');
+				if (label) {
+					label.style.opacity = i === current ? '1' : '0';
+					label.inert = i !== current;
+				}
+			});
+		};
+
+		let pending = false;
+		const tick = () => {
+			if (pending) return;
+			pending = true;
+			requestAnimationFrame(() => {
+				pending = false;
+				cut();
+			});
+		};
+		cut();
+		document.addEventListener('scroll', tick, { passive: true });
+		window.addEventListener('resize', tick);
 	}
 </script>
