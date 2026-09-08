@@ -1,0 +1,965 @@
+---
+/**
+ * Your account — the registration, back in the hands of the person who made it.
+ *
+ * Until now a registration was a one-way message: they filled the form, we sent
+ * a receipt, and correcting a digit meant writing to us and waiting. This is
+ * the same record, readable and correctable by the person it describes.
+ *
+ * Sign-in is a link sent to the address already on the registration, which is
+ * the only credential that exists here — no password is set, stored or asked
+ * for. Proving control of the address is what binds an account to a record, and
+ * `claim_registration()` does the binding server-side; nothing on this page can
+ * assert whose record it is.
+ *
+ * Every panel below is in the markup and toggled with `hidden`, never built by
+ * script. Elements created in JavaScript carry no scope attribute, so a scoped
+ * rule written here would silently not reach them.
+ *
+ * With scripting off nothing here can work, so nothing here is shown: the
+ * <noscript> block is the whole page in that case, and it points at a person.
+ */
+import Doc from '../layouts/Doc.astro';
+
+/** Kept in step with the registration form; the database accepts these. */
+const ROLES = [
+	['patient', 'Living with something myself'],
+	['caregiver', 'Caring for someone'],
+	['volunteer', 'Volunteering or supporting'],
+	['other', 'Something else'],
+];
+
+const GENDERS = [
+	['', 'Prefer not to answer'],
+	['woman', 'Woman'],
+	['man', 'Man'],
+	['non_binary', 'Non-binary'],
+	['self_described', 'I would rather describe it'],
+	['undisclosed', 'Prefer not to say'],
+];
+
+const LANGUAGES = [
+	['en', 'English'],
+	['hi', 'Hindi'],
+	['mr', 'Marathi'],
+	['gu', 'Gujarati'],
+	['bn', 'Bengali'],
+	['ta', 'Tamil'],
+	['te', 'Telugu'],
+	['kn', 'Kannada'],
+	['ml', 'Malayalam'],
+	['pa', 'Punjabi'],
+	['ur', 'Urdu'],
+	['or', 'Odia'],
+	['as', 'Assamese'],
+];
+
+const PILLARS = [
+	['neurodivergence', 'Neurodivergence'],
+	['cancer_care', 'Cancer care'],
+	['claw', 'CLAW — conservation'],
+	['not_sure', 'Not sure yet'],
+];
+---
+
+<Doc
+	title="Your account — The Itti Foundation"
+	description="Sign in to see the details The Itti Foundation holds about you, and correct anything that is wrong."
+	eyebrow="Your account"
+	heading="What we hold about you."
+	lede="Sign in with the address you registered with, and the record is yours to read and to correct."
+>
+	<noscript>
+		<section class="doc__section">
+			<h2 class="doc__h">Scripting is off</h2>
+			<div class="doc__body">
+				<p>
+					This page reads your record from our registry as you open it, which it cannot
+					do with scripting switched off. Every other page on this site works without
+					it.
+				</p>
+				<p>
+					Write to <a class="doc__link" href="mailto:hello@itti.org.in"
+						>hello@itti.org.in</a
+					>
+					instead and we will send you what we hold, or change it, by hand. We answer within
+					five working days.
+				</p>
+			</div>
+		</section>
+	</noscript>
+
+	<div class="acct" data-account hidden>
+		<!-- Opening the page, or coming back from the link with a token in the
+		     address. Neither is instant, and a blank page reads as a broken one. -->
+		<section class="doc__section" data-panel="loading">
+			<h2 class="doc__h">One moment</h2>
+			<div class="doc__body">
+				<p>Looking for your record.</p>
+			</div>
+		</section>
+
+		<section class="doc__section" data-panel="signin" hidden>
+			<h2 class="doc__h">Sign in</h2>
+			<div class="doc__body">
+				<p>
+					Give us the address you registered with and we will send a link that signs you
+					in. There is no password to remember, and we never set one.
+				</p>
+				<form class="acct__form" data-signin-form novalidate>
+					<div class="acct__field">
+						<label class="acct__label" for="acct-email">Your email address</label>
+						<input
+							class="acct__input"
+							id="acct-email"
+							name="email"
+							type="email"
+							autocomplete="email"
+							inputmode="email"
+							spellcheck="false"
+							required
+						/>
+					</div>
+					<button class="acct__go" type="submit" data-signin-go>Send me a link</button>
+				</form>
+				<p class="acct__note">
+					If you have not registered yet, <a class="doc__link" href="/join"
+						>start here</a
+					>.
+				</p>
+			</div>
+		</section>
+
+		<section class="doc__section" data-panel="sent" hidden>
+			<h2 class="doc__h">Check your email</h2>
+			<div class="doc__body">
+				<p>
+					If we have a registration for <strong data-sent-address></strong>, a sign-in
+					link is on its way. It works once, and it stops working after an hour.
+				</p>
+				<p>
+					Open it in this browser if you can &mdash; that is where the page is waiting
+					for you. Nothing arrived? Look in the spam folder, then{' '}
+					<button class="acct__again" type="button" data-signin-again
+						>try a different address</button
+					>.
+				</p>
+			</div>
+		</section>
+
+		<section class="doc__section" data-panel="none" hidden>
+			<h2 class="doc__h">Nothing under that address</h2>
+			<div class="doc__body">
+				<p>
+					You are signed in as <strong data-none-address></strong>, and we hold no
+					registration against it. That usually means the registration was made with a
+					different address.
+				</p>
+				<p>
+					<a class="doc__link" href="/join">Register now</a>, or write to{' '}
+					<a class="doc__link" href="mailto:hello@itti.org.in">hello@itti.org.in</a> and we
+					will find it. You can also{' '}
+					<button class="acct__again" type="button" data-signout>sign out</button> and try
+					another address.
+				</p>
+			</div>
+		</section>
+
+		<!-- The record as we hold it, in the order the receipt uses. A line
+		     nobody filled in is not shown, so this reads as what they said
+		     rather than as a form with gaps in it. -->
+		<section class="doc__section" data-panel="record" hidden>
+			<h2 class="doc__h">Your record</h2>
+			<div class="doc__body">
+				<p>
+					This is everything we hold about you. If a line is wrong, change it &mdash;
+					nobody has to approve it.
+				</p>
+				<dl class="doc__list" data-record-list></dl>
+				<div class="acct__actions">
+					<button class="acct__go" type="button" data-edit-open>Change something</button
+					>
+					<button class="acct__again" type="button" data-signout>Sign out</button>
+				</div>
+			</div>
+		</section>
+
+		<section class="doc__section" data-panel="edit" hidden>
+			<h2 class="doc__h">Change your details</h2>
+			<div class="doc__body">
+				<form class="acct__form" data-edit-form novalidate>
+					<div class="acct__field">
+						<label class="acct__label" for="acct-name">Name</label>
+						<input
+							class="acct__input"
+							id="acct-name"
+							name="fullName"
+							type="text"
+							maxlength="120"
+							autocomplete="name"
+							required
+						/>
+					</div>
+
+					<div class="acct__field">
+						<label class="acct__label" for="acct-role">You are</label>
+						<select class="acct__input" id="acct-role" name="role" required>
+							{ROLES.map(([v, l]) => <option value={v}>{l}</option>)}
+						</select>
+					</div>
+
+					<div class="acct__field">
+						<label class="acct__label" for="acct-phone">Phone</label>
+						<input
+							class="acct__input"
+							id="acct-phone"
+							name="phone"
+							type="tel"
+							autocomplete="tel"
+							placeholder="+91 98765 43210"
+						/>
+						<p class="acct__hint">
+							With the country code. Leave it empty if you would rather we only wrote.
+						</p>
+					</div>
+
+					<div class="acct__field">
+						<label class="acct__label" for="acct-city">City</label>
+						<input
+							class="acct__input"
+							id="acct-city"
+							name="city"
+							type="text"
+							maxlength="100"
+							autocomplete="address-level2"
+							required
+						/>
+					</div>
+
+					<div class="acct__field">
+						<label class="acct__label" for="acct-pincode">PIN code</label>
+						<input
+							class="acct__input"
+							id="acct-pincode"
+							name="pincode"
+							type="text"
+							inputmode="numeric"
+							maxlength="6"
+							autocomplete="postal-code"
+						/>
+					</div>
+
+					<div class="acct__field">
+						<label class="acct__label" for="acct-dob">Date of birth</label>
+						<input class="acct__input" id="acct-dob" name="dateOfBirth" type="date" />
+					</div>
+
+					<div class="acct__field">
+						<label class="acct__label" for="acct-gender">Gender</label>
+						<select class="acct__input" id="acct-gender" name="gender">
+							{GENDERS.map(([v, l]) => <option value={v}>{l}</option>)}
+						</select>
+					</div>
+
+					<div class="acct__field" data-gender-other hidden>
+						<label class="acct__label" for="acct-gender-other">In your own words</label>
+						<input
+							class="acct__input"
+							id="acct-gender-other"
+							name="genderSelfDescribed"
+							type="text"
+							maxlength="60"
+						/>
+					</div>
+
+					<div class="acct__field">
+						<label class="acct__label" for="acct-lang">Preferred language</label>
+						<select class="acct__input" id="acct-lang" name="language">
+							<option value="">No preference</option>
+							{LANGUAGES.map(([v, l]) => <option value={v}>{l}</option>)}
+							<option value="other">Another language</option>
+						</select>
+					</div>
+
+					<div class="acct__field" data-lang-other hidden>
+						<label class="acct__label" for="acct-lang-other">Which language</label>
+						<input
+							class="acct__input"
+							id="acct-lang-other"
+							name="languageOther"
+							type="text"
+							maxlength="40"
+						/>
+					</div>
+
+					<fieldset class="acct__set">
+						<legend class="acct__label">What you are here for</legend>
+						{
+							PILLARS.map(([v, l]) => (
+								<label class="acct__check">
+									<input type="checkbox" name="interests" value={v} />
+									<span>{l}</span>
+								</label>
+							))
+						}
+					</fieldset>
+
+					<fieldset class="acct__set">
+						<legend class="acct__label">We may contact you by</legend>
+						<label class="acct__check">
+							<input type="checkbox" name="consentWhatsapp" />
+							<span>WhatsApp</span>
+						</label>
+						<label class="acct__check">
+							<input type="checkbox" name="consentSms" />
+							<span>SMS</span>
+						</label>
+						<label class="acct__check">
+							<input type="checkbox" name="consentEmail" />
+							<span>Email</span>
+						</label>
+					</fieldset>
+
+					<p class="acct__error" data-edit-error role="alert" hidden></p>
+
+					<div class="acct__actions">
+						<button class="acct__go" type="submit" data-edit-save>Save changes</button>
+						<button class="acct__again" type="button" data-edit-cancel>Cancel</button>
+					</div>
+				</form>
+			</div>
+		</section>
+
+		<section class="doc__section" data-panel="fail" hidden>
+			<h2 class="doc__h">That did not work</h2>
+			<div class="doc__body">
+				<p data-fail-note>Something went wrong at our end.</p>
+				<p>
+					Try again in a moment. If it keeps happening, write to{' '}
+					<a class="doc__link" href="mailto:hello@itti.org.in">hello@itti.org.in</a> and we
+					will sort it out by hand.
+				</p>
+				<p><button class="acct__again" type="button" data-retry>Start again</button></p>
+			</div>
+		</section>
+
+		<!-- Not editable here, and said so rather than left to be discovered.
+		     The address is the account; changing it is an identity change, not a
+		     correction, and it goes through a person. -->
+		<section class="doc__section" data-panel="footnote" hidden>
+			<h2 class="doc__h">Two things we do by hand</h2>
+			<div class="doc__body">
+				<dl class="doc__list">
+					<dt>Your email address</dt>
+					<dd>
+						It is what signs you in and where the receipt went, so it is not something
+						this page will change under you. Write to{' '}
+						<a class="doc__link" href="mailto:hello@itti.org.in">hello@itti.org.in</a> and
+						we will move it.
+					</dd>
+					<dt>Deleting everything</dt>
+					<dd>
+						You can ask us to erase the whole record and we will, but not with a button
+						that cannot be undone. Write to the same address and{' '}
+						<strong>Anuja Bali</strong> will do it. What we hold and why is set out in{
+							' '
+						}
+						<a class="doc__link" href="/privacy">What we hold, and why</a>.
+					</dd>
+				</dl>
+			</div>
+		</section>
+	</div>
+</Doc>
+
+<style>
+	.acct__form {
+		display: grid;
+		gap: 1.5rem;
+		margin: 0.5rem 0 0;
+	}
+
+	/* Ruled lines rather than boxes, the same as the registration form. */
+	.acct__field {
+		display: grid;
+		gap: 0.4rem;
+	}
+
+	.acct__label {
+		font-family: var(--face-cinzel);
+		font-size: 0.6875rem;
+		font-weight: 600;
+		letter-spacing: 0.15em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+		padding: 0;
+	}
+
+	.acct__input {
+		width: 100%;
+		padding: 0.5rem 0;
+		border: 0;
+		border-bottom: 1px solid var(--rule);
+		border-radius: 0;
+		background: transparent;
+		font-family: inherit;
+		font-size: 1.0625rem;
+		line-height: 1.5;
+		color: var(--ink);
+		transition: border-color 180ms var(--ease);
+	}
+
+	.acct__input:hover {
+		border-bottom-color: color-mix(in srgb, var(--teal) 45%, var(--rule));
+	}
+
+	.acct__input:focus {
+		outline: none;
+		border-bottom-color: var(--teal);
+	}
+
+	.acct__input:focus-visible {
+		outline: 2px solid var(--teal);
+		outline-offset: 4px;
+	}
+
+	select.acct__input {
+		appearance: none;
+		cursor: pointer;
+	}
+
+	.acct__hint {
+		font-size: 0.875rem;
+		color: var(--ink-faint);
+	}
+
+	.acct__set {
+		display: grid;
+		gap: 0.55rem;
+		margin: 0;
+		padding: 0;
+		border: 0;
+	}
+
+	.acct__set legend {
+		padding: 0 0 0.35rem;
+	}
+
+	.acct__check {
+		display: flex;
+		align-items: baseline;
+		gap: 0.6rem;
+		cursor: pointer;
+		font-size: 1.0625rem;
+		color: var(--ink-soft);
+	}
+
+	.acct__check input {
+		accent-color: var(--teal);
+		width: 0.95rem;
+		height: 0.95rem;
+	}
+
+	.acct__actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 1.5rem;
+		margin-top: 0.5rem;
+	}
+
+	.acct__go {
+		justify-self: start;
+		padding: 0.7rem 1.6rem;
+		border: 1px solid var(--teal);
+		border-radius: 0;
+		background: var(--teal);
+		color: var(--cream);
+		font-family: var(--face-cinzel);
+		font-size: 0.75rem;
+		font-weight: 600;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		cursor: pointer;
+		transition:
+			background 200ms var(--ease),
+			color 200ms var(--ease);
+	}
+
+	.acct__go:hover {
+		background: transparent;
+		color: var(--teal);
+	}
+
+	.acct__go[disabled] {
+		opacity: 0.5;
+		cursor: progress;
+	}
+
+	/* A second action next to the first, weighted as a link rather than a
+	   button, so the page has one obvious thing to press. */
+	.acct__again {
+		padding: 0;
+		border: 0;
+		background: none;
+		font: inherit;
+		color: var(--teal);
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
+		text-decoration-thickness: 1px;
+		text-decoration-color: color-mix(in srgb, var(--teal) 40%, transparent);
+		cursor: pointer;
+	}
+
+	.acct__again:hover {
+		text-decoration-color: var(--teal);
+	}
+
+	.acct__note {
+		font-size: 0.9375rem;
+		color: var(--ink-faint);
+	}
+
+	.acct__error {
+		margin: 0;
+		padding: 0.75rem 0 0;
+		border-top: 1px solid color-mix(in srgb, var(--rose-ink) 35%, transparent);
+		font-size: 0.9375rem;
+		color: var(--rose-ink);
+	}
+
+	/* The field a message points at, marked so it is not only the words that
+	   say which one it is. */
+	.acct__field[data-wrong] .acct__input {
+		border-bottom-color: var(--rose-ink);
+	}
+</style>
+
+<script>
+	import { supabase } from '../lib/supabase';
+	import type { MyRegistration } from '../types/database';
+
+	const root = document.querySelector<HTMLElement>('[data-account]');
+	if (root) {
+		root.hidden = false;
+
+		const panels = new Map<string, HTMLElement>();
+		for (const el of root.querySelectorAll<HTMLElement>('[data-panel]')) {
+			panels.set(el.dataset.panel!, el);
+		}
+
+		/**
+		 * One panel at a time, except the footnote, which belongs beneath the
+		 * two panels where a record is in play and nowhere else.
+		 */
+		const show = (name: string) => {
+			for (const [key, el] of panels) el.hidden = key !== name;
+			const foot = panels.get('footnote');
+			if (foot) foot.hidden = !(name === 'record' || name === 'edit');
+		};
+
+		const fail = (note: string) => {
+			const el = root.querySelector<HTMLElement>('[data-fail-note]');
+			if (el) el.textContent = note;
+			show('fail');
+		};
+
+		// ── the words, not the codes ───────────────────────────────────────────
+
+		const ROLE: Record<string, string> = {
+			patient: 'Living with something yourself',
+			caregiver: 'Caring for someone',
+			volunteer: 'Volunteering or supporting',
+			other: 'Something else',
+		};
+
+		const GENDER: Record<string, string> = {
+			woman: 'Woman',
+			man: 'Man',
+			non_binary: 'Non-binary',
+			self_described: 'Self-described',
+			undisclosed: 'Preferred not to say',
+		};
+
+		const LANG: Record<string, string> = {
+			en: 'English',
+			hi: 'Hindi',
+			mr: 'Marathi',
+			gu: 'Gujarati',
+			bn: 'Bengali',
+			ta: 'Tamil',
+			te: 'Telugu',
+			kn: 'Kannada',
+			ml: 'Malayalam',
+			pa: 'Punjabi',
+			ur: 'Urdu',
+			or: 'Odia',
+			as: 'Assamese',
+		};
+
+		const PILLAR: Record<string, string> = {
+			neurodivergence: 'Neurodivergence',
+			cancer_care: 'Cancer care',
+			claw: 'CLAW — conservation',
+			not_sure: 'Not sure yet',
+			other: 'Something else',
+		};
+
+		const HEARD: Record<string, string> = {
+			friend_family: 'A friend or family member',
+			doctor_hospital: 'A doctor or hospital',
+			event: 'An event',
+			podcast: 'A podcast',
+			instagram: 'Instagram',
+			youtube: 'YouTube',
+			whatsapp_group: 'A WhatsApp group',
+			search: 'A search',
+			news: 'The news',
+			volunteer_staff: 'Someone from the foundation',
+			other: 'Somewhere else',
+		};
+
+		let current: MyRegistration | null = null;
+
+		const asDate = (iso: string) => {
+			if (!iso) return '';
+			const d = new Date(`${iso}T00:00:00`);
+			return Number.isNaN(d.getTime())
+				? iso
+				: d.toLocaleDateString('en-GB', {
+						day: '2-digit',
+						month: 'short',
+						year: 'numeric',
+					});
+		};
+
+		/** The same lines the receipt shows, in the same order. */
+		const rows = (r: MyRegistration): [string, string][] => {
+			const channels = [
+				r.consentWhatsapp ? 'WhatsApp' : '',
+				r.consentSms ? 'SMS' : '',
+				r.consentEmail ? 'Email' : '',
+			].filter(Boolean);
+
+			const interests: string[] = Array.isArray(r.interests) ? r.interests : [];
+
+			return (
+				[
+					['Name', r.fullName ?? ''],
+					['You are', ROLE[r.role] ?? r.role ?? ''],
+					['Phone', r.phone ?? ''],
+					['Email', r.email ?? ''],
+					['City', r.city ?? ''],
+					['PIN code', r.pincode ?? ''],
+					['Date of birth', asDate(r.dateOfBirth ?? '')],
+					['Gender', r.genderOther || (GENDER[r.gender] ?? r.gender ?? '')],
+					[
+						'Preferred language',
+						LANG[r.preferredLanguage] ?? r.preferredLanguage ?? '',
+					],
+					['Areas', interests.map((p) => PILLAR[p] ?? p).join(', ')],
+					['How you found us', r.heardFromOther || (HEARD[r.heardFrom] ?? '')],
+					['We may contact you by', channels.join(', ')],
+					['Parent or guardian', r.guardianName ?? ''],
+					["Guardian's email", r.guardianEmail ?? ''],
+					["Guardian's phone", r.guardianPhone ?? ''],
+					['Registered', r.registeredAt ?? ''],
+				] as [string, string][]
+			).filter(([, v]) => v !== '');
+		};
+
+		/**
+		 * Built with the DOM rather than innerHTML. The values are the person's
+		 * own, but they were typed, and typed text is never markup.
+		 */
+		const paint = (r: MyRegistration) => {
+			const list = root.querySelector<HTMLElement>('[data-record-list]');
+			if (!list) return;
+			list.textContent = '';
+			for (const [key, value] of rows(r)) {
+				const dt = document.createElement('dt');
+				dt.textContent = key;
+				const dd = document.createElement('dd');
+				dd.textContent = value;
+				list.append(dt, dd);
+			}
+		};
+
+		// ── the edit form ──────────────────────────────────────────────────────
+
+		const form = root.querySelector<HTMLFormElement>('[data-edit-form]');
+		const genderOtherField = root.querySelector<HTMLElement>('[data-gender-other]');
+		const langOtherField = root.querySelector<HTMLElement>('[data-lang-other]');
+		const editError = root.querySelector<HTMLElement>('[data-edit-error]');
+
+		const revealConditionals = () => {
+			if (!form) return;
+			const gender = (form.elements.namedItem('gender') as HTMLSelectElement).value;
+			if (genderOtherField) genderOtherField.hidden = gender !== 'self_described';
+			const lang = (form.elements.namedItem('language') as HTMLSelectElement).value;
+			if (langOtherField) langOtherField.hidden = lang !== 'other';
+		};
+
+		const fill = (r: MyRegistration) => {
+			if (!form) return;
+			const set = (name: string, value: string) => {
+				const el = form.elements.namedItem(name) as
+					HTMLInputElement | HTMLSelectElement;
+				if (el) el.value = value;
+			};
+
+			set('fullName', r.fullName ?? '');
+			set('role', r.role ?? 'other');
+			set('phone', r.phone ?? '');
+			set('city', r.city ?? '');
+			set('pincode', r.pincode ?? '');
+			set('dateOfBirth', r.dateOfBirth ?? '');
+			set('gender', r.gender ?? '');
+			set('genderSelfDescribed', r.genderOther ?? '');
+
+			// Registration stores a code for the languages it lists and the typed
+			// words for anything else. Anything unrecognised is therefore an
+			// answer, not a bad value: put it in the free-text half.
+			const lang: string = r.preferredLanguage ?? '';
+			if (lang && !(lang in LANG)) {
+				set('language', 'other');
+				set('languageOther', lang);
+			} else {
+				set('language', lang);
+				set('languageOther', '');
+			}
+
+			const interests: string[] = Array.isArray(r.interests) ? r.interests : [];
+			for (const box of form.querySelectorAll<HTMLInputElement>(
+				'input[name="interests"]',
+			)) {
+				box.checked = interests.includes(box.value);
+			}
+
+			const consents = ['consentWhatsapp', 'consentSms', 'consentEmail'] as const;
+			for (const name of consents) {
+				const box = form.elements.namedItem(name) as HTMLInputElement;
+				if (box) box.checked = r[name];
+			}
+
+			revealConditionals();
+			for (const field of form.querySelectorAll<HTMLElement>('[data-wrong]')) {
+				delete field.dataset.wrong;
+			}
+			if (editError) {
+				editError.hidden = true;
+				editError.textContent = '';
+			}
+		};
+
+		form?.addEventListener('change', (event) => {
+			const name = (event.target as HTMLElement).getAttribute('name');
+			if (name === 'gender' || name === 'language') revealConditionals();
+		});
+
+		// ── loading the record ─────────────────────────────────────────────────
+
+		const load = async () => {
+			const { data, error } = await supabase.rpc('my_registration');
+			if (error) {
+				fail('We could not read your record just now.');
+				return;
+			}
+			if (!data) {
+				const { data: session } = await supabase.auth.getUser();
+				const address = root.querySelector<HTMLElement>('[data-none-address]');
+				if (address) address.textContent = session.user?.email ?? 'this address';
+				show('none');
+				return;
+			}
+			current = data;
+			paint(current);
+			show('record');
+		};
+
+		const afterSignIn = async () => {
+			const { data, error } = await supabase.rpc('claim_registration');
+			if (error) {
+				fail('We could not open your record just now.');
+				return;
+			}
+			// `claim_registration` reports why it could not bind; every reason
+			// other than a missing registration is ours, not theirs.
+			if (data && data.ok === false && data.reason !== 'no_registration') {
+				fail('Your sign-in did not complete. Please ask for a new link.');
+				return;
+			}
+			await load();
+		};
+
+		// ── sign in ────────────────────────────────────────────────────────────
+
+		const signinForm = root.querySelector<HTMLFormElement>('[data-signin-form]');
+		const signinGo = root.querySelector<HTMLButtonElement>('[data-signin-go]');
+
+		signinForm?.addEventListener('submit', async (event) => {
+			event.preventDefault();
+			const input = signinForm.elements.namedItem('email') as HTMLInputElement;
+			const email = input.value.trim();
+			if (!email || !input.checkValidity()) {
+				input.focus();
+				return;
+			}
+
+			if (signinGo) {
+				signinGo.disabled = true;
+				signinGo.textContent = 'Sending';
+			}
+
+			const { error } = await supabase.auth.signInWithOtp({
+				email,
+				options: { emailRedirectTo: `${window.location.origin}/account` },
+			});
+
+			if (signinGo) {
+				signinGo.disabled = false;
+				signinGo.textContent = 'Send me a link';
+			}
+
+			if (error) {
+				fail('We could not send that link just now.');
+				return;
+			}
+
+			// The same words whether or not we hold a registration for it. Which
+			// addresses are on our list is not something a stranger gets to
+			// learn by typing them in one at a time.
+			const shown = root.querySelector<HTMLElement>('[data-sent-address]');
+			if (shown) shown.textContent = email;
+			show('sent');
+		});
+
+		root.querySelector('[data-signin-again]')?.addEventListener('click', () => {
+			show('signin');
+			(root.querySelector('#acct-email') as HTMLInputElement | null)?.focus();
+		});
+
+		for (const button of root.querySelectorAll('[data-signout]')) {
+			button.addEventListener('click', async () => {
+				await supabase.auth.signOut();
+				current = null;
+				show('signin');
+			});
+		}
+
+		root.querySelector('[data-retry]')?.addEventListener('click', () => {
+			show('loading');
+			void start();
+		});
+
+		// ── editing ────────────────────────────────────────────────────────────
+
+		root.querySelector('[data-edit-open]')?.addEventListener('click', () => {
+			if (!current) return;
+			fill(current);
+			show('edit');
+			(root.querySelector('#acct-name') as HTMLInputElement | null)?.focus();
+		});
+
+		root.querySelector('[data-edit-cancel]')?.addEventListener('click', () => {
+			show('record');
+		});
+
+		const save = root.querySelector<HTMLButtonElement>('[data-edit-save]');
+
+		form?.addEventListener('submit', async (event) => {
+			event.preventDefault();
+			if (!form) return;
+
+			for (const field of form.querySelectorAll<HTMLElement>('[data-wrong]')) {
+				delete field.dataset.wrong;
+			}
+
+			const value = (name: string) =>
+				(
+					(form.elements.namedItem(name) as HTMLInputElement | HTMLSelectElement)
+						?.value ?? ''
+				).trim();
+			const checked = (name: string) =>
+				Boolean((form.elements.namedItem(name) as HTMLInputElement)?.checked);
+
+			const language = value('language');
+			const payload = {
+				fullName: value('fullName'),
+				role: value('role'),
+				// Spaces are how people write a phone number and not how E.164
+				// stores one. Strip them here rather than refusing the number.
+				phone: value('phone').replace(/[\s()-]/g, ''),
+				city: value('city'),
+				pincode: value('pincode'),
+				dateOfBirth: value('dateOfBirth'),
+				gender: value('gender'),
+				genderSelfDescribed: value('genderSelfDescribed'),
+				preferredLanguage: language === 'other' ? value('languageOther') : language,
+				interests: [
+					...form.querySelectorAll<HTMLInputElement>('input[name="interests"]:checked'),
+				].map((b) => b.value),
+				consentWhatsapp: checked('consentWhatsapp'),
+				consentSms: checked('consentSms'),
+				consentEmail: checked('consentEmail'),
+			};
+
+			if (save) {
+				save.disabled = true;
+				save.textContent = 'Saving';
+			}
+
+			const { data, error } = await supabase.rpc('update_my_registration', { payload });
+
+			if (save) {
+				save.disabled = false;
+				save.textContent = 'Save changes';
+			}
+
+			if (error) {
+				if (editError) {
+					editError.textContent = 'We could not save that just now. Please try again.';
+					editError.hidden = false;
+				}
+				return;
+			}
+
+			if (data && data.ok === false) {
+				if (editError) {
+					editError.textContent = data.message ?? 'Please check that and try again.';
+					editError.hidden = false;
+				}
+				const field = form.querySelector<HTMLElement>(
+					`.acct__field:has([name="${data.field}"])`,
+				);
+				if (field) {
+					field.dataset.wrong = '';
+					field.querySelector<HTMLElement>('input, select')?.focus();
+				}
+				return;
+			}
+
+			await load();
+		});
+
+		// ── start ──────────────────────────────────────────────────────────────
+
+		const start = async () => {
+			const { data } = await supabase.auth.getSession();
+			if (data.session) {
+				await afterSignIn();
+			} else {
+				show('signin');
+			}
+		};
+
+		// Arriving from the link, the session is set while the page is already
+		// running. Waiting for the event rather than for getSession alone is
+		// what makes the link land on the record instead of on the sign-in form.
+		supabase.auth.onAuthStateChange((event) => {
+			if (event === 'SIGNED_IN') void afterSignIn();
+		});
+
+		void start();
+	}
+</script>

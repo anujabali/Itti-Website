@@ -209,6 +209,55 @@ export interface RegisterMemberResult {
 }
 
 /**
+ * What `my_registration` returns: the caller's own record, shaped for reading
+ * rather than mirroring the table. Everything is a string because this is what
+ * gets shown to the person it describes, and a blank is an unanswered question
+ * rather than a null to guard against at every use.
+ *
+ * `null` where the account is bound to no registration.
+ */
+export interface MyRegistration {
+	fullName: string;
+	city: string;
+	role: RoleKind;
+	phone: string;
+	email: string;
+	pincode: string;
+	/** ISO `YYYY-MM-DD`, which is what a date input reads and writes. */
+	dateOfBirth: string;
+	gender: GenderKind | '';
+	genderOther: string;
+	/** A language code for the listed languages, the typed words for the rest. */
+	preferredLanguage: string;
+	consentWhatsapp: boolean;
+	consentSms: boolean;
+	consentEmail: boolean;
+	/** Shown but not editable here. */
+	heardFrom: HeardFrom | '';
+	heardFromOther: string;
+	guardianName: string;
+	guardianEmail: string;
+	guardianPhone: string;
+	registeredAt: string;
+	interests: PillarKind[];
+}
+
+/** Whether an account could be tied to a registration, and why not. */
+export interface ClaimResult {
+	ok: boolean;
+	/** True only when this call did the binding, false when it was already done. */
+	claimed?: boolean;
+	reason?: 'signed_out' | 'unconfirmed' | 'no_registration';
+}
+
+/** The same shape a refusal from `register_member` takes. */
+export interface UpdateRegistrationResult {
+	ok: boolean;
+	field?: string;
+	message?: string;
+}
+
+/**
  * Complete Database Schema for Supabase client typing
  */
 export interface Database {
@@ -256,6 +305,18 @@ export interface Database {
 			has_consent: {
 				Args: { p_person: string; p_purpose: string };
 				Returns: boolean;
+			};
+			claim_registration: {
+				Args: Record<string, never>;
+				Returns: ClaimResult;
+			};
+			my_registration: {
+				Args: Record<string, never>;
+				Returns: MyRegistration | null;
+			};
+			update_my_registration: {
+				Args: { payload: Record<string, unknown> };
+				Returns: UpdateRegistrationResult;
 			};
 		};
 		CompositeTypes: Record<string, never>;

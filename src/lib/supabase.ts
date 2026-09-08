@@ -23,6 +23,27 @@ export const isSupabaseConfigured = (): boolean => {
 	);
 };
 
+/**
+ * Sign-in is a link sent to an email address, and people read email on whatever
+ * device is nearest. The implicit flow puts the session in the URL fragment, so
+ * a link asked for on a laptop still works when it is opened on a phone.
+ *
+ * PKCE would not: it holds a verifier in the browser that asked, and a link
+ * opened anywhere else fails with nothing useful to say. It is the safer flow
+ * where a redirect passes through a server, and this one does not — the
+ * fragment never leaves the browser.
+ *
+ * `implicit` is the library's default today. It is named here anyway, because
+ * a default that changes under a version bump would break sign-in for exactly
+ * the people who cannot tell us why.
+ */
+const AUTH = {
+	flowType: 'implicit',
+	detectSessionInUrl: true,
+	persistSession: true,
+	autoRefreshToken: true,
+} as const;
+
 let clientInstance: SupabaseClient<Database> | null = null;
 
 /**
@@ -42,11 +63,12 @@ export const getSupabase = (): SupabaseClient<Database> => {
 		clientInstance = createClient<Database>(
 			supabaseUrl || 'https://mock-itti-project.supabase.co',
 			supabaseAnonKey || 'mock-anon-key',
+			{ auth: AUTH },
 		);
 		return clientInstance;
 	}
 
-	clientInstance = createClient<Database>(supabaseUrl, supabaseAnonKey);
+	clientInstance = createClient<Database>(supabaseUrl, supabaseAnonKey, { auth: AUTH });
 	return clientInstance;
 };
 

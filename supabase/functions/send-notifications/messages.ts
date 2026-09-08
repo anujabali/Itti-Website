@@ -178,7 +178,7 @@ export const welcome = (p: Record<string, unknown>): Message => {
 			'',
 			asText(rows),
 			'',
-			'If any line of that is wrong, or you would rather we not keep it, reply to this message and we will put it right.',
+			'If any line of that is wrong, change it yourself at https://itti.org.in/account — sign in with this address and no password. Or reply to this message and we will put it right.',
 			'',
 			'The Itti Foundation',
 			'https://itti.org.in/privacy',
@@ -191,8 +191,10 @@ export const welcome = (p: Record<string, unknown>): Message => {
       <p style="margin:0 0 10px;font-size:11px;letter-spacing:0.18em;
                 text-transform:uppercase;color:#70695f;">What we wrote down</p>
       ${asTable(rows)}
-      <p style="margin:0;">If any line of that is wrong, or you would rather we not keep it,
-        reply to this message and we will put it right.</p>`),
+      <p style="margin:0;">If any line of that is wrong, change it yourself at
+        <a href="https://itti.org.in/account" style="color:#1c6b77;">itti.org.in/account</a> —
+        sign in with this address, and there is no password. Or reply to this message and we
+        will put it right.</p>`),
 	};
 };
 

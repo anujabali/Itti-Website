@@ -55,6 +55,17 @@ const { title, description, eyebrow, heading, lede, version, updated } = Astro.p
 	   on. Without it, it renders dark on dark. */
 	.doc-page {
 		background: var(--cream);
+		/* A short document — the account page signed out, or the not-found page —
+		   used to stop above the fold and leave the dark ground behind the page
+		   showing under the footer. The ground has to reach the bottom of the
+		   window even when the words do not. */
+		min-height: 100svh;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.doc {
+		flex: 1 0 auto;
 	}
 
 	.doc {
