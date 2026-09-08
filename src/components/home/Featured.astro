@@ -43,7 +43,7 @@ const SLIDES = [
 			SLIDES.map((slide, i) => (
 				<article
 					class="slide"
-					style={`--accent: var(--${slide.accent})`}
+					style={`--accent: var(--${slide.accent}); --accent-ink: var(--${slide.accent}-ink)`}
 					data-slide
 					aria-hidden={i === 0 ? undefined : 'true'}
 					hidden={i !== 0}
@@ -164,7 +164,7 @@ const SLIDES = [
 		font-weight: 500;
 		letter-spacing: 0.2em;
 		text-transform: uppercase;
-		color: var(--accent);
+		color: var(--accent-ink);
 	}
 
 	.slide__title {

@@ -22,7 +22,11 @@ interface Props {
 const { numeral, name, line, back, href, accent, mark } = Astro.props;
 ---
 
-<article class="pillar" style={`--accent: var(--${accent})`} data-pillar>
+<article
+	class="pillar"
+	style={`--accent: var(--${accent}); --accent-ink: var(--${accent}-ink)`}
+	data-pillar
+>
 	<div class="pillar__inner">
 		<div class="pillar__face pillar__face--front">
 			<button class="pillar__hit" type="button" aria-expanded="false" data-flip>
@@ -155,7 +159,7 @@ const { numeral, name, line, back, href, accent, mark } = Astro.props;
 		font-size: 0.8125rem;
 		letter-spacing: 0.24em;
 		text-transform: uppercase;
-		color: var(--accent);
+		color: var(--accent-ink);
 	}
 
 	/* A signature, not a logo: one colour, small, so the front stays the museum
@@ -234,7 +238,7 @@ const { numeral, name, line, back, href, accent, mark } = Astro.props;
 	.pillar__link {
 		align-self: flex-start;
 		margin-top: auto;
-		color: var(--accent);
+		color: var(--accent-ink);
 		pointer-events: auto;
 		padding-bottom: 0.15rem;
 		border-bottom: 1px solid currentColor;

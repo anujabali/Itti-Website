@@ -33,6 +33,17 @@
 	--rose: #b3837e;
 	--sage: #7f9070;
 
+	/* The same pigments, taken down far enough to carry small text on cream.
+	   The chalky versions above are for rules, marks and edges — as type they
+	   sit at 2.8 to 3.2 against the paper, and small text needs 4.5. These are
+	   the darkest each hue can stay while clearing it against the card, which is
+	   a shade deeper than the page. Teal already reads well past it, so it is
+	   itself. */
+	--ochre-ink: #826839;
+	--rose-ink: #886460;
+	--sage-ink: #637057;
+	--teal-ink: var(--teal);
+
 	/* Type. Three faces ship: Bodoni Moda for display, Cinzel for the poem's
 	   inscriptional capitals, EB Garamond for body and every small tracked
 	   label. Gardenia is still the wanted display face and needs a licence. */
