@@ -1,6 +1,5 @@
 ---
-import Base from '../layouts/Base.astro';
-import SiteFooter from '../components/layout/SiteFooter.astro';
+import Doc from '../layouts/Doc.astro';
 
 /**
  * What this page says about the system is taken from the system: the columns
@@ -46,322 +45,137 @@ const collected = [
 ];
 ---
 
-<Base
+<Doc
 	title="Privacy — The Itti Foundation"
 	description="What The Itti Foundation collects when you register, why, and what you can ask us to do about it."
+	eyebrow="Privacy"
+	heading="What we hold, and why."
+	lede="What happens to the details you give us when you register."
+	version={POLICY_VERSION}
+	updated={LAST_UPDATED}
 >
-	<div class="page">
-		<article class="doc">
-			<header class="doc__head">
-				<p class="doc__eyebrow">Privacy</p>
-				<h1 class="doc__title">What we hold, and why.</h1>
-				<p class="doc__lede">
-					What happens to the details you give us when you register.
-				</p>
-				<p class="doc__stamp">
-					Version {POLICY_VERSION} &middot; Last updated {LAST_UPDATED}
-				</p>
-			</header>
+	<section class="doc__section">
+		<h2 class="doc__h">Who we are</h2>
+		<div class="doc__body">
+			<p>
+				The Itti Foundation is the data fiduciary for everything described here. We are
+				registered as Itti&rsquo;s Skill School Foundation, a Section 8 not-for-profit.
+			</p>
+			<p>
+				<strong>Anuja Bali</strong> answers privacy requests. Write to{' '}
+				<a class="doc__link" href="mailto:hello@itti.org.in">hello@itti.org.in</a>{' '}
+				to see, correct or delete what we hold, or about anything else on this page.
+			</p>
+		</div>
+	</section>
 
-			<section class="doc__section">
-				<h2 class="doc__h">Who we are</h2>
-				<div class="doc__body">
-					<p>
-						The Itti Foundation is the data fiduciary for everything described here. We
-						are registered as Itti&rsquo;s Skill School Foundation, a Section 8
-						not-for-profit.
-					</p>
-					<p>
-						<strong>Anuja Bali</strong> answers privacy requests. Write to{' '}
-						<a class="doc__link" href="mailto:hello@itti.org.in">hello@itti.org.in</a>{
-							' '
-						}
-						to see, correct or delete what we hold, or about anything else on this page.
-					</p>
-				</div>
-			</section>
+	<section class="doc__section">
+		<h2 class="doc__h">What we collect</h2>
+		<div class="doc__body">
+			<dl class="doc__list">
+				{
+					collected.map((c) => (
+						<>
+							<dt>{c.group}</dt>
+							<dd>{c.items}</dd>
+						</>
+					))
+				}
+			</dl>
+			<p>
+				We ask nothing about your health beyond which area you want to connect with. No
+				cookies, no analytics, no advertising, and nothing is kept about a visit that
+				does not end in a registration.
+			</p>
+		</div>
+	</section>
 
-			<section class="doc__section">
-				<h2 class="doc__h">What we collect</h2>
-				<div class="doc__body">
-					<dl class="doc__list">
-						{
-							collected.map((c) => (
-								<>
-									<dt>{c.group}</dt>
-									<dd>{c.items}</dd>
-								</>
-							))
-						}
-					</dl>
-					<p>
-						We ask nothing about your health beyond which area you want to connect with.
-						No cookies, no analytics, no advertising, and nothing is kept about a visit
-						that does not end in a registration.
-					</p>
-				</div>
-			</section>
+	<section class="doc__section">
+		<h2 class="doc__h">Who else sees it</h2>
+		<div class="doc__body">
+			<p>
+				<strong>Supabase</strong> stores the registry in their Mumbai region, which is within
+				India.
+			</p>
+			<p>
+				<strong>Netlify</strong> serves this site and sees ordinary request logs.
+			</p>
+			<p>
+				<strong>India Post</strong> is sent a PIN code you enter, so we can fill in your district.
+				Nothing else about you reaches them.
+			</p>
+			<p>We do not sell your details or pass them to anyone else.</p>
+		</div>
+	</section>
 
-			<section class="doc__section">
-				<h2 class="doc__h">Who else sees it</h2>
-				<div class="doc__body">
-					<p>
-						<strong>Supabase</strong> stores the registry in their Mumbai region, which is
-						within India.
-					</p>
-					<p>
-						<strong>Netlify</strong> serves this site and sees ordinary request logs.
-					</p>
-					<p>
-						<strong>India Post</strong> is sent a PIN code you enter, so we can fill in your
-						district. Nothing else about you reaches them.
-					</p>
-					<p>We do not sell your details or pass them to anyone else.</p>
-				</div>
-			</section>
+	<section class="doc__section">
+		<h2 class="doc__h">How long we keep it</h2>
+		<div class="doc__body">
+			<p>
+				We keep what you give us for as long as you are in touch with us. If three years
+				pass with no contact either way, we delete it.
+			</p>
+			<p>
+				If you ask us to stop contacting you, we keep only enough to honour that &mdash;
+				your contact details and the fact that you asked &mdash; so we do not write to
+				you again by mistake. Ask us to delete everything instead and we will.
+			</p>
+			<p>
+				To stop the form being abused, we count registrations against a one-way hash of
+				the internet address you connect from. The address itself is never stored, and
+				the counts are deleted after a day.
+			</p>
+		</div>
+	</section>
 
-			<section class="doc__section">
-				<h2 class="doc__h">How long we keep it</h2>
-				<div class="doc__body">
-					<p>
-						We keep what you give us for as long as you are in touch with us. If three
-						years pass with no contact either way, we delete it.
-					</p>
-					<p>
-						If you ask us to stop contacting you, we keep only enough to honour that
-						&mdash; your contact details and the fact that you asked &mdash; so we do
-						not write to you again by mistake. Ask us to delete everything instead and
-						we will.
-					</p>
-					<p>
-						To stop the form being abused, we count registrations against a one-way hash
-						of the internet address you connect from. The address itself is never
-						stored, and the counts are deleted after a day.
-					</p>
-				</div>
-			</section>
+	<section class="doc__section">
+		<h2 class="doc__h">How we protect it</h2>
+		<div class="doc__body">
+			<p>
+				The registry cannot be read through this website. Registration reaches it
+				through a single function that only writes; no table can be read by anyone who
+				is not signed in as the person it describes.
+			</p>
+		</div>
+	</section>
 
-			<section class="doc__section">
-				<h2 class="doc__h">How we protect it</h2>
-				<div class="doc__body">
-					<p>
-						The registry cannot be read through this website. Registration reaches it
-						through a single function that only writes; no table can be read by anyone
-						who is not signed in as the person it describes.
-					</p>
-				</div>
-			</section>
+	<section class="doc__section">
+		<h2 class="doc__h">Under 18</h2>
+		<div class="doc__body">
+			<p>
+				If your date of birth puts you under 18, we ask for a parent or guardian&rsquo;s
+				phone number or email address and will not register you without one.
+			</p>
+			<p>
+				We write to them the moment you register, and we do not act on the registration
+				until they reply to say we may. If you gave a phone number rather than an email
+				address, we call instead.
+			</p>
+		</div>
+	</section>
 
-			<section class="doc__section">
-				<h2 class="doc__h">Under 18</h2>
-				<div class="doc__body">
-					<p>
-						If your date of birth puts you under 18, we ask for a parent or
-						guardian&rsquo;s phone number or email address and will not register you
-						without one.
-					</p>
-					<p>
-						We write to them the moment you register, and we do not act on the
-						registration until they reply to say we may. If you gave a phone number
-						rather than an email address, we call instead.
-					</p>
-				</div>
-			</section>
+	<section class="doc__section">
+		<h2 class="doc__h">What you can ask</h2>
+		<div class="doc__body">
+			<p>
+				You can ask for a copy of what we hold, ask us to correct it, ask us to delete
+				it, or withdraw a consent you gave. If you are unable to do these yourself, you
+				may nominate someone to do them for you.
+			</p>
+			<p>
+				Withdrawing a consent does not undo what was done while it stood. If we do not
+				answer, you may complain to the Data Protection Board of India.
+			</p>
+		</div>
+	</section>
 
-			<section class="doc__section">
-				<h2 class="doc__h">What you can ask</h2>
-				<div class="doc__body">
-					<p>
-						You can ask for a copy of what we hold, ask us to correct it, ask us to
-						delete it, or withdraw a consent you gave. If you are unable to do these
-						yourself, you may nominate someone to do them for you.
-					</p>
-					<p>
-						Withdrawing a consent does not undo what was done while it stood. If we do
-						not answer, you may complain to the Data Protection Board of India.
-					</p>
-				</div>
-			</section>
-
-			<section class="doc__section">
-				<h2 class="doc__h">If this changes</h2>
-				<div class="doc__body">
-					<p>
-						Each consent is stored with the policy version in force when you gave it, so
-						a change here cannot reinterpret it.
-					</p>
-				</div>
-			</section>
-		</article>
-
-		<SiteFooter />
-	</div>
-</Base>
-
-<style>
-	/* The ground runs the width of the page, so the footer — which sets no
-	   background of its own and whose ink assumes cream — has something to sit
-	   on. Without it, it renders dark on dark. */
-	.page {
-		background: var(--cream);
-	}
-
-	.doc {
-		max-width: 62rem;
-		margin: 0 auto;
-		padding: calc(var(--nav-h) + clamp(2.5rem, 7vh, 5rem)) var(--gutter)
-			clamp(3rem, 8vh, 5rem);
-	}
-
-	.doc__head {
-		display: grid;
-		grid-template-columns: minmax(7rem, 22%) 1fr;
-		column-gap: clamp(1.5rem, 4vw, 3.5rem);
-		padding-bottom: clamp(2.5rem, 6vh, 4rem);
-	}
-
-	.doc__eyebrow {
-		grid-column: 1;
-		padding-top: 0.65rem;
-		font-family: var(--face-cinzel);
-		font-size: 0.6875rem;
-		font-weight: 500;
-		letter-spacing: 0.18em;
-		text-transform: uppercase;
-		color: var(--teal);
-	}
-
-	.doc__title {
-		grid-column: 2;
-		font-family: var(--face-bodoni);
-		font-size: clamp(2.25rem, 4.6vw, 3.25rem);
-		font-weight: 450;
-		line-height: 1.05;
-		letter-spacing: -0.015em;
-	}
-
-	.doc__lede {
-		grid-column: 2;
-		margin-top: 1rem;
-		font-size: 1.125rem;
-		line-height: 1.55;
-		color: var(--ink-soft);
-		max-width: 34rem;
-	}
-
-	.doc__stamp {
-		grid-column: 2;
-		margin-top: 1.5rem;
-		font-size: 0.6875rem;
-		font-weight: 600;
-		letter-spacing: 0.15em;
-		text-transform: uppercase;
-		color: var(--ink-faint);
-	}
-
-	.doc__section {
-		display: grid;
-		grid-template-columns: minmax(7rem, 22%) 1fr;
-		column-gap: clamp(1.5rem, 4vw, 3.5rem);
-		border-top: 1px solid var(--rule);
-		padding: 2.75rem 0 0;
-		margin-bottom: 3rem;
-	}
-
-	.doc__h {
-		grid-column: 1;
-		margin: 0;
-		font-family: var(--face-cinzel);
-		font-size: 0.8125rem;
-		font-weight: 500;
-		letter-spacing: 0.16em;
-		line-height: 1.35;
-		text-transform: uppercase;
-		color: var(--teal);
-	}
-
-	.doc__body {
-		grid-column: 2;
-		display: grid;
-		gap: 1.15rem;
-		max-width: 36rem;
-		font-size: 1.0625rem;
-		line-height: 1.65;
-		color: var(--ink-soft);
-	}
-
-	.doc__body strong {
-		font-weight: 600;
-		color: var(--ink);
-	}
-
-	.doc__list {
-		display: grid;
-		margin: 0;
-		border-top: 1px solid var(--rule);
-	}
-
-	.doc__list dt {
-		padding: 1rem 0 0.35rem;
-		font-size: 0.6875rem;
-		font-weight: 600;
-		letter-spacing: 0.15em;
-		text-transform: uppercase;
-		color: var(--ink-faint);
-	}
-
-	.doc__list dd {
-		margin: 0;
-		padding: 0 0 1rem;
-		border-bottom: 1px solid var(--rule);
-		color: var(--ink-soft);
-	}
-
-	/* Deliberately conspicuous. These are the lines only the foundation can
-	   write, and a privacy policy that ships with them still in it is worse
-	   than one that is late. */
-	.doc__link {
-		color: var(--teal);
-		text-decoration: underline;
-		text-underline-offset: 0.2em;
-		text-decoration-thickness: 1px;
-		text-decoration-color: color-mix(in srgb, var(--teal) 40%, transparent);
-		transition: text-decoration-color 180ms var(--ease);
-	}
-
-	.doc__link:hover {
-		text-decoration-color: var(--teal);
-	}
-
-	.doc__todo {
-		padding: 0.9rem 0 0.9rem 1rem;
-		border-left: 2px solid var(--ochre);
-		color: var(--ink);
-		font-size: 1rem;
-	}
-
-	@media (max-width: 46rem) {
-		.doc__head,
-		.doc__section {
-			grid-template-columns: 1fr;
-		}
-
-		.doc__eyebrow,
-		.doc__title,
-		.doc__lede,
-		.doc__stamp,
-		.doc__h,
-		.doc__body {
-			grid-column: 1;
-		}
-
-		.doc__eyebrow {
-			padding-top: 0;
-			margin-bottom: 0.65rem;
-		}
-
-		.doc__h {
-			margin-bottom: 1.5rem;
-		}
-	}
-</style>
+	<section class="doc__section">
+		<h2 class="doc__h">If this changes</h2>
+		<div class="doc__body">
+			<p>
+				Each consent is stored with the policy version in force when you gave it, so a
+				change here cannot reinterpret it.
+			</p>
+		</div>
+	</section>
+</Doc>

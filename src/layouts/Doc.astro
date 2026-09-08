@@ -1,0 +1,211 @@
+---
+/**
+ * The shell every written document on this site shares — privacy, terms,
+ * accessibility, contact.
+ *
+ * The styles are global rather than scoped, because each page passes its own
+ * sections in through the slot and slotted markup carries the calling page's
+ * scope, not this one's. Every selector here is under `.doc` or `.doc-page`,
+ * which exist nowhere else.
+ */
+import Base from './Base.astro';
+import SiteFooter from '../components/layout/SiteFooter.astro';
+
+interface Props {
+	title: string;
+	description: string;
+	/** The small tracked label above the title. */
+	eyebrow: string;
+	heading: string;
+	lede: string;
+	/** Documents people agree to carry a version; the others do not. */
+	version?: string;
+	updated?: string;
+}
+
+const { title, description, eyebrow, heading, lede, version, updated } = Astro.props;
+---
+
+<Base title={title} description={description}>
+	<div class="doc-page">
+		<article class="doc">
+			<header class="doc__head">
+				<p class="doc__eyebrow">{eyebrow}</p>
+				<h1 class="doc__title">{heading}</h1>
+				<p class="doc__lede">{lede}</p>
+				{
+					version && updated && (
+						<p class="doc__stamp">
+							Version {version} &middot; Last updated {updated}
+						</p>
+					)
+				}
+			</header>
+
+			<slot />
+		</article>
+
+		<SiteFooter />
+	</div>
+</Base>
+
+<style is:global>
+	/* The ground runs the width of the page, so the footer — which sets no
+	   background of its own and whose ink assumes cream — has something to sit
+	   on. Without it, it renders dark on dark. */
+	.doc-page {
+		background: var(--cream);
+	}
+
+	.doc {
+		max-width: 62rem;
+		margin: 0 auto;
+		padding: calc(var(--nav-h) + clamp(2.5rem, 7vh, 5rem)) var(--gutter)
+			clamp(3rem, 8vh, 5rem);
+	}
+
+	.doc__head {
+		display: grid;
+		grid-template-columns: minmax(7rem, 22%) 1fr;
+		column-gap: clamp(1.5rem, 4vw, 3.5rem);
+		padding-bottom: clamp(2.5rem, 6vh, 4rem);
+	}
+
+	.doc__eyebrow {
+		grid-column: 1;
+		padding-top: 0.65rem;
+		font-family: var(--face-cinzel);
+		font-size: 0.6875rem;
+		font-weight: 500;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: var(--teal);
+	}
+
+	.doc__title {
+		grid-column: 2;
+		font-family: var(--face-bodoni);
+		font-size: clamp(2.25rem, 4.6vw, 3.25rem);
+		font-weight: 450;
+		line-height: 1.05;
+		letter-spacing: -0.015em;
+	}
+
+	.doc__lede {
+		grid-column: 2;
+		margin-top: 1rem;
+		font-size: 1.125rem;
+		line-height: 1.55;
+		color: var(--ink-soft);
+		max-width: 34rem;
+	}
+
+	.doc__stamp {
+		grid-column: 2;
+		margin-top: 1.5rem;
+		font-size: 0.6875rem;
+		font-weight: 600;
+		letter-spacing: 0.15em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+	}
+
+	.doc__section {
+		display: grid;
+		grid-template-columns: minmax(7rem, 22%) 1fr;
+		column-gap: clamp(1.5rem, 4vw, 3.5rem);
+		border-top: 1px solid var(--rule);
+		padding: 2.75rem 0 0;
+		margin-bottom: 3rem;
+	}
+
+	.doc__h {
+		grid-column: 1;
+		margin: 0;
+		font-family: var(--face-cinzel);
+		font-size: 0.8125rem;
+		font-weight: 500;
+		letter-spacing: 0.16em;
+		line-height: 1.35;
+		text-transform: uppercase;
+		color: var(--teal);
+	}
+
+	.doc__body {
+		grid-column: 2;
+		display: grid;
+		gap: 1.15rem;
+		max-width: 36rem;
+		font-size: 1.0625rem;
+		line-height: 1.65;
+		color: var(--ink-soft);
+	}
+
+	.doc__body strong {
+		font-weight: 600;
+		color: var(--ink);
+	}
+
+	.doc__list {
+		display: grid;
+		margin: 0;
+		border-top: 1px solid var(--rule);
+	}
+
+	.doc__list dt {
+		padding: 1rem 0 0.35rem;
+		font-size: 0.6875rem;
+		font-weight: 600;
+		letter-spacing: 0.15em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+	}
+
+	.doc__list dd {
+		margin: 0;
+		padding: 0 0 1rem;
+		border-bottom: 1px solid var(--rule);
+		color: var(--ink-soft);
+	}
+
+	/* Deliberately conspicuous. These are the lines only the foundation can
+	   write, and a privacy policy that ships with them still in it is worse
+	   than one that is late. */
+	.doc__link {
+		color: var(--teal);
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
+		text-decoration-thickness: 1px;
+		text-decoration-color: color-mix(in srgb, var(--teal) 40%, transparent);
+		transition: text-decoration-color 180ms var(--ease);
+	}
+
+	.doc__link:hover {
+		text-decoration-color: var(--teal);
+	}
+
+	@media (max-width: 46rem) {
+		.doc__head,
+		.doc__section {
+			grid-template-columns: 1fr;
+		}
+
+		.doc__eyebrow,
+		.doc__title,
+		.doc__lede,
+		.doc__stamp,
+		.doc__h,
+		.doc__body {
+			grid-column: 1;
+		}
+
+		.doc__eyebrow {
+			padding-top: 0;
+			margin-bottom: 0.65rem;
+		}
+
+		.doc__h {
+			margin-bottom: 1.5rem;
+		}
+	}
+</style>

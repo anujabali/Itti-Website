@@ -1,0 +1,157 @@
+---
+/**
+ * Accessibility statement.
+ *
+ * Every claim on this page was measured against the built site rather than
+ * asserted, and the section that says what is still wrong is the point of it.
+ * If you change the site in a way that breaks one of these, change the sentence
+ * too — a statement that has drifted from the site is worse than none.
+ *
+ * The measurements: every page carries a language and exactly one first-level
+ * heading with no level skipped; every form control resolves to a label; every
+ * focusable element shows a focus ring; no text falls below its WCAG AA
+ * contrast threshold; every image carries alt text; every page renders in full
+ * with scripting off; no page scrolls sideways between 390 and 2560 wide.
+ */
+import Doc from '../layouts/Doc.astro';
+
+const LAST_REVIEWED = '7 September 2026';
+---
+
+<Doc
+	title="Accessibility — The Itti Foundation"
+	description="What The Itti Foundation has done to make this site usable, what has been measured, and what is still wrong with it."
+	eyebrow="Accessibility"
+	heading="Who this site is built for."
+	lede="What we have done, what we have measured, and what is still wrong."
+	updated={LAST_REVIEWED}
+>
+	<section class="doc__section">
+		<h2 class="doc__h">Why we take this seriously</h2>
+		<div class="doc__body">
+			<p>
+				One of the three things this Foundation works on is neurodivergence. A site that
+				is hard to read, hard to operate without a mouse, or that moves when someone has
+				asked it not to, would be arguing against itself.
+			</p>
+			<p>
+				We aim at <strong>WCAG 2.2, Level AA</strong>. We are not claiming a certificate
+				against it. What follows is what we have actually tested.
+			</p>
+		</div>
+	</section>
+
+	<section class="doc__section">
+		<h2 class="doc__h">What has been measured</h2>
+		<div class="doc__body">
+			<p>
+				Each of these was checked against the built site, on every page, at widths from
+				a phone to a large desktop display.
+			</p>
+			<dl class="doc__list">
+				<dt>Contrast</dt>
+				<dd>
+					No text on the site falls below its AA threshold &mdash; 4.5 to 1 for normal
+					text, 3 to 1 for large. Three of our four accent colours used to fail as small
+					type and have been darkened for that use; they are unchanged as rules and
+					marks.
+				</dd>
+				<dt>Keyboard</dt>
+				<dd>
+					Everything you can click, you can reach with Tab, and every one of those shows
+					a visible focus ring. A skip link is the first thing you reach on every page.
+				</dd>
+				<dt>Structure</dt>
+				<dd>
+					Every page declares its language, carries one first-level heading, skips no
+					heading level, and marks its header, navigation, main content and footer so a
+					screen reader can jump between them.
+				</dd>
+				<dt>Forms</dt>
+				<dd>
+					All twenty-eight controls on the registration form resolve to a label. Errors
+					are announced, not only coloured.
+				</dd>
+				<dt>Images</dt>
+				<dd>
+					Every image carries alt text. The artwork in the opening is marked decorative,
+					because the words beside it carry the meaning.
+				</dd>
+				<dt>Without JavaScript</dt>
+				<dd>
+					Every page renders in full with scripting switched off. Nothing is hidden
+					behind a script that has to run first.
+				</dd>
+				<dt>Motion</dt>
+				<dd>
+					If your system asks for reduced motion, the opening stops moving: no camera,
+					no dissolve, no drift. The three pictures still change, so nothing is lost
+					&mdash; they simply cut rather than fade.
+				</dd>
+				<dt>Zoom and small screens</dt>
+				<dd>
+					No page scrolls sideways at any width between a 390-pixel phone and a
+					2560-pixel display.
+				</dd>
+			</dl>
+		</div>
+	</section>
+
+	<section class="doc__section">
+		<h2 class="doc__h">What is still wrong</h2>
+		<div class="doc__body">
+			<p>
+				This is the part most statements leave out. These are known, and they are ours
+				to fix.
+			</p>
+			<dl class="doc__list">
+				<dt>No one has tested this with a screen reader in anger</dt>
+				<dd>
+					The structure is right by measurement, which is not the same as being good to
+					listen to. We have not sat with anyone who uses one daily.
+				</dd>
+				<dt>No independent audit</dt>
+				<dd>
+					Everything on this page was checked by the people who built the site. That is
+					the weakest form of testing there is.
+				</dd>
+				<dt>The opening is a moving picture</dt>
+				<dd>
+					It is the most demanding thing here, and reduced motion is the answer we offer
+					rather than a still alternative.
+				</dd>
+				<dt>Parts of the navigation lead nowhere</dt>
+				<dd>
+					Much of the site is unwritten. Those links reach a page that says so, which is
+					honest but is still a dead end.
+				</dd>
+				<dt>English only</dt>
+				<dd>
+					We ask your preferred language when you register and we cannot yet answer in
+					it.
+				</dd>
+			</dl>
+		</div>
+	</section>
+
+	<section class="doc__section">
+		<h2 class="doc__h">If something does not work</h2>
+		<div class="doc__body">
+			<p>
+				Tell us and we will fix it. You do not need to know what the problem is called
+				or which guideline it falls under &mdash; &ldquo;I could not get past this
+				bit&rdquo; is a useful bug report.
+			</p>
+			<p>
+				Write to{' '}
+				<a class="doc__link" href="mailto:hello@itti.org.in">hello@itti.org.in</a>. We
+				answer within five working days. If something here stops you registering, say so
+				and we will take your details however is easiest for you.
+			</p>
+			<p>
+				This page was last checked on {LAST_REVIEWED}. When the site changes, it gets
+				checked again.
+			</p>
+		</div>
+	</section>
+</Doc>
