@@ -27,6 +27,107 @@ const esc = (s: string) =>
 		.replace(/>/g, '&gt;')
 		.replace(/"/g, '&quot;');
 
+/** The stored value, said the way it was asked for. */
+const ROLE: Record<string, string> = {
+	patient: 'Living with something yourself',
+	caregiver: 'Caring for someone',
+	volunteer: 'Volunteering or supporting',
+	other: 'Something else',
+};
+
+const GENDER: Record<string, string> = {
+	woman: 'Woman',
+	man: 'Man',
+	non_binary: 'Non-binary',
+	self_described: 'Self-described',
+	undisclosed: 'Preferred not to say',
+};
+
+const LANG: Record<string, string> = {
+	en: 'English',
+	hi: 'Hindi',
+	mr: 'Marathi',
+	gu: 'Gujarati',
+	bn: 'Bengali',
+	ta: 'Tamil',
+	te: 'Telugu',
+	kn: 'Kannada',
+	ml: 'Malayalam',
+	pa: 'Punjabi',
+	ur: 'Urdu',
+	or: 'Odia',
+	as: 'Assamese',
+};
+
+const HEARD: Record<string, string> = {
+	friend_family: 'A friend or family member',
+	doctor_hospital: 'A doctor or hospital',
+	event: 'An event',
+	podcast: 'A podcast',
+	instagram: 'Instagram',
+	youtube: 'YouTube',
+	whatsapp_group: 'A WhatsApp group',
+	search: 'A search',
+	news: 'The news',
+	volunteer_staff: 'Someone from the foundation',
+	other: 'Somewhere else',
+};
+
+type Row = [string, string];
+
+/**
+ * What we wrote down, as they gave it.
+ *
+ * Only the lines they actually filled in: a receipt full of blanks reads as a
+ * form somebody failed rather than as a record of what they said.
+ */
+const snapshot = (p: Record<string, unknown>): Row[] => {
+	const g = (k: string) => String(p[k] ?? '').trim();
+	const yes = (k: string) => p[k] === true;
+	const channels = [
+		yes('consentWhatsapp') ? 'WhatsApp' : '',
+		yes('consentSms') ? 'SMS' : '',
+		yes('consentEmail') ? 'Email' : '',
+	].filter(Boolean);
+
+	const rows: Row[] = [
+		['Name', g('fullName')],
+		['You are', ROLE[g('role')] ?? g('role')],
+		['Phone', g('phone')],
+		['Email', g('email')],
+		['City', g('city')],
+		['PIN code', g('pincode')],
+		['Date of birth', g('dateOfBirth')],
+		['Gender', g('genderOther') || (GENDER[g('gender')] ?? g('gender'))],
+		['Preferred language', LANG[g('language')] ?? g('language')],
+		['Areas', list((p.interests as string[]) ?? [])],
+		['How you found us', g('heardOther') || (HEARD[g('heardFrom')] ?? g('heardFrom'))],
+		['We may contact you by', channels.join(', ')],
+		['Parent or guardian', g('guardianName')],
+		["Guardian's email", g('guardianEmail')],
+		["Guardian's phone", g('guardianPhone')],
+	];
+	return rows.filter(([, v]) => v !== '');
+};
+
+const asText = (rows: Row[]): string => rows.map(([k, v]) => `  ${k}: ${v}`).join('\n');
+
+const asTable = (rows: Row[]): string =>
+	`<table role="presentation" cellpadding="0" cellspacing="0" border="0"
+        style="width:100%;margin:0 0 22px;border-collapse:collapse;">` +
+	rows
+		.map(
+			([k, v]) => `<tr>
+          <td style="padding:7px 14px 7px 0;vertical-align:top;white-space:nowrap;
+                     font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#70695f;
+                     border-bottom:1px solid rgba(44,39,33,0.10);">${esc(k)}</td>
+          <td style="padding:7px 0;vertical-align:top;font-size:15px;color:#2c2721;
+                     border-bottom:1px solid rgba(44,39,33,0.10);">${esc(v)}</td>
+        </tr>`,
+		)
+		.join('') +
+	`</table>`;
+
 export interface Message {
 	subject: string;
 	text: string;
@@ -60,6 +161,10 @@ export const welcome = (p: Record<string, unknown>): Message => {
 		? `You asked to connect with ${interests}.`
 		: `You have not told us yet which part of our work you want.`;
 
+	// The receipt. Asking someone to correct us without showing them what we
+	// wrote down asks them to remember a form they filled in once.
+	const rows = snapshot(p);
+
 	return {
 		subject: first ? `Thank you, ${first}` : 'Thank you for registering',
 		text: [
@@ -69,7 +174,11 @@ export const welcome = (p: Record<string, unknown>): Message => {
 			'',
 			chose,
 			'',
-			'If anything here is wrong, or you would rather we not keep it, reply to this message and we will put it right.',
+			'This is what we wrote down:',
+			'',
+			asText(rows),
+			'',
+			'If any line of that is wrong, or you would rather we not keep it, reply to this message and we will put it right.',
 			'',
 			'The Itti Foundation',
 			'https://itti.org.in/privacy',
@@ -78,8 +187,11 @@ export const welcome = (p: Record<string, unknown>): Message => {
       <p style="margin:0 0 18px;font-size:28px;line-height:1.2;">${esc(greeting)}</p>
       <p style="margin:0 0 18px;">We have your details, and someone from the right part of the
         foundation will be in touch.</p>
-      <p style="margin:0 0 18px;">${esc(chose)}</p>
-      <p style="margin:0;">If anything here is wrong, or you would rather we not keep it,
+      <p style="margin:0 0 26px;">${esc(chose)}</p>
+      <p style="margin:0 0 10px;font-size:11px;letter-spacing:0.18em;
+                text-transform:uppercase;color:#70695f;">What we wrote down</p>
+      ${asTable(rows)}
+      <p style="margin:0;">If any line of that is wrong, or you would rather we not keep it,
         reply to this message and we will put it right.</p>`),
 	};
 };
