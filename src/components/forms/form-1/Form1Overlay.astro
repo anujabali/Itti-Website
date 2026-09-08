@@ -611,7 +611,9 @@
 			<div class="f1-success" data-f1-success hidden>
 				<p class="f1-eyebrow f1-success__eyebrow">Registered</p>
 				<h2 class="f1-success__title">
-					Thank you<span class="f1-success__name" data-success-name></span>
+					Thank you<span data-success-lead></span><span
+						class="f1-success__name"
+						data-success-name></span><span data-success-tail></span>
 				</h2>
 				<p class="f1-success__message">
 					We have what we need to reach you. Someone from the right part of the
@@ -1092,7 +1094,9 @@
 		display: grid;
 		grid-template-columns: auto 1fr;
 		align-items: center;
-		column-gap: 0.85rem;
+		/* Enough that the dial code reads as its own thing rather than as the
+		   first digits of the number. */
+		column-gap: 1.4rem;
 		position: relative;
 		border-bottom: 1px solid rgba(44, 39, 33, 0.22);
 		transition:
@@ -2388,7 +2392,15 @@
 				// Completes the sentence rather than standing alone under it, and
 				// uses whatever they gave as a first name.
 				const firstName = payload.full_name.trim().split(/\s+/)[0];
-				if (nameEl) nameEl.textContent = firstName ? `, ${firstName}.` : '.';
+				const leadEl = successView.querySelector('[data-success-lead]');
+				const tailEl = successView.querySelector('[data-success-tail]');
+				// The comma and the full stop belong to the sentence, not to the name,
+				// so they sit outside the span that takes the accent colour. All three
+				// are in the markup: a span built in script carries none of the scoping
+				// Astro puts on the stylesheet, and the accent would never reach it.
+				if (nameEl) nameEl.textContent = firstName;
+				if (leadEl) leadEl.textContent = firstName ? ', ' : '';
+				if (tailEl) tailEl.textContent = '.';
 
 				const summaryEl = successView.querySelector('[data-success-summary]');
 				if (summaryEl) {
