@@ -149,7 +149,20 @@ const MENUS = [
 			</ul>
 		</nav>
 
-		<a class="pill" href="/join">Join Us</a>
+		{
+			/*
+		  Both states ship in the markup and one is hidden, because a nav built by
+		  script is a nav that flashes the wrong thing first. Which one shows is
+		  decided by `data-who` on the header, set synchronously below.
+		*/
+		}
+		<a class="pill" href="/join" data-signed-out>Join Us</a>
+		<a class="pill" href="/donate" data-signed-in hidden>Donate</a>
+		<a class="who" href="/account" data-signed-in hidden>
+			<span class="who__mark" aria-hidden="true" data-who-initial></span>
+			<span class="who__name" data-who-name></span>
+			<span class="u-visually-hidden">— your account</span>
+		</a>
 
 		<button
 			class="nav__burger"
@@ -191,10 +204,59 @@ const MENUS = [
 					</section>
 				))
 			}
-			<a class="pill pill--drawer" href="/join">Join Us</a>
+			<a class="pill pill--drawer" href="/join" data-signed-out>Join Us</a>
+			<a class="pill pill--drawer" href="/donate" data-signed-in hidden>Donate</a>
+			<a class="drawer__who" href="/account" data-signed-in hidden>
+				<span class="who__mark" aria-hidden="true" data-who-initial></span>
+				<span data-who-name></span>
+				<span class="u-visually-hidden">— your account</span>
+			</a>
 		</div>
 	</div>
 </header>
+
+{
+	/*
+  Runs where it stands, before the browser has painted anything below it, so a
+  returning visitor never sees "Join Us" flash into their own name.
+
+  It asks storage rather than the network, and deliberately does not import the
+  auth client: that would put the whole SDK on every page of the site to render
+  one word. The session's own token lives in local storage under a key the
+  library names after the project, so its presence is readable here for nothing
+  — and checking it is what makes signing out in another tab, or clearing site
+  data, take effect here too rather than leaving a stale name in the corner.
+
+  This is a greeting, not a permission. It guards nothing, and `/account` reads
+  the real session before it shows anybody a record.
+*/
+}
+<script is:inline>
+	try {
+		const nav = document.getElementById('site-nav');
+		let signedIn = false;
+		for (const key in localStorage) {
+			if (/^sb-.+-auth-token$/.test(key)) {
+				signedIn = true;
+				break;
+			}
+		}
+		const who = signedIn ? (localStorage.getItem('itti.who') || '').trim() : '';
+		if (!signedIn) localStorage.removeItem('itti.who');
+
+		if (who) {
+			const name = who.split(/\s+/)[0] || '';
+			for (const el of nav.querySelectorAll('[data-who-name]')) el.textContent = name;
+			for (const el of nav.querySelectorAll('[data-who-initial]'))
+				el.textContent = (name[0] || '').toUpperCase();
+			for (const el of nav.querySelectorAll('[data-signed-in]')) el.hidden = false;
+			for (const el of nav.querySelectorAll('[data-signed-out]')) el.hidden = true;
+		}
+	} catch {
+		// A browser that refuses storage gets the signed-out nav, which is the
+		// one already in the markup. Nothing to do.
+	}
+</script>
 
 <style>
 	.nav {
@@ -367,6 +429,68 @@ const MENUS = [
 
 	.pill:hover {
 		transform: translateY(-1px);
+	}
+
+	/* ── Who is signed in ───────────────────────────────────────────────── */
+
+	/* Deliberately not a second pill. Two pills side by side read as two calls
+	   to action competing; this is a statement of who you are, which happens to
+	   be a link to your own record. */
+	.who {
+		flex: none;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		max-width: 11rem;
+		font-size: 0.9375rem;
+		letter-spacing: 0.02em;
+		white-space: nowrap;
+		color: var(--cream);
+		transition: color var(--turn-dur) var(--ease);
+	}
+
+	.nav.is-light .who {
+		color: var(--teal-deep);
+	}
+
+	.who__name {
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.who__mark {
+		flex: none;
+		display: grid;
+		place-items: center;
+		width: 1.75rem;
+		height: 1.75rem;
+		border: 1px solid currentColor;
+		border-radius: 999px;
+		font-family: var(--face-cinzel);
+		font-size: 0.75rem;
+		line-height: 1;
+		/* The letter sits fractionally high inside a circle at this size. */
+		padding-top: 0.08em;
+	}
+
+	/* The disc fills with the ink it was outlined in, so the glyph has to become
+	   the ground instead — currentColor cannot be its own contrast. */
+	.who:hover .who__mark {
+		background: currentColor;
+		color: var(--teal-deep);
+	}
+
+	.nav.is-light .who:hover .who__mark {
+		color: var(--warm-white);
+	}
+
+	.drawer__who {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		margin-top: 1rem;
+		font-size: 1.0625rem;
+		color: inherit;
 	}
 
 	/* ── Mega menu ──────────────────────────────────────────────────────── */

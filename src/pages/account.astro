@@ -621,6 +621,25 @@ const PILLARS = [
 
 		let current: MyRegistration | null = null;
 
+		/**
+		 * The one thing the nav needs, kept where the nav can read it without
+		 * asking anybody. It is their own name, in their own browser, and it is
+		 * written only once they have proved the address is theirs.
+		 *
+		 * Storage can throw outright — a private window, a browser set to refuse
+		 * site data — and none of that is a reason for the page to stop working,
+		 * so every touch of it is guarded. The nav simply stays signed out.
+		 */
+		const WHO = 'itti.who';
+		const remember = (name: string) => {
+			try {
+				if (name) localStorage.setItem(WHO, name);
+				else localStorage.removeItem(WHO);
+			} catch {
+				/* Nothing to do: the nav falls back to its signed-out state. */
+			}
+		};
+
 		const asDate = (iso: string) => {
 			if (!iso) return '';
 			const d = new Date(`${iso}T00:00:00`);
@@ -776,10 +795,12 @@ const PILLARS = [
 				const { data: session } = await supabase.auth.getUser();
 				const address = root.querySelector<HTMLElement>('[data-none-address]');
 				if (address) address.textContent = session.user?.email ?? 'this address';
+				remember('');
 				show('none');
 				return;
 			}
 			current = data;
+			remember(current.fullName ?? '');
 			paint(current);
 			show('record');
 		};
@@ -850,6 +871,7 @@ const PILLARS = [
 			button.addEventListener('click', async () => {
 				await supabase.auth.signOut();
 				current = null;
+				remember('');
 				show('signin');
 			});
 		}
