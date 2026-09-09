@@ -23,12 +23,81 @@ const TERMS_VERSION = '2.0';
 const TERMS_UPDATED = '9 September 2026';
 const LAST_REVIEWED = '9 September 2026';
 
-/** The rail, the footer and the redirects all describe the same four doors. */
+/**
+ * The rail, the footer and the redirects all describe the same four doors.
+ *
+ * The section lists are generated from the documents below them and are
+ * rendered here rather than assembled by the script, so that the whole table
+ * of contents works with scripting switched off. The script only decides
+ * which part of it is lit.
+ */
 const DOCUMENTS = [
-	{ id: 'privacy', label: 'Privacy Policy' },
-	{ id: 'terms', label: 'Terms of Use' },
-	{ id: 'accessibility', label: 'Accessibility' },
-	{ id: 'contact', label: 'Contact' },
+	{
+		id: 'privacy',
+		label: 'Privacy Policy',
+		sections: [
+			{ id: 'privacy-1', label: '1. Scope and controller' },
+			{ id: 'privacy-2', label: '2. Personal data we collect' },
+			{ id: 'privacy-3', label: '3. Purposes and lawful basis' },
+			{ id: 'privacy-4', label: '4. Consent, and how to withdraw it' },
+			{ id: 'privacy-5', label: '5. Children' },
+			{ id: 'privacy-6', label: '6. Recipients and processors' },
+			{ id: 'privacy-7', label: '7. Storage and transfers' },
+			{ id: 'privacy-8', label: '8. Retention' },
+			{ id: 'privacy-9', label: '9. Your rights' },
+			{ id: 'privacy-10', label: '10. Security' },
+			{ id: 'privacy-11', label: '11. Cookies and browser storage' },
+			{ id: 'privacy-12', label: '12. Changes to this policy' },
+			{ id: 'privacy-13', label: '13. Contact and grievances' },
+		],
+	},
+	{
+		id: 'terms',
+		label: 'Terms of Use',
+		sections: [
+			{ id: 'terms-1', label: '1. Who we are, and your acceptance' },
+			{ id: 'terms-2', label: '2. Registration' },
+			{ id: 'terms-3', label: '3. Accounts and sign-in' },
+			{ id: 'terms-4', label: '4. Content you provide' },
+			{ id: 'terms-5', label: '5. Acceptable use' },
+			{ id: 'terms-6', label: '6. No professional advice' },
+			{ id: 'terms-7', label: '7. Intellectual property' },
+			{ id: 'terms-8', label: '8. Third-party links' },
+			{ id: 'terms-9', label: '9. Availability and disclaimers' },
+			{ id: 'terms-10', label: '10. Limitation of liability' },
+			{ id: 'terms-11', label: '11. Suspension' },
+			{ id: 'terms-12', label: '12. Changes to these terms' },
+			{ id: 'terms-13', label: '13. Governing law' },
+			{ id: 'terms-14', label: '14. Contact' },
+		],
+	},
+	{
+		id: 'accessibility',
+		label: 'Accessibility',
+		sections: [
+			{ id: 'accessibility-1', label: '1. Our commitment' },
+			{ id: 'accessibility-2', label: '2. Conformance status' },
+			{ id: 'accessibility-3', label: '3. Measures taken' },
+			{ id: 'accessibility-4', label: '4. Technical specifications' },
+			{ id: 'accessibility-5', label: '5. Assessment approach' },
+			{ id: 'accessibility-6', label: '6. Known limitations' },
+			{ id: 'accessibility-7', label: '7. Feedback' },
+			{ id: 'accessibility-8', label: '8. Review' },
+		],
+	},
+	{
+		id: 'contact',
+		label: 'Contact',
+		sections: [
+			{ id: 'contact-1', label: 'General enquiries' },
+			{ id: 'contact-2', label: 'Response times' },
+			{ id: 'contact-3', label: 'What to write about' },
+			{ id: 'contact-4', label: 'Data protection' },
+			{ id: 'contact-5', label: 'Accessibility' },
+			{ id: 'contact-6', label: 'Social media' },
+			{ id: 'contact-7', label: 'Urgent help' },
+		],
+	},
 ];
 ---
 
@@ -51,18 +120,31 @@ const DOCUMENTS = [
 				<aside class="pol__rail">
 					<nav class="pol__rail-inner" aria-label="Documents on this page">
 						<p class="pol__rail-heading" id="pol-rail-heading">On this page</p>
-						<ol class="pol__rail-list" aria-labelledby="pol-rail-heading">
+						<ol class="pol__rail-list" data-rail-list aria-labelledby="pol-rail-heading">
 							{
 								DOCUMENTS.map((doc) => (
-									<li>
+									<li class="pol__rail-item">
 										<a class="pol__rail-link" href={`#${doc.id}`} data-rail={doc.id}>
 											<span class="pol__rail-tick" aria-hidden="true" />
 											{doc.label}
 										</a>
+										<ol class="pol__rail-sub" data-rail-sub={doc.id}>
+											{doc.sections.map((section) => (
+												<li>
+													<a
+														class="pol__rail-sublink"
+														href={`#${section.id}`}
+														data-rail-section={section.id}>
+														{section.label}
+													</a>
+												</li>
+											))}
+										</ol>
 									</li>
 								))
 							}
 						</ol>
+						<p class="pol__rail-now" data-rail-now aria-hidden="true"></p>
 					</nav>
 				</aside>
 
@@ -80,7 +162,7 @@ const DOCUMENTS = [
 							</p>
 						</header>
 
-						<section class="pol__section">
+						<section class="pol__section" id="privacy-1">
 							<h3 class="pol__h">1. Scope and controller</h3>
 							<div class="pol__body">
 								<p>
@@ -97,7 +179,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="privacy-2">
 							<h3 class="pol__h">2. Personal data we collect</h3>
 							<div class="pol__body">
 								<p><strong>2.1 Information you provide when registering.</strong></p>
@@ -189,7 +271,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="privacy-3">
 							<h3 class="pol__h">3. Purposes and lawful basis</h3>
 							<div class="pol__body">
 								<p>
@@ -225,7 +307,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="privacy-4">
 							<h3 class="pol__h">4. Consent, and how to withdraw it</h3>
 							<div class="pol__body">
 								<p>
@@ -242,7 +324,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="privacy-5">
 							<h3 class="pol__h">5. Children</h3>
 							<div class="pol__body">
 								<p>
@@ -259,7 +341,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="privacy-6">
 							<h3 class="pol__h">6. Recipients and processors</h3>
 							<div class="pol__body">
 								<p>
@@ -303,7 +385,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="privacy-7">
 							<h3 class="pol__h">7. Storage and transfers</h3>
 							<div class="pol__body">
 								<p>
@@ -316,7 +398,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="privacy-8">
 							<h3 class="pol__h">8. Retention</h3>
 							<div class="pol__body">
 								<dl class="pol__list">
@@ -340,7 +422,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="privacy-9">
 							<h3 class="pol__h">9. Your rights</h3>
 							<div class="pol__body">
 								<p>Under the DPDP Act you have the right to:</p>
@@ -377,7 +459,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="privacy-10">
 							<h3 class="pol__h">10. Security</h3>
 							<div class="pol__body">
 								<p>
@@ -394,7 +476,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="privacy-11">
 							<h3 class="pol__h">11. Cookies and browser storage</h3>
 							<div class="pol__body">
 								<p>
@@ -418,7 +500,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="privacy-12">
 							<h3 class="pol__h">12. Changes to this policy</h3>
 							<div class="pol__body">
 								<p>
@@ -430,7 +512,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="privacy-13">
 							<h3 class="pol__h">13. Contact and grievances</h3>
 							<div class="pol__body">
 								<p>
@@ -462,7 +544,7 @@ const DOCUMENTS = [
 							</p>
 						</header>
 
-						<section class="pol__section">
+						<section class="pol__section" id="terms-1">
 							<h3 class="pol__h">1. Who we are, and your acceptance</h3>
 							<div class="pol__body">
 								<p>
@@ -481,7 +563,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="terms-2">
 							<h3 class="pol__h">2. Registration</h3>
 							<div class="pol__body">
 								<p>
@@ -513,7 +595,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="terms-3">
 							<h3 class="pol__h">3. Accounts and sign-in</h3>
 							<div class="pol__body">
 								<p>
@@ -547,7 +629,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="terms-4">
 							<h3 class="pol__h">4. Content you provide</h3>
 							<div class="pol__body">
 								<p>
@@ -577,7 +659,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="terms-5">
 							<h3 class="pol__h">5. Acceptable use</h3>
 							<div class="pol__body">
 								<p>
@@ -606,7 +688,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="terms-6">
 							<h3 class="pol__h">6. No professional advice</h3>
 							<div class="pol__body">
 								<p>
@@ -627,7 +709,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="terms-7">
 							<h3 class="pol__h">7. Intellectual property</h3>
 							<div class="pol__body">
 								<p>
@@ -669,7 +751,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="terms-8">
 							<h3 class="pol__h">8. Third-party links</h3>
 							<div class="pol__body">
 								<p>
@@ -681,7 +763,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="terms-9">
 							<h3 class="pol__h">9. Availability and disclaimers</h3>
 							<div class="pol__body">
 								<p>
@@ -694,7 +776,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="terms-10">
 							<h3 class="pol__h">10. Limitation of liability</h3>
 							<div class="pol__body">
 								<p>
@@ -711,7 +793,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="terms-11">
 							<h3 class="pol__h">11. Suspension</h3>
 							<div class="pol__body">
 								<p>
@@ -722,7 +804,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="terms-12">
 							<h3 class="pol__h">12. Changes to these terms</h3>
 							<div class="pol__body">
 								<p>
@@ -733,7 +815,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="terms-13">
 							<h3 class="pol__h">13. Governing law</h3>
 							<div class="pol__body">
 								<p>
@@ -745,7 +827,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="terms-14">
 							<h3 class="pol__h">14. Contact</h3>
 							<div class="pol__body">
 								<p>
@@ -770,7 +852,7 @@ const DOCUMENTS = [
 							<p class="pol__stamp">Last reviewed {LAST_REVIEWED}</p>
 						</header>
 
-						<section class="pol__section">
+						<section class="pol__section" id="accessibility-1">
 							<h3 class="pol__h">1. Our commitment</h3>
 							<div class="pol__body">
 								<p>
@@ -785,7 +867,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="accessibility-2">
 							<h3 class="pol__h">2. Conformance status</h3>
 							<div class="pol__body">
 								<p>
@@ -801,7 +883,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="accessibility-3">
 							<h3 class="pol__h">3. Measures taken</h3>
 							<div class="pol__body">
 								<p>
@@ -859,7 +941,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="accessibility-4">
 							<h3 class="pol__h">4. Technical specifications</h3>
 							<div class="pol__body">
 								<p>
@@ -874,7 +956,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="accessibility-5">
 							<h3 class="pol__h">5. Assessment approach</h3>
 							<div class="pol__body">
 								<p>
@@ -888,7 +970,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="accessibility-6">
 							<h3 class="pol__h">6. Known limitations</h3>
 							<div class="pol__body">
 								<p>
@@ -931,7 +1013,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="accessibility-7">
 							<h3 class="pol__h">7. Feedback</h3>
 							<div class="pol__body">
 								<p>
@@ -954,7 +1036,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="accessibility-8">
 							<h3 class="pol__h">8. Review</h3>
 							<div class="pol__body">
 								<p>
@@ -975,7 +1057,7 @@ const DOCUMENTS = [
 							</p>
 						</header>
 
-						<section class="pol__section">
+						<section class="pol__section" id="contact-1">
 							<h3 class="pol__h">General enquiries</h3>
 							<div class="pol__body">
 								<p>
@@ -997,7 +1079,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="contact-2">
 							<h3 class="pol__h">Response times</h3>
 							<div class="pol__body">
 								<p>
@@ -1013,7 +1095,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="contact-3">
 							<h3 class="pol__h">What to write about</h3>
 							<div class="pol__body">
 								<p>
@@ -1044,7 +1126,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="contact-4">
 							<h3 class="pol__h">Data protection</h3>
 							<div class="pol__body">
 								<p>
@@ -1060,7 +1142,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="contact-5">
 							<h3 class="pol__h">Accessibility</h3>
 							<div class="pol__body">
 								<p>
@@ -1076,7 +1158,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="contact-6">
 							<h3 class="pol__h">Social media</h3>
 							<div class="pol__body">
 								<dl class="pol__list">
@@ -1108,7 +1190,7 @@ const DOCUMENTS = [
 							</div>
 						</section>
 
-						<section class="pol__section">
+						<section class="pol__section" id="contact-7">
 							<h3 class="pol__h">Urgent help</h3>
 							<div class="pol__body">
 								<p>
@@ -1192,15 +1274,25 @@ const DOCUMENTS = [
 
 	.pol__grid {
 		display: grid;
-		grid-template-columns: minmax(9rem, 13rem) minmax(0, 40rem);
+		grid-template-columns: minmax(9rem, 14rem) minmax(0, 40rem);
 		column-gap: clamp(2rem, 6vw, 5rem);
-		align-items: start;
+		/* Deliberately not `align-items: start`. That sizes the rail's column to
+		   its own content, which leaves the sticky element inside it nothing to
+		   travel through — it scrolls away with the text and never comes back.
+		   The column has to span the whole flow for the rail to hold. */
+		align-items: stretch;
 	}
 
 	.pol__rail-inner {
 		position: sticky;
 		/* Clear of the fixed nav, and level with the first document's title. */
 		top: calc(var(--nav-h) + 2.5rem);
+		/* Fourteen sections is taller than a short window. The rail scrolls
+		   within itself rather than pushing past the bottom of the screen. */
+		max-height: calc(100svh - var(--nav-h) - 4rem);
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		scrollbar-width: thin;
 	}
 
 	.pol__rail-heading {
@@ -1265,6 +1357,45 @@ const DOCUMENTS = [
 		scale: 1.6 1;
 	}
 
+	/* The rooms behind each door. They ship open, so that a reader without
+	   scripting still gets the whole table of contents; the script closes the
+	   three that are not being read. */
+	.pol__rail-sub {
+		list-style: none;
+		margin: 0.15rem 0 0.55rem;
+		padding: 0 0 0 1.3rem;
+		display: grid;
+		gap: 0.1rem;
+	}
+
+	.pol__rail-sub[hidden] {
+		display: none;
+	}
+
+	.pol__rail-sublink {
+		display: block;
+		padding: 0.24rem 0;
+		font-size: 0.8125rem;
+		line-height: 1.35;
+		color: var(--ink-faint);
+		text-decoration: none;
+		transition: color 180ms var(--ease);
+	}
+
+	.pol__rail-sublink:hover {
+		color: var(--ink);
+	}
+
+	.pol__rail-sublink[aria-current='true'] {
+		color: var(--teal);
+	}
+
+	/* Only the narrow layout uses this: the strip has no room for a nested list,
+	   so the section being read is named on a line of its own beneath it. */
+	.pol__rail-now {
+		display: none;
+	}
+
 	/* ── Documents ─────────────────────────────────────────────────────────── */
 
 	.pol__doc {
@@ -1310,6 +1441,7 @@ const DOCUMENTS = [
 	/* ── Sections ──────────────────────────────────────────────────────────── */
 
 	.pol__section {
+		scroll-margin-top: calc(var(--nav-h) + 2rem);
 		border-top: 1px solid var(--rule);
 		padding-top: 1.85rem;
 		margin-bottom: 2.5rem;
@@ -1416,6 +1548,8 @@ const DOCUMENTS = [
 
 		.pol__rail-inner {
 			position: static;
+			max-height: none;
+			overflow: visible;
 		}
 
 		.pol__rail-heading {
@@ -1425,9 +1559,27 @@ const DOCUMENTS = [
 		.pol__rail-list {
 			display: flex;
 			gap: 1.35rem;
-			padding: 0.85rem 0;
+			padding: 0.85rem 0 0;
 			overflow-x: auto;
 			scrollbar-width: none;
+		}
+
+		.pol__rail-sub {
+			display: none;
+		}
+
+		/* Empty until the script fills it, and it collapses to nothing when it is
+		   empty, so a reader without scripting sees the strip alone rather than a
+		   gap where a caption should be. */
+		.pol__rail-now:not(:empty) {
+			display: block;
+			padding: 0.15rem 0 0.7rem;
+			font-size: 0.75rem;
+			letter-spacing: 0.02em;
+			color: var(--ink-faint);
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
 		}
 
 		.pol__rail-list::-webkit-scrollbar {
@@ -1455,6 +1607,7 @@ const DOCUMENTS = [
 
 	@media (prefers-reduced-motion: reduce) {
 		.pol__rail-link,
+		.pol__rail-sublink,
 		.pol__rail-tick {
 			transition: none;
 		}
@@ -1463,51 +1616,90 @@ const DOCUMENTS = [
 
 <script>
 	/**
-	 * The rail marks where you are.
+	 * The rail marks where you are, at both depths.
 	 *
-	 * Which document is "current" is decided by the topmost one whose heading
-	 * has passed under the nav — not by whichever section happens to intersect,
-	 * because with four documents of very different lengths several are in view
-	 * at once and the naive observer flickers between them on every scroll.
+	 * Which document is current is decided by the topmost one whose head has
+	 * passed the reading line — not by whichever section happens to intersect,
+	 * because four documents of very different lengths are in view at once and
+	 * the naive observer flickers between them on every scroll. The section is
+	 * chosen the same way, among that document's own sections only, so the two
+	 * marks can never disagree about which document is being read.
 	 *
-	 * A click sets the mark immediately and holds it while the browser scrolls,
+	 * The section lists ship open. Closing the three that are not being read is
+	 * this script's job, which means a reader without scripting still gets the
+	 * whole table of contents rather than four bare links.
+	 *
+	 * A click sets both marks at once and holds them while the browser scrolls,
 	 * so the rail never argues with the reader about where they just asked to
 	 * go.
 	 */
-	const rail = document.querySelectorAll<HTMLAnchorElement>('[data-rail]');
-	const docs = [...rail]
-		.map((link) => document.getElementById(link.dataset.rail ?? ''))
-		.filter((el): el is HTMLElement => el !== null);
+	const railLinks = [...document.querySelectorAll<HTMLElement>('[data-rail]')];
+	const subLinks = [...document.querySelectorAll<HTMLElement>('[data-rail-section]')];
+	const subLists = [...document.querySelectorAll<HTMLElement>('[data-rail-sub]')];
+	const list = document.querySelector<HTMLElement>('[data-rail-list]');
+	const now = document.querySelector<HTMLElement>('[data-rail-now]');
 
-	if (rail.length > 0 && docs.length === rail.length) {
+	const byId = (id: string | undefined) => (id ? document.getElementById(id) : null);
+	const docs = railLinks.map((l) => byId(l.dataset.rail)).filter((e): e is HTMLElement => !!e);
+	const sections = subLinks
+		.map((l) => byId(l.dataset.railSection))
+		.filter((e): e is HTMLElement => !!e);
+
+	if (docs.length === railLinks.length && docs.length > 0) {
 		let held = 0;
 
-		const mark = (id: string) => {
-			for (const link of rail) {
-				const on = link.dataset.rail === id;
-				if (on) link.setAttribute('aria-current', 'true');
+		/**
+		 * The line above which a heading counts as read past.
+		 *
+		 * On the wide layout that is where the nav sits. On the narrow one the
+		 * rail is a strip across the top, and a title that has slid under it is
+		 * not on screen at all — measuring against the nav alone leaves the mark
+		 * a whole document behind. The two layouts are told apart by the shape of
+		 * the rail itself, so nothing here has to know the breakpoint.
+		 */
+		const lineOf = () => {
+			const nav =
+				parseFloat(
+					getComputedStyle(document.documentElement).getPropertyValue('--nav-h'),
+				) * 16;
+			const box = list?.getBoundingClientRect();
+			if (box && box.width > box.height) return box.bottom + 24;
+			return nav + 48;
+		};
+
+		/** The last element whose top has crossed the line; the first, before any has. */
+		const topmost = (els: HTMLElement[], line: number) => {
+			let found = els[0];
+			for (const el of els) if (el.getBoundingClientRect().top <= line) found = el;
+			return found;
+		};
+
+		const mark = (docId: string, sectionId: string) => {
+			for (const link of railLinks) {
+				if (link.dataset.rail === docId) link.setAttribute('aria-current', 'true');
 				else link.removeAttribute('aria-current');
 			}
+			for (const sub of subLists) sub.hidden = sub.dataset.railSub !== docId;
+			let label = '';
+			for (const link of subLinks) {
+				const on = link.dataset.railSection === sectionId;
+				if (on) {
+					link.setAttribute('aria-current', 'true');
+					label = link.textContent?.trim() ?? '';
+				} else link.removeAttribute('aria-current');
+			}
+			if (now) now.textContent = label;
 		};
 
 		const current = () => {
-			// The line the nav sits on, plus a little, is where a document counts as
-			// having begun.
-			const line =
-				parseFloat(
-					getComputedStyle(document.documentElement).getPropertyValue('--nav-h'),
-				) *
-					16 +
-				48;
-			let found = docs[0]!;
-			for (const doc of docs) {
-				if (doc.getBoundingClientRect().top <= line) found = doc;
-			}
-			// At the very foot of the page the last document may never reach the
-			// line — nothing scrolls past it — so claim it once the page is done.
-			const atEnd =
-				window.innerHeight + window.scrollY >= document.body.scrollHeight - 2;
-			mark(atEnd ? docs[docs.length - 1]!.id : found.id);
+			const line = lineOf();
+			// At the foot nothing scrolls past the last document, so it would never
+			// claim the line on its own.
+			const atEnd = window.innerHeight + window.scrollY >= document.body.scrollHeight - 2;
+			const doc = atEnd ? docs[docs.length - 1]! : topmost(docs, line)!;
+			const own = sections.filter((s) => s.id.startsWith(`${doc.id}-`));
+			const section = atEnd ? own[own.length - 1] : topmost(own, line);
+			mark(doc.id, section?.id ?? '');
 		};
 
 		let ticking = false;
@@ -1520,9 +1712,11 @@ const DOCUMENTS = [
 			});
 		};
 
-		for (const link of rail) {
+		for (const link of [...railLinks, ...subLinks]) {
 			link.addEventListener('click', () => {
-				mark(link.dataset.rail ?? '');
+				const id = link.dataset.rail ?? link.dataset.railSection ?? '';
+				const docId = id.split('-')[0] ?? '';
+				mark(docId, link.dataset.railSection ?? `${docId}-1`);
 				// Long enough for a smooth scroll to land, short enough that a reader
 				// who immediately scrolls away is not stuck with a stale mark.
 				held = Date.now() + 700;
