@@ -355,12 +355,14 @@ const FACTS = {
 										autocomplete="name"
 										required
 									/>
+									<p class="note note--wrong" data-field-error hidden></p>
 								</div>
 								<div class="field">
 									<label class="field__label" for="acct-role">You are</label>
 									<select class="field__input" id="acct-role" name="role" required>
 										{ROLES.map(([v, l]) => <option value={v}>{l}</option>)}
 									</select>
+									<p class="note note--wrong" data-field-error hidden></p>
 								</div>
 								<div class="field">
 									<label class="field__label" for="acct-dob">Date of birth</label>
@@ -370,12 +372,14 @@ const FACTS = {
 										name="dateOfBirth"
 										type="date"
 									/>
+									<p class="note note--wrong" data-field-error hidden></p>
 								</div>
 								<div class="field">
 									<label class="field__label" for="acct-gender">Gender</label>
 									<select class="field__input" id="acct-gender" name="gender">
 										{GENDERS.map(([v, l]) => <option value={v}>{l}</option>)}
 									</select>
+									<p class="note note--wrong" data-field-error hidden></p>
 								</div>
 								<div class="field" data-gender-other hidden>
 									<label class="field__label" for="acct-gender-other"
@@ -388,6 +392,7 @@ const FACTS = {
 										type="text"
 										maxlength="60"
 									/>
+									<p class="note note--wrong" data-field-error hidden></p>
 								</div>
 							</section>
 
@@ -404,6 +409,7 @@ const FACTS = {
 										autocomplete="address-level2"
 										required
 									/>
+									<p class="note note--wrong" data-field-error hidden></p>
 								</div>
 								<div class="field">
 									<label class="field__label" for="acct-pincode">PIN code</label>
@@ -416,6 +422,7 @@ const FACTS = {
 										maxlength="6"
 										autocomplete="postal-code"
 									/>
+									<p class="note note--wrong" data-field-error hidden></p>
 								</div>
 								<div class="field">
 									<label class="field__label" for="acct-lang">Preferred language</label>
@@ -424,6 +431,7 @@ const FACTS = {
 										{LANGUAGES.map(([v, l]) => <option value={v}>{l}</option>)}
 										<option value="other">Another language</option>
 									</select>
+									<p class="note note--wrong" data-field-error hidden></p>
 								</div>
 								<div class="field" data-lang-other hidden>
 									<label class="field__label" for="acct-lang-other"
@@ -436,6 +444,7 @@ const FACTS = {
 										type="text"
 										maxlength="40"
 									/>
+									<p class="note note--wrong" data-field-error hidden></p>
 								</div>
 							</section>
 
@@ -455,6 +464,7 @@ const FACTS = {
 										With the country code. Leave it empty if you would rather we only
 										wrote.
 									</p>
+									<p class="note note--wrong" data-field-error hidden></p>
 								</div>
 								<fieldset class="set">
 									<legend class="field__label">You are happy to hear from us by</legend>
@@ -1471,6 +1481,14 @@ const FACTS = {
 			for (const field of form.querySelectorAll<HTMLElement>('[data-wrong]')) {
 				delete field.dataset.wrong;
 			}
+			for (const slot of form.querySelectorAll<HTMLElement>('[data-field-error]')) {
+				slot.textContent = '';
+				slot.hidden = true;
+			}
+			for (const el of form.querySelectorAll('[aria-invalid]')) {
+				el.removeAttribute('aria-invalid');
+				el.removeAttribute('aria-describedby');
+			}
 
 			const value = (name: string) =>
 				(
@@ -1522,20 +1540,37 @@ const FACTS = {
 			}
 
 			if (data && data.ok === false) {
-				if (editError) {
-					editError.textContent = data.message ?? 'Please check that and try again.';
-					editError.hidden = false;
-				}
+				const message = data.message ?? 'Please check that and try again.';
 				// `.field`, not `.acct__field`: the class was renamed when this page
 				// stopped borrowing the document layout, and a selector that matches
-				// nothing fails silently — the message appeared, the field it named
-				// was never marked and never focused.
-				const field = form.querySelector<HTMLElement>(
-					`.field:has([name="${data.field}"])`,
+				// nothing fails silently.
+				const field = data.field
+					? form.querySelector<HTMLElement>(`.field:has([name="${data.field}"])`)
+					: null;
+
+				// The message goes under the line it is about. Focusing the field
+				// scrolls to it, so a message anywhere else — the foot of the form,
+				// say — is carried off the screen by the very act of pointing at it,
+				// leaving a reddened rule and no reason for it.
+				const slot = field?.querySelector<HTMLElement>('[data-field-error]');
+				const control = field?.querySelector<HTMLInputElement | HTMLSelectElement>(
+					'input, select',
 				);
-				if (field) {
+				if (field && slot && control) {
 					field.dataset.wrong = '';
-					field.querySelector<HTMLElement>('input, select')?.focus();
+					slot.textContent = message;
+					slot.hidden = false;
+					// Named after the control it belongs to, so a screen reader reads
+					// the reason with the field rather than as a loose announcement.
+					slot.id ||= `${control.name}-wrong`;
+					control.setAttribute('aria-invalid', 'true');
+					control.setAttribute('aria-describedby', slot.id);
+					control.focus();
+					if (editError) editError.hidden = true;
+				} else if (editError) {
+					// Nothing to point at — a refusal about the form as a whole.
+					editError.textContent = message;
+					editError.hidden = false;
 				}
 				return;
 			}
