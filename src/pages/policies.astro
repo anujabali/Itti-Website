@@ -164,7 +164,7 @@ const DOCUMENTS = [
 		}
 	</script>
 
-	<div class="pol-page">
+	<div class="pol-page" id="top">
 		<div class="pol">
 			<header class="pol__masthead">
 				<p class="pol__eyebrow">The Itti Foundation</p>
@@ -178,23 +178,8 @@ const DOCUMENTS = [
 			<div class="pol__grid">
 				<aside class="pol__rail">
 					<nav class="pol__rail-inner" aria-label="Documents on this page">
-						<div class="pol__rail-top">
-							<p class="pol__rail-heading" id="pol-rail-heading">On this page</p>
-							<button class="pol__top" type="button" data-rail-top hidden>
-								<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-									<path
-										d="M8 13.25V3.4M8 3.4 3.9 7.5M8 3.4l4.1 4.1"
-										fill="none"
-										stroke="currentColor"
-										stroke-width="1.3"
-										stroke-linecap="round"
-										stroke-linejoin="round"
-									/>
-								</svg>
-								<span class="pol__top-label">Back to top</span>
-							</button>
-						</div>
-						<ol class="pol__rail-list" data-rail-list aria-labelledby="pol-rail-heading">
+						<a class="pol__rail-heading" href="#top">Policies</a>
+						<ol class="pol__rail-list" data-rail-list>
 							{
 								DOCUMENTS.map((doc) => (
 									<li class="pol__rail-item">
@@ -1365,6 +1350,9 @@ const DOCUMENTS = [
 	}
 
 	.pol__rail-inner {
+		display: grid;
+		grid-template-areas: 'head' 'list' 'now';
+		align-content: start;
 		position: sticky;
 		/* Clear of the fixed nav, and level with the first document's title. */
 		top: calc(var(--nav-h) + 2.5rem);
@@ -1376,71 +1364,31 @@ const DOCUMENTS = [
 		scrollbar-width: thin;
 	}
 
-	.pol__rail-top {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 0.5rem;
-		/* Reserved whether or not the button is showing, so that its arrival does
-		   not shunt the whole list down a few pixels. */
-		min-height: 1.6rem;
+	/* The rail's own head, and the way back to the top of the page. It keeps the
+	   label's quiet treatment rather than taking the links' — it names the whole
+	   rail, and a document title in the same weight would read as a fifth
+	   document. */
+	.pol__rail-heading {
+		grid-area: head;
+		display: block;
 		padding-bottom: 1rem;
 		border-bottom: 1px solid var(--rule);
-	}
-
-	.pol__top {
-		display: none;
-		align-items: center;
-		justify-content: center;
-		width: 1.6rem;
-		height: 1.6rem;
-		margin-right: -0.3rem;
-		border: 0;
-		border-radius: 999px;
-		background: none;
-		color: var(--ink-faint);
-		cursor: pointer;
-		transition:
-			color 180ms var(--ease),
-			background-color 180ms var(--ease);
-	}
-
-	.pol__top:not([hidden]) {
-		display: inline-flex;
-	}
-
-	.pol__top:hover {
-		color: var(--teal);
-		background: color-mix(in srgb, var(--teal) 10%, transparent);
-	}
-
-	.pol__top svg {
-		width: 0.875rem;
-		height: 0.875rem;
-	}
-
-	/* The name is for anything reading the page aloud; the arrow is the whole of
-	   it on screen. */
-	.pol__top-label {
-		position: absolute;
-		width: 1px;
-		height: 1px;
-		margin: -1px;
-		padding: 0;
-		overflow: hidden;
-		clip-path: inset(50%);
-		white-space: nowrap;
-	}
-
-	.pol__rail-heading {
-		font-size: 0.6875rem;
-		font-weight: 600;
+		font-family: var(--face-cinzel);
+		font-size: 0.75rem;
+		font-weight: 500;
 		letter-spacing: 0.18em;
 		text-transform: uppercase;
 		color: var(--ink-faint);
+		text-decoration: none;
+		transition: color 180ms var(--ease);
+	}
+
+	.pol__rail-heading:hover {
+		color: var(--teal);
 	}
 
 	.pol__rail-list {
+		grid-area: list;
 		list-style: none;
 		margin: 0;
 		padding: 0.5rem 0 0;
@@ -1528,6 +1476,7 @@ const DOCUMENTS = [
 	/* Only the narrow layout uses this: the strip has no room for a nested list,
 	   so the section being read is named on a line of its own beneath it. */
 	.pol__rail-now {
+		grid-area: now;
 		display: none;
 	}
 
@@ -1671,8 +1620,6 @@ const DOCUMENTS = [
 		.pol__rail {
 			position: sticky;
 			top: var(--nav-h);
-			/* The button is placed against this. */
-			isolation: isolate;
 			z-index: 2;
 			margin-bottom: 2.5rem;
 			background: var(--cream);
@@ -1689,26 +1636,23 @@ const DOCUMENTS = [
 			overflow: visible;
 		}
 
-		.pol__rail-top {
-			display: contents;
+		.pol__rail-inner {
+			grid-template-areas: 'list list' 'head now';
+			grid-template-columns: auto minmax(0, 1fr);
+			column-gap: 0.6rem;
+			align-items: baseline;
 		}
 
 		.pol__rail-heading {
-			display: none;
-		}
-
-		.pol__top {
-			position: absolute;
-			top: 0.7rem;
-			right: var(--gutter);
-			background: var(--cream);
+			padding: 0.15rem 0 0.7rem;
+			border-bottom: 0;
+			font-size: 0.6875rem;
 		}
 
 		.pol__rail-list {
 			display: flex;
 			gap: 1.35rem;
-			/* Clear of the button parked at the right-hand end. */
-			padding: 0.85rem 2.2rem 0 0;
+			padding: 0.85rem 0 0;
 			overflow-x: auto;
 			scrollbar-width: none;
 		}
@@ -1723,6 +1667,8 @@ const DOCUMENTS = [
 		.pol__rail-now:not(:empty) {
 			display: block;
 			padding: 0.15rem 0 0.7rem;
+			border-left: 1px solid var(--rule);
+			padding-left: 0.6rem;
 			font-size: 0.75rem;
 			letter-spacing: 0.02em;
 			color: var(--ink-faint);
@@ -1795,23 +1741,6 @@ const DOCUMENTS = [
 		.map((l) => byId(l.dataset.railSection))
 		.filter((e): e is HTMLElement => !!e);
 
-	const topButton = document.querySelector<HTMLButtonElement>('[data-rail-top]');
-	const title = document.querySelector<HTMLElement>('.pol__title');
-
-	if (topButton) {
-		topButton.addEventListener('click', () => {
-			// The page has opted out of smooth scrolling, so this lands.
-			window.scrollTo(0, 0);
-			// Send the reading position with it, or somebody on a keyboard is
-			// returned to the top of the page while their focus stays halfway down
-			// the terms.
-			if (title) {
-				title.tabIndex = -1;
-				title.focus({ preventScroll: true });
-			}
-		});
-	}
-
 	if (docs.length === railLinks.length && docs.length > 0) {
 
 		/**
@@ -1866,9 +1795,6 @@ const DOCUMENTS = [
 			const own = sections.filter((s) => s.id.startsWith(`${doc.id}-`));
 			const section = atEnd ? own[own.length - 1] : topmost(own, line);
 			mark(doc.id, section?.id ?? '');
-			// Offered once the masthead has gone, and not before: at the top of the
-			// page it would be a button that does nothing.
-			if (topButton) topButton.hidden = window.scrollY < 320;
 		};
 
 		let ticking = false;
