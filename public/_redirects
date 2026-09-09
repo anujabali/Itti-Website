@@ -1,0 +1,12 @@
+# The four standing documents were four routes until they became one page with
+# four anchors. A privacy notice and a set of terms are cited by URL — in the
+# registration receipt, in mail already sent, and by anyone who linked to them —
+# so the old addresses keep resolving, permanently, to the section they became.
+#
+# Cloudflare's static-asset runtime reads this file. A real asset at the same
+# path would win over the rule, which is why those four pages are deleted rather
+# than left in place.
+/privacy        /policies#privacy        301
+/terms          /policies#terms          301
+/accessibility  /policies#accessibility  301
+/contact        /policies#contact        301

@@ -179,6 +179,25 @@ const { title, description, eyebrow, heading, lede, version, updated } = Astro.p
 		color: var(--ink-soft);
 	}
 
+	/* No monospace face ships with this site, so an unstyled <code> falls
+	   through to whatever the browser keeps for one, and a system mono beside
+	   Bodoni and Garamond reads as a mistake rather than a distinction. The
+	   only literals left in these documents are a filename and three query
+	   parameters, both of which say what they are without help — the
+	   underscores and the extension do it. So they take the body face at full
+	   size, a shade darker than the prose around them, and nothing else: no
+	   tint, no box. A chip here would be the only one on the site, and it
+	   pushed the following comma visibly off the word.
+
+	   Anything that is merely a domain or an address is prose, not code, and
+	   is written as plain text. */
+	.doc code {
+		font-family: inherit;
+		font-size: inherit;
+		color: var(--ink);
+		white-space: nowrap;
+	}
+
 	.doc__link {
 		color: var(--teal);
 		text-decoration: underline;

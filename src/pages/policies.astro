@@ -1,0 +1,1536 @@
+---
+/**
+ * The four standing documents, on one page.
+ *
+ * They used to be four routes. They are read the way a single book is read —
+ * somebody checking what we hold about them almost always wants the erasure
+ * clause in the terms next, and the grievance address after that — and four
+ * separate pages made that three navigations instead of a scroll.
+ *
+ * The old routes still resolve: `_redirects` sends /privacy, /terms,
+ * /accessibility and /contact to their anchors here, permanently. A privacy
+ * notice is cited by URL, so those must not simply stop working.
+ *
+ * The rail is the table of contents and the position indicator at once. It
+ * mirrors the four links in the footer exactly, because those are the four
+ * doors people arrive through.
+ */
+import Base from '../layouts/Base.astro';
+import SiteFooter from '../components/layout/SiteFooter.astro';
+import { POLICY_LABEL, POLICY_UPDATED } from '../lib/policy';
+
+const TERMS_VERSION = '2.0';
+const TERMS_UPDATED = '9 September 2026';
+const LAST_REVIEWED = '9 September 2026';
+
+/** The rail, the footer and the redirects all describe the same four doors. */
+const DOCUMENTS = [
+	{ id: 'privacy', label: 'Privacy Policy' },
+	{ id: 'terms', label: 'Terms of Use' },
+	{ id: 'accessibility', label: 'Accessibility' },
+	{ id: 'contact', label: 'Contact' },
+];
+---
+
+<Base
+	title="Policies — The Itti Foundation"
+	description="The standing documents of The Itti Foundation: privacy policy, terms of use, accessibility statement, and how to contact us."
+>
+	<div class="pol-page">
+		<div class="pol">
+			<header class="pol__masthead">
+				<p class="pol__eyebrow">The Itti Foundation</p>
+				<h1 class="pol__title">Policies</h1>
+				<p class="pol__lede">
+					Four standing documents: what we do with your data, the terms this site is
+					offered on, how accessible it is, and how to reach us.
+				</p>
+			</header>
+
+			<div class="pol__grid">
+				<aside class="pol__rail">
+					<nav class="pol__rail-inner" aria-label="Documents on this page">
+						<p class="pol__rail-heading" id="pol-rail-heading">On this page</p>
+						<ol class="pol__rail-list" aria-labelledby="pol-rail-heading">
+							{
+								DOCUMENTS.map((doc) => (
+									<li>
+										<a class="pol__rail-link" href={`#${doc.id}`} data-rail={doc.id}>
+											<span class="pol__rail-tick" aria-hidden="true" />
+											{doc.label}
+										</a>
+									</li>
+								))
+							}
+						</ol>
+					</nav>
+				</aside>
+
+				<div class="pol__flow">
+					<!-- ─────────────────────────────  PRIVACY  ───────────────────────────── -->
+					<section class="pol__doc" id="privacy" aria-labelledby="privacy-title">
+						<header class="pol__doc-head">
+							<h2 class="pol__doc-title" id="privacy-title">Privacy Policy</h2>
+							<p class="pol__doc-lede">
+								What we collect, why we collect it, who else sees it, how long we keep
+								it, and what you can require of us.
+							</p>
+							<p class="pol__stamp">
+								Version {POLICY_LABEL} &middot; Last updated {POLICY_UPDATED}
+							</p>
+						</header>
+
+						<section class="pol__section">
+							<h3 class="pol__h">1. Scope and controller</h3>
+							<div class="pol__body">
+								<p>
+									This policy applies to itti.org.in and to the registry behind it. The
+									data fiduciary is <strong>Itti&rsquo;s Skill School Foundation</strong>,
+									a Section 8 not-for-profit company incorporated in India and operating
+									as The Itti Foundation.
+								</p>
+								<p>
+									It is written under India&rsquo;s Digital Personal Data Protection Act,
+									2023. Where that Act says <em>data principal</em>, this policy says{' '}
+									<em>you</em>; where it says <em>data fiduciary</em>, it says <em>we</em>.
+								</p>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">2. Personal data we collect</h3>
+							<div class="pol__body">
+								<p><strong>2.1 Information you provide when registering.</strong></p>
+								<dl class="pol__list">
+									<dt>Identity</dt>
+									<dd>
+										Full name; your stated role (patient or beneficiary, caregiver or
+										family member, volunteer or supporter, member); date of birth, if
+										given; gender, including a self-described value where you choose that
+										option.
+									</dd>
+									<dt>Contact</dt>
+									<dd>
+										Email address and telephone number. At least one is required; both
+										are optional individually. We record whether each has been verified.
+									</dd>
+									<dt>Location</dt>
+									<dd>
+										City and, if given, six-digit PIN code. We do not collect a street
+										address.
+									</dd>
+									<dt>Preferences</dt>
+									<dd>
+										Preferred language; which of our three areas of work you wish to be
+										connected with; and separate permissions for contact by WhatsApp, SMS
+										and email.
+									</dd>
+									<dt>Guardian details</dt>
+									<dd>
+										Where the registrant is under 18: the name, and the email address or
+										telephone number, of a parent or guardian.
+									</dd>
+									<dt>Source</dt>
+									<dd>How you heard of us, and the name of a referrer where you supply one.</dd>
+								</dl>
+
+								<p><strong>2.2 Information you add to your account.</strong></p>
+								<dl class="pol__list">
+									<dt>Profile text</dt>
+									<dd>
+										A short biography in your own words, up to 600 characters. It is
+										optional and is shown only to you, on your account page.
+									</dd>
+									<dt>Links</dt>
+									<dd>
+										Handles or addresses you choose to add for Instagram, Facebook,
+										YouTube, LinkedIn, a website, or an additional email address. These
+										are self-asserted: we do not verify that an account belongs to you,
+										and we do not access any of them.
+									</dd>
+									<dt>Display preference</dt>
+									<dd>The colour you select for your account page.</dd>
+								</dl>
+
+								<p><strong>2.3 Information generated by your use of the site.</strong></p>
+								<dl class="pol__list">
+									<dt>Authentication</dt>
+									<dd>
+										When you sign in we create an authentication record holding your email
+										address and the times you signed in. We do not set, store or ask for a
+										password.
+									</dd>
+									<dt>Campaign parameters</dt>
+									<dd>
+										If you arrive by a tagged link, the campaign parameters in that link
+										(commonly{' '}
+										<code>utm_source</code>, <code>utm_medium</code>,{' '}
+										<code>utm_campaign</code>) are recorded with your registration.
+									</dd>
+									<dt>Consent records</dt>
+									<dd>
+										Each permission you grant or withdraw, with its date and the version
+										of this policy in force at the time. These are append-only: a
+										withdrawal is a new entry, never a deletion.
+									</dd>
+									<dt>Correspondence</dt>
+									<dd>
+										A record of the messages we have sent you, their delivery status, and
+										the details included in them.
+									</dd>
+								</dl>
+
+								<p><strong>2.4 What we do not collect.</strong></p>
+								<p>
+									We do not use analytics, advertising or tracking services. We do not
+									profile you, and no decision affecting you is made by automated means. We
+									do not collect health information through this website.
+								</p>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">3. Purposes and lawful basis</h3>
+							<div class="pol__body">
+								<p>
+									Under the DPDP Act we process personal data on the basis of your consent,
+									given at registration and withdrawable at any time.
+								</p>
+								<dl class="pol__list">
+									<dt>To reach you</dt>
+									<dd>
+										To acknowledge your registration and to contact you about the work you
+										asked to be connected with, by the channels you permitted.
+									</dd>
+									<dt>To direct you correctly</dt>
+									<dd>
+										Your role, stated areas of interest and location determine which part
+										of the Foundation responds to you.
+									</dd>
+									<dt>To obtain guardian consent</dt>
+									<dd>
+										Where a registrant is under 18, to notify the parent or guardian named
+										and to obtain their agreement before acting on the registration.
+									</dd>
+									<dt>To operate your account</dt>
+									<dd>To authenticate you and to display the record we hold about you.</dd>
+									<dt>To understand our reach</dt>
+									<dd>
+										Aggregate counts by city, area of interest and referral source, used to
+										plan where the Foundation works. This does not identify individuals.
+									</dd>
+									<dt>To meet legal obligations</dt>
+									<dd>To retain consent records and to respond to lawful requests.</dd>
+								</dl>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">4. Consent, and how to withdraw it</h3>
+							<div class="pol__body">
+								<p>
+									Permission for WhatsApp, SMS and email is asked for separately and
+									recorded separately. You may change any of them at any time on your
+									account page, or by writing to us; the change takes effect on receipt and
+									we record it.
+								</p>
+								<p>
+									Withdrawing consent does not affect anything done while it was in force,
+									and does not by itself erase your record. To have the record removed, see
+									section 9.
+								</p>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">5. Children</h3>
+							<div class="pol__body">
+								<p>
+									The DPDP Act treats anyone under 18 as a child and requires verifiable
+									consent from a parent or lawful guardian. A registration giving a date of
+									birth under 18 cannot be completed without guardian details; the registry
+									refuses it.
+								</p>
+								<p>
+									We write to the guardian at the address given and do not act on the
+									registration until they agree. We do not use a child&rsquo;s data for
+									tracking, advertising or behavioural monitoring of any kind.
+								</p>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">6. Recipients and processors</h3>
+							<div class="pol__body">
+								<p>
+									We do not sell personal data, and we do not share it for anyone
+									else&rsquo;s marketing. It is disclosed only to the service providers
+									below, who process it on our instructions and for no purpose of their own.
+								</p>
+								<dl class="pol__list">
+									<dt>Supabase</dt>
+									<dd>
+										Database, authentication and server functions. Your data is held in the
+										Mumbai region.
+									</dd>
+									<dt>Cloudflare</dt>
+									<dd>
+										Hosting, content delivery and DNS for this website. Cloudflare
+										processes the network requests your browser makes, including your IP
+										address, in order to serve pages.
+									</dd>
+									<dt>Resend</dt>
+									<dd>
+										Delivery of automated email, including sign-in links and
+										acknowledgements.
+									</dd>
+									<dt>Zoho</dt>
+									<dd>
+										Our own mailboxes. Correspondence you send to an @itti.org.in address
+										is held there.
+									</dd>
+									<dt>India Post PIN directory</dt>
+									<dd>
+										If you enter a PIN code, your browser queries a public postal lookup
+										(api.postalpincode.in) to name the district. Only the PIN code is sent,
+										and it is not accompanied by anything identifying you.
+									</dd>
+								</dl>
+								<p>
+									We may also disclose personal data where required by law, or to establish
+									or defend a legal claim.
+								</p>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">7. Storage and transfers</h3>
+							<div class="pol__body">
+								<p>
+									The registry is hosted in India, in Supabase&rsquo;s Mumbai region. Our
+									email providers and content delivery network operate globally and may
+									process data outside India in the course of delivering a message or a
+									page. We use providers that offer contractual protections for such
+									transfers.
+								</p>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">8. Retention</h3>
+							<div class="pol__body">
+								<dl class="pol__list">
+									<dt>Your registration and account</dt>
+									<dd>
+										Kept while you remain in contact with the Foundation, and erased on
+										request.
+									</dd>
+									<dt>Consent records</dt>
+									<dd>
+										Kept for the life of the registration and for three years afterwards,
+										because they are the evidence of what you agreed to and when.
+									</dd>
+									<dt>Correspondence records</dt>
+									<dd>Kept for two years from the date of sending.</dd>
+								</dl>
+								<p>
+									Where a retention period has passed, data is deleted or irreversibly
+									aggregated so that it no longer identifies anyone.
+								</p>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">9. Your rights</h3>
+							<div class="pol__body">
+								<p>Under the DPDP Act you have the right to:</p>
+								<dl class="pol__list">
+									<dt>Access</dt>
+									<dd>
+										Obtain confirmation of what we hold about you and a summary of how it
+										is processed. Your account page shows this in full and at any time.
+									</dd>
+									<dt>Correction and completion</dt>
+									<dd>
+										Have inaccurate data corrected and incomplete data completed. Most
+										fields can be edited directly on your account page.
+									</dd>
+									<dt>Erasure</dt>
+									<dd>
+										Require deletion of your personal data, except where we must retain it
+										to meet a legal obligation.
+									</dd>
+									<dt>Grievance redressal</dt>
+									<dd>Raise a complaint with us, and receive a response.</dd>
+									<dt>Nomination</dt>
+									<dd>
+										Nominate another individual to exercise these rights on your behalf in
+										the event of your death or incapacity.
+									</dd>
+								</dl>
+								<p>
+									To exercise any of these, write to{' '}
+									<a class="pol__link" href="mailto:hello@itti.org.in">hello@itti.org.in</a
+									>. We respond within five working days and complete requests within thirty
+									days.
+								</p>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">10. Security</h3>
+							<div class="pol__body">
+								<p>
+									Access to the registry is restricted at the database level: a signed-in
+									person can read and amend their own record and no other. Staff access is
+									limited to those who need it. The site is served only over HTTPS and
+									enforces a content security policy.
+								</p>
+								<p>
+									No system is immune to compromise. In the event of a personal data breach
+									we will notify the Data Protection Board of India and every affected
+									person, as the Act requires.
+								</p>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">11. Cookies and browser storage</h3>
+							<div class="pol__body">
+								<p>
+									<strong>We set no advertising or analytics cookies.</strong> The site uses
+									browser storage for two strictly functional purposes:
+								</p>
+								<dl class="pol__list">
+									<dt>Your session</dt>
+									<dd>
+										When you sign in, an authentication token is stored in your browser so
+										that you remain signed in. Signing out removes it.
+									</dd>
+									<dt>Your display name and colour</dt>
+									<dd>
+										Your first name and chosen colour are stored locally so the site can
+										show them without querying the registry on every page. They never leave
+										your device.
+									</dd>
+								</dl>
+								<p>Clearing your browser&rsquo;s site data removes both and signs you out.</p>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">12. Changes to this policy</h3>
+							<div class="pol__body">
+								<p>
+									This policy carries a version number and a date, both shown at the head of
+									it. When it changes materially we update both and record the version in
+									force against each consent we hold, so that it is always possible to
+									establish which terms you agreed to.
+								</p>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">13. Contact and grievances</h3>
+							<div class="pol__body">
+								<p>
+									<strong>Grievance Officer:</strong> Anuja Bali, The Itti Foundation.<br />
+									<strong>Email:</strong>{' '}
+									<a class="pol__link" href="mailto:hello@itti.org.in">hello@itti.org.in</a
+									><br />
+									<strong>Telephone:</strong>{' '}
+									<a class="pol__link" href="tel:+918928263631">+91 89282 63631</a>
+								</p>
+								<p>
+									If you are not satisfied with our response, you may complain to the Data
+									Protection Board of India.
+								</p>
+							</div>
+						</section>
+					</section>
+
+					<!-- ──────────────────────────────  TERMS  ─────────────────────────────- -->
+					<section class="pol__doc" id="terms" aria-labelledby="terms-title">
+						<header class="pol__doc-head">
+							<h2 class="pol__doc-title" id="terms-title">Terms of Use</h2>
+							<p class="pol__doc-lede">
+								The terms on which this site is offered, what you may do with what is on
+								it, and the limits of what it claims to be.
+							</p>
+							<p class="pol__stamp">
+								Version {TERMS_VERSION} &middot; Last updated {TERMS_UPDATED}
+							</p>
+						</header>
+
+						<section class="pol__section">
+							<h3 class="pol__h">1. Who we are, and your acceptance</h3>
+							<div class="pol__body">
+								<p>
+									This site is operated by{' '}
+									<strong>Itti&rsquo;s Skill School Foundation</strong>, a Section 8
+									not-for-profit company incorporated in India and operating as The Itti
+									Foundation. In these terms <em>we</em> and <em>us</em> mean the Foundation,
+									and <em>you</em> means the person using the site.
+								</p>
+								<p>
+									By using this site you accept these terms. If you do not accept them,
+									please do not use the site. Your use of personal data is governed
+									additionally by the <a class="pol__link" href="#privacy">Privacy Policy</a
+									> above, which forms part of these terms.
+								</p>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">2. Registration</h3>
+							<div class="pol__body">
+								<p>
+									Registration is optional. It records your interest and how we may contact
+									you. It does not create a membership, an employment or volunteering
+									relationship, an entitlement to any service, or any other contract between
+									us.
+								</p>
+								<p>When you register you undertake that:</p>
+								<dl class="pol__list">
+									<dt>The details are accurate</dt>
+									<dd>
+										And that you will correct them if they cease to be. Your account page
+										allows this at any time.
+									</dd>
+									<dt>They are yours to give</dt>
+									<dd>
+										If you register on another person&rsquo;s behalf, you confirm that they
+										are aware of it and have asked you to.
+									</dd>
+									<dt>A minor has a guardian</dt>
+									<dd>
+										A person under eighteen may register only with a parent or lawful
+										guardian named. We write to the guardian and do not act on the
+										registration until they agree. This requirement is enforced by the
+										registry and cannot be waived.
+									</dd>
+								</dl>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">3. Accounts and sign-in</h3>
+							<div class="pol__body">
+								<p>
+									If you registered with an email address, you may sign in to view and amend
+									the record we hold about you.
+								</p>
+								<dl class="pol__list">
+									<dt>There is no password</dt>
+									<dd>
+										You sign in by requesting a single-use link sent to your registered
+										email address. Anyone with access to that mailbox can sign in as you,
+										so keep it secure and tell us promptly if you believe it has been
+										compromised.
+									</dd>
+									<dt>The account is personal to you</dt>
+									<dd>
+										Do not share access, and do not attempt to reach another
+										person&rsquo;s record.
+									</dd>
+									<dt>You may close it</dt>
+									<dd>
+										Write to us and we will erase your record, subject to the retention set
+										out in the Privacy Policy.
+									</dd>
+								</dl>
+								<p>
+									We take reasonable care to keep the sign-in mechanism secure, but you are
+									responsible for activity carried out through your account where it results
+									from your own act or omission.
+								</p>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">4. Content you provide</h3>
+							<div class="pol__body">
+								<p>
+									Your account allows you to add a short biography and links to your own
+									profiles or addresses. You remain the owner of what you write. You grant us
+									only the permission necessary to store it and display it back to you.
+								</p>
+								<p>You are responsible for it, and you undertake not to submit:</p>
+								<dl class="pol__list">
+									<dt>Another person&rsquo;s material or identity</dt>
+									<dd>
+										Including links to accounts that are not yours, or content that
+										infringes someone else&rsquo;s rights.
+									</dd>
+									<dt>Unlawful or abusive content</dt>
+									<dd>
+										Anything defamatory, obscene, harassing, or prohibited by Indian law.
+									</dd>
+									<dt>Other people&rsquo;s personal data</dt>
+									<dd>Beyond the guardian details the registration asks for.</dd>
+								</dl>
+								<p>
+									Links you add are self-asserted: we do not verify that an account belongs
+									to you and displaying one is not an endorsement of it. We may remove
+									content that breaches these terms, and will tell you when we do.
+								</p>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">5. Acceptable use</h3>
+							<div class="pol__body">
+								<p>
+									You may read, quote, link to, print and share the material on this site
+									freely, subject to section 7. You may not:
+								</p>
+								<dl class="pol__list">
+									<dt>Interfere with the site</dt>
+									<dd>
+										By probing it, overloading it, circumventing its security, or
+										attempting to reach any part of the system not offered to you.
+									</dd>
+									<dt>Submit false or unauthorised details</dt>
+									<dd>Including registering a person who has not asked you to.</dd>
+									<dt>Extract the site at scale</dt>
+									<dd>
+										Automated collection that imposes a material load on our
+										infrastructure, or that reproduces the site rather than reading it.
+									</dd>
+									<dt>Misrepresent your relationship with us</dt>
+									<dd>
+										By using our name, marks or wording in a way that suggests we said
+										something we did not, or that you speak for the Foundation.
+									</dd>
+								</dl>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">6. No professional advice</h3>
+							<div class="pol__body">
+								<p>
+									This site discusses neurodivergence, cancer, mental health and the
+									environment. Nothing on it constitutes medical, psychological, legal or
+									financial advice, a diagnosis, or a treatment plan, and nothing on it
+									establishes a practitioner&ndash;patient relationship.
+								</p>
+								<p>
+									It is not a substitute for a qualified professional who knows your
+									circumstances, and it should never be the reason you start, stop or change
+									any aspect of your care.{' '}
+									<strong
+										>We are not a crisis service. If you are in immediate danger, contact
+										your local emergency services.</strong
+									>
+								</p>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">7. Intellectual property</h3>
+							<div class="pol__body">
+								<p>
+									This site incorporates work under several different licences. The complete
+									record travels with the source code in <code>ATTRIBUTION.md</code>; the
+									following is a summary.
+								</p>
+								<dl class="pol__list">
+									<dt>The heron</dt>
+									<dd>
+										<em>Hummingbird at Arizona-Sonora Desert Museum</em> (2023) by Lorie
+										Shaull, under{' '}
+										<a
+											class="pol__link"
+											href="https://creativecommons.org/licenses/by-sa/4.0/"
+											rel="noopener">CC BY-SA 4.0</a
+										>, colour-graded and resized by us. Because that licence is share-alike,
+										our version is offered under the same terms and any derivative must
+										carry the same notice. This obligation binds us as it binds you.
+									</dd>
+									<dt>The Cajal and the Bourgery</dt>
+									<dd>
+										<em>Purkinje cell of the cerebellum</em> (1899) by Santiago Ram&oacute;n
+										y Cajal, and Plate 42 of the{' '}
+										<em>Trait&eacute; complet de l&rsquo;anatomie de l&rsquo;homme</em>{' '}
+										(1831&ndash;54), drawn by Nicolas-Henri Jacob for J. M. Bourgery. Both
+										are in the public domain. We graded them; the originals belong to
+										everyone.
+									</dd>
+									<dt>The typefaces</dt>
+									<dd>Each under the SIL Open Font License 1.1, and self-hosted.</dd>
+									<dt>Everything else</dt>
+									<dd>
+										Our name, our mark, the project marks, the photography and the text are
+										the Foundation&rsquo;s and are not licensed for reuse. Please write to us
+										if you wish to use them.
+									</dd>
+								</dl>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">8. Third-party links</h3>
+							<div class="pol__body">
+								<p>
+									Where we link to another organisation we are directing you, not endorsing
+									them. We do not control those sites and are not responsible for their
+									content, their availability, or what they do with your data. Their own
+									terms and privacy notices apply once you leave this site.
+								</p>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">9. Availability and disclaimers</h3>
+							<div class="pol__body">
+								<p>
+									The site is provided on an &ldquo;as is&rdquo; and &ldquo;as
+									available&rdquo; basis. We do not warrant that it will be uninterrupted or
+									error-free, that every page is current, or that it is fit for any
+									particular purpose of yours. We may modify, suspend or withdraw any part
+									of it without notice.
+								</p>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">10. Limitation of liability</h3>
+							<div class="pol__body">
+								<p>
+									To the extent permitted by law, we are not liable for indirect or
+									consequential loss, or for loss of data, profit or goodwill, arising from
+									your use of this site.
+								</p>
+								<p>
+									Nothing in these terms excludes or limits liability that cannot lawfully be
+									excluded or limited, including liability for death or personal injury
+									caused by negligence or for fraud; and nothing in them removes a right you
+									have under Indian consumer or data protection law.
+								</p>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">11. Suspension</h3>
+							<div class="pol__body">
+								<p>
+									We may suspend or withdraw access, or remove a registration or account,
+									where these terms are breached or where required by law. Where we do so we
+									will tell you, and where the breach can be remedied we will say how.
+								</p>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">12. Changes to these terms</h3>
+							<div class="pol__body">
+								<p>
+									These terms carry a version number and a date, shown at the head of them.
+									When they change materially, both change. Continued use of the site after a
+									change constitutes acceptance of the revised terms.
+								</p>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">13. Governing law</h3>
+							<div class="pol__body">
+								<p>
+									These terms are governed by and construed in accordance with the laws of
+									India, and any dispute arising from them is subject to the exclusive
+									jurisdiction of the courts having jurisdiction over the
+									Foundation&rsquo;s registered office.
+								</p>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">14. Contact</h3>
+							<div class="pol__body">
+								<p>
+									Questions about these terms or about this site:{' '}
+									<a class="pol__link" href="mailto:hello@itti.org.in">hello@itti.org.in</a
+									>. We respond within five working days.
+								</p>
+							</div>
+						</section>
+					</section>
+
+					<!-- ───────────────────────────  ACCESSIBILITY  ────────────────────────- -->
+					<section class="pol__doc" id="accessibility" aria-labelledby="accessibility-title">
+						<header class="pol__doc-head">
+							<h2 class="pol__doc-title" id="accessibility-title">
+								Accessibility Statement
+							</h2>
+							<p class="pol__doc-lede">
+								Our commitment, what conformance we claim, how it was assessed, and what we
+								know is still wrong.
+							</p>
+							<p class="pol__stamp">Last reviewed {LAST_REVIEWED}</p>
+						</header>
+
+						<section class="pol__section">
+							<h3 class="pol__h">1. Our commitment</h3>
+							<div class="pol__body">
+								<p>
+									The Itti Foundation is committed to making itti.org.in usable by as many
+									people as possible, regardless of disability, device or circumstance.
+								</p>
+								<p>
+									One of the three areas this Foundation works in is neurodivergence. A site
+									that is hard to read, that cannot be operated without a mouse, or that
+									moves when someone has asked it not to, would contradict its own purpose.
+								</p>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">2. Conformance status</h3>
+							<div class="pol__body">
+								<p>
+									We target{' '}
+									<strong>Web Content Accessibility Guidelines (WCAG) 2.2, Level AA</strong>.
+								</p>
+								<p>
+									This site is <strong>partially conformant</strong> with WCAG 2.2 Level AA:
+									most of the standard is met, and the exceptions are listed in section 6. We
+									do not claim certification, and the assessment has not been independently
+									verified.
+								</p>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">3. Measures taken</h3>
+							<div class="pol__body">
+								<p>
+									Each of the following was verified against the built site, on every page,
+									at viewport widths from a 390-pixel phone to a 2560-pixel display.
+								</p>
+								<dl class="pol__list">
+									<dt>Contrast</dt>
+									<dd>
+										No text falls below its Level AA threshold: 4.5:1 for normal text and
+										3:1 for large text. Three of our four accent colours failed as small
+										type and have been darkened for that use; they are unchanged as rules
+										and marks.
+									</dd>
+									<dt>Keyboard operation</dt>
+									<dd>
+										Every interactive element is reachable and operable by keyboard and
+										displays a visible focus indicator. A skip link is the first focusable
+										element on every page.
+									</dd>
+									<dt>Structure and semantics</dt>
+									<dd>
+										Every page declares its language, carries exactly one first-level
+										heading, skips no heading level, and identifies its banner, navigation,
+										main content and footer as landmarks.
+									</dd>
+									<dt>Forms</dt>
+									<dd>
+										All twenty-eight controls on the registration form have
+										programmatically associated labels. Errors are conveyed in text and
+										announced to assistive technology, not by colour alone.
+									</dd>
+									<dt>Images</dt>
+									<dd>
+										Every image carries alternative text. Artwork in the opening sequence is
+										marked decorative, because the adjacent text carries its meaning.
+									</dd>
+									<dt>Motion</dt>
+									<dd>
+										Where the operating system requests reduced motion, the opening sequence
+										stops animating: no camera movement, no dissolve, no drift. The three
+										images still change, so no content is lost; they cut rather than fade.
+									</dd>
+									<dt>Reflow and zoom</dt>
+									<dd>
+										No page requires horizontal scrolling at any width in the range tested,
+										and content reflows to a single column on small viewports.
+									</dd>
+									<dt>Operation without scripting</dt>
+									<dd>
+										Every page renders in full with JavaScript disabled, with one exception
+										noted in section 6.
+									</dd>
+								</dl>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">4. Technical specifications</h3>
+							<div class="pol__body">
+								<p>
+									Accessibility relies on HTML, CSS, WAI-ARIA and JavaScript, and on the
+									combination of a modern browser with any assistive technology installed on
+									the visitor&rsquo;s device.
+								</p>
+								<p>
+									The site is served as static pages over HTTPS. Typefaces are self-hosted,
+									and no third-party script runs on any page.
+								</p>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">5. Assessment approach</h3>
+							<div class="pol__body">
+								<p>
+									The Foundation assessed this site by self-evaluation. Testing combined
+									automated checks of the built output with manual keyboard operation,
+									contrast measurement against rendered composites rather than nominal
+									colours, and inspection with scripting disabled and with reduced motion
+									requested.
+								</p>
+								<p>Self-evaluation is the weakest form of assessment available.</p>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">6. Known limitations</h3>
+							<div class="pol__body">
+								<p>
+									Despite our efforts, the following are known to fall short. Each is ours to
+									fix.
+								</p>
+								<dl class="pol__list">
+									<dt>No assistive-technology user testing</dt>
+									<dd>
+										The structure is correct by measurement, which is not the same as being
+										good to listen to. We have not yet tested with anyone who uses a screen
+										reader daily.
+									</dd>
+									<dt>No independent audit</dt>
+									<dd>
+										Every claim on this page was verified by the people who built the site.
+									</dd>
+									<dt>The account page requires scripting</dt>
+									<dd>
+										It retrieves your record from our registry as it opens and cannot do so
+										with JavaScript disabled. It states this, and gives an address at which
+										a person will provide the same information.
+									</dd>
+									<dt>The opening sequence is animated</dt>
+									<dd>
+										It is the most demanding element on the site. Reduced motion is the
+										alternative we offer; there is no static version of the page.
+									</dd>
+									<dt>Some navigation leads to unwritten pages</dt>
+									<dd>
+										Much of the site is not yet written. Those links reach a page that says
+										so, which is honest but remains a dead end.
+									</dd>
+									<dt>English only</dt>
+									<dd>
+										We ask your preferred language at registration and cannot yet
+										correspond in it.
+									</dd>
+								</dl>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">7. Feedback</h3>
+							<div class="pol__body">
+								<p>
+									We welcome reports of accessibility barriers. You do not need to know what
+									the problem is called or which guideline it falls under &mdash; &ldquo;I
+									could not get past this part&rdquo; is a useful report.
+								</p>
+								<p>
+									<strong>Email:</strong>{' '}
+									<a class="pol__link" href="mailto:hello@itti.org.in">hello@itti.org.in</a
+									><br />
+									<strong>Telephone:</strong>{' '}
+									<a class="pol__link" href="tel:+918928263631">+91 89282 63631</a>
+								</p>
+								<p>
+									We aim to respond within five working days. If anything on this site
+									prevents you from registering, tell us and we will take your details by
+									whatever means is easiest for you.
+								</p>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">8. Review</h3>
+							<div class="pol__body">
+								<p>
+									This statement was last reviewed on {LAST_REVIEWED}. It is reviewed
+									whenever the site changes materially, and at least once a year.
+								</p>
+							</div>
+						</section>
+					</section>
+
+					<!-- ─────────────────────────────  CONTACT  ────────────────────────────- -->
+					<section class="pol__doc" id="contact" aria-labelledby="contact-title">
+						<header class="pol__doc-head">
+							<h2 class="pol__doc-title" id="contact-title">Contact</h2>
+							<p class="pol__doc-lede">
+								One address, answered by people. Below is how to reach us and what to
+								expect.
+							</p>
+						</header>
+
+						<section class="pol__section">
+							<h3 class="pol__h">General enquiries</h3>
+							<div class="pol__body">
+								<p>
+									<strong>Email:</strong>{' '}
+									<a class="pol__link" href="mailto:hello@itti.org.in">hello@itti.org.in</a
+									><br />
+									<strong>Telephone:</strong>{' '}
+									<a class="pol__link" href="tel:+918928263631">+91 89282 63631</a>
+								</p>
+								<p>
+									The address is read by people at the Foundation, not by a ticketing
+									system. You do not need to know which part of our work your question
+									belongs to: send it and we will pass it to whoever should have it.
+								</p>
+								<p>
+									The telephone is a working number rather than a staffed line. If nobody
+									answers, please write instead and we will come back to you.
+								</p>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">Response times</h3>
+							<div class="pol__body">
+								<p>
+									We respond to email within <strong>five working days</strong>. Requests
+									concerning your personal data are acknowledged within five working days and
+									completed within thirty days, as set out in the{' '}
+									<a class="pol__link" href="#privacy">Privacy Policy</a>.
+								</p>
+								<p>
+									Messages sent through social media reach us, but more slowly than the
+									address above.
+								</p>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">What to write about</h3>
+							<div class="pol__body">
+								<p>
+									It helps to say roughly what your message concerns, because that
+									determines who reads it next.
+								</p>
+								<dl class="pol__list">
+									<dt>Taking part</dt>
+									<dd>
+										Whether as someone we can help, someone caring for another person, a
+										volunteer or a partner. The quickest route is{' '}
+										<a class="pol__link" href="/join">our registration form</a>, which asks
+										the few things we need in order to reach you properly. An email is
+										equally welcome.
+									</dd>
+									<dt>Your personal data</dt>
+									<dd>
+										To access, correct or erase what we hold about you, or to withdraw a
+										permission you gave us. Most of this can be done directly on your{' '}
+										<a class="pol__link" href="/account">account page</a>.
+									</dd>
+									<dt>Media and partnerships</dt>
+									<dd>
+										Press enquiries, and organisations proposing joint work. Please say what
+										you have in mind and who you are.
+									</dd>
+								</dl>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">Data protection</h3>
+							<div class="pol__body">
+								<p>
+									<strong>Grievance Officer:</strong> Anuja Bali<br />
+									<strong>Email:</strong>{' '}
+									<a class="pol__link" href="mailto:hello@itti.org.in">hello@itti.org.in</a>
+								</p>
+								<p>
+									Please mark data protection requests clearly so they are routed correctly.
+									What we hold, why, and the rights you have over it are set out in the{' '}
+									<a class="pol__link" href="#privacy">Privacy Policy</a>.
+								</p>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">Accessibility</h3>
+							<div class="pol__body">
+								<p>
+									If any part of this site was difficult to read, could not be reached with a
+									keyboard, or behaved unexpectedly, please tell us at the address above. The{' '}
+									<a class="pol__link" href="#accessibility">Accessibility Statement</a>{' '}
+									records what we already know to be wrong.
+								</p>
+								<p>
+									If something here prevents you from registering, say so and we will take
+									your details by whatever means is easiest for you.
+								</p>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">Social media</h3>
+							<div class="pol__body">
+								<dl class="pol__list">
+									<dt>Instagram</dt>
+									<dd>
+										<a
+											class="pol__link"
+											href="https://www.instagram.com/ittifoundation/"
+											rel="me noopener">@ittifoundation</a
+										>
+									</dd>
+									<dt>Facebook</dt>
+									<dd>
+										<a
+											class="pol__link"
+											href="https://www.facebook.com/ittifoundation"
+											rel="me noopener">@ittifoundation</a
+										>
+									</dd>
+									<dt>YouTube</dt>
+									<dd>
+										<a
+											class="pol__link"
+											href="https://www.youtube.com/@ittifoundation"
+											rel="me noopener">@ittifoundation</a
+										>
+									</dd>
+								</dl>
+							</div>
+						</section>
+
+						<section class="pol__section">
+							<h3 class="pol__h">Urgent help</h3>
+							<div class="pol__body">
+								<p>
+									<strong>We are not a crisis service and not a medical service.</strong> None
+									of the routes above is monitored overnight, and five working days is far too
+									slow to be of use to someone in danger.
+								</p>
+								<p>
+									If you or someone near you needs help now, please contact your local
+									emergency services or a crisis helpline in your country rather than waiting
+									on us.
+								</p>
+								<p>
+									Nothing we write in reply constitutes medical, legal or financial advice.
+									See the <a class="pol__link" href="#terms">Terms of Use</a> above.
+								</p>
+							</div>
+						</section>
+					</section>
+				</div>
+			</div>
+		</div>
+
+		<SiteFooter />
+	</div>
+</Base>
+
+<style>
+	/* The ground runs the width of the page, so the footer — which sets no
+	   background of its own and whose ink assumes cream — has something to sit
+	   on. Without it, it renders dark on dark. */
+	.pol-page {
+		background: var(--cream);
+		min-height: 100svh;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.pol {
+		flex: 1 0 auto;
+		width: 100%;
+		max-width: 72rem;
+		margin: 0 auto;
+		padding: calc(var(--nav-h) + clamp(2.5rem, 7vh, 5rem)) var(--gutter)
+			clamp(3rem, 8vh, 5rem);
+	}
+
+	/* ── Masthead ──────────────────────────────────────────────────────────── */
+
+	.pol__masthead {
+		max-width: 36rem;
+		padding-bottom: clamp(2.5rem, 6vh, 4rem);
+	}
+
+	.pol__eyebrow {
+		font-family: var(--face-cinzel);
+		font-size: 0.6875rem;
+		font-weight: 500;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: var(--teal);
+	}
+
+	.pol__title {
+		margin-top: 0.75rem;
+		font-family: var(--face-bodoni);
+		font-size: clamp(2.5rem, 5.4vw, 3.75rem);
+		font-weight: 450;
+		line-height: 1.02;
+		letter-spacing: -0.015em;
+	}
+
+	.pol__lede {
+		margin-top: 1rem;
+		font-size: 1.125rem;
+		line-height: 1.55;
+		color: var(--ink-soft);
+	}
+
+	/* ── The rail and the flow ─────────────────────────────────────────────── */
+
+	.pol__grid {
+		display: grid;
+		grid-template-columns: minmax(9rem, 13rem) minmax(0, 40rem);
+		column-gap: clamp(2rem, 6vw, 5rem);
+		align-items: start;
+	}
+
+	.pol__rail-inner {
+		position: sticky;
+		/* Clear of the fixed nav, and level with the first document's title. */
+		top: calc(var(--nav-h) + 2.5rem);
+	}
+
+	.pol__rail-heading {
+		font-size: 0.625rem;
+		font-weight: 600;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+		padding-bottom: 0.9rem;
+		border-bottom: 1px solid var(--rule);
+	}
+
+	.pol__rail-list {
+		list-style: none;
+		margin: 0;
+		padding: 0.35rem 0 0;
+	}
+
+	.pol__rail-link {
+		display: flex;
+		align-items: baseline;
+		gap: 0.55rem;
+		padding: 0.5rem 0;
+		font-size: 0.875rem;
+		line-height: 1.35;
+		color: var(--ink-soft);
+		text-decoration: none;
+		transition:
+			color 180ms var(--ease),
+			opacity 180ms var(--ease);
+	}
+
+	/* A hairline that grows into a rule rather than a dot that appears: the
+	   position indicator should read as the same family of marks as the rules
+	   dividing the documents. */
+	.pol__rail-tick {
+		flex: none;
+		width: 0.75rem;
+		height: 1px;
+		translate: 0 -0.25em;
+		background: var(--rule);
+		transition:
+			background-color 220ms var(--ease),
+			scale 220ms var(--ease);
+		transform-origin: left center;
+	}
+
+	.pol__rail-link:hover {
+		color: var(--ink);
+	}
+
+	.pol__rail-link:hover .pol__rail-tick {
+		background: var(--ink-faint);
+	}
+
+	.pol__rail-link[aria-current='true'] {
+		color: var(--teal);
+	}
+
+	.pol__rail-link[aria-current='true'] .pol__rail-tick {
+		background: var(--teal);
+		scale: 1.6 1;
+	}
+
+	/* ── Documents ─────────────────────────────────────────────────────────── */
+
+	.pol__doc {
+		/* An anchor jump has to clear the fixed nav and land with air above the
+		   title, or the document opens looking like it started mid-sentence. */
+		scroll-margin-top: calc(var(--nav-h) + 2rem);
+	}
+
+	.pol__doc + .pol__doc {
+		margin-top: clamp(4.5rem, 12vh, 8rem);
+		padding-top: clamp(3.5rem, 9vh, 6rem);
+		border-top: 1px solid var(--rule);
+	}
+
+	.pol__doc-head {
+		padding-bottom: clamp(2rem, 5vh, 3rem);
+	}
+
+	.pol__doc-title {
+		font-family: var(--face-bodoni);
+		font-size: clamp(1.875rem, 3.4vw, 2.5rem);
+		font-weight: 450;
+		line-height: 1.08;
+		letter-spacing: -0.01em;
+	}
+
+	.pol__doc-lede {
+		margin-top: 0.85rem;
+		font-size: 1.0625rem;
+		line-height: 1.6;
+		color: var(--ink-soft);
+	}
+
+	.pol__stamp {
+		margin-top: 1.35rem;
+		font-size: 0.6875rem;
+		font-weight: 600;
+		letter-spacing: 0.15em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+	}
+
+	/* ── Sections ──────────────────────────────────────────────────────────── */
+
+	.pol__section {
+		border-top: 1px solid var(--rule);
+		padding-top: 1.85rem;
+		margin-bottom: 2.5rem;
+	}
+
+	.pol__h {
+		margin: 0 0 1.1rem;
+		font-family: var(--face-cinzel);
+		font-size: 0.8125rem;
+		font-weight: 500;
+		letter-spacing: 0.16em;
+		line-height: 1.35;
+		text-transform: uppercase;
+		color: var(--teal);
+	}
+
+	.pol__body {
+		display: grid;
+		gap: 1.15rem;
+		font-size: 1.0625rem;
+		line-height: 1.65;
+		color: var(--ink-soft);
+	}
+
+	.pol__body strong {
+		font-weight: 600;
+		color: var(--ink);
+	}
+
+	/* No monospace face ships with this site, so an unstyled <code> falls
+	   through to whatever the browser keeps for one, and a system mono beside
+	   Bodoni and Garamond reads as a mistake rather than a distinction. The only
+	   literals left in these documents are a filename and three query
+	   parameters, both of which say what they are without help — the underscores
+	   and the extension do it. So they take the body face at full size, a shade
+	   darker than the prose around them, and nothing else.
+
+	   Anything that is merely a domain or an address is prose, not code, and is
+	   written as plain text. */
+	.pol__body code {
+		font-family: inherit;
+		font-size: inherit;
+		color: var(--ink);
+		white-space: nowrap;
+	}
+
+	.pol__list {
+		display: grid;
+		margin: 0;
+		border-top: 1px solid var(--rule);
+	}
+
+	.pol__list dt {
+		padding: 1rem 0 0.35rem;
+		font-size: 0.6875rem;
+		font-weight: 600;
+		letter-spacing: 0.15em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+	}
+
+	.pol__list dd {
+		margin: 0;
+		padding: 0 0 1rem;
+		border-bottom: 1px solid var(--rule);
+		color: var(--ink-soft);
+	}
+
+	.pol__link {
+		color: var(--teal);
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
+		text-decoration-thickness: 1px;
+		text-decoration-color: color-mix(in srgb, var(--teal) 40%, transparent);
+		transition: text-decoration-color 180ms var(--ease);
+	}
+
+	.pol__link:hover {
+		text-decoration-color: var(--teal);
+	}
+
+	/* ── Narrow ────────────────────────────────────────────────────────────── */
+
+	/* Below the two-column threshold the rail stops being a margin and becomes a
+	   strip under the nav: same four doors, same active mark, read left to right
+	   instead of top to bottom. */
+	@media (max-width: 58rem) {
+		.pol__grid {
+			grid-template-columns: 1fr;
+		}
+
+		.pol__rail {
+			position: sticky;
+			top: var(--nav-h);
+			z-index: 2;
+			margin-bottom: 2.5rem;
+			background: var(--cream);
+			/* The strip has to cover the full bleed as text scrolls beneath it, not
+			   just the column it sits in. */
+			margin-inline: calc(var(--gutter) * -1);
+			padding-inline: var(--gutter);
+			border-bottom: 1px solid var(--rule);
+		}
+
+		.pol__rail-inner {
+			position: static;
+		}
+
+		.pol__rail-heading {
+			display: none;
+		}
+
+		.pol__rail-list {
+			display: flex;
+			gap: 1.35rem;
+			padding: 0.85rem 0;
+			overflow-x: auto;
+			scrollbar-width: none;
+		}
+
+		.pol__rail-list::-webkit-scrollbar {
+			display: none;
+		}
+
+		.pol__rail-link {
+			padding: 0;
+			white-space: nowrap;
+			flex-direction: column;
+			align-items: stretch;
+			gap: 0.4rem;
+		}
+
+		.pol__rail-tick {
+			width: 100%;
+			translate: none;
+			order: 2;
+		}
+
+		.pol__rail-link[aria-current='true'] .pol__rail-tick {
+			scale: 1 1;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.pol__rail-link,
+		.pol__rail-tick {
+			transition: none;
+		}
+	}
+</style>
+
+<script>
+	/**
+	 * The rail marks where you are.
+	 *
+	 * Which document is "current" is decided by the topmost one whose heading
+	 * has passed under the nav — not by whichever section happens to intersect,
+	 * because with four documents of very different lengths several are in view
+	 * at once and the naive observer flickers between them on every scroll.
+	 *
+	 * A click sets the mark immediately and holds it while the browser scrolls,
+	 * so the rail never argues with the reader about where they just asked to
+	 * go.
+	 */
+	const rail = document.querySelectorAll<HTMLAnchorElement>('[data-rail]');
+	const docs = [...rail]
+		.map((link) => document.getElementById(link.dataset.rail ?? ''))
+		.filter((el): el is HTMLElement => el !== null);
+
+	if (rail.length > 0 && docs.length === rail.length) {
+		let held = 0;
+
+		const mark = (id: string) => {
+			for (const link of rail) {
+				const on = link.dataset.rail === id;
+				if (on) link.setAttribute('aria-current', 'true');
+				else link.removeAttribute('aria-current');
+			}
+		};
+
+		const current = () => {
+			// The line the nav sits on, plus a little, is where a document counts as
+			// having begun.
+			const line =
+				parseFloat(
+					getComputedStyle(document.documentElement).getPropertyValue('--nav-h'),
+				) *
+					16 +
+				48;
+			let found = docs[0]!;
+			for (const doc of docs) {
+				if (doc.getBoundingClientRect().top <= line) found = doc;
+			}
+			// At the very foot of the page the last document may never reach the
+			// line — nothing scrolls past it — so claim it once the page is done.
+			const atEnd =
+				window.innerHeight + window.scrollY >= document.body.scrollHeight - 2;
+			mark(atEnd ? docs[docs.length - 1]!.id : found.id);
+		};
+
+		let ticking = false;
+		const onScroll = () => {
+			if (ticking || Date.now() < held) return;
+			ticking = true;
+			requestAnimationFrame(() => {
+				current();
+				ticking = false;
+			});
+		};
+
+		for (const link of rail) {
+			link.addEventListener('click', () => {
+				mark(link.dataset.rail ?? '');
+				// Long enough for a smooth scroll to land, short enough that a reader
+				// who immediately scrolls away is not stuck with a stale mark.
+				held = Date.now() + 700;
+			});
+		}
+
+		window.addEventListener('scroll', onScroll, { passive: true });
+		window.addEventListener('resize', onScroll, { passive: true });
+		current();
+	}
+</script>
