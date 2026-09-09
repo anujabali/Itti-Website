@@ -127,8 +127,18 @@ const FACTS = {
 <Base
 	title="Your account — The Itti Foundation"
 	description="Sign in to see the details The Itti Foundation holds about you, and correct anything that is wrong."
+	navTheme="dark"
 >
 	<div class="page">
+		<!-- The ground the whole account stands on, and the two things that stop it
+		     reading as flat CSS: the Foundation's own mark, very large and very
+		     quiet, and the grain the rest of the site is laid over. Both are laid
+		     under everything and neither is in the way of a pointer. -->
+		<span class="page__ornament" aria-hidden="true">
+			<Mark height="34rem" label="" />
+		</span>
+		<div class="page__grain" aria-hidden="true"></div>
+
 		<article class="acct">
 			<noscript>
 				<header class="acct__mast">
@@ -151,34 +161,23 @@ const FACTS = {
 			</noscript>
 
 			<div data-account hidden>
-				<!-- Opening the page, or coming back from the link with a token in
-				     the address. Neither is instant, and a blank page reads as a
-				     broken one. -->
-				<!-- Opening a record takes a session check and a round trip, and the
-				     page used to spend both of them saying "One moment." and then
-				     jumping to something a different height. This is the record's own
-				     shape, held until the record arrives: the same band, the same bar,
-				     the same three cards. The name and the colour come from what the
-				     browser already remembers, so the band is right from the first
-				     frame and only the details fade in.
-
-				     The crown is repeated here rather than shared, because a
-				     component would carry its own style scope and none of the rules
-				     below would reach it. -->
-				<section data-panel="loading">
-					<div class="crown" data-boot-crown data-accent="teal">
-						<span class="crown__ornament" aria-hidden="true">
-							<Mark height="26rem" label="" />
-						</span>
-						<div class="crown__grain" aria-hidden="true"></div>
-						<div class="crown__id">
-							<p class="crown__eyebrow">Your account</p>
-							<h1 class="crown__name" data-boot-name>&nbsp;</h1>
-							<p class="crown__meta" data-boot-meta>Opening your record</p>
-						</div>
-						<span class="crown__rule" aria-hidden="true"></span>
+				<!-- One band, shared by the outline and the record beneath it, so that
+				     opening the page does not swap it out from under the reader. It
+				     runs the full width and starts above the navigation, which turns
+				     dark over it and light again the moment the sentinel below clears
+				     the bar. -->
+				<div class="crown" data-crown data-accent="teal">
+					<div class="crown__id">
+						<p class="crown__eyebrow">Your account</p>
+						<h1 class="crown__name" data-mast-name>&nbsp;</h1>
+						<p class="crown__meta" data-mast-meta>Opening your record</p>
 					</div>
+					<span class="crown__rule" data-crown-rule aria-hidden="true"></span>
+				</div>
 
+				<!-- Opening a record takes a session check and a round trip. This is
+				     the record's own shape, held until the record arrives. -->
+				<section data-panel="loading">
 					<div class="bar" aria-hidden="true">
 						<div class="tabs">
 							<span class="tab tab--ghost">Your details</span>
@@ -324,19 +323,6 @@ const FACTS = {
 				*/
 				}
 				<section data-panel="record" hidden>
-					<div class="crown" data-crown data-accent="teal">
-						<span class="crown__ornament" aria-hidden="true">
-							<Mark height="26rem" label="" />
-						</span>
-						<div class="crown__grain" aria-hidden="true"></div>
-						<div class="crown__id">
-							<p class="crown__eyebrow">Your account</p>
-							<h1 class="crown__name" data-mast-name></h1>
-							<p class="crown__meta" data-mast-meta></p>
-						</div>
-						<span class="crown__rule" data-crown-rule aria-hidden="true"></span>
-					</div>
-
 					<div class="bar">
 						<div class="tabs" role="tablist" aria-label="Your account">
 							{
@@ -373,10 +359,6 @@ const FACTS = {
 						tabindex="0"
 						data-view="details"
 					>
-						<p class="held__note">
-							Everything on our side of the record. If a line is wrong, change it
-							&mdash; nobody has to approve it.
-						</p>
 						<div class="spread">
 							{
 								[
@@ -384,7 +366,6 @@ const FACTS = {
 									['place', 'Where you are'],
 									['reach', 'How we reach you'],
 									['guardian', 'Your parent or guardian'],
-									['record', 'For the record'],
 								].map(([key, title]) => (
 									<section class="block" data-group={key} hidden>
 										<h3 class="block__title">{title}</h3>
@@ -415,10 +396,7 @@ const FACTS = {
 							<section class="block block--wide">
 								<h3 class="block__title">In your own words</h3>
 								<p class="profile__bio" data-bio hidden></p>
-								<p class="profile__invite" data-bio-empty hidden>
-									You have not written anything about yourself yet. Edit your profile to
-									add a few words and the places you can be found.
-								</p>
+								<p class="profile__invite" data-bio-empty hidden>Nothing written yet.</p>
 							</section>
 
 							<section class="block">
@@ -432,9 +410,21 @@ const FACTS = {
 										))
 									}
 								</div>
-								<p class="profile__none" data-marks-empty hidden>
-									You have not told us which part of our work you want yet.
-								</p>
+								<p class="profile__none" data-marks-empty hidden>Nothing chosen yet.</p>
+							</section>
+
+							<section class="block" data-group="record" hidden>
+								<h3 class="block__title">For the record</h3>
+								<dl class="facts">
+									{
+										FACTS.record.map(([id, label]) => (
+											<div class="fact" data-fact={id} hidden>
+												<dt class="fact__label">{label}</dt>
+												<dd class="fact__value" data-value={id} />
+											</div>
+										))
+									}
+								</dl>
 							</section>
 
 							<section class="block">
@@ -451,9 +441,7 @@ const FACTS = {
 										))
 									}
 								</ul>
-								<p class="profile__none" data-links-empty hidden>
-									Nothing added yet. Anything you add here is shown only to you.
-								</p>
+								<p class="profile__none" data-links-empty hidden>Nothing added yet.</p>
 							</section>
 						</div>
 
@@ -508,10 +496,6 @@ const FACTS = {
 						<div class="spread">
 							<section class="block block--wide">
 								<h2 class="block__title">The colour of your account</h2>
-								<p class="held__note">
-									The Foundation's own teal, or the colour of one of the three things we
-									work on.
-								</p>
 								<fieldset class="set">
 									<legend class="u-visually-hidden">Choose a colour</legend>
 									<div class="swatches">
@@ -717,8 +701,7 @@ const FACTS = {
 						<section class="block block--wide">
 							<h2 class="block__title">Where else to find you</h2>
 							<p class="held__note">
-								Optional, and shown on your profile. A handle or a whole address &mdash;
-								we will tidy it either way. Leave one empty to remove it.
+								A handle or a full address. Leave one empty to remove it.
 							</p>
 							<div class="linkfields">
 								{
@@ -780,14 +763,143 @@ const FACTS = {
 	<style>
 		/* The ground reaches the bottom of the window even when the record is
 	   short, so the footer never sits on the dark behind the page. */
+		/* The whole account stands on the band rather than under it. Depth rather
+	   than a flat fill: the brand teal falling away to its own abyss, lit from
+	   the upper left so the page has a light source and the cards have
+	   something to cast against.
+
+	   The tokens are redefined here rather than reached into, because custom
+	   properties inherit and the footer reads the same four names. No new teal
+	   is introduced — the brand teal is the brand teal. */
 		.page {
+			position: relative;
 			/* A 100vw child is wider than the content box when a scrollbar is
 		   present, and that surplus must be clipped rather than scrolled. */
 			overflow-x: clip;
+			isolation: isolate;
 			display: flex;
 			flex-direction: column;
 			min-height: 100svh;
+			color: var(--cream);
+
+			--lit: var(--teal);
+			--deep: color-mix(in srgb, var(--teal) 46%, var(--teal-deep));
+			--floor: var(--teal-deep);
+			background:
+				radial-gradient(
+					128% 92% at 10% 0%,
+					color-mix(in srgb, var(--lit) 62%, transparent) 0%,
+					transparent 58%
+				),
+				linear-gradient(168deg, var(--deep) 0%, var(--floor) 62%);
+			background-attachment: scroll;
+
+			--ink: var(--warm-white);
+			--ink-soft: rgba(250, 247, 240, 0.78);
+			--ink-faint: rgba(250, 247, 240, 0.62);
+			--rule: rgba(250, 247, 240, 0.16);
+			/* The footer reads this for its lockup, and the brand teal sinks on a
+		   dark ground — which is why the navigation drops it there too. */
+			--accent: var(--warm-white);
+		}
+
+		/* Anything that was teal on paper has to be light here. The brand teal is
+	   the brand teal; it simply cannot be read at 4.5 to 1 on its own abyss,
+	   so on this ground the page speaks in cream and keeps teal for the cards. */
+		.page .tab[aria-selected='true']::after,
+		.page .crown__rule {
+			background: var(--warm-white);
+		}
+
+		.page .acct__link,
+		.page .linkish {
+			color: var(--warm-white);
+			text-decoration-color: rgba(250, 247, 240, 0.45);
+		}
+
+		.page .acct__link:hover,
+		.page .linkish:hover {
+			text-decoration-color: var(--warm-white);
+		}
+
+		.page .acct__eyebrow,
+		.page .crown__eyebrow {
+			color: rgba(250, 247, 240, 0.72);
+		}
+
+		/* The one filled control on a dark page cannot be filled with the colour of
+	   the page. It takes the cream and gives back the abyss — the same trade
+	   the navigation's own pill makes on the opening arc. */
+		.page .btn {
+			background: var(--warm-white);
+			border-color: var(--warm-white);
+			color: var(--teal-deep);
+		}
+
+		.page .btn:hover:not([disabled]) {
 			background: var(--cream);
+			border-color: var(--cream);
+			color: var(--teal-deep);
+		}
+
+		.page .btn--quiet {
+			color: var(--warm-white);
+			border-color: rgba(250, 247, 240, 0.4);
+		}
+
+		.page .btn--quiet:hover {
+			background: var(--warm-white);
+			border-color: var(--warm-white);
+			color: var(--teal-deep);
+		}
+
+		/* Inside a card the page's ink is restored, so teal reads again. */
+		.block .block__title,
+		.block .acct__link {
+			color: var(--teal);
+		}
+
+		/* A watermark, not a logo: large enough to be a texture in the field and
+	   faint enough that it is felt rather than read. It bleeds off the right so
+	   it never resolves into a badge sitting on the page. */
+		.page__ornament {
+			position: absolute;
+			top: calc(var(--nav-h) - 4rem);
+			right: -9%;
+			z-index: 0;
+			display: block;
+			color: var(--cream);
+			/* Quiet enough to be felt rather than read, and held to the masthead so
+		   it is texture behind a name rather than clutter behind the cards. */
+			opacity: 0.05;
+			pointer-events: none;
+		}
+
+		/* The grain the whole site is laid over, so this ground sits in the same
+	   air as the plates rather than looking like flat CSS. */
+		.page__grain {
+			position: absolute;
+			inset: 0;
+			z-index: 0;
+			opacity: 0.26;
+			mix-blend-mode: overlay;
+			pointer-events: none;
+			background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='1 0 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+		}
+
+		.acct,
+		:global(.foot) {
+			position: relative;
+			z-index: 1;
+		}
+
+		/* A card is paper laid on the ground, so it takes the page's ink back. */
+		.block {
+			--ink: #2c2721;
+			--ink-soft: #5d564d;
+			--ink-faint: #70695f;
+			--rule: rgba(44, 39, 33, 0.14);
+			color: var(--ink);
 		}
 
 		.acct {
@@ -802,13 +914,13 @@ const FACTS = {
 			/* Only the nav's height at the top: the crown carries its own space and
 		   should meet the bar rather than float below it. Panels without a
 		   crown add the breathing room back themselves. */
-			padding: var(--nav-h) var(--gutter) clamp(3rem, 8vh, 5rem);
+			padding: 0 var(--gutter) clamp(3rem, 8vh, 5rem);
 		}
 
 		/* Every panel except the record opens with words, and words need air. */
 		[data-panel]:not([data-panel='record']) .acct__mast,
 		[data-panel]:not([data-panel='record']) > form:first-child {
-			padding-top: clamp(2.5rem, 7vh, 4.5rem);
+			padding-top: calc(var(--nav-h) + clamp(2.5rem, 7vh, 4.5rem));
 		}
 
 		/* ── The masthead ────────────────────────────────────────────────────── */
@@ -901,52 +1013,55 @@ const FACTS = {
 
 		/* Edge to edge whatever the column does. The page is a centred measure and
 	   this is the one thing that should ignore it. */
+		/* The band belongs to the two stages that have a record behind them. Every
+	   other stage is prose on cream, and the navigation stays light over it. */
+		.crown {
+			display: none;
+		}
+
+		[data-stage='loading'] .crown,
+		[data-stage='record'] .crown {
+			display: block;
+		}
+
+		/* A marker with no size. The navigation watches its top edge to decide
+	   whether it is standing on the band or on the paper. When the band is not
+	   shown this sits at the top of the page, which is the right answer: light. */
+		.zone {
+			display: block;
+			height: 0;
+		}
+
 		.crown {
 			position: relative;
-			width: 100vw;
-			margin-left: calc(50% - 50vw);
-			margin-bottom: clamp(2.75rem, 7vh, 4.5rem);
-			padding: clamp(3.5rem, 9vh, 6rem) 0 clamp(2.5rem, 6vh, 4rem);
-			overflow: clip;
-			isolation: isolate;
-			color: var(--cream);
-			/* Depth rather than a flat fill: the brand teal falling away to its own
-		   abyss, lit from the upper left so the band has a light source. */
-			/* Two stops mixed from one token, so a new colour is one line and never a
-		   new hex. `--lit` is the light source, `--deep` the ground it falls to. */
-			--lit: var(--teal);
-			--deep: color-mix(in srgb, var(--teal) 46%, var(--teal-deep));
-			--floor: var(--teal-deep);
-			background:
-				radial-gradient(
-					118% 140% at 12% 0%,
-					color-mix(in srgb, var(--lit) 72%, transparent) 0%,
-					transparent 62%
-				),
-				linear-gradient(160deg, var(--deep) 0%, var(--floor) 68%);
+			margin-bottom: clamp(2rem, 5vh, 3rem);
+			/* The navigation stands on this page, so the masthead carries its height
+		   as well as its own. */
+			padding: calc(var(--nav-h) + clamp(2.75rem, 8vh, 5rem)) 0
+				clamp(1.75rem, 4vh, 2.5rem);
 		}
 
 		/* Ochre is the lightest of the four, so it carries at a lower proportion. */
-		.crown[data-accent='ochre'] {
-			--lit: var(--ochre);
-			--deep: color-mix(in srgb, var(--ochre) 41%, var(--ink-deep));
-			--floor: color-mix(in srgb, var(--ochre) 19%, var(--ink-deep));
+		.page[data-band='ochre'] {
+			--lit: color-mix(in srgb, var(--ochre) 46%, var(--ink-deep));
+			--deep: color-mix(in srgb, var(--ochre) 30%, var(--ink-deep));
+			--floor: color-mix(in srgb, var(--ochre) 14%, var(--ink-deep));
 		}
 
-		.crown[data-accent='rose'] {
-			--lit: var(--rose);
-			--deep: color-mix(in srgb, var(--rose) 47%, var(--ink-deep));
-			--floor: color-mix(in srgb, var(--rose) 23%, var(--ink-deep));
+		.page[data-band='rose'] {
+			--lit: color-mix(in srgb, var(--rose) 52%, var(--ink-deep));
+			--deep: color-mix(in srgb, var(--rose) 34%, var(--ink-deep));
+			--floor: color-mix(in srgb, var(--rose) 17%, var(--ink-deep));
 		}
 
 		/* Sage is the least saturated of the four, so at the proportions the
 		   others use it went muddy and the green only survived in the corner
 		   where the light falls. More of it reaches the ground, and the light
 		   itself is pushed toward the leaf rather than the stone. */
-		.crown[data-accent='sage'] {
-			--lit: color-mix(in srgb, var(--sage) 78%, var(--claw-leaf));
-			--deep: color-mix(in srgb, var(--sage) 58%, var(--ink-deep));
-			--floor: color-mix(in srgb, var(--sage) 30%, var(--ink-deep));
+		.page[data-band='sage'] {
+			--lit: color-mix(in srgb, var(--claw-leaf) 74%, var(--ink-deep));
+			--deep: color-mix(in srgb, var(--sage) 40%, var(--ink-deep));
+			--floor: color-mix(in srgb, var(--sage) 20%, var(--ink-deep));
 		}
 
 		/* The mark, very large and very quiet, bleeding off the right edge. An
@@ -1428,6 +1543,35 @@ const FACTS = {
 			animation: record-settle 420ms var(--ease) both;
 		}
 
+		/* The cards follow each other in rather than landing together, which reads
+	   as one movement instead of four. */
+		[data-panel='record'][data-first] .block {
+			animation: card-rise 520ms var(--ease) both;
+		}
+
+		[data-panel='record'][data-first] .block:nth-child(2) {
+			animation-delay: 70ms;
+		}
+
+		[data-panel='record'][data-first] .block:nth-child(3) {
+			animation-delay: 140ms;
+		}
+
+		[data-panel='record'][data-first] .block:nth-child(4) {
+			animation-delay: 210ms;
+		}
+
+		@keyframes card-rise {
+			from {
+				opacity: 0;
+				translate: 0 0.75rem;
+			}
+			to {
+				opacity: 1;
+				translate: none;
+			}
+		}
+
 		@keyframes record-settle {
 			from {
 				opacity: 0;
@@ -1438,7 +1582,8 @@ const FACTS = {
 		}
 
 		@media (prefers-reduced-motion: reduce) {
-			[data-panel='record'][data-first]:not([hidden]) {
+			[data-panel='record'][data-first]:not([hidden]),
+			[data-panel='record'][data-first] .block {
 				animation: none;
 			}
 		}
@@ -1957,12 +2102,15 @@ const FACTS = {
 				const known = localStorage.getItem('itti.who');
 				const hue = localStorage.getItem('itti.accent');
 				if (known) {
-					const name = root.querySelector<HTMLElement>('[data-boot-name]');
+					const name = root.querySelector<HTMLElement>('[data-mast-name]');
 					if (name) name.textContent = `${known}.`;
 				}
-				const band = root.querySelector<HTMLElement>('[data-boot-crown]');
+				const band = root.querySelector<HTMLElement>('[data-crown]');
 				if (band && hue) band.dataset.accent = hue;
-				if (hue) root.setAttribute('data-band', hue);
+				if (hue) {
+					root.setAttribute('data-band', hue);
+					root.closest('.page')?.setAttribute('data-band', hue);
+				}
 			} catch {
 				// A browser that refuses storage still gets the shape, just unnamed.
 			}
@@ -1978,6 +2126,10 @@ const FACTS = {
 			 */
 			const show = (name: string) => {
 				for (const [key, el] of panels) el.hidden = key !== name;
+				// The band belongs to two stages only. Everything else — signing in,
+				// the code, the record we could not find — opens on cream with the
+				// navigation in its light state.
+				root.dataset.stage = name;
 				const foot = panels.get('footnote');
 				if (foot) foot.hidden = !(name === 'record' || name === 'edit');
 			};
@@ -2189,6 +2341,7 @@ const FACTS = {
 				// The cards below take the same colour as a hairline down their edge,
 				// so the spread belongs to the band rather than sitting under it.
 				root.setAttribute('data-band', accent);
+				root.closest('.page')?.setAttribute('data-band', accent);
 
 				const bio = (r.bio ?? '').trim();
 				const bioEl = root.querySelector<HTMLElement>('[data-bio]');
