@@ -112,19 +112,29 @@ const WAYS = [
 <Base
 	title="Donate — The Itti Foundation"
 	description="Support The Itti Foundation. Where your gift goes, how we account for it, and where we stand on tax relief and on donations from outside India."
+	navTheme="auto"
 >
 	<div class="give-page">
-		<article class="give">
-			<!-- ── The ask, beside the case for it ──────────────────────────────── -->
-			<section class="give__hero">
-				<div class="give__lead">
-					<p class="give__eyebrow">Donate</p>
-					<h1 class="give__title">Your gift becomes someone&rsquo;s turning point.</h1>
-					<p class="give__lede">
+		<!-- ── The ask ──────────────────────────────────────────────────────────
+		     Full width and dark, so the card that asks for money is the brightest
+		     thing on the page rather than one more cream panel among several. The
+		     nav follows the ground behind it: dark here, light from the moment
+		     `data-light-zone` reaches it. -->
+		<section class="hero">
+			<span class="hero__ornament" aria-hidden="true">
+				<Mark height="30rem" label="" />
+			</span>
+			<div class="hero__grain" aria-hidden="true"></div>
+
+			<div class="hero__inner">
+				<div class="hero__lead">
+					<p class="hero__eyebrow">Donate</p>
+					<h1 class="hero__title">Your gift becomes someone&rsquo;s turning point.</h1>
+					<p class="hero__lede">
 						Neurodivergence, cancer care and conservation &mdash; and the long
 						continuation of that work, which no grant covers.
 					</p>
-					<p class="give__stamp">
+					<p class="hero__stamp">
 						Itti&rsquo;s Skill School Foundation &middot; Section 8 not-for-profit
 					</p>
 				</div>
@@ -210,10 +220,14 @@ const WAYS = [
 						</div>
 					</div>
 				</aside>
-			</section>
+			</div>
 
+			<span class="hero__rule" aria-hidden="true"></span>
+		</section>
+
+		<article class="give" data-light-zone>
 			<!-- ── Where it goes ────────────────────────────────────────────────── -->
-			<section class="give__band" aria-labelledby="give-areas-heading">
+			<section class="give__band" aria-labelledby="give-areas-heading" data-reveal>
 				<header class="give__band-head">
 					<h2 class="give__band-title" id="give-areas-heading">Where your gift goes</h2>
 					<p class="give__band-line">
@@ -227,6 +241,7 @@ const WAYS = [
 						AREAS.map((area) => (
 							<li
 								class="area"
+								data-reveal
 								style={`--accent: var(--${area.accent}); --accent-ink: var(--${area.accent}-ink)`}>
 								<span class="area__rule" aria-hidden="true" />
 								<span class="area__sign" aria-hidden="true">
@@ -247,16 +262,16 @@ const WAYS = [
 		</article>
 
 		<!-- ── The part nobody funds ────────────────────────────────────────────
-		     Outside the article's measure, because it runs the full width. The
-		     same designed band as the account page: the Foundation's own mark as
-		     a watermark rather than a photograph it borrowed. -->
+		     Full width, and deliberately quiet. The hero is the page's one loud
+		     moment; repeating its treatment here would spend it twice. This is
+		     the same argument set in the same face, on paper instead. -->
 		<section class="plinth" aria-labelledby="give-plinth-heading">
 			<span class="plinth__ornament" aria-hidden="true">
 				<Mark height="22rem" label="" />
 			</span>
 			<div class="plinth__grain" aria-hidden="true"></div>
 
-			<div class="plinth__body">
+			<div class="plinth__body" data-reveal>
 				<h2 class="plinth__eyebrow" id="give-plinth-heading">And the part nobody funds</h2>
 				<p class="plinth__line">
 					The phone answered on a Sunday. The follow-up six months later. The record kept
@@ -272,7 +287,11 @@ const WAYS = [
 
 		<article class="give give--tail">
 			<!-- ── Accounting ───────────────────────────────────────────────────── -->
-			<section class="give__band give__band--open" id="accounting" aria-labelledby="give-account-heading">
+			<section
+				class="give__band give__band--open"
+				id="accounting"
+				aria-labelledby="give-account-heading"
+				data-reveal>
 				<header class="give__band-head">
 					<h2 class="give__band-title" id="give-account-heading">How we account for it</h2>
 					<p class="give__band-line">
@@ -299,7 +318,7 @@ const WAYS = [
 			</section>
 
 			<!-- ── Other ways ───────────────────────────────────────────────────── -->
-			<section class="give__band" aria-labelledby="give-other-heading">
+			<section class="give__band" aria-labelledby="give-other-heading" data-reveal>
 				<header class="give__band-head">
 					<h2 class="give__band-title" id="give-other-heading">Other ways to help</h2>
 					<p class="give__band-line">None of these is the lesser gift.</p>
@@ -325,91 +344,142 @@ const WAYS = [
 	</div>
 </Base>
 
+
 <style>
 	.give-page {
 		background: var(--cream);
 		min-height: 100svh;
 		display: flex;
 		flex-direction: column;
-		/* The plinth is full-bleed from inside a centred column. */
+		/* The hero and the plinth are full-bleed from inside a centred column. */
 		overflow-x: clip;
 	}
 
-	.give {
+	/* ══ The hero ═════════════════════════════════════════════════════════════ */
+
+	/* Depth rather than a flat fill: the brand teal falling away to its own
+	   abyss, lit from the upper left so the band has a light source and the card
+	   has something to cast against. */
+	.hero {
+		position: relative;
+		isolation: isolate;
+		padding: calc(var(--nav-h) + clamp(3rem, 9vh, 6rem)) var(--gutter)
+			clamp(3.5rem, 10vh, 6.5rem);
+		overflow: clip;
+		color: var(--cream);
+		--lit: var(--teal);
+		--deep: color-mix(in srgb, var(--teal) 46%, var(--teal-deep));
+		--floor: var(--teal-deep);
+		background:
+			radial-gradient(
+				118% 140% at 12% 0%,
+				color-mix(in srgb, var(--lit) 72%, transparent) 0%,
+				transparent 62%
+			),
+			linear-gradient(160deg, var(--deep) 0%, var(--floor) 68%);
+	}
+
+	/* A watermark, not a logo: large enough to be a texture in the field and
+	   faint enough that it is felt rather than read. It sits behind the card and
+	   bleeds off the left, so it never resolves into a badge. */
+	.hero__ornament {
+		position: absolute;
+		top: 50%;
+		left: -9%;
+		transform: translateY(-46%);
+		display: block;
+		color: var(--cream);
+		opacity: 0.06;
+		pointer-events: none;
+	}
+
+	/* The grain the whole site is laid over, so this band sits in the same air
+	   as the plates rather than looking like flat CSS. */
+	.hero__grain {
+		position: absolute;
+		inset: 0;
+		opacity: 0.28;
+		mix-blend-mode: overlay;
+		pointer-events: none;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='1 0 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+	}
+
+	/* A hairline closing the band, in the colour lighting it. */
+	.hero__rule {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		height: 2px;
+		background: var(--lit);
+		opacity: 0.9;
+	}
+
+	.hero__inner {
+		position: relative;
+		z-index: 1;
 		width: 100%;
 		max-width: 74rem;
 		margin: 0 auto;
-		padding: calc(var(--nav-h) + clamp(2.5rem, 7vh, 4.5rem)) var(--gutter) 0;
-	}
-
-	.give--tail {
-		flex: 1 0 auto;
-		padding-top: 0;
-		padding-bottom: clamp(3rem, 8vh, 5rem);
-	}
-
-	/* ── Hero ──────────────────────────────────────────────────────────────── */
-
-	.give__hero {
 		display: grid;
-		grid-template-columns: minmax(0, 1.15fr) minmax(20rem, 24rem);
+		grid-template-columns: minmax(0, 1.1fr) minmax(20rem, 24rem);
 		column-gap: clamp(2.5rem, 6vw, 5rem);
-		align-items: start;
-		padding-bottom: clamp(2.5rem, 7vh, 4.5rem);
+		align-items: center;
 	}
 
-	.give__eyebrow {
+	.hero__eyebrow {
 		font-family: var(--face-cinzel);
 		font-size: 0.6875rem;
 		font-weight: 500;
-		letter-spacing: 0.18em;
+		letter-spacing: 0.2em;
 		text-transform: uppercase;
-		color: var(--teal);
+		/* Mixed toward the ground rather than made transparent: translucent type
+		   over a gradient is lightest exactly where the band is lightest, which
+		   makes its contrast a moving target. A solid colour measures once. */
+		color: color-mix(in srgb, var(--cream) 88%, var(--teal-deep));
 	}
 
-	.give__title {
-		margin-top: 1.1rem;
+	.hero__title {
+		margin-top: 1.25rem;
 		font-family: var(--face-bodoni);
-		font-size: clamp(2.5rem, 5.2vw, 4rem);
+		font-size: clamp(2.5rem, 5.4vw, 4.25rem);
 		font-weight: var(--display-weight);
 		line-height: 1.02;
 		letter-spacing: -0.02em;
 		max-width: 15ch;
 	}
 
-	.give__lede {
+	.hero__lede {
 		margin-top: 1.5rem;
 		max-width: 30rem;
 		font-size: 1.1875rem;
 		line-height: 1.55;
-		color: var(--ink-soft);
+		color: color-mix(in srgb, var(--cream) 88%, var(--teal-deep));
 	}
 
-	.give__stamp {
+	.hero__stamp {
 		margin-top: 2rem;
 		padding-top: 1.25rem;
-		border-top: 1px solid var(--rule);
+		border-top: 1px solid color-mix(in srgb, var(--cream) 22%, transparent);
 		font-size: 0.6875rem;
 		font-weight: 600;
 		letter-spacing: 0.13em;
 		text-transform: uppercase;
-		color: var(--ink-faint);
+		color: color-mix(in srgb, var(--cream) 88%, var(--teal-deep));
 	}
 
-	/* ── The card ──────────────────────────────────────────────────────────── */
+	/* ══ The card ═════════════════════════════════════════════════════════════ */
 
-	/* The one element on the site that asks for money, so the one thing allowed
-	   to lift off the ground. */
+	/* The brightest thing on the page, because it is the one that asks. On a
+	   dark ground it needs no border to read as an object; the shadow does it. */
 	.card {
-		position: sticky;
-		top: calc(var(--nav-h) + 1.5rem);
 		background: var(--warm-white, #fff);
-		border: 1px solid var(--rule);
-		border-radius: 3px;
+		border-radius: 4px;
 		box-shadow:
-			0 1px 2px rgba(44, 39, 33, 0.04),
-			0 12px 32px -18px rgba(44, 39, 33, 0.28);
+			0 2px 4px rgba(10, 47, 53, 0.18),
+			0 24px 60px -22px rgba(10, 47, 53, 0.55);
 		overflow: hidden;
+		color: var(--ink);
 	}
 
 	.card::before {
@@ -421,7 +491,7 @@ const WAYS = [
 
 	.card__inner {
 		display: grid;
-		gap: 1.5rem;
+		gap: 1.45rem;
 		padding: clamp(1.5rem, 2.4vw, 1.9rem);
 	}
 
@@ -459,7 +529,7 @@ const WAYS = [
 	.amount {
 		font-family: var(--body);
 		font-size: 0.9375rem;
-		padding: 0.62rem 0.3rem;
+		padding: 0.66rem 0.3rem;
 		border: 1px solid var(--rule);
 		border-radius: 2px;
 		background: none;
@@ -473,6 +543,7 @@ const WAYS = [
 
 	.amount:hover {
 		border-color: color-mix(in srgb, var(--teal) 55%, transparent);
+		background: color-mix(in srgb, var(--teal) 5%, transparent);
 	}
 
 	.amount[aria-pressed='true'] {
@@ -516,7 +587,7 @@ const WAYS = [
 		min-width: 0;
 		font-family: var(--body);
 		font-size: 1rem;
-		padding: 0.62rem 0.75rem 0.62rem 0.1rem;
+		padding: 0.66rem 0.75rem 0.66rem 0.1rem;
 		border: 0;
 		background: none;
 		color: var(--ink);
@@ -536,7 +607,7 @@ const WAYS = [
 		min-width: 0;
 		font-family: var(--body);
 		font-size: 1rem;
-		padding: 0.62rem 2.2rem 0.62rem 0.75rem;
+		padding: 0.66rem 2.2rem 0.66rem 0.75rem;
 		border: 1px solid var(--rule);
 		border-radius: 2px;
 		background: none;
@@ -569,17 +640,20 @@ const WAYS = [
 		gap: 1rem;
 		font-family: var(--body);
 		font-size: 1.0625rem;
-		padding: 0.9rem 1.15rem;
+		padding: 0.95rem 1.15rem;
 		border: 0;
 		border-radius: 2px;
 		background: var(--teal);
 		color: var(--cream);
 		cursor: pointer;
-		transition: background-color 180ms var(--ease);
+		transition:
+			background-color 180ms var(--ease),
+			box-shadow 180ms var(--ease);
 	}
 
-	.card__go:hover {
+	.card__go:hover:not([disabled]) {
 		background: var(--teal-deep);
+		box-shadow: 0 6px 18px -10px rgba(10, 47, 53, 0.8);
 	}
 
 	.card__go[disabled] {
@@ -639,16 +713,26 @@ const WAYS = [
 		color: var(--ink);
 	}
 
-	/* ── Bands ─────────────────────────────────────────────────────────────── */
+	/* ══ The body ═════════════════════════════════════════════════════════════ */
 
-	.give__band {
-		border-top: 1px solid var(--rule);
-		padding: clamp(3rem, 7vh, 4.5rem) 0;
+	.give {
+		width: 100%;
+		max-width: 74rem;
+		margin: 0 auto;
+		padding: 0 var(--gutter);
 	}
 
-	/* The band that opens straight out of the plinth already has its rule. */
-	.give__band--open {
-		border-top: 0;
+	.give--tail {
+		flex: 1 0 auto;
+		padding-bottom: clamp(3rem, 8vh, 5rem);
+	}
+
+	.give__band {
+		padding: clamp(3.25rem, 8vh, 5rem) 0;
+	}
+
+	.give__band + .give__band {
+		border-top: 1px solid var(--rule);
 	}
 
 	.give__band-head {
@@ -689,7 +773,7 @@ const WAYS = [
 		text-decoration-color: var(--teal);
 	}
 
-	/* ── The three areas ───────────────────────────────────────────────────── */
+	/* ══ The three areas ══════════════════════════════════════════════════════ */
 
 	.areas {
 		display: grid;
@@ -700,17 +784,32 @@ const WAYS = [
 		padding: 0;
 	}
 
+	/* Each card takes a wash of its own colour rather than a shared cream, so
+	   the three read as three things at a glance and not as one list. */
 	.area {
 		position: relative;
 		display: grid;
 		align-content: start;
 		gap: 0.6rem;
-		min-height: 13rem;
+		min-height: 13.5rem;
 		padding: 1.9rem 1.6rem 2.1rem;
-		background: var(--cream-deep);
-		border: 1px solid var(--rule);
-		border-radius: 3px;
+		border: 1px solid color-mix(in srgb, var(--accent) 26%, transparent);
+		border-radius: 4px;
 		overflow: hidden;
+		background:
+			linear-gradient(
+				165deg,
+				color-mix(in srgb, var(--accent) 13%, var(--cream)) 0%,
+				color-mix(in srgb, var(--accent) 5%, var(--cream)) 62%
+			);
+		transition:
+			transform 320ms var(--ease),
+			box-shadow 320ms var(--ease);
+	}
+
+	.area:hover {
+		transform: translateY(-3px);
+		box-shadow: 0 16px 34px -22px color-mix(in srgb, var(--accent-ink) 70%, transparent);
 	}
 
 	.area__rule {
@@ -724,11 +823,11 @@ const WAYS = [
 	   and not a logo tile. */
 	.area__sign {
 		position: absolute;
-		right: -1.5rem;
-		bottom: -1.75rem;
-		width: 9rem;
-		height: 9rem;
-		opacity: 0.08;
+		right: -1.75rem;
+		bottom: -2rem;
+		width: 10rem;
+		height: 10rem;
+		opacity: 0.1;
 		color: var(--accent-ink);
 		pointer-events: none;
 	}
@@ -770,66 +869,39 @@ const WAYS = [
 		color: var(--ink-soft);
 	}
 
-	/* ── The plinth ────────────────────────────────────────────────────────── */
+	/* ══ The plinth ═══════════════════════════════════════════════════════════ */
 
-	/* Depth rather than a flat fill: the brand teal falling away to its own
-	   abyss, lit from the upper left so the band has a light source. The same
-	   treatment the account page uses, because it is the Foundation's, and
-	   because a page that asks for money should have one moment in it. */
+	/* Quiet on purpose. The hero is the page's one loud moment, and repeating
+	   its treatment here would spend it twice. */
 	.plinth {
 		position: relative;
 		width: 100vw;
 		margin-left: calc(50% - 50vw);
 		padding: clamp(4rem, 11vh, 7rem) var(--gutter);
+		background: var(--cream-deep);
+		border-top: 1px solid var(--rule);
+		border-bottom: 1px solid var(--rule);
 		overflow: clip;
 		isolation: isolate;
-		color: var(--cream);
-		--lit: var(--teal);
-		--deep: color-mix(in srgb, var(--teal) 46%, var(--teal-deep));
-		--floor: var(--teal-deep);
-		background:
-			radial-gradient(
-				118% 140% at 12% 0%,
-				color-mix(in srgb, var(--lit) 72%, transparent) 0%,
-				transparent 62%
-			),
-			linear-gradient(160deg, var(--deep) 0%, var(--floor) 68%);
 	}
 
-	/* A watermark, not a logo: large enough to be a texture in the field and
-	   faint enough that it is felt rather than read. It bleeds off the right so
-	   it never resolves into a badge sitting on the band. */
 	.plinth__ornament {
 		position: absolute;
 		top: 50%;
-		right: -7%;
-		transform: translateY(-52%);
+		right: -8%;
+		transform: translateY(-50%);
 		display: block;
-		color: var(--cream);
-		opacity: 0.07;
+		color: var(--ink);
+		opacity: 0.035;
 		pointer-events: none;
 	}
 
-	/* The grain the whole site is laid over, so this band sits in the same air
-	   as the plates rather than looking like flat CSS. */
 	.plinth__grain {
-		position: absolute;
-		inset: 0;
-		opacity: 0.3;
-		mix-blend-mode: overlay;
-		pointer-events: none;
-		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='1 0 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+		display: none;
 	}
 
-	/* A hairline closing the band, in the same colour lighting it. */
 	.plinth__rule {
-		position: absolute;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		height: 2px;
-		background: var(--lit);
-		opacity: 0.9;
+		display: none;
 	}
 
 	.plinth__body {
@@ -846,11 +918,7 @@ const WAYS = [
 		font-weight: 500;
 		letter-spacing: 0.18em;
 		text-transform: uppercase;
-		/* Mixed toward the ground rather than made transparent. Translucent type
-		   over a gradient makes its own contrast a moving target — it is lightest
-		   where the band is lightest, which is exactly where it needs to be
-		   darkest. A solid colour can be measured once. */
-		color: color-mix(in srgb, var(--cream) 88%, var(--teal-deep));
+		color: var(--teal);
 	}
 
 	.plinth__line {
@@ -860,6 +928,7 @@ const WAYS = [
 		font-weight: var(--display-weight);
 		line-height: 1.3;
 		letter-spacing: -0.01em;
+		color: var(--ink);
 	}
 
 	.plinth__note {
@@ -867,10 +936,10 @@ const WAYS = [
 		max-width: 30rem;
 		font-size: 1rem;
 		line-height: 1.6;
-		color: color-mix(in srgb, var(--cream) 88%, var(--teal-deep));
+		color: var(--ink-soft);
 	}
 
-	/* ── Facts and ways ────────────────────────────────────────────────────── */
+	/* ══ Facts and ways ═══════════════════════════════════════════════════════ */
 
 	.facts {
 		display: grid;
@@ -941,17 +1010,55 @@ const WAYS = [
 		text-underline-offset: 0.2em;
 	}
 
-	/* ── Narrow ────────────────────────────────────────────────────────────── */
+	/* ══ Arrival ══════════════════════════════════════════════════════════════ */
+
+	/* The armed state is added by script, never by the stylesheet, so a page
+	   without JavaScript renders every section rather than none of them. */
+	[data-reveal].is-armed {
+		opacity: 0;
+		translate: 0 1.25rem;
+	}
+
+	[data-reveal].is-armed.is-in {
+		opacity: 1;
+		translate: none;
+		transition:
+			opacity 700ms var(--ease),
+			translate 700ms var(--ease);
+		transition-delay: var(--delay, 0ms);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		[data-reveal].is-armed,
+		[data-reveal].is-armed.is-in {
+			opacity: 1;
+			translate: none;
+			transition: none;
+		}
+
+		.area,
+		.amount,
+		.card__go,
+		.card__go-arrow {
+			transition: none;
+		}
+	}
+
+	/* ══ Narrow ═══════════════════════════════════════════════════════════════ */
 
 	@media (max-width: 62rem) {
-		.give__hero {
+		.hero__inner {
 			grid-template-columns: 1fr;
 			row-gap: clamp(2rem, 5vh, 3rem);
 		}
 
 		.card {
-			position: static;
 			max-width: 26rem;
+		}
+
+		.hero__ornament {
+			left: -30%;
+			opacity: 0.045;
 		}
 
 		.areas,
@@ -965,16 +1072,7 @@ const WAYS = [
 		}
 
 		.plinth__ornament {
-			right: -22%;
-			opacity: 0.05;
-		}
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.amount,
-		.card__go,
-		.card__go-arrow {
-			transition: none;
+			right: -28%;
 		}
 	}
 </style>
@@ -1176,5 +1274,47 @@ const WAYS = [
 		});
 
 		say();
+	}
+</script>
+
+<script>
+	/**
+	 * Sections arrive as they are reached.
+	 *
+	 * Armed from here rather than from the stylesheet, so a reader without
+	 * JavaScript gets the whole page rather than a blank one — the hidden state
+	 * only ever exists if something is running that can undo it.
+	 *
+	 * The observer releases each element once and then stops watching it. A
+	 * reveal that runs again on the way back up is a page that will not settle.
+	 */
+	const revealing = [...document.querySelectorAll<HTMLElement>('[data-reveal]')];
+	const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+	if (revealing.length > 0 && !still && 'IntersectionObserver' in window) {
+		for (const el of revealing) el.classList.add('is-armed');
+
+		const watcher = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) {
+					if (!entry.isIntersecting) continue;
+					const el = entry.target as HTMLElement;
+					// Siblings in the same row follow each other rather than landing
+					// together, which reads as one movement instead of three.
+					const peers = [...(el.parentElement?.children ?? [])].filter((n) =>
+						(n as HTMLElement).dataset?.reveal !== undefined,
+					);
+					const place = peers.indexOf(el);
+					if (peers.length > 1 && place > 0) el.style.setProperty('--delay', `${place * 90}ms`);
+					el.classList.add('is-in');
+					watcher.unobserve(el);
+				}
+			},
+			// Released a little before the element's top edge arrives, so the
+			// movement finishes about when the reader gets there.
+			{ rootMargin: '0px 0px -12% 0px', threshold: 0.05 },
+		);
+
+		for (const el of revealing) watcher.observe(el);
 	}
 </script>
