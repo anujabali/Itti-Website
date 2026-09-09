@@ -3,51 +3,129 @@
  * Contact.
  *
  * One address, because one address is what exists and is answered. A page that
- * lists five routes and answers one is worse than a page that lists one.
+ * lists five routes and answers one is worse than a page that lists one; the
+ * headings below route the enquiry rather than multiplying the destinations.
  *
- * The phone number and the three accounts below are the ones the Foundation
+ * Unlike privacy and terms, the sections here are not numbered — nothing
+ * cross-references them, and numbering a contact page reads as bureaucracy.
+ *
+ * The phone number and the three accounts are the ones the Foundation
  * confirmed. Each was checked to resolve before it was linked; a dead account
- * on a contact page is worse than no account. If one is closed, take it out
- * here rather than leaving it to rot.
+ * on a contact page is worse than no account. If one is closed, remove it here
+ * rather than leaving it to rot.
  */
 import Doc from '../layouts/Doc.astro';
 ---
 
 <Doc
 	title="Contact — The Itti Foundation"
-	description="How to reach The Itti Foundation, what to write about, and how long we take to answer."
+	description="How to reach The Itti Foundation: general enquiries, data protection, accessibility, media and partnerships, and our response times."
 	eyebrow="Contact"
-	heading="How to reach us."
-	lede="An address, a number, and the places we post. All of them reach people."
+	heading="Contact"
+	lede="One address, answered by people. Below is how to reach us and what to expect."
 >
 	<section class="doc__section">
-		<h2 class="doc__h">Write to us</h2>
+		<h2 class="doc__h">General enquiries</h2>
 		<div class="doc__body">
 			<p>
-				<a class="doc__link" href="mailto:hello@itti.org.in">hello@itti.org.in</a>{' '}
-				&mdash; for anything at all. It is read by people at the Foundation, not by a ticketing
-				system, and we answer within five working days.
+				<strong>Email:</strong>{' '}
+				<a class="doc__link" href="mailto:hello@itti.org.in">hello@itti.org.in</a><br />
+				<strong>Telephone:</strong>{' '}
+				<a class="doc__link" href="tel:+918928263631">+91 89282 63631</a>
 			</p>
 			<p>
-				You do not need to know which part of the Foundation your question belongs to.
-				Send it and we will pass it to whoever should have it.
+				The address is read by people at the Foundation, not by a ticketing system. You do
+				not need to know which part of our work your question belongs to: send it and we
+				will pass it to whoever should have it.
 			</p>
 			<p>
-				If you would rather speak to someone:{' '}
-				<a class="doc__link" href="tel:+918928263631">+91 89282 63631</a>. It is a
-				working number rather than a staffed line, so you may reach us or you may not
-				&mdash; if nobody answers, write instead and we will come back to you.
+				The telephone is a working number rather than a staffed line. If nobody answers,
+				please write instead and we will come back to you.
 			</p>
 		</div>
 	</section>
 
 	<section class="doc__section">
-		<h2 class="doc__h">Where we post</h2>
+		<h2 class="doc__h">Response times</h2>
 		<div class="doc__body">
 			<p>
-				What we are doing, as we do it. Messages sent to these reach us too, though more
-				slowly than the address above.
+				We respond to email within <strong>five working days</strong>. Requests concerning
+				your personal data are acknowledged within five working days and completed within
+				thirty days, as set out in our{' '}
+				<a class="doc__link" href="/privacy">Privacy Policy</a>.
 			</p>
+			<p>
+				Messages sent through social media reach us, but more slowly than the address
+				above.
+			</p>
+		</div>
+	</section>
+
+	<section class="doc__section">
+		<h2 class="doc__h">What to write about</h2>
+		<div class="doc__body">
+			<p>
+				It helps to say roughly what your message concerns, because that determines who
+				reads it next.
+			</p>
+			<dl class="doc__list">
+				<dt>Taking part</dt>
+				<dd>
+					Whether as someone we can help, someone caring for another person, a volunteer
+					or a partner. The quickest route is{' '}
+					<a class="doc__link" href="/join">our registration form</a>, which asks the few
+					things we need in order to reach you properly. An email is equally welcome.
+				</dd>
+				<dt>Your personal data</dt>
+				<dd>
+					To access, correct or erase what we hold about you, or to withdraw a permission
+					you gave us. Most of this can be done directly on your{' '}
+					<a class="doc__link" href="/account">account page</a>.
+				</dd>
+				<dt>Media and partnerships</dt>
+				<dd>
+					Press enquiries, and organisations proposing joint work. Please say what you
+					have in mind and who you are.
+				</dd>
+			</dl>
+		</div>
+	</section>
+
+	<section class="doc__section">
+		<h2 class="doc__h">Data protection</h2>
+		<div class="doc__body">
+			<p>
+				<strong>Grievance Officer:</strong> Anuja Bali<br />
+				<strong>Email:</strong>{' '}
+				<a class="doc__link" href="mailto:hello@itti.org.in">hello@itti.org.in</a>
+			</p>
+			<p>
+				Please mark data protection requests clearly so they are routed correctly. What we
+				hold, why, and the rights you have over it are set out in our{' '}
+				<a class="doc__link" href="/privacy">Privacy Policy</a>.
+			</p>
+		</div>
+	</section>
+
+	<section class="doc__section">
+		<h2 class="doc__h">Accessibility</h2>
+		<div class="doc__body">
+			<p>
+				If any part of this site was difficult to read, could not be reached with a
+				keyboard, or behaved unexpectedly, please tell us at the address above. Our{' '}
+				<a class="doc__link" href="/accessibility">Accessibility Statement</a> records what
+				we already know to be wrong.
+			</p>
+			<p>
+				If something here prevents you from registering, say so and we will take your
+				details by whatever means is easiest for you.
+			</p>
+		</div>
+	</section>
+
+	<section class="doc__section">
+		<h2 class="doc__h">Social media</h2>
+		<div class="doc__body">
 			<dl class="doc__list">
 				<dt>Instagram</dt>
 				<dd>
@@ -78,59 +156,20 @@ import Doc from '../layouts/Doc.astro';
 	</section>
 
 	<section class="doc__section">
-		<h2 class="doc__h">What to say</h2>
+		<h2 class="doc__h">Urgent help</h2>
 		<div class="doc__body">
 			<p>
-				Nothing formal. It helps if you tell us roughly what you are writing about,
-				because it decides who reads it next.
-			</p>
-			<dl class="doc__list">
-				<dt>Wanting to take part</dt>
-				<dd>
-					Whether as someone we can help, someone caring for another person, a volunteer
-					or a partner. The quickest route is{' '}
-					<a class="doc__link" href="/join">the registration form</a>, which asks the
-					few things we need to reach you properly &mdash; but an email is fine.
-				</dd>
-				<dt>Your details, and what we hold</dt>
-				<dd>
-					To see, correct or delete anything we hold about you. <strong
-						>Anuja Bali</strong
-					> answers these. What we keep and why is set out in{' '}
-					<a class="doc__link" href="/privacy">What we hold, and why</a>.
-				</dd>
-				<dt>Something on the site is broken</dt>
-				<dd>
-					Including anything you could not read, could not reach with a keyboard, or
-					that behaved strangely. See{' '}
-					<a class="doc__link" href="/accessibility">Accessibility</a> for what we already
-					know is wrong.
-				</dd>
-				<dt>Working with us</dt>
-				<dd>
-					Press, partnership, or an organisation wanting to do something together. Say
-					what you have in mind and who you are.
-				</dd>
-			</dl>
-		</div>
-	</section>
-
-	<section class="doc__section">
-		<h2 class="doc__h">What we are not</h2>
-		<div class="doc__body">
-			<p>
-				We are not a crisis line and not a medical service. None of the routes above is
-				watched overnight &mdash; not the address, not the number, not the accounts
-				&mdash; and five working days is far too slow to be any use to someone in
-				danger.
+				<strong>We are not a crisis service and not a medical service.</strong> None of the
+				routes above is monitored overnight, and five working days is far too slow to be of
+				use to someone in danger.
 			</p>
 			<p>
-				If you or someone near you needs help now, contact your local emergency
-				services, or a crisis line in your country. Please do not wait on us.
+				If you or someone near you needs help now, please contact your local emergency
+				services or a crisis helpline in your country rather than waiting on us.
 			</p>
 			<p>
-				Nothing we write back is medical, legal or financial advice. See{' '}
-				<a class="doc__link" href="/terms">the terms of this site</a>.
+				Nothing we write in reply constitutes medical, legal or financial advice. See our{' '}
+				<a class="doc__link" href="/terms">Terms of Use</a>.
 			</p>
 		</div>
 	</section>

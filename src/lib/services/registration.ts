@@ -1,4 +1,5 @@
 import { supabase, isSupabaseConfigured } from '../supabase';
+import { POLICY_VERSION } from '../policy';
 import {
 	LIMITS,
 	checkDateOfBirth,
@@ -185,7 +186,7 @@ export const registerMember = async (
 				referrerName: payload.referrerName?.trim() || null,
 				referrerCode: payload.referrerCode?.trim() || null,
 				utm: payload.utm || {},
-				policyVersion: payload.policyVersion || 'v1.0',
+				policyVersion: payload.policyVersion || POLICY_VERSION,
 			},
 		});
 

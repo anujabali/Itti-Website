@@ -123,7 +123,7 @@ export type ConsentRecord = {
 	person_id: string;
 	purpose: string; // 'account' | 'privacy_policy' | 'whatsapp' | 'sms' | 'email'
 	granted: boolean;
-	policy_version: string; // e.g. 'v1.0'
+	policy_version: string; // the version in force when granted, e.g. 'v2.0'
 	channel: 'web' | 'in_person' | 'phone';
 	granted_by: string | null;
 	created_at: string;
@@ -175,7 +175,7 @@ export interface Form1RegistrationPayload {
 	utm?: Record<string, string>;
 
 	// Policy acceptance
-	policyVersion?: string; // defaults to 'v1.0'
+	policyVersion?: string; // defaults to POLICY_VERSION in lib/policy.ts
 }
 
 /**

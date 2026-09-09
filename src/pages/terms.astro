@@ -2,10 +2,11 @@
 /**
  * Terms of Use.
  *
- * Written against what the site actually does today, not against what it is
- * planned to do. There is nothing to buy here, no account to hold and nothing
- * to upload, so there are no clauses about any of that; when those arrive the
- * terms get a new version rather than a clause written early and left to rot.
+ * Written against what the site actually does today. Version 1.0 stated that
+ * there was no account and no sign-in; accounts shipped, so sections 3 and 4
+ * exist and that claim is gone. A term describing a capability the site does
+ * not have is as much a defect as a missing one — when the site gains or loses
+ * something, this page changes with it, under a new version and date.
  *
  * The licence section is the one place this has to be exact, and it follows
  * ATTRIBUTION.md rather than asserting a blanket claim: one of the three plates
@@ -13,206 +14,300 @@
  */
 import Doc from '../layouts/Doc.astro';
 
-const TERMS_VERSION = '1.0';
-const LAST_UPDATED = '7 September 2026';
+const TERMS_VERSION = '2.0';
+const LAST_UPDATED = '9 September 2026';
 ---
 
 <Doc
 	title="Terms of Use — The Itti Foundation"
-	description="The terms on which The Itti Foundation offers this site, what you may do with what is on it, and what it is not."
+	description="The terms on which The Itti Foundation offers this site: eligibility, accounts, acceptable use, intellectual property and liability."
 	eyebrow="Terms of Use"
-	heading="The terms of this site."
-	lede="What this site is, what you can do with it, and what it does not claim to be."
+	heading="Terms of Use"
+	lede="The terms on which this site is offered, what you may do with what is on it, and the limits of what it claims to be."
 	version={TERMS_VERSION}
 	updated={LAST_UPDATED}
 >
 	<section class="doc__section">
-		<h2 class="doc__h">Who offers this site</h2>
+		<h2 class="doc__h">1. Who we are, and your acceptance</h2>
 		<div class="doc__body">
 			<p>
-				The Itti Foundation, registered as Itti&rsquo;s Skill School Foundation, a
-				Section 8 not-for-profit in India. Where these terms say <em>we</em>, that is
-				who they mean. Where they say <em>you</em>, they mean whoever is reading the
-				site.
+				This site is operated by <strong>Itti&rsquo;s Skill School Foundation</strong>, a
+				Section 8 not-for-profit company incorporated in India and operating as The Itti
+				Foundation. In these terms <em>we</em> and <em>us</em> mean the Foundation, and{' '}
+				<em>you</em> means the person using the site.
 			</p>
 			<p>
-				Using the site means these terms apply to you. If you do not want them to, the
-				remedy is not to use it.
+				By using this site you accept these terms. If you do not accept them, please do
+				not use the site. Your use of personal data is governed additionally by our{' '}
+				<a class="doc__link" href="/privacy">Privacy Policy</a>, which forms part of these
+				terms.
 			</p>
 		</div>
 	</section>
 
 	<section class="doc__section">
-		<h2 class="doc__h">What this site is</h2>
+		<h2 class="doc__h">2. Registration</h2>
 		<div class="doc__body">
 			<p>
-				An account of what the Foundation works on, and a form that lets you tell us who
-				you are so we can reach you.
+				Registration is optional. It records your interest and how we may contact you. It
+				does not create a membership, an employment or volunteering relationship, an
+				entitlement to any service, or any other contract between us.
 			</p>
-			<p>
-				That is the whole of it today. There is nothing to buy, no account to hold, no
-				password, and nothing for you to upload or publish. Where the navigation points
-				at parts of the site that do not exist yet, they do not exist yet. When any of
-				that changes these terms change with it, under a new version and date.
-			</p>
-		</div>
-	</section>
-
-	<section class="doc__section">
-		<h2 class="doc__h">Nothing here is advice</h2>
-		<div class="doc__body">
-			<p>
-				We write about neurodivergence, cancer, mental health and the environment. None
-				of it is medical, psychological, legal or financial advice, and none of it is a
-				diagnosis or a treatment plan. It is not a substitute for a professional who
-				knows your situation, and it should never be the reason you start, stop or
-				change anything about your care.
-			</p>
-			<p>
-				If something here is useful, take it to someone qualified and ask them. If you
-				are in immediate danger or crisis, contact your local emergency services rather
-				than us &mdash; we are not a crisis service and cannot answer quickly enough to
-				be one.
-			</p>
-		</div>
-	</section>
-
-	<section class="doc__section">
-		<h2 class="doc__h">Registering</h2>
-		<div class="doc__body">
-			<p>
-				What happens to the details you give us is set out in{' '}
-				<a class="doc__link" href="/privacy">What we hold, and why</a>. These terms add
-				three things.
-			</p>
-			<p>
-				Give us details that are true, and that are yours to give. If you are
-				registering on someone else&rsquo;s behalf, they should know you are doing it.
-			</p>
-			<p>
-				If you are under eighteen we ask for a parent or guardian, and we write to them
-				before we act on the registration. That is not a formality we can waive &mdash;
-				the registry itself refuses a registration from a minor that has no guardian on
-				it.
-			</p>
-			<p>
-				Registering is not a contract, a membership or a promise of anything from either
-				side. It tells us you are interested and how to reach you.
-			</p>
-		</div>
-	</section>
-
-	<section class="doc__section">
-		<h2 class="doc__h">What you may do, and what you may not</h2>
-		<div class="doc__body">
-			<p>
-				Read it, quote it, link to it, print it, and send it to whoever you like. None
-				of that needs our permission.
-			</p>
-			<p>What we ask you not to do:</p>
+			<p>When you register you undertake that:</p>
 			<dl class="doc__list">
-				<dt>Break it, or try to</dt>
+				<dt>The details are accurate</dt>
 				<dd>
-					Probing, overloading, or attempting to reach parts of the system that are not
-					offered to you.
+					And that you will correct them if they cease to be. Your account page allows
+					this at any time.
 				</dd>
-				<dt>Register other people without their knowing</dt>
+				<dt>They are yours to give</dt>
 				<dd>
-					Or submit details that are false, or that belong to someone who has not asked
-					you to.
+					If you register on another person&rsquo;s behalf, you confirm that they are
+					aware of it and have asked you to.
 				</dd>
-				<dt>Take it wholesale</dt>
+				<dt>A minor has a guardian</dt>
 				<dd>
-					Automated collection at a scale that costs us to serve, or that copies the
-					site rather than reading it.
-				</dd>
-				<dt>Pass yourself off as us</dt>
-				<dd>
-					Using our name, our mark or our wording in a way that suggests we said
-					something we did not, or that you speak for the Foundation.
+					A person under eighteen may register only with a parent or lawful guardian
+					named. We write to the guardian and do not act on the registration until they
+					agree. This requirement is enforced by the registry and cannot be waived.
 				</dd>
 			</dl>
 		</div>
 	</section>
 
 	<section class="doc__section">
-		<h2 class="doc__h">What belongs to whom</h2>
+		<h2 class="doc__h">3. Accounts and sign-in</h2>
 		<div class="doc__body">
 			<p>
-				The site is built from work under several different licences, and they are not
-				the same. The full record travels with the code in{' '}
-				<code>ATTRIBUTION.md</code>; this is the short version.
+				If you registered with an email address, you may sign in to view and amend the
+				record we hold about you.
+			</p>
+			<dl class="doc__list">
+				<dt>There is no password</dt>
+				<dd>
+					You sign in by requesting a single-use link sent to your registered email
+					address. Anyone with access to that mailbox can sign in as you, so keep it
+					secure and tell us promptly if you believe it has been compromised.
+				</dd>
+				<dt>The account is personal to you</dt>
+				<dd>
+					Do not share access, and do not attempt to reach another person&rsquo;s record.
+				</dd>
+				<dt>You may close it</dt>
+				<dd>
+					Write to us and we will erase your record, subject to the retention set out in
+					the Privacy Policy.
+				</dd>
+			</dl>
+			<p>
+				We take reasonable care to keep the sign-in mechanism secure, but you are
+				responsible for activity carried out through your account where it results from
+				your own act or omission.
+			</p>
+		</div>
+	</section>
+
+	<section class="doc__section">
+		<h2 class="doc__h">4. Content you provide</h2>
+		<div class="doc__body">
+			<p>
+				Your account allows you to add a short biography and links to your own profiles or
+				addresses. You remain the owner of what you write. You grant us only the permission
+				necessary to store it and display it back to you.
+			</p>
+			<p>You are responsible for it, and you undertake not to submit:</p>
+			<dl class="doc__list">
+				<dt>Another person&rsquo;s material or identity</dt>
+				<dd>
+					Including links to accounts that are not yours, or content that infringes
+					someone else&rsquo;s rights.
+				</dd>
+				<dt>Unlawful or abusive content</dt>
+				<dd>
+					Anything defamatory, obscene, harassing, or prohibited by Indian law.
+				</dd>
+				<dt>Other people&rsquo;s personal data</dt>
+				<dd>Beyond the guardian details the registration asks for.</dd>
+			</dl>
+			<p>
+				Links you add are self-asserted: we do not verify that an account belongs to you
+				and displaying one is not an endorsement of it. We may remove content that
+				breaches these terms, and will tell you when we do.
+			</p>
+		</div>
+	</section>
+
+	<section class="doc__section">
+		<h2 class="doc__h">5. Acceptable use</h2>
+		<div class="doc__body">
+			<p>
+				You may read, quote, link to, print and share the material on this site freely,
+				subject to section 7. You may not:
+			</p>
+			<dl class="doc__list">
+				<dt>Interfere with the site</dt>
+				<dd>
+					By probing it, overloading it, circumventing its security, or attempting to
+					reach any part of the system not offered to you.
+				</dd>
+				<dt>Submit false or unauthorised details</dt>
+				<dd>Including registering a person who has not asked you to.</dd>
+				<dt>Extract the site at scale</dt>
+				<dd>
+					Automated collection that imposes a material load on our infrastructure, or
+					that reproduces the site rather than reading it.
+				</dd>
+				<dt>Misrepresent your relationship with us</dt>
+				<dd>
+					By using our name, marks or wording in a way that suggests we said something we
+					did not, or that you speak for the Foundation.
+				</dd>
+			</dl>
+		</div>
+	</section>
+
+	<section class="doc__section">
+		<h2 class="doc__h">6. No professional advice</h2>
+		<div class="doc__body">
+			<p>
+				This site discusses neurodivergence, cancer, mental health and the environment.
+				Nothing on it constitutes medical, psychological, legal or financial advice, a
+				diagnosis, or a treatment plan, and nothing on it establishes a
+				practitioner&ndash;patient relationship.
+			</p>
+			<p>
+				It is not a substitute for a qualified professional who knows your circumstances,
+				and it should never be the reason you start, stop or change any aspect of your
+				care. <strong
+					>We are not a crisis service. If you are in immediate danger, contact your local
+					emergency services.</strong
+				>
+			</p>
+		</div>
+	</section>
+
+	<section class="doc__section">
+		<h2 class="doc__h">7. Intellectual property</h2>
+		<div class="doc__body">
+			<p>
+				This site incorporates work under several different licences. The complete record
+				travels with the source code in <code>ATTRIBUTION.md</code>; the following is a
+				summary.
 			</p>
 			<dl class="doc__list">
 				<dt>The heron</dt>
 				<dd>
-					<em>Hummingbird at Arizona-Sonora Desert Museum</em> (2023) by Lorie Shaull, under{
-						' '
-					}
+					<em>Hummingbird at Arizona-Sonora Desert Museum</em> (2023) by Lorie Shaull,
+					under{' '}
 					<a
 						class="doc__link"
 						href="https://creativecommons.org/licenses/by-sa/4.0/"
 						rel="noopener">CC BY-SA 4.0</a
-					>. We colour-graded and resized it. Because that licence is share-alike, our
-					version is offered under the same terms, and anything you make from it has to
-					carry the same notice. This binds us as much as it binds you.
+					>, colour-graded and resized by us. Because that licence is share-alike, our
+					version is offered under the same terms and any derivative must carry the same
+					notice. This obligation binds us as it binds you.
 				</dd>
 				<dt>The Cajal and the Bourgery</dt>
 				<dd>
-					<em>Purkinje cell of the cerebellum</em> (1899) by Santiago Ram&oacute;n y Cajal,
-					and Plate 42 of the <em
-						>Trait&eacute; complet de l&rsquo;anatomie de l&rsquo;homme</em
-					> (1831&ndash;54), drawn by Nicolas-Henri Jacob for J. M. Bourgery. Both are in
+					<em>Purkinje cell of the cerebellum</em> (1899) by Santiago Ram&oacute;n y
+					Cajal, and Plate 42 of the{' '}
+					<em>Trait&eacute; complet de l&rsquo;anatomie de l&rsquo;homme</em>{' '}
+					(1831&ndash;54), drawn by Nicolas-Henri Jacob for J. M. Bourgery. Both are in
 					the public domain. We graded them; the originals belong to everyone.
 				</dd>
 				<dt>The typefaces</dt>
 				<dd>Each under the SIL Open Font License 1.1, and self-hosted.</dd>
 				<dt>Everything else</dt>
 				<dd>
-					Our name, our mark, the project marks, the photography and the words are the
-					Foundation&rsquo;s own, and are not licensed for reuse. Ask us if you want to
-					use them.
+					Our name, our mark, the project marks, the photography and the text are the
+					Foundation&rsquo;s and are not licensed for reuse. Please write to us if you
+					wish to use them.
 				</dd>
 			</dl>
 		</div>
 	</section>
 
 	<section class="doc__section">
-		<h2 class="doc__h">What we do not promise</h2>
+		<h2 class="doc__h">8. Third-party links</h2>
 		<div class="doc__body">
 			<p>
-				The site is offered as it is. We do not promise it will always be reachable,
-				that every page will be current, or that it will suit any particular purpose of
-				yours. We take it down, change it and rewrite it without notice, because it is
-				still being built.
-			</p>
-			<p>
-				Where we link to somewhere else, we are pointing rather than vouching. What
-				happens on another organisation&rsquo;s site is theirs, including what they do
-				with your data.
-			</p>
-			<p>
-				Nothing in these terms limits any liability that the law does not permit us to
-				limit &mdash; and nothing in them takes away a right you have under Indian
-				consumer or data protection law. Beyond that, we are not liable for loss arising
-				from your use of the site.
+				Where we link to another organisation we are directing you, not endorsing them. We
+				do not control those sites and are not responsible for their content, their
+				availability, or what they do with your data. Their own terms and privacy notices
+				apply once you leave this site.
 			</p>
 		</div>
 	</section>
 
 	<section class="doc__section">
-		<h2 class="doc__h">Changes, and the law that applies</h2>
+		<h2 class="doc__h">9. Availability and disclaimers</h2>
 		<div class="doc__body">
 			<p>
-				These terms carry a version and a date, at the top of this page. When they
-				change materially, both change. We do not quietly edit a live document and leave
-				the date alone.
+				The site is provided on an &ldquo;as is&rdquo; and &ldquo;as available&rdquo;
+				basis. We do not warrant that it will be uninterrupted or error-free, that every
+				page is current, or that it is fit for any particular purpose of yours. We may
+				modify, suspend or withdraw any part of it without notice.
 			</p>
-			<p>They are governed by the laws of India.</p>
+		</div>
+	</section>
+
+	<section class="doc__section">
+		<h2 class="doc__h">10. Limitation of liability</h2>
+		<div class="doc__body">
 			<p>
-				Anything about this page, or the site:{' '}
+				To the extent permitted by law, we are not liable for indirect or consequential
+				loss, or for loss of data, profit or goodwill, arising from your use of this site.
+			</p>
+			<p>
+				Nothing in these terms excludes or limits liability that cannot lawfully be
+				excluded or limited, including liability for death or personal injury caused by
+				negligence or for fraud; and nothing in them removes a right you have under Indian
+				consumer or data protection law.
+			</p>
+		</div>
+	</section>
+
+	<section class="doc__section">
+		<h2 class="doc__h">11. Suspension</h2>
+		<div class="doc__body">
+			<p>
+				We may suspend or withdraw access, or remove a registration or account, where these
+				terms are breached or where required by law. Where we do so we will tell you, and
+				where the breach can be remedied we will say how.
+			</p>
+		</div>
+	</section>
+
+	<section class="doc__section">
+		<h2 class="doc__h">12. Changes to these terms</h2>
+		<div class="doc__body">
+			<p>
+				These terms carry a version number and a date, shown at the head of this page. When
+				they change materially, both change. We do not edit a live document and leave its
+				date untouched. Continued use of the site after a change constitutes acceptance of
+				the revised terms.
+			</p>
+		</div>
+	</section>
+
+	<section class="doc__section">
+		<h2 class="doc__h">13. Governing law</h2>
+		<div class="doc__body">
+			<p>
+				These terms are governed by and construed in accordance with the laws of India,
+				and any dispute arising from them is subject to the exclusive jurisdiction of the
+				courts having jurisdiction over the Foundation&rsquo;s registered office.
+			</p>
+		</div>
+	</section>
+
+	<section class="doc__section">
+		<h2 class="doc__h">14. Contact</h2>
+		<div class="doc__body">
+			<p>
+				Questions about these terms or about this site:{' '}
 				<a class="doc__link" href="mailto:hello@itti.org.in">hello@itti.org.in</a>. We
-				answer within five working days.
+				respond within five working days.
 			</p>
 		</div>
 	</section>
