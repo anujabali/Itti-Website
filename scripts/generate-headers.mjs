@@ -78,7 +78,10 @@ const supabase = supabaseUrl ? new URL(supabaseUrl).origin : 'https://*.supabase
  * the browser entirely and are not a frame.
  */
 const RAZORPAY = {
-	script: 'https://checkout.razorpay.com',
+	// checkout.razorpay.com is the window itself; cdn.razorpay.com carries the
+	// fraud-detection bundle it loads, which is part of the payment rather than
+	// an extra. Blocking it leaves the checkout working and its risk checks not.
+	scripts: ['https://checkout.razorpay.com', 'https://cdn.razorpay.com'],
 	frames: ['https://api.razorpay.com', 'https://checkout.razorpay.com'],
 	connect: [
 		'https://api.razorpay.com',
@@ -90,7 +93,7 @@ const RAZORPAY = {
 
 const csp = [
 	`default-src 'self'`,
-	`script-src 'self' ${RAZORPAY.script} ${[...hashes].sort().join(' ')}`,
+	`script-src 'self' ${RAZORPAY.scripts.join(' ')} ${[...hashes].sort().join(' ')}`,
 	// Astro extracts component styles to files, but 35-odd `style=` attributes
 	// remain in the markup. style-src-attr would be tighter; it is not old
 	// enough to rely on alone, and losing it means losing the layout.
