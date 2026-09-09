@@ -216,20 +216,25 @@ svg {
 	}
 }
 
-/* The four grounds a veiled bar can take, mixed to sit a shade under the floor
-   of the page beneath it so the line between them still reads. */
+/* The four grounds a veiled bar can take.
+   
+   Mixed from the middle of the page's gradient rather than from its floor. The
+   bar is fixed and the ground scrolls beneath it, so what is actually behind it
+   at any moment is nearer the middle than the bottom — matched to the floor it
+   read as a dark strip laid over a lighter page. A little transparency on top,
+   so the blur has something of the ground to carry. */
 html[data-band='teal'] {
-	--veil: color-mix(in srgb, var(--teal-deep) 88%, var(--ink-deep));
+	--veil: color-mix(in srgb, color-mix(in srgb, var(--teal) 42%, var(--teal-deep)) 94%, transparent);
 }
 
 html[data-band='ochre'] {
-	--veil: color-mix(in srgb, var(--ochre) 17%, var(--ink-deep));
+	--veil: color-mix(in srgb, color-mix(in srgb, var(--ochre) 34%, var(--ink-deep)) 94%, transparent);
 }
 
 html[data-band='rose'] {
-	--veil: color-mix(in srgb, var(--rose) 20%, var(--ink-deep));
+	--veil: color-mix(in srgb, color-mix(in srgb, var(--rose) 38%, var(--ink-deep)) 94%, transparent);
 }
 
 html[data-band='sage'] {
-	--veil: color-mix(in srgb, var(--sage) 23%, var(--ink-deep));
+	--veil: color-mix(in srgb, color-mix(in srgb, var(--sage) 44%, var(--ink-deep)) 94%, transparent);
 }

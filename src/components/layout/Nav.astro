@@ -326,6 +326,14 @@ const MENUS = [
 		backdrop-filter: blur(12px);
 	}
 
+	/* A veiled bar wants no line under it. The dark theme's teal hairline marks
+	   the bar off from a page it does not otherwise share a colour with; here it
+	   is the same colour family as the ground, and the line only draws attention
+	   to the join it is meant to hide. */
+	:global(body[data-nav-theme='veil']) .nav.is-veiled .nav__inner {
+		border-bottom-color: transparent;
+	}
+
 	/* The ground arrives rather than appearing, so the bar does not blink as the
 	   first card reaches it. */
 	:global(body[data-nav-theme='veil']) .nav__inner {
