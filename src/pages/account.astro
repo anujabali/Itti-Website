@@ -752,8 +752,7 @@ const FACTS = {
 					<div class="acct__prose">
 						<p>
 							Try again in a moment. If it keeps happening, write to{' '}
-							<a class="acct__link" href="mailto:hello@itti.org.in">hello@itti.org.in</a
-							> and we will sort it out by hand.
+							<a class="acct__link" href="mailto:hello@itti.org.in">hello@itti.org.in</a>.
 						</p>
 						<p>
 							<button class="linkish" type="button" data-retry>Start again</button>
@@ -969,6 +968,7 @@ const FACTS = {
 			font-size: 1.125rem;
 			line-height: 1.55;
 			color: var(--ink-soft);
+			text-wrap: pretty;
 		}
 
 		/* The three areas, carried up beside the name as marks rather than left as
@@ -1454,6 +1454,7 @@ const FACTS = {
 			font-size: 0.9375rem;
 			line-height: 1.6;
 			color: var(--ink-faint);
+			text-wrap: pretty;
 		}
 
 		.block--wide {
@@ -1757,6 +1758,7 @@ const FACTS = {
 			font-size: 0.9375rem;
 			line-height: 1.65;
 			color: var(--ink-soft);
+			text-wrap: pretty;
 		}
 
 		.block__prose strong {
@@ -2030,6 +2032,18 @@ const FACTS = {
 			font-size: 1.0625rem;
 			line-height: 1.65;
 			color: var(--ink-soft);
+			/* A long address in the middle of a sentence forces an early break and
+		   leaves the rest of the clause stranded on a line of its own. `pretty`
+		   spends a little more time on the last lines so the text ends evenly
+		   instead of trailing off. */
+			text-wrap: pretty;
+		}
+
+		/* One sentence with an address in the middle of it. At the reading measure
+	   it breaks after the address and strands the rest; a little wider and it
+	   holds a single line, which is what a message about a failure should be. */
+		[data-panel='fail'] .acct__prose {
+			max-width: 44rem;
 		}
 
 		.acct__aside {

@@ -221,20 +221,24 @@ svg {
    Mixed from the middle of the page's gradient rather than from its floor. The
    bar is fixed and the ground scrolls beneath it, so what is actually behind it
    at any moment is nearer the middle than the bottom — matched to the floor it
-   read as a dark strip laid over a lighter page. A little transparency on top,
-   so the blur has something of the ground to carry. */
+   read as a dark strip laid over a lighter page.
+
+   Held at 82% rather than opaque, so what passes underneath is blurred rather
+   than deleted and the bar arrives instead of appearing. That is as far as it
+   can go: a cream card directly behind it lifts the ground, and at three
+   quarters the lockup falls under 4.5 to one against its own bar. */
 html[data-band='teal'] {
-	--veil: color-mix(in srgb, color-mix(in srgb, var(--teal) 42%, var(--teal-deep)) 94%, transparent);
+	--veil: color-mix(in srgb, color-mix(in srgb, var(--teal) 42%, var(--teal-deep)) 82%, transparent);
 }
 
 html[data-band='ochre'] {
-	--veil: color-mix(in srgb, color-mix(in srgb, var(--ochre) 34%, var(--ink-deep)) 94%, transparent);
+	--veil: color-mix(in srgb, color-mix(in srgb, var(--ochre) 34%, var(--ink-deep)) 82%, transparent);
 }
 
 html[data-band='rose'] {
-	--veil: color-mix(in srgb, color-mix(in srgb, var(--rose) 38%, var(--ink-deep)) 94%, transparent);
+	--veil: color-mix(in srgb, color-mix(in srgb, var(--rose) 38%, var(--ink-deep)) 82%, transparent);
 }
 
 html[data-band='sage'] {
-	--veil: color-mix(in srgb, color-mix(in srgb, var(--sage) 44%, var(--ink-deep)) 94%, transparent);
+	--veil: color-mix(in srgb, color-mix(in srgb, var(--sage) 44%, var(--ink-deep)) 82%, transparent);
 }

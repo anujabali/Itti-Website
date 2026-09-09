@@ -129,6 +129,15 @@ const GRAIN =
 			// Glass until something is behind it. Same sentinel as `auto`, read the
 			// other way round: `auto` asks whether the ground has turned light,
 			// this asks whether there is any ground at all.
+			//
+			// The wordmark collapses on the same terms as it does on the arc: once
+			// the page has moved, the bar is a way back rather than a title, and
+			// the name is already at the top of the page it belongs to. Two
+			// thresholds rather than one, so a scroll resting on the boundary
+			// cannot flicker it.
+			const COLLAPSE_AT = 48;
+			const RESTORE_AT = 12;
+			let compact = false;
 			let queued = false;
 			const settle = () => {
 				queued = false;
@@ -136,6 +145,10 @@ const GRAIN =
 					? zone.getBoundingClientRect().top <= nav.offsetHeight
 					: window.scrollY > 24;
 				nav.classList.toggle('is-veiled', behind);
+
+				if (!compact && window.scrollY > COLLAPSE_AT) compact = true;
+				else if (compact && window.scrollY < RESTORE_AT) compact = false;
+				nav.classList.toggle('is-compact', compact);
 			};
 			const schedule = () => {
 				if (queued) return;
