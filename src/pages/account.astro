@@ -638,7 +638,12 @@ const FACTS = {
 									{
 										PILLARS.map(([v, l, accent]) => (
 											<label class="check check--area" data-accent={accent}>
-												<input type="checkbox" name="interests" value={v} />
+												<input
+													type="checkbox"
+													name="interests"
+													value={v}
+													data-exclusive={v === 'not_sure' ? '' : undefined}
+												/>
 												<span>{l}</span>
 											</label>
 										))
@@ -2068,8 +2073,26 @@ const FACTS = {
 			});
 
 			form?.addEventListener('change', (event) => {
-				const name = (event.target as HTMLElement).getAttribute('name');
+				const target = event.target as HTMLElement;
+				const name = target.getAttribute('name');
 				if (name === 'gender' || name === 'language') revealConditionals();
+
+				// "Not sure yet" is an answer on its own, not one to hold beside others.
+				// The registry already strips it when it arrives with the rest, so a form
+				// that allows the combination promises something it then quietly undoes —
+				// worse than refusing it here. Same rule the registration form applies.
+				if (name === 'interests') {
+					const box = target as HTMLInputElement;
+					const boxes = [
+						...form.querySelectorAll<HTMLInputElement>('input[name="interests"]'),
+					];
+					const exclusive = box.hasAttribute('data-exclusive');
+					for (const other of boxes) {
+						if (other === box) continue;
+						if (exclusive || other.hasAttribute('data-exclusive'))
+							other.checked = false;
+					}
+				}
 			});
 
 			// ── loading the record ─────────────────────────────────────────────────
