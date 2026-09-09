@@ -351,7 +351,8 @@ const FACTS = {
 						<header class="profile">
 							<p class="profile__bio" data-bio hidden></p>
 							<p class="profile__invite" data-bio-empty hidden>
-								You have not written anything about yourself yet.
+								You have not written anything about yourself yet. Edit your profile to
+								add a few words and the places you can be found.
 							</p>
 
 							<div class="profile__marks" data-mast-marks aria-hidden="true">
@@ -1898,11 +1899,15 @@ const FACTS = {
 					}
 				}
 
-				// Who they said they are, and how long we have had them — the two
-				// things worth reading before any single field.
+				// Who they said they are, where they are, and how long we have had
+				// them — the three things worth reading before any single field.
 				const meta = root.querySelector<HTMLElement>('[data-mast-meta]');
 				if (meta) {
-					const bits = [v.role, v.registeredAt ? `with us since ${v.registeredAt}` : '']
+					const bits = [
+						v.role,
+						v.city,
+						v.registeredAt ? `with us since ${v.registeredAt}` : '',
+					]
 						.filter(Boolean)
 						.join(' \u00b7 ');
 					meta.textContent = bits;
