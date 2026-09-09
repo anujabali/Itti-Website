@@ -160,7 +160,6 @@ const MENUS = [
 		<a class="pill" href="/join" data-signed-out>Join Us</a>
 		<a class="pill" href="/donate" data-signed-in hidden>Donate</a>
 		<a class="who" href="/account" data-who data-accent="teal" data-signed-in hidden>
-			<span class="who__mark" aria-hidden="true" data-who-initial></span>
 			<span class="who__name" data-who-name></span>
 			<span class="u-visually-hidden">— your account</span>
 		</a>
@@ -216,7 +215,6 @@ const MENUS = [
 				data-signed-in
 				hidden
 			>
-				<span class="who__mark" aria-hidden="true" data-who-initial></span>
 				<span data-who-name></span>
 				<span class="u-visually-hidden">— your account</span>
 			</a>
@@ -247,8 +245,6 @@ const MENUS = [
 		const paint = (who, accent) => {
 			const name = (who || '').trim().split(/\s+/)[0] || '';
 			for (const el of nav.querySelectorAll('[data-who-name]')) el.textContent = name;
-			for (const el of nav.querySelectorAll('[data-who-initial]'))
-				el.textContent = (name[0] || '').toUpperCase();
 			// The colour somebody chose for their account follows them into the
 			// bar, so the disc in the corner is theirs and not just a circle.
 			for (const el of nav.querySelectorAll('[data-who]'))
@@ -483,20 +479,34 @@ const MENUS = [
 
 	/* ── Who is signed in ───────────────────────────────────────────────── */
 
-	/* Deliberately not a second pill. Two pills side by side read as two calls
-	   to action competing; this is a statement of who you are, which happens to
-	   be a link to your own record. */
+	/* ── Who is signed in ───────────────────────────────────────────────── */
+
+	/* One object, not two. A disc showing "T" beside a name reading "Tubhyam"
+	   says the same thing twice, and the letter was there out of avatar habit
+	   rather than because it earned the space.
+
+	   A pill, then — but outlined where Donate is filled. Two filled pills
+	   would read as two calls to action arguing; outlined, this reads as a
+	   state sitting beside an action, the way a ghost button sits next to a
+	   primary one. The stroke also gives the colour far more room to show than
+	   a small ring did, so it needs a hairline rather than the two pixels the
+	   ring had come to need. */
 	.who {
 		flex: none;
-		display: flex;
+		display: inline-flex;
 		align-items: center;
-		gap: 0.5rem;
-		max-width: 11rem;
-		font-size: 0.9375rem;
-		letter-spacing: 0.02em;
+		max-width: 12rem;
+		padding: 0.45rem 1.05rem 0.5rem;
+		border: 1px solid var(--who-ring, currentColor);
+		border-radius: 999px;
+		font-size: 0.875rem;
+		letter-spacing: 0.03em;
 		white-space: nowrap;
 		color: var(--cream);
-		transition: color var(--turn-dur) var(--ease);
+		transition:
+			background var(--turn-dur) var(--ease),
+			color var(--turn-dur) var(--ease),
+			border-color var(--turn-dur) var(--ease);
 	}
 
 	.nav.is-light .who {
@@ -508,32 +518,9 @@ const MENUS = [
 		text-overflow: ellipsis;
 	}
 
-	/* The ring carries the colour; the letter stays the bar's own ink. Colouring
-	   the glyph too would put a mid-tone on a mid-tone in one of the four
-	   states, and the ring says it just as clearly. */
-	.who__mark {
-		flex: none;
-		transition: background 200ms var(--ease);
-		display: grid;
-		place-items: center;
-		width: 1.85rem;
-		height: 1.85rem;
-		/* Ringed, not filled. A hairline in one of these inks read as grey at this
-		   size, so the ring is two pixels rather than one and takes the colour
-		   at full strength — enough for it to register as a colour without the
-		   disc becoming a solid badge. */
-		border: 2px solid var(--who-ring, currentColor);
-		border-radius: 999px;
-		background: transparent;
-		font-family: var(--face-cinzel);
-		font-size: 0.75rem;
-		font-weight: 600;
-		line-height: 1;
-		/* The letter sits fractionally high inside a circle at this size. */
-		padding-top: 0.08em;
-		transition:
-			background var(--turn-dur) var(--ease),
-			border-color var(--turn-dur) var(--ease);
+	/* The colour washes in behind the name rather than the shape changing. */
+	.who:hover {
+		background: color-mix(in srgb, var(--who-ring, currentColor) 14%, transparent);
 	}
 
 	/* On the dark bar the accent itself reads; on cream the darker ink does. */
@@ -550,9 +537,6 @@ const MENUS = [
 		--who-ring: var(--sage);
 	}
 
-	/* On the dark bar the disc sits on near-black, so the letter is that; on
-	   cream it is cream. Either way the letter is the ground, never a third
-	   colour competing with the two already there. */
 	.nav.is-light [data-accent='teal'] {
 		--who-ring: var(--teal);
 	}
@@ -564,11 +548,6 @@ const MENUS = [
 	}
 	.nav.is-light [data-accent='sage'] {
 		--who-ring: var(--sage-ink);
-	}
-
-	/* The colour washes in rather than the disc changing shape. */
-	.who:hover .who__mark {
-		background: color-mix(in srgb, var(--who-ring, currentColor) 16%, transparent);
 	}
 
 	.drawer__who {
