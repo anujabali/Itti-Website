@@ -77,6 +77,22 @@ const PILLARS = [
 	['not_sure', "I'm not sure yet", 'teal'],
 ];
 
+/**
+ * Where somebody can be found elsewhere.
+ *
+ * Self-asserted. A handle here is a claim the person makes, exactly like the
+ * name they typed — the registry keeps a `verified_at` for the day a provider
+ * confirms one, and nothing sets it yet.
+ */
+const LINKS = [
+	['instagram', 'Instagram', 'instagram.com/'],
+	['youtube', 'YouTube', 'youtube.com/@'],
+	['facebook', 'Facebook', 'facebook.com/'],
+	['linkedin', 'LinkedIn', 'linkedin.com/in/'],
+	['website', 'Website', ''],
+	['email', 'Another email', ''],
+];
+
 /** Read-only rows, and the groups they sit in. */
 const FACTS = {
 	you: [
@@ -251,13 +267,28 @@ const FACTS = {
 					</div>
 				</section>
 
-				<!-- The record. It opens with their name because it is theirs. -->
+				<!-- Theirs, not ours. A profile first — a face, their own words, and
+				     where else to find them — and only then the record we keep, which
+				     is a different kind of thing and is allowed to look like one. -->
 				<section data-panel="record" hidden>
-					<header class="acct__mast">
+					<header class="profile">
 						<p class="acct__eyebrow">Your account</p>
-						<h1 class="acct__title" data-mast-name></h1>
-						<p class="acct__lede" data-mast-meta></p>
-						<div class="acct__marks" data-mast-marks aria-hidden="true">
+						<div class="profile__head">
+							<span class="monogram" aria-hidden="true" data-monogram></span>
+							<div class="profile__id">
+								<h1 class="acct__title" data-mast-name></h1>
+								<p class="profile__meta" data-mast-meta></p>
+							</div>
+						</div>
+
+						<p class="profile__bio" data-bio hidden></p>
+						<p class="profile__invite" data-bio-empty hidden>
+							You have not written anything about yourself yet.{' '}
+							<button class="linkish" type="button" data-edit-open>Say something</button
+							>.
+						</p>
+
+						<div class="profile__marks" data-mast-marks aria-hidden="true">
 							{
 								PILLARS.map(([id, label, accent]) => (
 									<span class="mark" data-mark={id} data-accent={accent} hidden>
@@ -266,51 +297,58 @@ const FACTS = {
 								))
 							}
 						</div>
+
+						<ul class="elsewhere" data-links>
+							{
+								LINKS.map(([id, label]) => (
+									<li data-link={id} hidden>
+										<a class="elsewhere__a" data-link-a href="#">
+											<span class="elsewhere__kind">{label}</span>
+											<span class="elsewhere__at" data-link-text />
+										</a>
+									</li>
+								))
+							}
+						</ul>
+
+						<div class="acct__actions acct__actions--profile">
+							<button class="btn" type="button" data-edit-open>Edit your profile</button
+							>
+							<button class="linkish" type="button" data-signout>Sign out</button>
+						</div>
+						<p class="note" data-saved role="status" hidden>Saved.</p>
 					</header>
 
-					<div class="spread">
-						{
-							[
-								['you', 'Who you are'],
-								['place', 'Where you are'],
-								['reach', 'How we reach you'],
-								['guardian', 'Your parent or guardian'],
-								['record', 'For the record'],
-							].map(([key, title]) => (
-								<section class="block" data-group={key} hidden>
-									<h2 class="block__title">{title}</h2>
-									<dl class="facts">
-										{FACTS[key as keyof typeof FACTS].map(([id, label]) => (
-											<div class="fact" data-fact={id} hidden>
-												<dt class="fact__label">{label}</dt>
-												<dd class="fact__value" data-value={id} />
-											</div>
-										))}
-									</dl>
-								</section>
-							))
-						}
-
-						<section class="block block--areas" data-group="areas" hidden>
-							<h2 class="block__title">What you are here for</h2>
-							<div class="areas" data-areas>
-								{
-									PILLARS.map(([id, label, accent]) => (
-										<span class="area" data-area={id} data-accent={accent} hidden>
-											{label}
-										</span>
-									))
-								}
-							</div>
-						</section>
-					</div>
-
-					<div class="acct__actions">
-						<button class="btn" type="button" data-edit-open>Change something</button>
-						<button class="linkish" type="button" data-signout>Sign out</button>
-					</div>
-
-					<p class="note" data-saved role="status" hidden>Saved.</p>
+					<section class="held">
+						<h2 class="held__title">What we hold</h2>
+						<p class="held__note">
+							Everything on our side of the record. If a line is wrong, change it
+							&mdash; nobody has to approve it.
+						</p>
+						<div class="spread">
+							{
+								[
+									['you', 'Who you are'],
+									['place', 'Where you are'],
+									['reach', 'How we reach you'],
+									['guardian', 'Your parent or guardian'],
+									['record', 'For the record'],
+								].map(([key, title]) => (
+									<section class="block" data-group={key} hidden>
+										<h3 class="block__title">{title}</h3>
+										<dl class="facts">
+											{FACTS[key as keyof typeof FACTS].map(([id, label]) => (
+												<div class="fact" data-fact={id} hidden>
+													<dt class="fact__label">{label}</dt>
+													<dd class="fact__value" data-value={id} />
+												</div>
+											))}
+										</dl>
+									</section>
+								))
+							}
+						</div>
+					</section>
 
 					<footer class="acct__foot">
 						<p>
@@ -342,6 +380,25 @@ const FACTS = {
 
 					<form data-edit-form novalidate>
 						<div class="spread">
+							<section class="block block--wide">
+								<h2 class="block__title">In your own words</h2>
+								<div class="field">
+									<label class="field__label" for="acct-bio">
+										Anything you would like people here to know
+									</label>
+									<textarea
+										class="field__input field__input--bio"
+										id="acct-bio"
+										name="bio"
+										rows="4"
+										maxlength="600"
+										placeholder="What brings you here, what you care about, what you are working on."
+									></textarea>
+									<p class="note"><span data-bio-count>0</span> of 600</p>
+									<p class="note note--wrong" data-field-error hidden></p>
+								</div>
+							</section>
+
 							<section class="block">
 								<h2 class="block__title">Who you are</h2>
 								<div class="field">
@@ -499,6 +556,38 @@ const FACTS = {
 							</section>
 						</div>
 
+						<section class="block block--wide">
+							<h2 class="block__title">Where else to find you</h2>
+							<p class="held__note">
+								Optional, and shown on your profile. A handle or a whole address &mdash;
+								we will tidy it either way. Leave one empty to remove it.
+							</p>
+							<div class="linkfields">
+								{
+									LINKS.map(([id, label, prefix]) => (
+										<div class="field" data-link-field={id}>
+											<label class="field__label" for={`acct-link-${id}`}>
+												{label}
+											</label>
+											<div class="linkfields__row">
+												{prefix && <span class="linkfields__prefix">{prefix}</span>}
+												<input
+													class="field__input"
+													id={`acct-link-${id}`}
+													name={`link_${id}`}
+													type="text"
+													maxlength="200"
+													autocomplete="off"
+													spellcheck="false"
+												/>
+											</div>
+											<p class="note note--wrong" data-field-error hidden />
+										</div>
+									))
+								}
+							</div>
+						</section>
+
 						<p class="note note--wrong" data-edit-error role="alert" hidden></p>
 
 						<div class="acct__actions">
@@ -632,6 +721,189 @@ const FACTS = {
 	[data-accent='teal'] {
 		--accent: var(--teal);
 		--accent-ink: var(--teal);
+	}
+
+	/* ── The profile ─────────────────────────────────────────────────────── */
+
+	/* No labels anywhere in this block. Labels are what make a page read as a
+	   form, and none of this is a form: it is a face, a name, a sentence
+	   somebody wrote, and where else to find them. */
+	.profile {
+		padding-bottom: clamp(2.5rem, 6vh, 4rem);
+	}
+
+	.profile__head {
+		display: flex;
+		align-items: center;
+		gap: clamp(1.25rem, 3vw, 2rem);
+	}
+
+	/* A focal point that is not type. Ruled rather than filled, so it sits with
+	   the plates and the mark rather than looking like an app avatar. */
+	.monogram {
+		flex: none;
+		display: grid;
+		place-items: center;
+		width: clamp(4rem, 9vw, 5.5rem);
+		height: clamp(4rem, 9vw, 5.5rem);
+		border: 1px solid color-mix(in srgb, var(--teal) 45%, transparent);
+		border-radius: 999px;
+		font-family: var(--face-cinzel);
+		font-size: clamp(1.1rem, 2.4vw, 1.5rem);
+		font-weight: 500;
+		letter-spacing: 0.08em;
+		line-height: 1;
+		padding-top: 0.06em;
+		color: var(--teal);
+	}
+
+	.profile__meta {
+		margin: 0.6rem 0 0;
+		font-size: 1.0625rem;
+		color: var(--ink-soft);
+	}
+
+	/* Their sentence, at reading size rather than at record size — the one
+	   thing on the page written by the person it is about. */
+	.profile__bio {
+		max-width: 34rem;
+		margin: clamp(1.5rem, 4vh, 2.25rem) 0 0;
+		font-size: 1.1875rem;
+		line-height: 1.62;
+		color: var(--ink);
+	}
+
+	.profile__invite {
+		max-width: 34rem;
+		margin: clamp(1.5rem, 4vh, 2.25rem) 0 0;
+		font-size: 1.0625rem;
+		line-height: 1.6;
+		color: var(--ink-faint);
+	}
+
+	.profile__marks {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem 1.25rem;
+		margin-top: clamp(1.5rem, 4vh, 2rem);
+	}
+
+	/* Set as a line of places, not a row of buttons. */
+	.elsewhere {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem 1.75rem;
+		margin: 1.5rem 0 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.elsewhere__a {
+		display: inline-flex;
+		align-items: baseline;
+		gap: 0.5rem;
+		color: var(--ink-soft);
+		transition: color 180ms var(--ease);
+	}
+
+	.elsewhere__a:hover {
+		color: var(--teal);
+	}
+
+	.elsewhere__kind {
+		font-family: var(--face-cinzel);
+		font-size: 0.625rem;
+		font-weight: 600;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+	}
+
+	.elsewhere__at {
+		font-size: 1rem;
+		border-bottom: 1px solid color-mix(in srgb, var(--ink-faint) 35%, transparent);
+	}
+
+	.elsewhere__a:hover .elsewhere__at {
+		border-bottom-color: var(--teal);
+	}
+
+	.acct__actions--profile {
+		border-top: 0;
+		padding-top: 0;
+		margin-top: clamp(2rem, 5vh, 2.75rem);
+	}
+
+	/* ── What we hold ────────────────────────────────────────────────────── */
+
+	/* Deliberately quieter than the profile above it. This half is ours — a
+	   record, and allowed to look like one. */
+	.held {
+		padding-top: clamp(2rem, 5vh, 3rem);
+		border-top: 1px solid var(--rule);
+	}
+
+	.held__title {
+		margin: 0;
+		font-family: var(--face-cinzel);
+		font-size: 0.75rem;
+		font-weight: 600;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+	}
+
+	.held__note {
+		margin: 0.75rem 0 clamp(1.75rem, 4vh, 2.5rem);
+		max-width: 34rem;
+		font-size: 0.9375rem;
+		line-height: 1.6;
+		color: var(--ink-faint);
+	}
+
+	.block--wide {
+		grid-column: 1 / -1;
+	}
+
+	.field__input--bio {
+		border: 1px solid var(--rule);
+		padding: 0.75rem 0.9rem;
+		min-height: 7rem;
+		resize: vertical;
+		line-height: 1.6;
+	}
+
+	.field__input--bio:focus {
+		border-color: var(--teal);
+	}
+
+	.linkfields {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
+		gap: 0 clamp(1.5rem, 3vw, 2.5rem);
+	}
+
+	.linkfields__row {
+		display: flex;
+		align-items: baseline;
+		gap: 0.15rem;
+		border-bottom: 1px solid var(--rule);
+	}
+
+	.linkfields__row:focus-within {
+		border-bottom-color: var(--teal);
+	}
+
+	/* The part of the address nobody should have to type. */
+	.linkfields__prefix {
+		flex: none;
+		font-size: 0.9375rem;
+		color: var(--ink-faint);
+		white-space: nowrap;
+	}
+
+	.linkfields__row .field__input {
+		border-bottom: 0;
 	}
 
 	/* ── The record ──────────────────────────────────────────────────────── */
@@ -1060,6 +1332,26 @@ const FACTS = {
 			document.dispatchEvent(new CustomEvent('itti:who', { detail: name }));
 		};
 
+		/** The address for a handle, per provider. */
+		const linkHref = (kind: string, handle: string) => {
+			if (kind === 'email') return `mailto:${handle}`;
+			if (kind === 'website') return handle;
+			const base: Record<string, string> = {
+				instagram: 'https://instagram.com/',
+				facebook: 'https://facebook.com/',
+				youtube: 'https://youtube.com/@',
+				linkedin: 'https://linkedin.com/in/',
+			};
+			return (base[kind] ?? 'https://') + handle;
+		};
+
+		/** A web address read as a person would say it, not as it is stored. */
+		const tidyUrl = (url: string) =>
+			url
+				.replace(/^https?:\/\//i, '')
+				.replace(/^www\./i, '')
+				.replace(/\/$/, '');
+
 		const asDate = (iso: string) => {
 			if (!iso) return '';
 			const d = new Date(`${iso}T00:00:00`);
@@ -1124,6 +1416,52 @@ const FACTS = {
 			const name = (r.fullName ?? '').trim();
 			const mast = root.querySelector<HTMLElement>('[data-mast-name]');
 			if (mast) mast.textContent = name ? `${name}.` : 'Your record.';
+
+			// Initials: the first letter of the first and last words, which is
+			// what a monogram is. One word gives one letter rather than a letter
+			// and a gap.
+			const mono = root.querySelector<HTMLElement>('[data-monogram]');
+			if (mono) {
+				const words = name.split(/\s+/).filter(Boolean);
+				mono.textContent = words
+					.filter((_, i) => i === 0 || i === words.length - 1)
+					.map((wd) => wd[0]!.toUpperCase())
+					.join('');
+			}
+
+			const bio = (r.bio ?? '').trim();
+			const bioEl = root.querySelector<HTMLElement>('[data-bio]');
+			const bioEmpty = root.querySelector<HTMLElement>('[data-bio-empty]');
+			if (bioEl) {
+				bioEl.textContent = bio;
+				bioEl.hidden = bio === '';
+			}
+			if (bioEmpty) bioEmpty.hidden = bio !== '';
+
+			// Where else to find them. The stored value is a handle; the address
+			// is built here so it is consistent wherever it is shown.
+			const links = (r.links ?? {}) as Record<string, string>;
+			for (const el of root.querySelectorAll<HTMLElement>('[data-link]')) {
+				const kind = el.dataset.link!;
+				const handle = (links[kind] ?? '').trim();
+				el.hidden = handle === '';
+				if (!handle) continue;
+				const a = el.querySelector<HTMLAnchorElement>('[data-link-a]');
+				const text = el.querySelector<HTMLElement>('[data-link-text]');
+				if (text) text.textContent = kind === 'website' ? tidyUrl(handle) : handle;
+				if (a) {
+					a.href = linkHref(kind, handle);
+					// An address on somebody's profile is a place we are sending a
+					// visitor, not a page of ours.
+					if (kind !== 'email') {
+						a.rel = 'me noopener nofollow ugc';
+						a.target = '_blank';
+					} else {
+						a.removeAttribute('target');
+						a.rel = 'me';
+					}
+				}
+			}
 
 			// Who they said they are, and how long we have had them — the two
 			// things worth reading before any single field.
@@ -1197,6 +1535,22 @@ const FACTS = {
 			set('dateOfBirth', r.dateOfBirth ?? '');
 			set('gender', r.gender ?? '');
 			set('genderSelfDescribed', r.genderOther ?? '');
+			set('bio', r.bio ?? '');
+			countBio();
+
+			const have = (r.links ?? {}) as Record<string, string>;
+			for (const el of form.querySelectorAll<HTMLElement>('[data-link-field]')) {
+				const kind = el.dataset.linkField!;
+				const input = form.elements.namedItem(
+					`link_${kind}`,
+				) as HTMLInputElement | null;
+				// The prefix is printed beside the box, so the box holds the handle
+				// alone — and a website keeps its address, minus the scheme nobody
+				// wants to read.
+				if (input)
+					input.value =
+						kind === 'website' ? tidyUrl(have[kind] ?? '') : (have[kind] ?? '');
+			}
 
 			// Registration stores a code for the languages it lists and the typed
 			// words for anything else. Anything unrecognised is therefore an
@@ -1232,6 +1586,17 @@ const FACTS = {
 				editError.textContent = '';
 			}
 		};
+
+		// Six hundred characters is a limit somebody should see approaching, not
+		// discover by being refused.
+		const countBio = () => {
+			const box = form?.elements.namedItem('bio') as HTMLTextAreaElement | null;
+			const out = root.querySelector<HTMLElement>('[data-bio-count]');
+			if (box && out) out.textContent = String(box.value.length);
+		};
+		form?.addEventListener('input', (event) => {
+			if ((event.target as HTMLElement).getAttribute('name') === 'bio') countBio();
+		});
 
 		form?.addEventListener('change', (event) => {
 			const name = (event.target as HTMLElement).getAttribute('name');
@@ -1514,6 +1879,16 @@ const FACTS = {
 				interests: [
 					...form.querySelectorAll<HTMLInputElement>('input[name="interests"]:checked'),
 				].map((b) => b.value),
+				bio: value('bio'),
+				// Every kind is sent, including the empty ones: an empty value is
+				// how somebody removes a link, and a kind left out of the object
+				// would simply be left alone.
+				links: Object.fromEntries(
+					[...form.querySelectorAll<HTMLElement>('[data-link-field]')].map((el) => [
+						el.dataset.linkField!,
+						value(`link_${el.dataset.linkField}`),
+					]),
+				),
 				consentWhatsapp: checked('consentWhatsapp'),
 				consentSms: checked('consentSms'),
 				consentEmail: checked('consentEmail'),
@@ -1544,8 +1919,16 @@ const FACTS = {
 				// `.field`, not `.acct__field`: the class was renamed when this page
 				// stopped borrowing the document layout, and a selector that matches
 				// nothing fails silently.
+				// A refusal about a link names the kind — `instagram` — while the
+				// input is called `link_instagram`, so both spellings are tried.
 				const field = data.field
-					? form.querySelector<HTMLElement>(`.field:has([name="${data.field}"])`)
+					? (form.querySelector<HTMLElement>(`.field:has([name="${data.field}"])`) ??
+						form.querySelector<HTMLElement>(
+							`.field:has([name="link_${data.field}"])`,
+						) ??
+						form.querySelector<HTMLElement>(
+							`.field:has([name="link_${String(data.field).replace(/_link$/, '')}"])`,
+						))
 					: null;
 
 				// The message goes under the line it is about. Focusing the field

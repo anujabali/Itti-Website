@@ -208,6 +208,10 @@ export interface RegisterMemberResult {
 	message?: string;
 }
 
+/** Where a person can be found, other than here. */
+export type LinkKind =
+	'instagram' | 'facebook' | 'youtube' | 'linkedin' | 'website' | 'email';
+
 /**
  * What `my_registration` returns: the caller's own record, shaped for reading
  * rather than mirroring the table. Everything is a string because this is what
@@ -229,6 +233,18 @@ export interface MyRegistration {
 	genderOther: string;
 	/** A language code for the listed languages, the typed words for the rest. */
 	preferredLanguage: string;
+	/** The person's own words about themselves. Up to 600 characters. */
+	bio: string;
+	/**
+	 * Where else they can be found, keyed by kind. A handle for the social
+	 * kinds, an address for `website` and `email`.
+	 *
+	 * Self-asserted: a handle here is a claim the person makes, exactly like the
+	 * name they typed. `linksVerified` marks the ones a provider has confirmed,
+	 * and nothing sets it yet.
+	 */
+	links: Partial<Record<LinkKind, string>>;
+	linksVerified: Partial<Record<LinkKind, true>>;
 	consentWhatsapp: boolean;
 	consentSms: boolean;
 	consentEmail: boolean;
