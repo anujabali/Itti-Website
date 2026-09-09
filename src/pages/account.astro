@@ -1526,8 +1526,12 @@ const FACTS = {
 					editError.textContent = data.message ?? 'Please check that and try again.';
 					editError.hidden = false;
 				}
+				// `.field`, not `.acct__field`: the class was renamed when this page
+				// stopped borrowing the document layout, and a selector that matches
+				// nothing fails silently — the message appeared, the field it named
+				// was never marked and never focused.
 				const field = form.querySelector<HTMLElement>(
-					`.acct__field:has([name="${data.field}"])`,
+					`.field:has([name="${data.field}"])`,
 				);
 				if (field) {
 					field.dataset.wrong = '';
