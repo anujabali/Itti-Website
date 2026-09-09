@@ -66,6 +66,18 @@ describe('the welcome message', () => {
 		expect(welcome({ interests: ['other'] }).text).toContain('connect with Other');
 	});
 
+	// E.164 is stored without spaces because it is a machine format. A receipt
+	// is read by a person, and nobody reads thirteen digits in one run.
+	it('spaces an Indian number and leaves the rest alone', () => {
+		const phone = (p: string) =>
+			welcome({ firstName: 'Asha', interests: [], phone: p }).text;
+		expect(phone('+919175672245')).toContain('Phone: +91 91756 72245');
+		// Grouping depends on the numbering plan, so a number we cannot group is
+		// shown as given rather than broken up in the wrong places.
+		expect(phone('+14155552671')).toContain('Phone: +14155552671');
+		expect(phone('+9112345')).toContain('Phone: +9112345');
+	});
+
 	// A blank line is a question nobody answered, not a gap to display.
 	it('leaves out what was never filled in', () => {
 		const sparse = welcome({ firstName: 'Asha', interests: [], city: 'Pune' });

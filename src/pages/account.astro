@@ -1776,6 +1776,25 @@ const FACTS = {
 				return (base[kind] ?? 'https://') + handle;
 			};
 
+			/**
+			 * A number read the way it is said, not the way it is stored.
+			 *
+			 * E.164 has no spaces in it by design — it is a machine format, and the
+			 * registry is right to keep it that way. Nobody reads a number as one
+			 * run of thirteen digits, so the country code comes off the front and an
+			 * Indian ten splits five and five, which is how they are written here.
+			 *
+			 * Only +91 is grouped, because grouping depends on the numbering plan
+			 * and guessing at a country code's length gets it wrong more often than
+			 * it helps. Anything else keeps its digits and simply loses nothing.
+			 */
+			const readablePhone = (raw: string) => {
+				const s = (raw ?? '').trim();
+				const india = /^\+91(\d{10})$/.exec(s);
+				if (india) return `+91 ${india[1]!.slice(0, 5)} ${india[1]!.slice(5)}`;
+				return s;
+			};
+
 			/** A web address read as a person would say it, not as it is stored. */
 			const tidyUrl = (url: string) =>
 				url
@@ -1826,11 +1845,11 @@ const FACTS = {
 					pincode: r.pincode ?? '',
 					preferredLanguage: LANG[r.preferredLanguage] ?? r.preferredLanguage ?? '',
 					email: r.email ?? '',
-					phone: r.phone ?? '',
+					phone: readablePhone(r.phone ?? ''),
 					channels: sentence(channels),
 					guardianName: r.guardianName ?? '',
 					guardianEmail: r.guardianEmail ?? '',
-					guardianPhone: r.guardianPhone ?? '',
+					guardianPhone: readablePhone(r.guardianPhone ?? ''),
 					heardFrom: r.heardFromOther || (HEARD[r.heardFrom] ?? ''),
 					registeredAt: r.registeredAt ?? '',
 				};
@@ -1889,15 +1908,11 @@ const FACTS = {
 					}
 				}
 
-				// Who they said they are, where they are, and how long we have had
-				// them — the three things worth reading before any single field.
+				// Who they said they are, and how long we have had them — the two things
+				// worth reading before any single field.
 				const meta = root.querySelector<HTMLElement>('[data-mast-meta]');
 				if (meta) {
-					const bits = [
-						v.role,
-						v.city,
-						v.registeredAt ? `with us since ${v.registeredAt}` : '',
-					]
+					const bits = [v.role, v.registeredAt ? `with us since ${v.registeredAt}` : '']
 						.filter(Boolean)
 						.join(' \u00b7 ');
 					meta.textContent = bits;
@@ -2002,7 +2017,7 @@ const FACTS = {
 
 				set('fullName', r.fullName ?? '');
 				set('role', r.role ?? 'other');
-				set('phone', r.phone ?? '');
+				set('phone', readablePhone(r.phone ?? ''));
 				set('city', r.city ?? '');
 				set('pincode', r.pincode ?? '');
 				set('dateOfBirth', r.dateOfBirth ?? '');

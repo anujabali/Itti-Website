@@ -30,6 +30,20 @@ const sentence = (parts: string[]): string => {
 
 const list = (interests: string[]): string => sentence(interests.map(say));
 
+/**
+ * A number read the way it is said, not the way it is stored.
+ *
+ * E.164 has no spaces by design — it is a machine format. Nobody reads a number
+ * as one run of thirteen digits, and a receipt exists to be read. Only +91 is
+ * grouped: grouping depends on the numbering plan, and guessing at a country
+ * code's length gets it wrong more often than it helps.
+ */
+const readablePhone = (raw: string): string => {
+	const v = (raw ?? '').trim();
+	const india = /^\+91(\d{10})$/.exec(v);
+	return india ? `+91 ${india[1].slice(0, 5)} ${india[1].slice(5)}` : v;
+};
+
 /** Escapes for the HTML part. The values are names people typed. */
 const esc = (s: string) =>
 	s
@@ -105,7 +119,7 @@ const snapshot = (p: Record<string, unknown>): Row[] => {
 	const rows: Row[] = [
 		['Name', g('fullName')],
 		['You are', ROLE[g('role')] ?? g('role')],
-		['Phone', g('phone')],
+		['Phone', readablePhone(g('phone'))],
 		['Email', g('email')],
 		['City', g('city')],
 		['PIN code', g('pincode')],
@@ -117,7 +131,7 @@ const snapshot = (p: Record<string, unknown>): Row[] => {
 		['We may contact you by', by],
 		['Parent or guardian', g('guardianName')],
 		["Guardian's email", g('guardianEmail')],
-		["Guardian's phone", g('guardianPhone')],
+		["Guardian's phone", readablePhone(g('guardianPhone'))],
 	];
 	return rows.filter(([, v]) => v !== '');
 };
