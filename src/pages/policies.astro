@@ -105,6 +105,35 @@ const DOCUMENTS = [
 	title="Policies — The Itti Foundation"
 	description="The standing documents of The Itti Foundation: privacy policy, terms of use, accessibility statement, and how to contact us."
 >
+	<script is:inline>
+		/**
+		 * A link from the footer has to land on its document, not travel to it.
+		 *
+		 * The site sets `scroll-behavior: smooth` on the root, and a fragment
+		 * arriving with the page inherits it — so /policies#contact opened at the
+		 * top and then rode sixteen thousand pixels down, which reads as a lurch
+		 * rather than as arriving. Smooth is right for a click within the page and
+		 * wrong for the first paint, and the two cannot be told apart in CSS.
+		 *
+		 * This runs before the document is parsed far enough to hold the target,
+		 * so the browser's own jump is already instant. The repeat on load is for
+		 * the fonts: they land after the first jump and change every height above
+		 * the target, which leaves the document a few hundred pixels off.
+		 */
+		if (location.hash) {
+			var root = document.documentElement;
+			var prior = root.style.scrollBehavior;
+			root.style.scrollBehavior = 'auto';
+			addEventListener('load', function () {
+				var target = document.getElementById(location.hash.slice(1));
+				if (target) target.scrollIntoView();
+				requestAnimationFrame(function () {
+					root.style.scrollBehavior = prior;
+				});
+			});
+		}
+	</script>
+
 	<div class="pol-page">
 		<div class="pol">
 			<header class="pol__masthead">
@@ -1274,8 +1303,8 @@ const DOCUMENTS = [
 
 	.pol__grid {
 		display: grid;
-		grid-template-columns: minmax(9rem, 14rem) minmax(0, 40rem);
-		column-gap: clamp(2rem, 6vw, 5rem);
+		grid-template-columns: minmax(11rem, 17rem) minmax(0, 40rem);
+		column-gap: clamp(2rem, 5vw, 4.5rem);
 		/* Deliberately not `align-items: start`. That sizes the rail's column to
 		   its own content, which leaves the sticky element inside it nothing to
 		   travel through — it scrolls away with the text and never comes back.
@@ -1296,27 +1325,27 @@ const DOCUMENTS = [
 	}
 
 	.pol__rail-heading {
-		font-size: 0.625rem;
+		font-size: 0.6875rem;
 		font-weight: 600;
 		letter-spacing: 0.18em;
 		text-transform: uppercase;
 		color: var(--ink-faint);
-		padding-bottom: 0.9rem;
+		padding-bottom: 1rem;
 		border-bottom: 1px solid var(--rule);
 	}
 
 	.pol__rail-list {
 		list-style: none;
 		margin: 0;
-		padding: 0.35rem 0 0;
+		padding: 0.5rem 0 0;
 	}
 
 	.pol__rail-link {
 		display: flex;
 		align-items: baseline;
-		gap: 0.55rem;
-		padding: 0.5rem 0;
-		font-size: 0.875rem;
+		gap: 0.7rem;
+		padding: 0.6rem 0;
+		font-size: 1rem;
 		line-height: 1.35;
 		color: var(--ink-soft);
 		text-decoration: none;
@@ -1330,7 +1359,7 @@ const DOCUMENTS = [
 	   dividing the documents. */
 	.pol__rail-tick {
 		flex: none;
-		width: 0.75rem;
+		width: 1rem;
 		height: 1px;
 		translate: 0 -0.25em;
 		background: var(--rule);
@@ -1362,10 +1391,10 @@ const DOCUMENTS = [
 	   three that are not being read. */
 	.pol__rail-sub {
 		list-style: none;
-		margin: 0.15rem 0 0.55rem;
-		padding: 0 0 0 1.3rem;
+		margin: 0.2rem 0 0.7rem;
+		padding: 0 0 0 1.7rem;
 		display: grid;
-		gap: 0.1rem;
+		gap: 0.15rem;
 	}
 
 	.pol__rail-sub[hidden] {
@@ -1374,9 +1403,9 @@ const DOCUMENTS = [
 
 	.pol__rail-sublink {
 		display: block;
-		padding: 0.24rem 0;
-		font-size: 0.8125rem;
-		line-height: 1.35;
+		padding: 0.3rem 0;
+		font-size: 0.9375rem;
+		line-height: 1.4;
 		color: var(--ink-faint);
 		text-decoration: none;
 		transition: color 180ms var(--ease);
@@ -1588,6 +1617,7 @@ const DOCUMENTS = [
 
 		.pol__rail-link {
 			padding: 0;
+			font-size: 0.9375rem;
 			white-space: nowrap;
 			flex-direction: column;
 			align-items: stretch;
