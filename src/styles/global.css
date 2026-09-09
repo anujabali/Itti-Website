@@ -32,6 +32,10 @@
 	--ochre: #b4914f;
 	--rose: #b3837e;
 	--sage: #7f9070;
+	/* The green inside the mark's own tree, used only to push the sage band
+	   toward leaf rather than stone. Not a new brand colour: it is sampled from
+	   the artwork the site already ships. */
+	--claw-leaf: #3f6b45;
 
 	/* The same pigments, taken down far enough to carry small text on cream.
 	   The chalky versions above are for rules, marks and edges — as type they

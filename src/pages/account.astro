@@ -74,7 +74,7 @@ const LANGUAGES = [
 const PILLARS = [
 	['neurodivergence', 'Neurodivergence', 'ochre'],
 	['cancer_care', 'Cancer Care', 'rose'],
-	['claw', 'CLAW', 'sage'],
+	['claw', 'Conservation', 'sage'],
 	['not_sure', "I'm not sure yet", 'teal'],
 ];
 
@@ -458,7 +458,7 @@ const FACTS = {
 												['teal', 'The mark'],
 												['ochre', 'Neurodivergence'],
 												['rose', 'Cancer Care'],
-												['sage', 'CLAW'],
+												['sage', 'Conservation'],
 											].map(([v, l]) => (
 												<label class="swatch" data-accent={v}>
 													<input type="radio" name="accent" value={v} />
@@ -872,10 +872,14 @@ const FACTS = {
 			--floor: color-mix(in srgb, var(--rose) 12%, var(--ink-deep));
 		}
 
+		/* Sage is the least saturated of the four, so at the proportions the
+		   others use it went muddy and the green only survived in the corner
+		   where the light falls. More of it reaches the ground, and the light
+		   itself is pushed toward the leaf rather than the stone. */
 		.crown[data-accent='sage'] {
-			--lit: var(--sage);
-			--deep: color-mix(in srgb, var(--sage) 34%, var(--ink-deep));
-			--floor: color-mix(in srgb, var(--sage) 12%, var(--ink-deep));
+			--lit: color-mix(in srgb, var(--sage) 78%, var(--claw-leaf));
+			--deep: color-mix(in srgb, var(--sage) 58%, var(--ink-deep));
+			--floor: color-mix(in srgb, var(--sage) 30%, var(--ink-deep));
 		}
 
 		/* The mark, very large and very quiet, bleeding off the right edge. An
@@ -1710,7 +1714,7 @@ const FACTS = {
 			const PILLAR: Record<string, string> = {
 				neurodivergence: 'Neurodivergence',
 				cancer_care: 'Cancer Care',
-				claw: 'CLAW',
+				claw: 'Conservation',
 				not_sure: "I'm not sure yet",
 				other: 'Other',
 			};

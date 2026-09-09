@@ -22,14 +22,14 @@ describe('the welcome message', () => {
 		const areas = (interests: string[]) =>
 			welcome({ firstName: 'Asha', interests }).text;
 
-		expect(areas(['claw'])).toContain('connect with CLAW.');
-		expect(areas(['cancer_care', 'claw'])).toContain('Cancer Care and CLAW');
+		expect(areas(['claw'])).toContain('connect with Conservation.');
+		expect(areas(['cancer_care', 'claw'])).toContain('Cancer Care and Conservation');
 		expect(areas(['neurodivergence', 'cancer_care', 'claw'])).toContain(
-			'Neurodivergence, Cancer Care and CLAW',
+			'Neurodivergence, Cancer Care and Conservation',
 		);
 		// No serial comma, and never a bare comma before the last item.
 		expect(areas(['neurodivergence', 'cancer_care', 'claw'])).not.toContain(
-			'Cancer Care, and CLAW',
+			'Cancer Care, and Conservation',
 		);
 	});
 

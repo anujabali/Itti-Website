@@ -9,7 +9,7 @@
 const SAID: Record<string, string> = {
 	neurodivergence: 'Neurodivergence',
 	cancer_care: 'Cancer Care',
-	claw: 'CLAW',
+	claw: 'Conservation',
 	not_sure: 'Not sure yet',
 	other: 'Other',
 };
