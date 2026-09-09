@@ -2,253 +2,340 @@
 /**
  * Donate.
  *
- * The page is built; the rails are not. Everything about how money actually
- * arrives is in GIVING below, and the page renders honestly against it: with a
- * key or an account it asks for a gift, and without one it says plainly that it
- * cannot take a payment yet rather than showing a ladder of amounts that do
- * nothing. A donate page that fails at the last step costs more than one that
- * is honest at the first.
+ * Structured as a donation page rather than as a document: the ask is beside
+ * the headline, above the fold, and everything after it is the case for making
+ * it. The policy pages use the label-and-column grid; this one deliberately
+ * does not, because a page that asks for money should not read like terms.
  *
- * Two things are stated here because they are true today and will not always
- * be, and both are switched by the constants below rather than by editing prose
- * in four places:
+ * Everything about how money actually arrives is in GIVING below. With a key
+ * the card takes a payment; without one the same card falls back to a direct
+ * route at the point of action, rather than opening the page with an apology.
+ *
+ * Two facts are switched by constants rather than by editing prose in several
+ * places, because both change this year:
  *
  *   - There is no 80G registration yet, so a gift does not reduce anyone's tax.
  *   - There is no FCRA registration, so a foreign contribution cannot lawfully
- *     be accepted at all. That one is not a disclaimer; it is the law, and the
- *     page says so where a donor will actually read it.
+ *     be accepted at all. That is the law, not a disclaimer, and it is stated
+ *     where a donor will read it rather than in small print.
  *
- * No sum on this page carries a claim about what it buys. The Foundation has
- * given me no costings, and inventing one here — of all pages — is exactly the
- * kind of thing its own integrity standard forbids.
+ * No sum carries a claim about what it buys. There are no costings to stand
+ * behind yet, and inventing one here is what the Foundation's own integrity
+ * standard forbids. When real figures exist they belong on the amounts.
  */
 import Base from '../layouts/Base.astro';
 import SiteFooter from '../components/layout/SiteFooter.astro';
+import ClawMark from '../components/brand/ClawMark.astro';
 
-/**
- * The rails. Empty until the Foundation supplies them.
- *
- * `razorpayKey` is a publishable key id and belongs in the page; the secret
- * never does — it lives in the Edge Function's environment, where the order is
- * created and the signature verified.
- */
 const GIVING = {
+	/** Publishable key id. The secret lives in the Edge Function, never here. */
 	razorpayKey: '',
 	upi: '',
-	bank: null as null | {
-		name: string;
-		account: string;
-		ifsc: string;
-		bank: string;
-	},
 };
 
-/** Switched the day the certificate arrives, not before. */
 const HAS_80G = false;
-/** Switched only when the Foundation is registered under the FCRA. */
 const ACCEPTS_FOREIGN = false;
+const canTakeMoney = Boolean(GIVING.razorpayKey);
 
-const canTakeMoney = Boolean(GIVING.razorpayKey || GIVING.upi || GIVING.bank);
-
-/** Plain sums. Nothing is claimed for any of them — see the note above. */
 const AMOUNTS = [500, 1000, 2500, 5000, 10000];
 const rupees = (n: number) => `₹${n.toLocaleString('en-IN')}`;
+
+/** The three areas a gift can be directed to — the same three the registry
+ *  holds and the registration form offers. */
+const AREAS = [
+	{
+		numeral: 'I',
+		id: 'neurodivergence',
+		name: 'Neurodivergence',
+		accent: 'ochre',
+		mark: '/brand/pillar-neuro.png',
+		line: 'Assessment families can afford and reach — and the long work after it.',
+		body: 'The school that needs persuading. The sibling nobody asked about. The adult never assessed as a child, who has spent thirty years being told they were careless.',
+	},
+	{
+		numeral: 'II',
+		id: 'cancer_care',
+		name: 'Cancer Care',
+		accent: 'rose',
+		mark: '/brand/pillar-cancer.png',
+		line: 'Catching it early, and standing beside people through what follows.',
+		body: 'Diagnosis is a day. The year after it is transport, childcare, lost wages, and somebody to explain what was just said in a room where nobody could hear.',
+	},
+	{
+		numeral: 'III',
+		id: 'claw',
+		name: 'Conservation',
+		accent: 'sage',
+		mark: 'claw',
+		line: 'The ordinary defence of places that have nobody arguing for them.',
+		body: 'The forest and the person are the same problem: both are cheaper to protect than to restore, and both are usually noticed too late.',
+	},
+];
 ---
 
 <Base
 	title="Donate — The Itti Foundation"
-	description="Give to The Itti Foundation: what your gift pays for, where it goes, and exactly where we stand on tax and on donations from abroad."
+	description="Support The Itti Foundation. What your gift pays for, how we account for it, and exactly where we stand on tax relief and on donations from outside India."
 >
 	<div class="give-page">
 		<article class="give">
-			<header class="give__open">
-				<p class="give__eyebrow">Donate</p>
-				<h1 class="give__title">This much.</h1>
-				<div class="give__open-body">
+			<!-- ── The ask, beside the case for it ──────────────────────────────── -->
+			<section class="give__hero">
+				<div class="give__lead">
+					<p class="give__eyebrow">Donate</p>
+					<h1 class="give__title">Your gift becomes someone&rsquo;s turning point.</h1>
 					<p class="give__lede">
-						<em>Itti</em> means <em>this much</em>. It is the smaller half of the name
-						this Foundation carries, and it is the whole of its argument for giving.
+						The Itti Foundation works in neurodivergence, cancer care and conservation.
+						Your support pays for the long continuation of that work &mdash; the part no
+						grant covers and no campaign photographs.
 					</p>
-					<p>
-						A small determined effort counts. The size of what you are able to do is not
-						the measure of whether to do it. That is not a fundraising line — it is what
-						the name says, in the language it came from, and the Foundation was built on
-						it.
+					<p class="give__stamp">
+						Itti&rsquo;s Skill School Foundation &middot; Section 8 not-for-profit
+						&middot; Registered in India
 					</p>
 				</div>
-			</header>
 
-			<section class="give__act" aria-labelledby="give-act-heading">
-				<h2 class="give__h" id="give-act-heading">How to give</h2>
-				<div class="give__act-body">
-					{
-						canTakeMoney ? (
-							<>
-								<ul class="give__ladder">
-									{AMOUNTS.map((amount) => (
-										<li>
-											<button class="give__amount" type="button" data-amount={amount}>
-												{rupees(amount)}
-											</button>
-										</li>
-									))}
-									<li>
-										<button class="give__amount give__amount--own" type="button" data-amount="0">
-											Another amount
+				<aside class="card" aria-labelledby="give-card-heading">
+					<div class="card__inner">
+						<h2 class="card__heading" id="give-card-heading">Make a gift</h2>
+
+						<fieldset class="card__group">
+							<legend class="card__legend">Amount</legend>
+							<div class="card__amounts">
+								{
+									AMOUNTS.map((amount, i) => (
+										<button
+											class="amount"
+											type="button"
+											data-amount={amount}
+											aria-pressed={i === 1 ? 'true' : 'false'}>
+											{rupees(amount)}
 										</button>
-									</li>
-								</ul>
-								<p class="give__note">
-									We have not put a claim against any of these sums. We do not yet have
-									costings we would stand behind, and we would rather say so than invent
-									one.
-								</p>
-							</>
-						) : (
-							<>
-								<p class="give__standfirst">
-									We cannot take a payment on this page yet.
-								</p>
-								<p>
-									Online giving is being set up now. Until it is finished, saying so is
-									better than a button that goes nowhere.
-								</p>
-								<p>
-									Write to{' '}
-									<a class="give__link" href="mailto:hello@itti.org.in">
-										hello@itti.org.in
-									</a>{' '}
-									and we will arrange it directly — a transfer, a cheque, or whatever is
-									easiest at your end. Tell us roughly what you have in mind, and whether
-									you want it to go to one of the three in particular. A person answers,
-									within five working days.
-								</p>
-								<p>
-									If you would rather wait until it is one click, that is entirely
-									reasonable. <a class="give__link" href="/join">Register</a> and we will
-									tell you the day it is.
-								</p>
-							</>
-						)
+									))
+								}
+								<button class="amount amount--own" type="button" data-amount-other aria-pressed="false">
+									Other
+								</button>
+							</div>
+							<div class="card__own" data-own hidden>
+								<label class="card__label" for="give-own">Amount in rupees</label>
+								<div class="card__own-field">
+									<span class="card__rupee" aria-hidden="true">₹</span>
+									<input
+										class="card__input"
+										id="give-own"
+										name="amount"
+										type="text"
+										inputmode="numeric"
+										autocomplete="off"
+										placeholder="0"
+									/>
+								</div>
+							</div>
+						</fieldset>
+
+						<div class="card__group">
+							<label class="card__label" for="give-area">Direct it to</label>
+							<div class="card__select">
+								<select class="card__control" id="give-area" name="area">
+									<option value="">Wherever it is needed most</option>
+									{AREAS.map((area) => <option value={area.id}>{area.name}</option>)}
+								</select>
+								<span class="card__chevron" aria-hidden="true" />
+							</div>
+						</div>
+
+						<button class="card__go" type="button" data-give>
+							<span data-give-label>Give {rupees(AMOUNTS[1]!)}</span>
+							<span class="card__go-arrow" aria-hidden="true">&rarr;</span>
+						</button>
+
+						<p class="card__fine">
+							{
+								ACCEPTS_FOREIGN
+									? 'Indian and foreign contributions accepted.'
+									: 'Indian donors only.'
+							}{' '}
+							{
+								HAS_80G
+									? 'Eligible for relief under section 80G.'
+									: 'Not yet eligible for 80G relief.'
+							}{' '}
+							<a class="card__fine-link" href="#accounting">Why</a>
+						</p>
+
+						{
+							!canTakeMoney && (
+								<div class="card__interim" data-interim hidden>
+									<p>
+										<strong>Online payment is being set up.</strong> Until it is
+										finished, write to{' '}
+										<a class="card__fine-link" href="mailto:hello@itti.org.in">
+											hello@itti.org.in
+										</a>{' '}
+										with the amount and we will arrange a transfer directly. A person
+										answers, within five working days.
+									</p>
+								</div>
+							)
+						}
+					</div>
+				</aside>
+			</section>
+
+			<!-- ── Where it goes ────────────────────────────────────────────────── -->
+			<section class="give__band" aria-labelledby="give-areas-heading">
+				<header class="give__band-head">
+					<h2 class="give__band-title" id="give-areas-heading">Where your gift goes</h2>
+					<p class="give__band-line">
+						Three areas of work, and one conviction repeated three times: that a person is
+						worth the trouble of being understood before they are treated.
+					</p>
+				</header>
+
+				<ul class="areas">
+					{
+						AREAS.map((area) => (
+							<li
+								class="area"
+								style={`--accent: var(--${area.accent}); --accent-ink: var(--${area.accent}-ink)`}>
+								<span class="area__rule" aria-hidden="true" />
+								<span class="area__sign" aria-hidden="true">
+									{area.mark === 'claw' ? (
+										<ClawMark mono />
+									) : (
+										<span class="area__raster" style={`--mark:url('${area.mark}')`} />
+									)}
+								</span>
+								<p class="area__numeral">{area.numeral}</p>
+								<h3 class="area__name">{area.name}</h3>
+								<p class="area__line">{area.line}</p>
+								<p class="area__body">{area.body}</p>
+							</li>
+						))
 					}
-				</div>
+				</ul>
 			</section>
 
-			<section class="give__section" aria-labelledby="give-work-heading">
-				<h2 class="give__h" id="give-work-heading">Where it goes</h2>
-				<div class="give__body">
-					<p>
-						We work on three things, and they are not three campaigns. They are the same
-						conviction three times over: that a person is worth the trouble of being
-						understood before they are treated.
-					</p>
-					<dl class="give__list">
-						<dt>Neurodivergence</dt>
-						<dd>
-							Assessment that families can afford and reach, and the long unglamorous work
-							after it — the school that needs persuading, the sibling nobody asked about,
-							the adult who was never assessed as a child and has spent thirty years being
-							told they were careless.
-						</dd>
-						<dt>Cancer care</dt>
-						<dd>
-							Catching it early, and standing next to people through what follows.
-							Diagnosis is a day; the year after it is transport, childcare, lost wages and
-							somebody to explain what was just said in a room where nobody could hear.
-						</dd>
-						<dt>Conservation</dt>
-						<dd>
-							The ordinary defence of places that have nobody arguing for them. The forest
-							and the person are the same problem: both are cheaper to protect than to
-							restore, and both are usually noticed too late.
-						</dd>
-					</dl>
-					<p>
-						It also pays for the parts nobody funds — the phone answered on a Sunday, the
-						follow-up six months later, the record kept properly so a family does not have
-						to tell their story again from the beginning.
-					</p>
-				</div>
+			<!-- ── The part nobody funds ────────────────────────────────────────── -->
+			<section class="give__quiet" aria-labelledby="give-quiet-heading">
+				<h2 class="give__quiet-eyebrow" id="give-quiet-heading">
+					And the part nobody funds
+				</h2>
+				<p class="give__quiet-line">
+					The phone answered on a Sunday. The follow-up six months later. The record kept
+					properly, so that a family does not have to tell their story again from the
+					beginning.
+				</p>
+				<p class="give__quiet-note">
+					Restricted grants rarely reach any of it. Unrestricted giving is what keeps it
+					alive.
+				</p>
 			</section>
 
-			<section class="give__section" aria-labelledby="give-plain-heading">
-				<h2 class="give__h" id="give-plain-heading">Plainly</h2>
-				<div class="give__body">
-					<dl class="give__list">
-						<dt>Tax</dt>
-						<dd>
+			<!-- ── Accounting ───────────────────────────────────────────────────── -->
+			<section class="give__band" id="accounting" aria-labelledby="give-account-heading">
+				<header class="give__band-head">
+					<h2 class="give__band-title" id="give-account-heading">How we account for it</h2>
+					<p class="give__band-line">
+						Everything a donor is entitled to ask, answered before it is asked.
+					</p>
+				</header>
+
+				<dl class="facts">
+					<div class="fact">
+						<dt class="fact__term">Tax relief</dt>
+						<dd class="fact__def">
 							{
 								HAS_80G ? (
-									'A gift to the Foundation is eligible for deduction under section 80G. We issue the certificate you need.'
+									'A gift is eligible for deduction under section 80G, and we issue the certificate you need to claim it.'
 								) : (
 									<>
 										The Foundation does not yet hold <strong>80G</strong> registration, so
-										a gift made today does not reduce your tax. We expect it by the end of
-										this year, and this page will say so the day it arrives. Until then,
-										anyone telling you otherwise is wrong.
+										a gift made today does not reduce your tax. We expect it before the end
+										of this year and this page will say so the day it arrives.
 									</>
 								)
 							}
 						</dd>
-						<dt>Where you are giving from</dt>
-						<dd>
+					</div>
+					<div class="fact">
+						<dt class="fact__term">Where you may give from</dt>
+						<dd class="fact__def">
 							{
 								ACCEPTS_FOREIGN ? (
-									'We can accept contributions from outside India into our designated FCRA account.'
+									'Contributions from outside India are received into our designated FCRA account.'
 								) : (
 									<>
-										We can accept donations from <strong>Indian sources only</strong>. The
-										Foundation is not registered under the Foreign Contribution
-										(Regulation) Act, and accepting a foreign contribution without that
-										registration is an offence rather than an oversight. If you are abroad
-										and want to help, write to us — there are other things you can do, and
-										we would rather do them properly.
+										<strong>Indian sources only.</strong> The Foundation is not registered
+										under the Foreign Contribution (Regulation) Act, and accepting a
+										foreign contribution without it is an offence rather than an
+										oversight. If you are abroad and want to help, write to us.
 									</>
 								)
 							}
 						</dd>
-						<dt>What we will tell you</dt>
-						<dd>
-							Ask what a gift was spent on and we will tell you plainly, including the part
-							that went on rent and salaries. A charity claiming none of it did is either
-							lying or about to fold.
+					</div>
+					<div class="fact">
+						<dt class="fact__term">What we will tell you</dt>
+						<dd class="fact__def">
+							Ask what a gift was spent on and we will tell you plainly, including the
+							share that went on rent and salaries. A charity claiming none of it did is
+							either lying or about to fold.
 						</dd>
-						<dt>Who we are, in law</dt>
-						<dd>
-							Itti&rsquo;s Skill School Foundation, a Section 8 not-for-profit company
-							incorporated in India, operating as The Itti Foundation.
+					</div>
+					<div class="fact">
+						<dt class="fact__term">Refunds</dt>
+						<dd class="fact__def">
+							A gift is put to work as soon as it clears, so donations are not generally
+							refundable. Duplicate, mistaken and unauthorised payments are returned
+							without argument &mdash; the terms say how.
 						</dd>
-					</dl>
-					<p>
-						What we do with your details is set out in our{' '}
-						<a class="give__link" href="/policies#privacy">Privacy Policy</a>.
-					</p>
-				</div>
+					</div>
+				</dl>
+
+				<p class="give__band-foot">
+					Read the{' '}
+					<a class="give__link" href="/policies#terms-5">donations and refunds terms</a>{' '}
+					and our{' '}
+					<a class="give__link" href="/policies#privacy">Privacy Policy</a>.
+				</p>
 			</section>
 
-			<section class="give__section" aria-labelledby="give-other-heading">
-				<h2 class="give__h" id="give-other-heading">Other ways, which are not lesser</h2>
-				<div class="give__body">
-					<dl class="give__list">
-						<dt>Time</dt>
-						<dd>
+			<!-- ── Other ways ───────────────────────────────────────────────────── -->
+			<section class="give__band" aria-labelledby="give-other-heading">
+				<header class="give__band-head">
+					<h2 class="give__band-title" id="give-other-heading">Other ways to help</h2>
+					<p class="give__band-line">None of these is the lesser gift.</p>
+				</header>
+
+				<ul class="ways">
+					<li class="way">
+						<h3 class="way__name">Give time</h3>
+						<p class="way__body">
 							Hours from someone who knows what they are doing are worth more to us than
 							the money it would take to buy them. Clinicians, teachers, translators,
-							drivers, people who are good on the phone.{' '}
-							<a class="give__link" href="/join">Register</a> and say what you can do.
-						</dd>
-						<dt>Saying it out loud</dt>
-						<dd>
-							Most people who need us do not know we exist, and they are not reached by
-							advertising. They are reached by somebody they already trust mentioning us.
-						</dd>
-						<dt>Your organisation</dt>
-						<dd>
+							drivers, and people who are good on the phone.
+						</p>
+						<a class="way__link" href="/join">Tell us what you can do &rarr;</a>
+					</li>
+					<li class="way">
+						<h3 class="way__name">Say it out loud</h3>
+						<p class="way__body">
+							Most people who need us do not know we exist, and advertising does not reach
+							them. They are reached by somebody they already trust mentioning us.
+						</p>
+						<a class="way__link" href="/policies#contact">Share our work &rarr;</a>
+					</li>
+					<li class="way">
+						<h3 class="way__name">Bring your organisation</h3>
+						<p class="way__body">
 							Partnerships, and companies wanting to do something beyond a cheque at the
-							end of the year. Write and say what you have in mind.
-						</dd>
-					</dl>
-				</div>
+							end of the year. Say what you have in mind and who you are.
+						</p>
+						<a class="way__link" href="mailto:hello@itti.org.in">Write to us &rarr;</a>
+					</li>
+				</ul>
 			</section>
 		</article>
 
@@ -267,194 +354,323 @@ const rupees = (n: number) => `₹${n.toLocaleString('en-IN')}`;
 	.give {
 		flex: 1 0 auto;
 		width: 100%;
-		max-width: 62rem;
+		max-width: 74rem;
 		margin: 0 auto;
-		padding: calc(var(--nav-h) + clamp(2.5rem, 8vh, 5.5rem)) var(--gutter)
-			clamp(3rem, 8vh, 5rem);
+		padding: calc(var(--nav-h) + clamp(2.5rem, 7vh, 4.5rem)) var(--gutter) 0;
 	}
 
-	/* ── The opening ───────────────────────────────────────────────────────── */
+	/* ── Hero: the ask sits beside the case for it ─────────────────────────── */
 
-	/* The title is set against the argument rather than above it. The name is
-	   the argument, so the two want to be read as one thought. */
-	.give__open {
+	.give__hero {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-		column-gap: clamp(2rem, 6vw, 4.5rem);
-		align-items: end;
-		padding-bottom: clamp(3rem, 8vh, 5rem);
+		grid-template-columns: minmax(0, 1.15fr) minmax(20rem, 24rem);
+		column-gap: clamp(2.5rem, 6vw, 5rem);
+		align-items: start;
+		padding-bottom: clamp(3.5rem, 10vh, 6rem);
 	}
 
 	.give__eyebrow {
-		grid-column: 1 / -1;
 		font-family: var(--face-cinzel);
 		font-size: 0.6875rem;
 		font-weight: 500;
 		letter-spacing: 0.18em;
 		text-transform: uppercase;
 		color: var(--teal);
-		padding-bottom: clamp(1.5rem, 5vh, 3rem);
 	}
 
 	.give__title {
+		margin-top: 1.1rem;
 		font-family: var(--face-bodoni);
-		font-size: clamp(3rem, 9vw, 6rem);
+		font-size: clamp(2.5rem, 5.2vw, 4rem);
 		font-weight: var(--display-weight);
-		line-height: 0.94;
+		line-height: 1.02;
 		letter-spacing: -0.02em;
-		/* The full stop is part of the sentence, not of the measure. */
-		text-indent: -0.04em;
-	}
-
-	.give__open-body {
-		display: grid;
-		gap: 1.1rem;
-		font-size: 1.0625rem;
-		line-height: 1.65;
-		color: var(--ink-soft);
-		padding-bottom: 0.5rem;
+		max-width: 15ch;
 	}
 
 	.give__lede {
-		font-size: 1.25rem;
-		line-height: 1.5;
-		color: var(--ink);
-	}
-
-	.give__lede em {
-		font-style: italic;
-		color: var(--teal);
-	}
-
-	/* ── The act of giving ─────────────────────────────────────────────────── */
-
-	/* The one panel on the page that asks for something, so it is the one thing
-	   set on its own ground. */
-	.give__act {
-		display: grid;
-		grid-template-columns: minmax(7rem, 20%) 1fr;
-		column-gap: clamp(1.5rem, 4vw, 3.5rem);
-		background: var(--cream-deep);
-		border: 1px solid var(--rule);
-		border-radius: 2px;
-		padding: clamp(1.75rem, 4vw, 2.75rem);
-		margin-bottom: clamp(3rem, 8vh, 4.5rem);
-	}
-
-	.give__act-body {
-		display: grid;
-		gap: 1.1rem;
+		margin-top: 1.5rem;
 		max-width: 34rem;
-		font-size: 1.0625rem;
-		line-height: 1.65;
+		font-size: 1.1875rem;
+		line-height: 1.6;
 		color: var(--ink-soft);
 	}
 
-	.give__standfirst {
-		font-size: 1.125rem;
+	.give__stamp {
+		margin-top: 2rem;
+		padding-top: 1.25rem;
+		border-top: 1px solid var(--rule);
+		font-size: 0.6875rem;
 		font-weight: 600;
-		color: var(--ink);
+		letter-spacing: 0.13em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
 	}
 
-	.give__ladder {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.6rem;
-		list-style: none;
+	/* ── The card ──────────────────────────────────────────────────────────── */
+
+	/* The one element on the site that asks for money, so it is the one thing
+	   allowed to lift off the ground. The teal edge is the Foundation's own
+	   colour used as a signature rather than as decoration. */
+	.card {
+		position: sticky;
+		top: calc(var(--nav-h) + 1.5rem);
+		background: var(--warm-white, #fff);
+		border: 1px solid var(--rule);
+		border-radius: 3px;
+		box-shadow:
+			0 1px 2px rgba(44, 39, 33, 0.04),
+			0 12px 32px -18px rgba(44, 39, 33, 0.28);
+		overflow: hidden;
+	}
+
+	.card::before {
+		content: '';
+		display: block;
+		height: 3px;
+		background: linear-gradient(90deg, var(--teal), var(--teal-deep));
+	}
+
+	.card__inner {
+		display: grid;
+		gap: 1.5rem;
+		padding: clamp(1.5rem, 2.4vw, 1.9rem);
+	}
+
+	.card__heading {
+		font-family: var(--face-bodoni);
+		font-size: 1.5rem;
+		font-weight: var(--display-weight);
+		letter-spacing: -0.01em;
+	}
+
+	.card__group {
+		display: grid;
+		gap: 0.7rem;
 		margin: 0;
 		padding: 0;
+		border: 0;
 	}
 
-	.give__amount {
+	.card__legend,
+	.card__label {
+		padding: 0;
+		font-size: 0.6875rem;
+		font-weight: 600;
+		letter-spacing: 0.13em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+	}
+
+	.card__amounts {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 0.5rem;
+	}
+
+	.amount {
 		font-family: var(--body);
-		font-size: 1rem;
-		padding: 0.6rem 1.1rem;
-		border: 1px solid color-mix(in srgb, var(--teal) 35%, transparent);
-		border-radius: 999px;
+		font-size: 0.9375rem;
+		padding: 0.62rem 0.3rem;
+		border: 1px solid var(--rule);
+		border-radius: 2px;
 		background: none;
 		color: var(--ink);
 		cursor: pointer;
 		transition:
-			border-color 180ms var(--ease),
-			background-color 180ms var(--ease),
-			color 180ms var(--ease);
+			border-color 160ms var(--ease),
+			background-color 160ms var(--ease),
+			color 160ms var(--ease);
 	}
 
-	.give__amount:hover,
-	.give__amount[aria-pressed='true'] {
+	.amount:hover {
+		border-color: color-mix(in srgb, var(--teal) 55%, transparent);
+	}
+
+	.amount[aria-pressed='true'] {
 		border-color: var(--teal);
 		background: var(--teal);
 		color: var(--cream);
 	}
 
-	.give__amount--own {
-		border-style: dashed;
+	.amount--own {
+		font-size: 0.875rem;
+		letter-spacing: 0.02em;
 	}
 
-	.give__note {
-		font-size: 0.9375rem;
+	.card__own[hidden] {
+		display: none;
+	}
+
+	.card__own {
+		display: grid;
+		gap: 0.5rem;
+	}
+
+	.card__own-field {
+		display: flex;
+		align-items: center;
+		border: 1px solid var(--rule);
+		border-radius: 2px;
+	}
+
+	.card__own-field:focus-within {
+		border-color: var(--teal);
+	}
+
+	.card__rupee {
+		padding: 0 0.2rem 0 0.75rem;
 		color: var(--ink-faint);
 	}
 
-	/* ── Sections ──────────────────────────────────────────────────────────── */
-
-	.give__section {
-		display: grid;
-		grid-template-columns: minmax(7rem, 20%) 1fr;
-		column-gap: clamp(1.5rem, 4vw, 3.5rem);
-		border-top: 1px solid var(--rule);
-		padding-top: 2.75rem;
-		margin-bottom: clamp(2.5rem, 6vh, 3.5rem);
-	}
-
-	.give__h {
-		grid-column: 1;
-		margin: 0;
-		font-family: var(--face-cinzel);
-		font-size: 0.8125rem;
-		font-weight: 500;
-		letter-spacing: 0.16em;
-		line-height: 1.35;
-		text-transform: uppercase;
-		color: var(--teal);
-	}
-
-	.give__body {
-		grid-column: 2;
-		display: grid;
-		gap: 1.15rem;
-		max-width: 36rem;
-		font-size: 1.0625rem;
-		line-height: 1.65;
-		color: var(--ink-soft);
-	}
-
-	.give__body strong,
-	.give__act-body strong {
-		font-weight: 600;
+	.card__input {
+		flex: 1;
+		min-width: 0;
+		font-family: var(--body);
+		font-size: 1rem;
+		padding: 0.62rem 0.75rem 0.62rem 0.1rem;
+		border: 0;
+		background: none;
 		color: var(--ink);
 	}
 
-	.give__list {
-		display: grid;
-		margin: 0;
-		border-top: 1px solid var(--rule);
+	.card__input:focus {
+		outline: none;
 	}
 
-	.give__list dt {
-		padding: 1rem 0 0.35rem;
-		font-size: 0.6875rem;
-		font-weight: 600;
-		letter-spacing: 0.15em;
-		text-transform: uppercase;
+	.card__select {
+		position: relative;
+		display: flex;
+	}
+
+	.card__control {
+		flex: 1;
+		min-width: 0;
+		font-family: var(--body);
+		font-size: 1rem;
+		padding: 0.62rem 2.2rem 0.62rem 0.75rem;
+		border: 1px solid var(--rule);
+		border-radius: 2px;
+		background: none;
+		color: var(--ink);
+		appearance: none;
+		cursor: pointer;
+	}
+
+	.card__control:focus-visible {
+		border-color: var(--teal);
+	}
+
+	.card__chevron {
+		position: absolute;
+		right: 0.85rem;
+		top: 50%;
+		width: 0.45rem;
+		height: 0.45rem;
+		translate: 0 -70%;
+		rotate: 45deg;
+		border-right: 1px solid var(--ink-faint);
+		border-bottom: 1px solid var(--ink-faint);
+		pointer-events: none;
+	}
+
+	.card__go {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		font-family: var(--body);
+		font-size: 1.0625rem;
+		padding: 0.9rem 1.15rem;
+		border: 0;
+		border-radius: 2px;
+		background: var(--teal);
+		color: var(--cream);
+		cursor: pointer;
+		transition: background-color 180ms var(--ease);
+	}
+
+	.card__go:hover {
+		background: var(--teal-deep);
+	}
+
+	.card__go-arrow {
+		transition: translate 180ms var(--ease);
+	}
+
+	.card__go:hover .card__go-arrow {
+		translate: 0.2rem 0;
+	}
+
+	.card__fine {
+		font-size: 0.8125rem;
+		line-height: 1.5;
 		color: var(--ink-faint);
 	}
 
-	.give__list dd {
-		margin: 0;
-		padding: 0 0 1rem;
-		border-bottom: 1px solid var(--rule);
+	.card__fine-link {
+		color: inherit;
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
+	}
+
+	.card__fine-link:hover {
+		color: var(--teal);
+	}
+
+	.card__interim[hidden] {
+		display: none;
+	}
+
+	.card__interim {
+		padding-top: 1.15rem;
+		border-top: 1px solid var(--rule);
+		font-size: 0.9375rem;
+		line-height: 1.55;
 		color: var(--ink-soft);
+	}
+
+	.card__interim strong {
+		color: var(--ink);
+	}
+
+	/* ── Bands ─────────────────────────────────────────────────────────────── */
+
+	.give__band {
+		border-top: 1px solid var(--rule);
+		padding: clamp(3rem, 7vh, 4.5rem) 0;
+	}
+
+	/* The quiet band runs the full width and closes with its own rule. A second,
+	   inset rule immediately under it reads as a mistake. */
+	.give__quiet + .give__band {
+		border-top: 0;
+	}
+
+	.give__band-head {
+		max-width: 40rem;
+		padding-bottom: clamp(2rem, 4vh, 2.75rem);
+	}
+
+	.give__band-title {
+		font-family: var(--face-bodoni);
+		font-size: clamp(1.75rem, 3vw, 2.25rem);
+		font-weight: var(--display-weight);
+		line-height: 1.1;
+		letter-spacing: -0.01em;
+	}
+
+	.give__band-line {
+		margin-top: 0.85rem;
+		font-size: 1.0625rem;
+		line-height: 1.6;
+		color: var(--ink-soft);
+	}
+
+	.give__band-foot {
+		padding-top: 2rem;
+		font-size: 0.9375rem;
+		color: var(--ink-faint);
 	}
 
 	.give__link {
@@ -463,39 +679,319 @@ const rupees = (n: number) => `₹${n.toLocaleString('en-IN')}`;
 		text-underline-offset: 0.2em;
 		text-decoration-thickness: 1px;
 		text-decoration-color: color-mix(in srgb, var(--teal) 40%, transparent);
-		transition: text-decoration-color 180ms var(--ease);
 	}
 
 	.give__link:hover {
 		text-decoration-color: var(--teal);
 	}
 
+	/* ── The three areas ───────────────────────────────────────────────────── */
+
+	.areas {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: clamp(1rem, 2vw, 1.5rem);
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.area {
+		position: relative;
+		display: grid;
+		align-content: start;
+		gap: 0.55rem;
+		padding: 1.75rem 1.5rem 1.9rem;
+		background: var(--cream-deep);
+		border: 1px solid var(--rule);
+		border-radius: 3px;
+		overflow: hidden;
+	}
+
+	.area__rule {
+		position: absolute;
+		inset: 0 0 auto;
+		height: 3px;
+		background: var(--accent);
+	}
+
+	/* The project's own mark, held back to a watermark so the card stays a card
+	   and not a logo tile. */
+	.area__sign {
+		position: absolute;
+		right: -1.25rem;
+		bottom: -1.25rem;
+		width: 7.5rem;
+		height: 7.5rem;
+		opacity: 0.07;
+		color: var(--accent-ink);
+		pointer-events: none;
+	}
+
+	.area__sign :global(svg) {
+		width: 100%;
+		height: 100%;
+	}
+
+	.area__raster {
+		display: block;
+		width: 100%;
+		height: 100%;
+		background: currentColor;
+		-webkit-mask: var(--mark) center / contain no-repeat;
+		mask: var(--mask, var(--mark)) center / contain no-repeat;
+	}
+
+	.area__numeral {
+		font-family: var(--face-cinzel);
+		font-size: 0.6875rem;
+		font-weight: 500;
+		letter-spacing: 0.22em;
+		color: var(--accent-ink);
+	}
+
+	.area__name {
+		font-family: var(--face-bodoni);
+		font-size: 1.375rem;
+		font-weight: var(--display-weight);
+		letter-spacing: -0.005em;
+	}
+
+	.area__line {
+		font-size: 1rem;
+		line-height: 1.5;
+		color: var(--ink);
+	}
+
+	.area__body {
+		font-size: 0.9375rem;
+		line-height: 1.6;
+		color: var(--ink-soft);
+	}
+
+	/* ── The quiet band ────────────────────────────────────────────────────── */
+
+	/* Full-bleed, and the only place on the page where the type is allowed to
+	   carry the argument alone. */
+	.give__quiet {
+		width: 100vw;
+		margin-left: calc(50% - 50vw);
+		padding: clamp(3.5rem, 9vh, 6rem) var(--gutter);
+		background: var(--cream-deep);
+		border-top: 1px solid var(--rule);
+		border-bottom: 1px solid var(--rule);
+		text-align: center;
+	}
+
+	.give__quiet-eyebrow {
+		font-family: var(--face-cinzel);
+		font-size: 0.6875rem;
+		font-weight: 500;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: var(--teal);
+	}
+
+	.give__quiet-line {
+		max-width: 46rem;
+		margin: 1.5rem auto 0;
+		font-family: var(--face-bodoni);
+		font-size: clamp(1.375rem, 2.6vw, 1.9rem);
+		font-weight: var(--display-weight);
+		line-height: 1.35;
+		letter-spacing: -0.01em;
+		color: var(--ink);
+	}
+
+	.give__quiet-note {
+		max-width: 34rem;
+		margin: 1.5rem auto 0;
+		font-size: 1rem;
+		line-height: 1.6;
+		color: var(--ink-soft);
+	}
+
+	/* ── Facts and ways ────────────────────────────────────────────────────── */
+
+	.facts {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0;
+		margin: 0;
+		border-top: 1px solid var(--rule);
+	}
+
+	.fact {
+		padding: 1.4rem clamp(1rem, 3vw, 2.5rem) 1.5rem 0;
+		border-bottom: 1px solid var(--rule);
+	}
+
+	.fact__term {
+		font-size: 0.6875rem;
+		font-weight: 600;
+		letter-spacing: 0.13em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+	}
+
+	.fact__def {
+		margin: 0.5rem 0 0;
+		max-width: 32rem;
+		font-size: 1rem;
+		line-height: 1.6;
+		color: var(--ink-soft);
+	}
+
+	.fact__def strong {
+		font-weight: 600;
+		color: var(--ink);
+	}
+
+	.ways {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: clamp(1rem, 2vw, 1.5rem);
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.way {
+		display: grid;
+		align-content: start;
+		gap: 0.7rem;
+		padding-top: 1.4rem;
+		border-top: 1px solid var(--ink);
+	}
+
+	.way__name {
+		font-family: var(--face-bodoni);
+		font-size: 1.25rem;
+		font-weight: var(--display-weight);
+	}
+
+	.way__body {
+		font-size: 0.9375rem;
+		line-height: 1.6;
+		color: var(--ink-soft);
+	}
+
+	.way__link {
+		font-size: 0.9375rem;
+		color: var(--teal);
+		text-decoration: none;
+	}
+
+	.way__link:hover {
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
+	}
+
 	/* ── Narrow ────────────────────────────────────────────────────────────── */
 
-	@media (max-width: 46rem) {
-		.give__open,
-		.give__act,
-		.give__section {
+	@media (max-width: 62rem) {
+		.give__hero {
+			grid-template-columns: 1fr;
+			row-gap: clamp(2rem, 5vh, 3rem);
+		}
+
+		.card {
+			position: static;
+			max-width: 26rem;
+		}
+
+		.areas,
+		.ways {
 			grid-template-columns: 1fr;
 		}
 
-		.give__open {
-			row-gap: 1.5rem;
+		.facts {
+			grid-template-columns: 1fr;
 		}
 
-		.give__h {
-			margin-bottom: 1.35rem;
-		}
-
-		.give__body {
-			grid-column: 1;
+		.area__sign {
+			width: 6rem;
+			height: 6rem;
 		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.give__amount,
-		.give__link {
+		.amount,
+		.card__go,
+		.card__go-arrow {
 			transition: none;
 		}
 	}
 </style>
+
+<script>
+	/**
+	 * The card's own behaviour: choose an amount, name it on the button, and
+	 * hand it to the gateway.
+	 *
+	 * The gateway is not wired yet — there is no key. Until there is, the button
+	 * reveals the direct route rather than failing, which keeps the honest
+	 * sentence at the point where somebody actually tries to give instead of at
+	 * the top of the page where it discourages everyone who reads it.
+	 */
+	const card = document.querySelector('[data-give]')?.closest('aside');
+
+	if (card) {
+		const chips = [...card.querySelectorAll<HTMLButtonElement>('[data-amount]')];
+		const other = card.querySelector<HTMLButtonElement>('[data-amount-other]');
+		const ownWrap = card.querySelector<HTMLElement>('[data-own]');
+		const own = card.querySelector<HTMLInputElement>('#give-own');
+		const label = card.querySelector<HTMLElement>('[data-give-label]');
+		const button = card.querySelector<HTMLButtonElement>('[data-give]');
+		const interim = card.querySelector<HTMLElement>('[data-interim]');
+
+		const rupees = (n: number) => `₹${n.toLocaleString('en-IN')}`;
+		let amount = Number(chips[1]?.dataset.amount ?? 0);
+
+		const say = () => {
+			if (!label) return;
+			label.textContent = amount > 0 ? `Give ${rupees(amount)}` : 'Give';
+		};
+
+		const press = (chosen: HTMLButtonElement | null) => {
+			for (const chip of [...chips, other]) {
+				if (chip) chip.setAttribute('aria-pressed', String(chip === chosen));
+			}
+		};
+
+		for (const chip of chips) {
+			chip.addEventListener('click', () => {
+				amount = Number(chip.dataset.amount);
+				press(chip);
+				if (ownWrap) ownWrap.hidden = true;
+				say();
+			});
+		}
+
+		other?.addEventListener('click', () => {
+			press(other);
+			if (ownWrap) ownWrap.hidden = false;
+			own?.focus();
+			amount = Number((own?.value ?? '').replace(/\D/g, '')) || 0;
+			say();
+		});
+
+		own?.addEventListener('input', () => {
+			// Digits only, and grouped the way the amounts above it are, so the two
+			// read as the same kind of number.
+			const digits = own.value.replace(/\D/g, '').slice(0, 8);
+			amount = Number(digits) || 0;
+			own.value = amount > 0 ? amount.toLocaleString('en-IN') : '';
+			say();
+		});
+
+		button?.addEventListener('click', () => {
+			if (interim) {
+				interim.hidden = false;
+				interim.scrollIntoView({ block: 'nearest' });
+			}
+		});
+
+		say();
+	}
+</script>
