@@ -315,8 +315,8 @@ const FACTS = {
 						<div class="tabs" role="tablist" aria-label="Your account">
 							{
 								[
-									['profile', 'Profile'],
 									['details', 'Your details'],
+									['profile', 'Profile'],
 									['account', 'Account'],
 								].map(([id, label], i) => (
 									<button
@@ -346,6 +346,7 @@ const FACTS = {
 						aria-labelledby="tab-profile"
 						tabindex="0"
 						data-view="profile"
+						hidden
 					>
 						<header class="profile">
 							<p class="profile__bio" data-bio hidden></p>
@@ -386,7 +387,6 @@ const FACTS = {
 							aria-labelledby="tab-details"
 							tabindex="0"
 							data-view="details"
-							hidden
 						>
 							<p class="held__note">
 								Everything on our side of the record. If a line is wrong, change it
