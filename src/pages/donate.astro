@@ -2,126 +2,500 @@
 /**
  * Donate.
  *
- * There is no payment integration yet, and this page says so rather than
- * dressing up a form that cannot take money. A donate page that fails at the
- * last step costs more than one that is honest at the first.
+ * The page is built; the rails are not. Everything about how money actually
+ * arrives is in GIVING below, and the page renders honestly against it: with a
+ * key or an account it asks for a gift, and without one it says plainly that it
+ * cannot take a payment yet rather than showing a ladder of amounts that do
+ * nothing. A donate page that fails at the last step costs more than one that
+ * is honest at the first.
  *
- * Nothing here claims a tax status, a figure, or a proportion. The Foundation
- * has not given me any, and an invented one on this page of all pages is the
- * kind of thing that is never forgiven. When online giving exists, the middle
- * section is what changes; the rest of the page already means what it says.
+ * Two things are stated here because they are true today and will not always
+ * be, and both are switched by the constants below rather than by editing prose
+ * in four places:
+ *
+ *   - There is no 80G registration yet, so a gift does not reduce anyone's tax.
+ *   - There is no FCRA registration, so a foreign contribution cannot lawfully
+ *     be accepted at all. That one is not a disclaimer; it is the law, and the
+ *     page says so where a donor will actually read it.
+ *
+ * No sum on this page carries a claim about what it buys. The Foundation has
+ * given me no costings, and inventing one here — of all pages — is exactly the
+ * kind of thing its own integrity standard forbids.
  */
-import Doc from '../layouts/Doc.astro';
+import Base from '../layouts/Base.astro';
+import SiteFooter from '../components/layout/SiteFooter.astro';
+
+/**
+ * The rails. Empty until the Foundation supplies them.
+ *
+ * `razorpayKey` is a publishable key id and belongs in the page; the secret
+ * never does — it lives in the Edge Function's environment, where the order is
+ * created and the signature verified.
+ */
+const GIVING = {
+	razorpayKey: '',
+	upi: '',
+	bank: null as null | {
+		name: string;
+		account: string;
+		ifsc: string;
+		bank: string;
+	},
+};
+
+/** Switched the day the certificate arrives, not before. */
+const HAS_80G = false;
+/** Switched only when the Foundation is registered under the FCRA. */
+const ACCEPTS_FOREIGN = false;
+
+const canTakeMoney = Boolean(GIVING.razorpayKey || GIVING.upi || GIVING.bank);
+
+/** Plain sums. Nothing is claimed for any of them — see the note above. */
+const AMOUNTS = [500, 1000, 2500, 5000, 10000];
+const rupees = (n: number) => `₹${n.toLocaleString('en-IN')}`;
 ---
 
-<Doc
+<Base
 	title="Donate — The Itti Foundation"
-	description="How to give to The Itti Foundation, what the money is for, and what we are still setting up."
-	eyebrow="Donate"
-	heading="What your giving does."
-	lede="Three kinds of work, one place to send it, and an honest account of what we cannot take yet."
+	description="Give to The Itti Foundation: what your gift pays for, where it goes, and exactly where we stand on tax and on donations from abroad."
 >
-	<section class="doc__section">
-		<h2 class="doc__h">What it pays for</h2>
-		<div class="doc__body">
-			<p>
-				We work on three things, and they are not three campaigns &mdash; they are the
-				same conviction three times over: that a person is worth the trouble of being
-				understood before they are treated.
-			</p>
-			<dl class="doc__list">
-				<dt>Neurodivergence</dt>
-				<dd>
-					Assessment that families can afford and reach, and the long unglamorous work
-					after it &mdash; the school that needs persuading, the sibling nobody asked
-					about, the adult who was never assessed as a child and has spent thirty years
-					being told they were careless.
-				</dd>
-				<dt>Cancer care</dt>
-				<dd>
-					Catching it early, and standing next to people through what follows. Diagnosis
-					is a day; the year after it is transport, childcare, lost wages and somebody to
-					explain what was just said in a room where nobody could hear.
-				</dd>
-				<dt>Conservation</dt>
-				<dd>
-					The ordinary defence of places that have nobody arguing for
-					them. The forest and the person are the same problem: both are cheaper to
-					protect than to restore, and both are usually noticed too late.
-				</dd>
-			</dl>
-			<p>
-				It also pays for the parts nobody funds &mdash; the phone answered on a Sunday,
-				the follow-up six months later, the record kept properly so a family does not have
-				to tell their story again from the beginning.
-			</p>
-		</div>
-	</section>
+	<div class="give-page">
+		<article class="give">
+			<header class="give__open">
+				<p class="give__eyebrow">Donate</p>
+				<h1 class="give__title">This much.</h1>
+				<div class="give__open-body">
+					<p class="give__lede">
+						<em>Itti</em> means <em>this much</em>. It is the smaller half of the name
+						this Foundation carries, and it is the whole of its argument for giving.
+					</p>
+					<p>
+						A small determined effort counts. The size of what you are able to do is not
+						the measure of whether to do it. That is not a fundraising line — it is what
+						the name says, in the language it came from, and the Foundation was built on
+						it.
+					</p>
+				</div>
+			</header>
 
-	<section class="doc__section">
-		<h2 class="doc__h">How to give today</h2>
-		<div class="doc__body">
-			<p>
-				<strong>We cannot take a payment on this page yet.</strong> Online giving is being
-				set up, and until it is, saying so is better than a button that goes nowhere.
-			</p>
-			<p>
-				Write to{' '}
-				<a class="doc__link" href="mailto:hello@itti.org.in">hello@itti.org.in</a>{' '}
-				and we will arrange it directly &mdash; a transfer, a cheque, or whatever is
-				easiest at your end. Say roughly what you have in mind and whether you want it to
-				go to one of the three in particular. A person answers, within five working days.
-			</p>
-			<p>
-				If you would rather wait until it is one click, that is entirely reasonable.{' '}
-				<a class="doc__link" href="/join">Register</a> and we will tell you when it is.
-			</p>
-		</div>
-	</section>
+			<section class="give__act" aria-labelledby="give-act-heading">
+				<h2 class="give__h" id="give-act-heading">How to give</h2>
+				<div class="give__act-body">
+					{
+						canTakeMoney ? (
+							<>
+								<ul class="give__ladder">
+									{AMOUNTS.map((amount) => (
+										<li>
+											<button class="give__amount" type="button" data-amount={amount}>
+												{rupees(amount)}
+											</button>
+										</li>
+									))}
+									<li>
+										<button class="give__amount give__amount--own" type="button" data-amount="0">
+											Another amount
+										</button>
+									</li>
+								</ul>
+								<p class="give__note">
+									We have not put a claim against any of these sums. We do not yet have
+									costings we would stand behind, and we would rather say so than invent
+									one.
+								</p>
+							</>
+						) : (
+							<>
+								<p class="give__standfirst">
+									We cannot take a payment on this page yet.
+								</p>
+								<p>
+									Online giving is being set up now. Until it is finished, saying so is
+									better than a button that goes nowhere.
+								</p>
+								<p>
+									Write to{' '}
+									<a class="give__link" href="mailto:hello@itti.org.in">
+										hello@itti.org.in
+									</a>{' '}
+									and we will arrange it directly — a transfer, a cheque, or whatever is
+									easiest at your end. Tell us roughly what you have in mind, and whether
+									you want it to go to one of the three in particular. A person answers,
+									within five working days.
+								</p>
+								<p>
+									If you would rather wait until it is one click, that is entirely
+									reasonable. <a class="give__link" href="/join">Register</a> and we will
+									tell you the day it is.
+								</p>
+							</>
+						)
+					}
+				</div>
+			</section>
 
-	<section class="doc__section">
-		<h2 class="doc__h">Other ways, which are not lesser</h2>
-		<div class="doc__body">
-			<dl class="doc__list">
-				<dt>Time</dt>
-				<dd>
-					Hours from someone who knows what they are doing are worth more to us than the
-					money it would take to buy them. Clinicians, teachers, translators, drivers,
-					people who are good on the phone.{' '}
-					<a class="doc__link" href="/join">Register</a> and say what you can do.
-				</dd>
-				<dt>Saying it out loud</dt>
-				<dd>
-					Most people who need us do not know we exist, and they are not reached by
-					advertising. They are reached by somebody they already trust mentioning us.
-				</dd>
-				<dt>Your organisation</dt>
-				<dd>
-					Partnerships, and companies wanting to do something beyond a cheque at the end
-					of the year. Write and say what you have in mind.
-				</dd>
-			</dl>
-		</div>
-	</section>
+			<section class="give__section" aria-labelledby="give-work-heading">
+				<h2 class="give__h" id="give-work-heading">Where it goes</h2>
+				<div class="give__body">
+					<p>
+						We work on three things, and they are not three campaigns. They are the same
+						conviction three times over: that a person is worth the trouble of being
+						understood before they are treated.
+					</p>
+					<dl class="give__list">
+						<dt>Neurodivergence</dt>
+						<dd>
+							Assessment that families can afford and reach, and the long unglamorous work
+							after it — the school that needs persuading, the sibling nobody asked about,
+							the adult who was never assessed as a child and has spent thirty years being
+							told they were careless.
+						</dd>
+						<dt>Cancer care</dt>
+						<dd>
+							Catching it early, and standing next to people through what follows.
+							Diagnosis is a day; the year after it is transport, childcare, lost wages and
+							somebody to explain what was just said in a room where nobody could hear.
+						</dd>
+						<dt>Conservation</dt>
+						<dd>
+							The ordinary defence of places that have nobody arguing for them. The forest
+							and the person are the same problem: both are cheaper to protect than to
+							restore, and both are usually noticed too late.
+						</dd>
+					</dl>
+					<p>
+						It also pays for the parts nobody funds — the phone answered on a Sunday, the
+						follow-up six months later, the record kept properly so a family does not have
+						to tell their story again from the beginning.
+					</p>
+				</div>
+			</section>
 
-	<section class="doc__section">
-		<h2 class="doc__h">What we will tell you</h2>
-		<div class="doc__body">
-			<p>
-				The Itti Foundation is registered as Itti&rsquo;s Skill School Foundation, a
-				Section 8 not-for-profit in India. Ask us what a gift was spent on and we will
-				tell you plainly, including the part that went on rent and salaries &mdash; a
-				charity that claims none of it did is either lying or about to fold.
-			</p>
-			<p>
-				Ask us about receipts and tax treatment before you give rather than after, and we
-				will tell you exactly where we stand at the time. We would rather answer that
-				question than have you assume.
-			</p>
-			<p>
-				What we do with your details is set out in{' '}
-				<a class="doc__link" href="/policies#privacy">Privacy Policy</a>.
-			</p>
-		</div>
-	</section>
-</Doc>
+			<section class="give__section" aria-labelledby="give-plain-heading">
+				<h2 class="give__h" id="give-plain-heading">Plainly</h2>
+				<div class="give__body">
+					<dl class="give__list">
+						<dt>Tax</dt>
+						<dd>
+							{
+								HAS_80G ? (
+									'A gift to the Foundation is eligible for deduction under section 80G. We issue the certificate you need.'
+								) : (
+									<>
+										The Foundation does not yet hold <strong>80G</strong> registration, so
+										a gift made today does not reduce your tax. We expect it by the end of
+										this year, and this page will say so the day it arrives. Until then,
+										anyone telling you otherwise is wrong.
+									</>
+								)
+							}
+						</dd>
+						<dt>Where you are giving from</dt>
+						<dd>
+							{
+								ACCEPTS_FOREIGN ? (
+									'We can accept contributions from outside India into our designated FCRA account.'
+								) : (
+									<>
+										We can accept donations from <strong>Indian sources only</strong>. The
+										Foundation is not registered under the Foreign Contribution
+										(Regulation) Act, and accepting a foreign contribution without that
+										registration is an offence rather than an oversight. If you are abroad
+										and want to help, write to us — there are other things you can do, and
+										we would rather do them properly.
+									</>
+								)
+							}
+						</dd>
+						<dt>What we will tell you</dt>
+						<dd>
+							Ask what a gift was spent on and we will tell you plainly, including the part
+							that went on rent and salaries. A charity claiming none of it did is either
+							lying or about to fold.
+						</dd>
+						<dt>Who we are, in law</dt>
+						<dd>
+							Itti&rsquo;s Skill School Foundation, a Section 8 not-for-profit company
+							incorporated in India, operating as The Itti Foundation.
+						</dd>
+					</dl>
+					<p>
+						What we do with your details is set out in our{' '}
+						<a class="give__link" href="/policies#privacy">Privacy Policy</a>.
+					</p>
+				</div>
+			</section>
+
+			<section class="give__section" aria-labelledby="give-other-heading">
+				<h2 class="give__h" id="give-other-heading">Other ways, which are not lesser</h2>
+				<div class="give__body">
+					<dl class="give__list">
+						<dt>Time</dt>
+						<dd>
+							Hours from someone who knows what they are doing are worth more to us than
+							the money it would take to buy them. Clinicians, teachers, translators,
+							drivers, people who are good on the phone.{' '}
+							<a class="give__link" href="/join">Register</a> and say what you can do.
+						</dd>
+						<dt>Saying it out loud</dt>
+						<dd>
+							Most people who need us do not know we exist, and they are not reached by
+							advertising. They are reached by somebody they already trust mentioning us.
+						</dd>
+						<dt>Your organisation</dt>
+						<dd>
+							Partnerships, and companies wanting to do something beyond a cheque at the
+							end of the year. Write and say what you have in mind.
+						</dd>
+					</dl>
+				</div>
+			</section>
+		</article>
+
+		<SiteFooter />
+	</div>
+</Base>
+
+<style>
+	.give-page {
+		background: var(--cream);
+		min-height: 100svh;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.give {
+		flex: 1 0 auto;
+		width: 100%;
+		max-width: 62rem;
+		margin: 0 auto;
+		padding: calc(var(--nav-h) + clamp(2.5rem, 8vh, 5.5rem)) var(--gutter)
+			clamp(3rem, 8vh, 5rem);
+	}
+
+	/* ── The opening ───────────────────────────────────────────────────────── */
+
+	/* The title is set against the argument rather than above it. The name is
+	   the argument, so the two want to be read as one thought. */
+	.give__open {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		column-gap: clamp(2rem, 6vw, 4.5rem);
+		align-items: end;
+		padding-bottom: clamp(3rem, 8vh, 5rem);
+	}
+
+	.give__eyebrow {
+		grid-column: 1 / -1;
+		font-family: var(--face-cinzel);
+		font-size: 0.6875rem;
+		font-weight: 500;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: var(--teal);
+		padding-bottom: clamp(1.5rem, 5vh, 3rem);
+	}
+
+	.give__title {
+		font-family: var(--face-bodoni);
+		font-size: clamp(3rem, 9vw, 6rem);
+		font-weight: var(--display-weight);
+		line-height: 0.94;
+		letter-spacing: -0.02em;
+		/* The full stop is part of the sentence, not of the measure. */
+		text-indent: -0.04em;
+	}
+
+	.give__open-body {
+		display: grid;
+		gap: 1.1rem;
+		font-size: 1.0625rem;
+		line-height: 1.65;
+		color: var(--ink-soft);
+		padding-bottom: 0.5rem;
+	}
+
+	.give__lede {
+		font-size: 1.25rem;
+		line-height: 1.5;
+		color: var(--ink);
+	}
+
+	.give__lede em {
+		font-style: italic;
+		color: var(--teal);
+	}
+
+	/* ── The act of giving ─────────────────────────────────────────────────── */
+
+	/* The one panel on the page that asks for something, so it is the one thing
+	   set on its own ground. */
+	.give__act {
+		display: grid;
+		grid-template-columns: minmax(7rem, 20%) 1fr;
+		column-gap: clamp(1.5rem, 4vw, 3.5rem);
+		background: var(--cream-deep);
+		border: 1px solid var(--rule);
+		border-radius: 2px;
+		padding: clamp(1.75rem, 4vw, 2.75rem);
+		margin-bottom: clamp(3rem, 8vh, 4.5rem);
+	}
+
+	.give__act-body {
+		display: grid;
+		gap: 1.1rem;
+		max-width: 34rem;
+		font-size: 1.0625rem;
+		line-height: 1.65;
+		color: var(--ink-soft);
+	}
+
+	.give__standfirst {
+		font-size: 1.125rem;
+		font-weight: 600;
+		color: var(--ink);
+	}
+
+	.give__ladder {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.6rem;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.give__amount {
+		font-family: var(--body);
+		font-size: 1rem;
+		padding: 0.6rem 1.1rem;
+		border: 1px solid color-mix(in srgb, var(--teal) 35%, transparent);
+		border-radius: 999px;
+		background: none;
+		color: var(--ink);
+		cursor: pointer;
+		transition:
+			border-color 180ms var(--ease),
+			background-color 180ms var(--ease),
+			color 180ms var(--ease);
+	}
+
+	.give__amount:hover,
+	.give__amount[aria-pressed='true'] {
+		border-color: var(--teal);
+		background: var(--teal);
+		color: var(--cream);
+	}
+
+	.give__amount--own {
+		border-style: dashed;
+	}
+
+	.give__note {
+		font-size: 0.9375rem;
+		color: var(--ink-faint);
+	}
+
+	/* ── Sections ──────────────────────────────────────────────────────────── */
+
+	.give__section {
+		display: grid;
+		grid-template-columns: minmax(7rem, 20%) 1fr;
+		column-gap: clamp(1.5rem, 4vw, 3.5rem);
+		border-top: 1px solid var(--rule);
+		padding-top: 2.75rem;
+		margin-bottom: clamp(2.5rem, 6vh, 3.5rem);
+	}
+
+	.give__h {
+		grid-column: 1;
+		margin: 0;
+		font-family: var(--face-cinzel);
+		font-size: 0.8125rem;
+		font-weight: 500;
+		letter-spacing: 0.16em;
+		line-height: 1.35;
+		text-transform: uppercase;
+		color: var(--teal);
+	}
+
+	.give__body {
+		grid-column: 2;
+		display: grid;
+		gap: 1.15rem;
+		max-width: 36rem;
+		font-size: 1.0625rem;
+		line-height: 1.65;
+		color: var(--ink-soft);
+	}
+
+	.give__body strong,
+	.give__act-body strong {
+		font-weight: 600;
+		color: var(--ink);
+	}
+
+	.give__list {
+		display: grid;
+		margin: 0;
+		border-top: 1px solid var(--rule);
+	}
+
+	.give__list dt {
+		padding: 1rem 0 0.35rem;
+		font-size: 0.6875rem;
+		font-weight: 600;
+		letter-spacing: 0.15em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+	}
+
+	.give__list dd {
+		margin: 0;
+		padding: 0 0 1rem;
+		border-bottom: 1px solid var(--rule);
+		color: var(--ink-soft);
+	}
+
+	.give__link {
+		color: var(--teal);
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
+		text-decoration-thickness: 1px;
+		text-decoration-color: color-mix(in srgb, var(--teal) 40%, transparent);
+		transition: text-decoration-color 180ms var(--ease);
+	}
+
+	.give__link:hover {
+		text-decoration-color: var(--teal);
+	}
+
+	/* ── Narrow ────────────────────────────────────────────────────────────── */
+
+	@media (max-width: 46rem) {
+		.give__open,
+		.give__act,
+		.give__section {
+			grid-template-columns: 1fr;
+		}
+
+		.give__open {
+			row-gap: 1.5rem;
+		}
+
+		.give__h {
+			margin-bottom: 1.35rem;
+		}
+
+		.give__body {
+			grid-column: 1;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.give__amount,
+		.give__link {
+			transition: none;
+		}
+	}
+</style>
