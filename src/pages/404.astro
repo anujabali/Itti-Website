@@ -5,62 +5,159 @@
  * Most of what reaches this page reaches it from our own navigation: the bar
  * lists the site we intend to have, and much of that site is not written yet.
  * So this says that, rather than implying the visitor mistyped something or
- * that something has broken. Netlify serves it automatically for any path that
- * does not resolve.
+ * that something has broken.
+ *
+ * It stands on the same ground the account does — the brand teal falling away
+ * to its own abyss, the Foundation's mark as a texture across it — because a
+ * page a visitor lands on by accident is the worst place for the site to look
+ * unfinished. The bar stays glass over it: nothing on this page is long enough
+ * to pass behind the lockup.
  */
 import Base from '../layouts/Base.astro';
 import SiteFooter from '../components/layout/SiteFooter.astro';
+import Mark from '../components/brand/Mark.astro';
+
+const WAYS = [
+	{
+		name: 'The opening',
+		note: 'Three pictures, and what they are for.',
+		href: '/',
+	},
+	{
+		name: 'Join us',
+		note: 'Tell us who you are and how to reach you.',
+		href: '/join',
+	},
+	{
+		name: 'Donate',
+		note: 'Where a gift goes, and how we account for it.',
+		href: '/donate',
+	},
+	{
+		name: 'Policies',
+		note: 'What we hold, why, and how to have it back.',
+		href: '/policies',
+	},
+];
 ---
 
 <Base
 	title="Not here yet — The Itti Foundation"
 	description="This part of The Itti Foundation's site has not been written yet."
-	navTheme="light"
+	navTheme="veil"
 >
 	<div class="page">
+		<span class="page__ornament" aria-hidden="true">
+			<Mark height="30rem" label="" />
+		</span>
+		<div class="page__grain" aria-hidden="true"></div>
+
 		<article class="lost">
 			<p class="lost__eyebrow">Not found</p>
 			<h1 class="lost__title">Not here yet.</h1>
 			<p class="lost__lede">
 				This part of the site has not been written. Nothing is broken and nothing has
-				moved — we are building it a section at a time, and this one has not had its
-				turn.
+				moved &mdash; we are building it a section at a time, and this one has not had
+				its turn.
 			</p>
 
-			<nav class="lost__ways" aria-label="Pages that do exist">
-				<a class="lost__way" href="/">
-					<span class="lost__way-name">The opening</span>
-					<span class="lost__way-note">Three pictures and what they are for.</span>
-				</a>
-				<a class="lost__way" href="/join">
-					<span class="lost__way-name">Join us</span>
-					<span class="lost__way-note">Tell us who you are and how to reach you.</span>
-				</a>
-				<a class="lost__way" href="/policies#privacy">
-					<span class="lost__way-name">Privacy Policy</span>
-					<span class="lost__way-note">What we hold, why, and how to have it back.</span>
-				</a>
+			<nav class="ways" aria-label="Pages that do exist">
+				{
+					WAYS.map((way) => (
+						<a class="way" href={way.href}>
+							<span class="way__name">{way.name}</span>
+							<span class="way__note">{way.note}</span>
+							<span class="way__go" aria-hidden="true">
+								&rarr;
+							</span>
+						</a>
+					))
+				}
 			</nav>
 
 			<p class="lost__foot">
 				If you followed a link here from somewhere else, write to{' '}
-				<a href="mailto:hello@itti.org.in">hello@itti.org.in</a>{' '}
+				<a class="lost__link" href="mailto:hello@itti.org.in">hello@itti.org.in</a>{' '}
 				and we will point you the right way.
 			</p>
 		</article>
+
+		<!-- Below everything, so the bar never takes its ground on a page this
+		     short. -->
+		<span class="zone" data-light-zone aria-hidden="true"></span>
 
 		<SiteFooter />
 	</div>
 </Base>
 
 <style>
+	/* The same ground the account stands on, and the same two things that stop
+	   it reading as flat CSS. */
 	.page {
-		background: var(--cream);
+		position: relative;
+		isolation: isolate;
+		overflow-x: clip;
+		display: flex;
+		flex-direction: column;
 		min-height: 100svh;
+		color: var(--cream);
+
+		--lit: var(--teal);
+		--deep: color-mix(in srgb, var(--teal) 46%, var(--teal-deep));
+		--floor: var(--teal-deep);
+		background:
+			radial-gradient(
+				128% 92% at 10% 0%,
+				color-mix(in srgb, var(--lit) 62%, transparent) 0%,
+				transparent 58%
+			),
+			linear-gradient(168deg, var(--deep) 0%, var(--floor) 62%);
+
+		--ink: var(--warm-white);
+		--ink-soft: rgba(250, 247, 240, 0.78);
+		--ink-faint: rgba(250, 247, 240, 0.62);
+		--rule: rgba(250, 247, 240, 0.16);
+		--accent: var(--warm-white);
+	}
+
+	.page__ornament {
+		position: absolute;
+		top: calc(var(--nav-h) - 3rem);
+		right: -8%;
+		z-index: 0;
+		display: block;
+		color: var(--cream);
+		opacity: 0.05;
+		pointer-events: none;
+	}
+
+	.page__grain {
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		opacity: 0.26;
+		mix-blend-mode: overlay;
+		pointer-events: none;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='1 0 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+	}
+
+	.zone {
+		display: block;
+		height: 0;
+	}
+
+	.lost,
+	:global(.foot) {
+		position: relative;
+		z-index: 1;
 	}
 
 	.lost {
-		max-width: 44rem;
+		flex: 1 0 auto;
+		width: 100%;
+		/* Wide enough for the four ways to sit in one row. The title and the
+		   sentences hold their own narrower measures. */
+		max-width: 72rem;
 		margin: 0 auto;
 		padding: calc(var(--nav-h) + clamp(3rem, 12vh, 7rem)) var(--gutter)
 			clamp(3rem, 10vh, 6rem);
@@ -68,70 +165,124 @@ import SiteFooter from '../components/layout/SiteFooter.astro';
 
 	.lost__eyebrow {
 		margin: 0;
-		font-size: 0.75rem;
+		font-family: var(--face-cinzel);
+		font-size: 0.6875rem;
+		font-weight: 500;
 		letter-spacing: 0.18em;
 		text-transform: uppercase;
-		color: var(--ink-faint);
+		color: rgba(250, 247, 240, 0.72);
 	}
 
 	.lost__title {
-		margin: 0.6rem 0 0;
-		font-family: var(--display);
+		margin: 1.1rem 0 0;
+		font-family: var(--face-bodoni);
+		font-size: clamp(2.75rem, 6vw, 4.5rem);
 		font-weight: var(--display-weight);
-		font-size: clamp(2.6rem, 7vw, 4.2rem);
-		line-height: 1.04;
-		color: var(--ink);
+		line-height: 1.02;
+		letter-spacing: -0.02em;
 	}
 
 	.lost__lede {
-		margin: 1.4rem 0 0;
+		margin: 1.5rem 0 0;
 		max-width: 34rem;
-		font-size: clamp(1.05rem, 1.6vw, 1.25rem);
-		line-height: 1.62;
-		color: var(--ink-soft, var(--ink));
+		font-size: 1.1875rem;
+		line-height: 1.6;
+		color: color-mix(in srgb, var(--cream) 88%, var(--teal-deep));
+		text-wrap: pretty;
 	}
 
-	/* The three that exist, listed plainly rather than sold. */
-	.lost__ways {
-		margin-top: clamp(2.5rem, 6vh, 4rem);
-		border-top: 1px solid var(--rule, rgba(28, 107, 119, 0.22));
+	/* ── The ways out ──────────────────────────────────────────────────────── */
+
+	.ways {
+		display: grid;
+		/* Four across where there is room. At fifteen rems only three fitted and
+		   the fourth sat alone on a second row, which reads as a mistake. */
+		grid-template-columns: repeat(auto-fit, minmax(min(13rem, 100%), 1fr));
+		gap: clamp(0.9rem, 1.8vw, 1.35rem);
+		margin-top: clamp(2.5rem, 6vh, 3.5rem);
 	}
 
-	.lost__way {
-		display: block;
-		padding: 1.15rem 0;
-		border-bottom: 1px solid var(--rule, rgba(28, 107, 119, 0.22));
+	/* Paper on the ground, the way the account's cards are: the one thing on
+	   this page a visitor is meant to act on should look like something to
+	   press rather than a line of text with a rule under it. */
+	.way {
+		position: relative;
+		display: grid;
+		align-content: start;
+		gap: 0.45rem;
+		padding: 1.35rem 1.4rem 1.5rem;
+		background: color-mix(in srgb, var(--cream) 93%, var(--floor));
+		border-radius: 4px;
 		text-decoration: none;
-		color: inherit;
-		transition: padding-left 260ms var(--ease);
+		color: #2c2721;
+		transition:
+			transform 320ms var(--ease),
+			box-shadow 320ms var(--ease);
 	}
 
-	.lost__way:hover,
-	.lost__way:focus-visible {
-		padding-left: 0.55rem;
+	.way::before {
+		content: '';
+		position: absolute;
+		inset: 0 auto 0 0;
+		width: 2px;
+		border-radius: 4px 0 0 4px;
+		background: var(--teal);
+		opacity: 0.55;
 	}
 
-	.lost__way-name {
-		display: block;
-		font-family: var(--display);
-		font-size: 1.3rem;
-		color: var(--teal);
+	.way:hover {
+		transform: translateY(-3px);
+		box-shadow: 0 18px 36px -24px rgba(10, 47, 53, 0.8);
 	}
 
-	.lost__way-note {
-		display: block;
-		margin-top: 0.15rem;
+	.way__name {
+		font-family: var(--face-bodoni);
+		font-size: 1.25rem;
+		font-weight: var(--display-weight);
+		color: #2c2721;
+	}
+
+	.way__note {
 		font-size: 0.9375rem;
-		color: var(--ink-faint);
+		line-height: 1.55;
+		color: #5d564d;
+	}
+
+	.way__go {
+		margin-top: 0.35rem;
+		font-size: 0.9375rem;
+		color: var(--teal);
+		transition: translate 220ms var(--ease);
+	}
+
+	.way:hover .way__go {
+		translate: 0.25rem 0;
 	}
 
 	.lost__foot {
-		margin: clamp(2rem, 5vh, 3rem) 0 0;
+		margin: clamp(2.5rem, 6vh, 3.5rem) 0 0;
+		max-width: 40rem;
 		font-size: 0.9375rem;
-		color: var(--ink-faint);
+		line-height: 1.65;
+		color: color-mix(in srgb, var(--cream) 88%, var(--teal-deep));
+		text-wrap: pretty;
 	}
 
-	.lost__foot a {
-		color: var(--teal);
+	.lost__link {
+		color: var(--warm-white);
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
+		text-decoration-color: rgba(250, 247, 240, 0.45);
+	}
+
+	.lost__link:hover {
+		text-decoration-color: var(--warm-white);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.way,
+		.way__go {
+			transition: none;
+		}
 	}
 </style>
