@@ -2,10 +2,10 @@
 /**
  * Donate.
  *
- * Structured as a donation page rather than as a document: the ask is beside
- * the headline, above the fold, and everything after it is the case for making
- * it. The policy pages use the label-and-column grid; this one deliberately
- * does not, because a page that asks for money should not read like terms.
+ * The ask sits beside the headline, above the fold; everything under it is the
+ * case for making it, and each part of that case is one line long. A donation
+ * page is read standing up. The policy pages are where sentences are allowed to
+ * take their time.
  *
  * Whether money can actually arrive is asked of the Edge Function at the moment
  * somebody tries to give, rather than baked in at build time. If the gateway
@@ -18,25 +18,17 @@
  *
  *   - There is no 80G registration yet, so a gift does not reduce anyone's tax.
  *   - There is no FCRA registration, so a foreign contribution cannot lawfully
- *     be accepted at all. That is the law, not a disclaimer, and it is stated
- *     where a donor will read it rather than in small print.
+ *     be accepted at all. That is the law, not a disclaimer.
  *
  * No sum carries a claim about what it buys. There are no costings to stand
  * behind yet, and inventing one here is what the Foundation's own integrity
- * standard forbids. When real figures exist they belong on the amounts.
+ * standard forbids.
  */
 import Base from '../layouts/Base.astro';
 import SiteFooter from '../components/layout/SiteFooter.astro';
 import ClawMark from '../components/brand/ClawMark.astro';
+import Mark from '../components/brand/Mark.astro';
 
-/**
- * Whether a gateway exists is decided at run time, not at build time.
- *
- * The page asks the Edge Function for an order; the function holds the keys and
- * answers `not_configured` when it has none. So the day the Foundation moves
- * from test keys to live ones, nothing in this repository changes — and there
- * is no publishable key sitting in the markup going stale.
- */
 const HAS_80G = false;
 const ACCEPTS_FOREIGN = false;
 
@@ -52,8 +44,7 @@ const AREAS = [
 		name: 'Neurodivergence',
 		accent: 'ochre',
 		mark: '/brand/pillar-neuro.png',
-		line: 'Assessment families can afford and reach — and the long work after it.',
-		body: 'The school that needs persuading. The sibling nobody asked about. The adult never assessed as a child, who has spent thirty years being told they were careless.',
+		line: 'Assessment a family can afford, and the years of work after it.',
 	},
 	{
 		numeral: 'II',
@@ -61,8 +52,7 @@ const AREAS = [
 		name: 'Cancer Care',
 		accent: 'rose',
 		mark: '/brand/pillar-cancer.png',
-		line: 'Catching it early, and standing beside people through what follows.',
-		body: 'Diagnosis is a day. The year after it is transport, childcare, lost wages, and somebody to explain what was just said in a room where nobody could hear.',
+		line: 'Diagnosis is a day. The year that follows is everything else.',
 	},
 	{
 		numeral: 'III',
@@ -70,15 +60,58 @@ const AREAS = [
 		name: 'Conservation',
 		accent: 'sage',
 		mark: 'claw',
-		line: 'The ordinary defence of places that have nobody arguing for them.',
-		body: 'The forest and the person are the same problem: both are cheaper to protect than to restore, and both are usually noticed too late.',
+		line: 'The ordinary defence of places with nobody arguing for them.',
+	},
+];
+
+const FACTS = [
+	{
+		term: 'Tax relief',
+		body: HAS_80G
+			? 'Eligible for deduction under section 80G. We issue the certificate.'
+			: 'No 80G registration yet, so a gift today does not reduce your tax. We expect it before the end of the year.',
+	},
+	{
+		term: 'Where you may give from',
+		body: ACCEPTS_FOREIGN
+			? 'Contributions from outside India are received into our designated FCRA account.'
+			: 'Indian sources only. Without FCRA registration, accepting a foreign contribution is an offence rather than an oversight.',
+	},
+	{
+		term: 'What we will tell you',
+		body: 'Ask what a gift was spent on and we will tell you, including the share that went on rent and salaries.',
+	},
+	{
+		term: 'Refunds',
+		body: 'A gift is put to work as soon as it clears. Duplicate, mistaken and unauthorised payments are returned without argument.',
+	},
+];
+
+const WAYS = [
+	{
+		name: 'Give time',
+		body: 'Hours from someone who knows what they are doing are worth more than the money to buy them.',
+		cta: 'Tell us what you can do',
+		href: '/join',
+	},
+	{
+		name: 'Say it out loud',
+		body: 'The people who need us are reached by someone they already trust, not by advertising.',
+		cta: 'Share our work',
+		href: '/policies#contact',
+	},
+	{
+		name: 'Bring your organisation',
+		body: 'Partnerships, and companies wanting to do more than a cheque in December.',
+		cta: 'Write to us',
+		href: 'mailto:hello@itti.org.in',
 	},
 ];
 ---
 
 <Base
 	title="Donate — The Itti Foundation"
-	description="Support The Itti Foundation. What your gift pays for, how we account for it, and exactly where we stand on tax relief and on donations from outside India."
+	description="Support The Itti Foundation. Where your gift goes, how we account for it, and where we stand on tax relief and on donations from outside India."
 >
 	<div class="give-page">
 		<article class="give">
@@ -88,13 +121,11 @@ const AREAS = [
 					<p class="give__eyebrow">Donate</p>
 					<h1 class="give__title">Your gift becomes someone&rsquo;s turning point.</h1>
 					<p class="give__lede">
-						The Itti Foundation works in neurodivergence, cancer care and conservation.
-						Your support pays for the long continuation of that work &mdash; the part no
-						grant covers and no campaign photographs.
+						Neurodivergence, cancer care and conservation &mdash; and the long
+						continuation of that work, which no grant covers.
 					</p>
 					<p class="give__stamp">
 						Itti&rsquo;s Skill School Foundation &middot; Section 8 not-for-profit
-						&middot; Registered in India
 					</p>
 				</div>
 
@@ -116,7 +147,11 @@ const AREAS = [
 										</button>
 									))
 								}
-								<button class="amount amount--own" type="button" data-amount-other aria-pressed="false">
+								<button
+									class="amount amount--own"
+									type="button"
+									data-amount-other
+									aria-pressed="false">
 									Other
 								</button>
 							</div>
@@ -144,7 +179,7 @@ const AREAS = [
 									<option value="">Wherever it is needed most</option>
 									{AREAS.map((area) => <option value={area.id}>{area.name}</option>)}
 								</select>
-								<span class="card__chevron" aria-hidden="true" />
+								<span class="card__chevron" aria-hidden="true"></span>
 							</div>
 						</div>
 
@@ -153,21 +188,15 @@ const AREAS = [
 							<span class="card__go-arrow" aria-hidden="true">&rarr;</span>
 						</button>
 
+						<p class="card__state" data-state role="status" hidden></p>
+
 						<p class="card__fine">
-							{
-								ACCEPTS_FOREIGN
-									? 'Indian and foreign contributions accepted.'
-									: 'Indian donors only.'
-							}{' '}
-							{
-								HAS_80G
-									? 'Eligible for relief under section 80G.'
-									: 'Not yet eligible for 80G relief.'
-							}{' '}
+							{ACCEPTS_FOREIGN ? 'Indian and foreign gifts accepted.' : 'Indian donors only.'}{
+								' '
+							}
+							{HAS_80G ? 'Eligible for 80G relief.' : 'Not yet eligible for 80G relief.'}{' '}
 							<a class="card__fine-link" href="#accounting">Why</a>
 						</p>
-
-						<p class="card__state" data-state role="status" hidden></p>
 
 						<div class="card__interim" data-interim hidden>
 							<p>
@@ -175,8 +204,8 @@ const AREAS = [
 								<a class="card__fine-link" href="mailto:hello@itti.org.in">
 									hello@itti.org.in
 								</a>{' '}
-								with the amount and we will arrange a transfer directly. A person answers,
-								within five working days.
+								with the amount and we will arrange a transfer. A person answers, within
+								five working days.
 							</p>
 						</div>
 					</div>
@@ -188,8 +217,8 @@ const AREAS = [
 				<header class="give__band-head">
 					<h2 class="give__band-title" id="give-areas-heading">Where your gift goes</h2>
 					<p class="give__band-line">
-						Three areas of work, and one conviction repeated three times: that a person is
-						worth the trouble of being understood before they are treated.
+						One conviction, three times over: that a person is worth the trouble of being
+						understood before they are treated.
 					</p>
 				</header>
 
@@ -210,31 +239,40 @@ const AREAS = [
 								<p class="area__numeral">{area.numeral}</p>
 								<h3 class="area__name">{area.name}</h3>
 								<p class="area__line">{area.line}</p>
-								<p class="area__body">{area.body}</p>
 							</li>
 						))
 					}
 				</ul>
 			</section>
+		</article>
 
-			<!-- ── The part nobody funds ────────────────────────────────────────── -->
-			<section class="give__quiet" aria-labelledby="give-quiet-heading">
-				<h2 class="give__quiet-eyebrow" id="give-quiet-heading">
-					And the part nobody funds
-				</h2>
-				<p class="give__quiet-line">
+		<!-- ── The part nobody funds ────────────────────────────────────────────
+		     Outside the article's measure, because it runs the full width. The
+		     same designed band as the account page: the Foundation's own mark as
+		     a watermark rather than a photograph it borrowed. -->
+		<section class="plinth" aria-labelledby="give-plinth-heading">
+			<span class="plinth__ornament" aria-hidden="true">
+				<Mark height="22rem" label="" />
+			</span>
+			<div class="plinth__grain" aria-hidden="true"></div>
+
+			<div class="plinth__body">
+				<h2 class="plinth__eyebrow" id="give-plinth-heading">And the part nobody funds</h2>
+				<p class="plinth__line">
 					The phone answered on a Sunday. The follow-up six months later. The record kept
-					properly, so that a family does not have to tell their story again from the
-					beginning.
+					properly, so a family never has to tell its story twice.
 				</p>
-				<p class="give__quiet-note">
-					Restricted grants rarely reach any of it. Unrestricted giving is what keeps it
-					alive.
+				<p class="plinth__note">
+					Restricted grants rarely reach any of it. Unrestricted giving does.
 				</p>
-			</section>
+			</div>
 
+			<span class="plinth__rule" aria-hidden="true"></span>
+		</section>
+
+		<article class="give give--tail">
 			<!-- ── Accounting ───────────────────────────────────────────────────── -->
-			<section class="give__band" id="accounting" aria-labelledby="give-account-heading">
+			<section class="give__band give__band--open" id="accounting" aria-labelledby="give-account-heading">
 				<header class="give__band-head">
 					<h2 class="give__band-title" id="give-account-heading">How we account for it</h2>
 					<p class="give__band-line">
@@ -243,62 +281,20 @@ const AREAS = [
 				</header>
 
 				<dl class="facts">
-					<div class="fact">
-						<dt class="fact__term">Tax relief</dt>
-						<dd class="fact__def">
-							{
-								HAS_80G ? (
-									'A gift is eligible for deduction under section 80G, and we issue the certificate you need to claim it.'
-								) : (
-									<>
-										The Foundation does not yet hold <strong>80G</strong> registration, so
-										a gift made today does not reduce your tax. We expect it before the end
-										of this year and this page will say so the day it arrives.
-									</>
-								)
-							}
-						</dd>
-					</div>
-					<div class="fact">
-						<dt class="fact__term">Where you may give from</dt>
-						<dd class="fact__def">
-							{
-								ACCEPTS_FOREIGN ? (
-									'Contributions from outside India are received into our designated FCRA account.'
-								) : (
-									<>
-										<strong>Indian sources only.</strong> The Foundation is not registered
-										under the Foreign Contribution (Regulation) Act, and accepting a
-										foreign contribution without it is an offence rather than an
-										oversight. If you are abroad and want to help, write to us.
-									</>
-								)
-							}
-						</dd>
-					</div>
-					<div class="fact">
-						<dt class="fact__term">What we will tell you</dt>
-						<dd class="fact__def">
-							Ask what a gift was spent on and we will tell you plainly, including the
-							share that went on rent and salaries. A charity claiming none of it did is
-							either lying or about to fold.
-						</dd>
-					</div>
-					<div class="fact">
-						<dt class="fact__term">Refunds</dt>
-						<dd class="fact__def">
-							A gift is put to work as soon as it clears, so donations are not generally
-							refundable. Duplicate, mistaken and unauthorised payments are returned
-							without argument &mdash; the terms say how.
-						</dd>
-					</div>
+					{
+						FACTS.map((fact) => (
+							<div class="fact">
+								<dt class="fact__term">{fact.term}</dt>
+								<dd class="fact__def">{fact.body}</dd>
+							</div>
+						))
+					}
 				</dl>
 
 				<p class="give__band-foot">
 					Read the{' '}
 					<a class="give__link" href="/policies#terms-5">donations and refunds terms</a>{' '}
-					and our{' '}
-					<a class="give__link" href="/policies#privacy">Privacy Policy</a>.
+					and our <a class="give__link" href="/policies#privacy">Privacy Policy</a>.
 				</p>
 			</section>
 
@@ -310,31 +306,17 @@ const AREAS = [
 				</header>
 
 				<ul class="ways">
-					<li class="way">
-						<h3 class="way__name">Give time</h3>
-						<p class="way__body">
-							Hours from someone who knows what they are doing are worth more to us than
-							the money it would take to buy them. Clinicians, teachers, translators,
-							drivers, and people who are good on the phone.
-						</p>
-						<a class="way__link" href="/join">Tell us what you can do &rarr;</a>
-					</li>
-					<li class="way">
-						<h3 class="way__name">Say it out loud</h3>
-						<p class="way__body">
-							Most people who need us do not know we exist, and advertising does not reach
-							them. They are reached by somebody they already trust mentioning us.
-						</p>
-						<a class="way__link" href="/policies#contact">Share our work &rarr;</a>
-					</li>
-					<li class="way">
-						<h3 class="way__name">Bring your organisation</h3>
-						<p class="way__body">
-							Partnerships, and companies wanting to do something beyond a cheque at the
-							end of the year. Say what you have in mind and who you are.
-						</p>
-						<a class="way__link" href="mailto:hello@itti.org.in">Write to us &rarr;</a>
-					</li>
+					{
+						WAYS.map((way) => (
+							<li class="way">
+								<h3 class="way__name">{way.name}</h3>
+								<p class="way__body">{way.body}</p>
+								<a class="way__link" href={way.href}>
+									{way.cta} &rarr;
+								</a>
+							</li>
+						))
+					}
 				</ul>
 			</section>
 		</article>
@@ -349,24 +331,31 @@ const AREAS = [
 		min-height: 100svh;
 		display: flex;
 		flex-direction: column;
+		/* The plinth is full-bleed from inside a centred column. */
+		overflow-x: clip;
 	}
 
 	.give {
-		flex: 1 0 auto;
 		width: 100%;
 		max-width: 74rem;
 		margin: 0 auto;
 		padding: calc(var(--nav-h) + clamp(2.5rem, 7vh, 4.5rem)) var(--gutter) 0;
 	}
 
-	/* ── Hero: the ask sits beside the case for it ─────────────────────────── */
+	.give--tail {
+		flex: 1 0 auto;
+		padding-top: 0;
+		padding-bottom: clamp(3rem, 8vh, 5rem);
+	}
+
+	/* ── Hero ──────────────────────────────────────────────────────────────── */
 
 	.give__hero {
 		display: grid;
 		grid-template-columns: minmax(0, 1.15fr) minmax(20rem, 24rem);
 		column-gap: clamp(2.5rem, 6vw, 5rem);
 		align-items: start;
-		padding-bottom: clamp(3.5rem, 10vh, 6rem);
+		padding-bottom: clamp(2.5rem, 7vh, 4.5rem);
 	}
 
 	.give__eyebrow {
@@ -390,9 +379,9 @@ const AREAS = [
 
 	.give__lede {
 		margin-top: 1.5rem;
-		max-width: 34rem;
+		max-width: 30rem;
 		font-size: 1.1875rem;
-		line-height: 1.6;
+		line-height: 1.55;
 		color: var(--ink-soft);
 	}
 
@@ -409,9 +398,8 @@ const AREAS = [
 
 	/* ── The card ──────────────────────────────────────────────────────────── */
 
-	/* The one element on the site that asks for money, so it is the one thing
-	   allowed to lift off the ground. The teal edge is the Foundation's own
-	   colour used as a signature rather than as decoration. */
+	/* The one element on the site that asks for money, so the one thing allowed
+	   to lift off the ground. */
 	.card {
 		position: sticky;
 		top: calc(var(--nav-h) + 1.5rem);
@@ -594,12 +582,29 @@ const AREAS = [
 		background: var(--teal-deep);
 	}
 
+	.card__go[disabled] {
+		opacity: 0.55;
+		cursor: default;
+	}
+
 	.card__go-arrow {
 		transition: translate 180ms var(--ease);
 	}
 
-	.card__go:hover .card__go-arrow {
+	.card__go:hover:not([disabled]) .card__go-arrow {
 		translate: 0.2rem 0;
+	}
+
+	/* What the card is doing, announced as well as shown. `role="status"` means
+	   it is heard without the focus moving off the button. */
+	.card__state[hidden] {
+		display: none;
+	}
+
+	.card__state {
+		font-size: 0.9375rem;
+		line-height: 1.5;
+		color: var(--teal);
 	}
 
 	.card__fine {
@@ -615,18 +620,6 @@ const AREAS = [
 	}
 
 	.card__fine-link:hover {
-		color: var(--teal);
-	}
-
-	/* What the card is doing, announced as well as shown. `role="status"` means
-	   a screen reader hears it without the focus moving off the button. */
-	.card__state[hidden] {
-		display: none;
-	}
-
-	.card__state {
-		font-size: 0.9375rem;
-		line-height: 1.5;
 		color: var(--teal);
 	}
 
@@ -653,9 +646,8 @@ const AREAS = [
 		padding: clamp(3rem, 7vh, 4.5rem) 0;
 	}
 
-	/* The quiet band runs the full width and closes with its own rule. A second,
-	   inset rule immediately under it reads as a mistake. */
-	.give__quiet + .give__band {
+	/* The band that opens straight out of the plinth already has its rule. */
+	.give__band--open {
 		border-top: 0;
 	}
 
@@ -712,8 +704,9 @@ const AREAS = [
 		position: relative;
 		display: grid;
 		align-content: start;
-		gap: 0.55rem;
-		padding: 1.75rem 1.5rem 1.9rem;
+		gap: 0.6rem;
+		min-height: 13rem;
+		padding: 1.9rem 1.6rem 2.1rem;
 		background: var(--cream-deep);
 		border: 1px solid var(--rule);
 		border-radius: 3px;
@@ -731,11 +724,11 @@ const AREAS = [
 	   and not a logo tile. */
 	.area__sign {
 		position: absolute;
-		right: -1.25rem;
-		bottom: -1.25rem;
-		width: 7.5rem;
-		height: 7.5rem;
-		opacity: 0.07;
+		right: -1.5rem;
+		bottom: -1.75rem;
+		width: 9rem;
+		height: 9rem;
+		opacity: 0.08;
 		color: var(--accent-ink);
 		pointer-events: none;
 	}
@@ -751,7 +744,7 @@ const AREAS = [
 		height: 100%;
 		background: currentColor;
 		-webkit-mask: var(--mark) center / contain no-repeat;
-		mask: var(--mask, var(--mark)) center / contain no-repeat;
+		mask: var(--mark) center / contain no-repeat;
 	}
 
 	.area__numeral {
@@ -764,63 +757,117 @@ const AREAS = [
 
 	.area__name {
 		font-family: var(--face-bodoni);
-		font-size: 1.375rem;
+		font-size: 1.5rem;
 		font-weight: var(--display-weight);
 		letter-spacing: -0.005em;
 	}
 
 	.area__line {
+		position: relative;
+		max-width: 20rem;
 		font-size: 1rem;
-		line-height: 1.5;
-		color: var(--ink);
-	}
-
-	.area__body {
-		font-size: 0.9375rem;
-		line-height: 1.6;
+		line-height: 1.55;
 		color: var(--ink-soft);
 	}
 
-	/* ── The quiet band ────────────────────────────────────────────────────── */
+	/* ── The plinth ────────────────────────────────────────────────────────── */
 
-	/* Full-bleed, and the only place on the page where the type is allowed to
-	   carry the argument alone. */
-	.give__quiet {
+	/* Depth rather than a flat fill: the brand teal falling away to its own
+	   abyss, lit from the upper left so the band has a light source. The same
+	   treatment the account page uses, because it is the Foundation's, and
+	   because a page that asks for money should have one moment in it. */
+	.plinth {
+		position: relative;
 		width: 100vw;
 		margin-left: calc(50% - 50vw);
-		padding: clamp(3.5rem, 9vh, 6rem) var(--gutter);
-		background: var(--cream-deep);
-		border-top: 1px solid var(--rule);
-		border-bottom: 1px solid var(--rule);
+		padding: clamp(4rem, 11vh, 7rem) var(--gutter);
+		overflow: clip;
+		isolation: isolate;
+		color: var(--cream);
+		--lit: var(--teal);
+		--deep: color-mix(in srgb, var(--teal) 46%, var(--teal-deep));
+		--floor: var(--teal-deep);
+		background:
+			radial-gradient(
+				118% 140% at 12% 0%,
+				color-mix(in srgb, var(--lit) 72%, transparent) 0%,
+				transparent 62%
+			),
+			linear-gradient(160deg, var(--deep) 0%, var(--floor) 68%);
+	}
+
+	/* A watermark, not a logo: large enough to be a texture in the field and
+	   faint enough that it is felt rather than read. It bleeds off the right so
+	   it never resolves into a badge sitting on the band. */
+	.plinth__ornament {
+		position: absolute;
+		top: 50%;
+		right: -7%;
+		transform: translateY(-52%);
+		display: block;
+		color: var(--cream);
+		opacity: 0.07;
+		pointer-events: none;
+	}
+
+	/* The grain the whole site is laid over, so this band sits in the same air
+	   as the plates rather than looking like flat CSS. */
+	.plinth__grain {
+		position: absolute;
+		inset: 0;
+		opacity: 0.3;
+		mix-blend-mode: overlay;
+		pointer-events: none;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='1 0 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+	}
+
+	/* A hairline closing the band, in the same colour lighting it. */
+	.plinth__rule {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		height: 2px;
+		background: var(--lit);
+		opacity: 0.9;
+	}
+
+	.plinth__body {
+		position: relative;
+		z-index: 1;
+		max-width: 46rem;
+		margin: 0 auto;
 		text-align: center;
 	}
 
-	.give__quiet-eyebrow {
+	.plinth__eyebrow {
 		font-family: var(--face-cinzel);
 		font-size: 0.6875rem;
 		font-weight: 500;
 		letter-spacing: 0.18em;
 		text-transform: uppercase;
-		color: var(--teal);
+		/* Mixed toward the ground rather than made transparent. Translucent type
+		   over a gradient makes its own contrast a moving target — it is lightest
+		   where the band is lightest, which is exactly where it needs to be
+		   darkest. A solid colour can be measured once. */
+		color: color-mix(in srgb, var(--cream) 88%, var(--teal-deep));
 	}
 
-	.give__quiet-line {
-		max-width: 46rem;
-		margin: 1.5rem auto 0;
+	.plinth__line {
+		margin-top: 1.6rem;
 		font-family: var(--face-bodoni);
-		font-size: clamp(1.375rem, 2.6vw, 1.9rem);
+		font-size: clamp(1.5rem, 3vw, 2.25rem);
 		font-weight: var(--display-weight);
-		line-height: 1.35;
+		line-height: 1.3;
 		letter-spacing: -0.01em;
-		color: var(--ink);
 	}
 
-	.give__quiet-note {
-		max-width: 34rem;
-		margin: 1.5rem auto 0;
+	.plinth__note {
+		margin: 1.6rem auto 0;
+		max-width: 30rem;
 		font-size: 1rem;
 		line-height: 1.6;
-		color: var(--ink-soft);
+		color: color-mix(in srgb, var(--cream) 88%, var(--teal-deep));
 	}
 
 	/* ── Facts and ways ────────────────────────────────────────────────────── */
@@ -828,13 +875,13 @@ const AREAS = [
 	.facts {
 		display: grid;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 0;
+		column-gap: clamp(1.5rem, 4vw, 3.5rem);
 		margin: 0;
 		border-top: 1px solid var(--rule);
 	}
 
 	.fact {
-		padding: 1.4rem clamp(1rem, 3vw, 2.5rem) 1.5rem 0;
+		padding: 1.4rem 0 1.5rem;
 		border-bottom: 1px solid var(--rule);
 	}
 
@@ -848,15 +895,10 @@ const AREAS = [
 
 	.fact__def {
 		margin: 0.5rem 0 0;
-		max-width: 32rem;
+		max-width: 30rem;
 		font-size: 1rem;
 		line-height: 1.6;
 		color: var(--ink-soft);
-	}
-
-	.fact__def strong {
-		font-weight: 600;
-		color: var(--ink);
 	}
 
 	.ways {
@@ -913,17 +955,18 @@ const AREAS = [
 		}
 
 		.areas,
-		.ways {
-			grid-template-columns: 1fr;
-		}
-
+		.ways,
 		.facts {
 			grid-template-columns: 1fr;
 		}
 
-		.area__sign {
-			width: 6rem;
-			height: 6rem;
+		.area {
+			min-height: 0;
+		}
+
+		.plinth__ornament {
+			right: -22%;
+			opacity: 0.05;
 		}
 	}
 
@@ -935,7 +978,6 @@ const AREAS = [
 		}
 	}
 </style>
-
 <script>
 	/**
 	 * The card: choose an amount, then hand it to the gateway.
