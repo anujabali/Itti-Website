@@ -281,7 +281,7 @@ const FACTS = {
 					  else's picture behind a person's own name.
 					*/
 					}
-					<div class="crown">
+					<div class="crown" data-crown data-accent="teal">
 						{
 							/*
 						  Wrapped rather than styled directly. A component's root element
@@ -303,47 +303,96 @@ const FACTS = {
 						<span class="crown__rule" data-crown-rule aria-hidden="true"></span>
 					</div>
 
-					<header class="profile">
-						<p class="profile__bio" data-bio hidden></p>
-						<p class="profile__invite" data-bio-empty hidden>
-							You have not written anything about yourself yet.{' '}
-							<button class="linkish" type="button" data-edit-open>Say something</button
-							>.
-						</p>
+					{
+						/*
+					  A real tablist rather than buttons that look like one: roving tabindex,
+					  arrow keys, and aria-controls naming the panel each opens. The page had
+					  grown long enough that the record at the foot was rarely reached, and
+					  three short views are easier to hold in the head than one long column.
+					*/
+					}
+					<div class="tabs" role="tablist" aria-label="Your account">
+						{
+							[
+								['profile', 'Profile'],
+								['details', 'Your details'],
+								['account', 'Account'],
+							].map(([id, label], i) => (
+								<button
+									class="tab"
+									type="button"
+									role="tab"
+									id={`tab-${id}`}
+									aria-controls={`view-${id}`}
+									aria-selected={i === 0 ? 'true' : 'false'}
+									tabindex={i === 0 ? 0 : -1}
+									data-tab={id}
+								>
+									<span>{label}</span>
+								</button>
+							))
+						}
+					</div>
 
-						<div class="profile__marks" data-mast-marks aria-hidden="true">
-							{
-								PILLARS.map(([id, label, accent]) => (
-									<span class="mark" data-mark={id} data-accent={accent} hidden>
-										{label}
-									</span>
-								))
-							}
-						</div>
+					<div
+						class="view"
+						role="tabpanel"
+						id="view-profile"
+						aria-labelledby="tab-profile"
+						tabindex="0"
+						data-view="profile"
+					>
+						<header class="profile">
+							<p class="profile__bio" data-bio hidden></p>
+							<p class="profile__invite" data-bio-empty hidden>
+								You have not written anything about yourself yet.{' '}
+								<button class="linkish" type="button" data-edit-open
+									>Say something</button
+								>.
+							</p>
 
-						<ul class="elsewhere" data-links>
-							{
-								LINKS.map(([id, label]) => (
-									<li data-link={id} hidden>
-										<a class="elsewhere__a" data-link-a href="#">
-											<span class="elsewhere__kind">{label}</span>
-											<span class="elsewhere__at" data-link-text />
-										</a>
-									</li>
-								))
-							}
-						</ul>
+							<div class="profile__marks" data-mast-marks aria-hidden="true">
+								{
+									PILLARS.map(([id, label, accent]) => (
+										<span class="mark" data-mark={id} data-accent={accent} hidden>
+											{label}
+										</span>
+									))
+								}
+							</div>
 
-						<div class="acct__actions acct__actions--profile">
-							<button class="btn" type="button" data-edit-open>Edit your profile</button
-							>
-							<button class="linkish" type="button" data-signout>Sign out</button>
-						</div>
-						<p class="note" data-saved role="status" hidden>Saved.</p>
-					</header>
+							<ul class="elsewhere" data-links>
+								{
+									LINKS.map(([id, label]) => (
+										<li data-link={id} hidden>
+											<a class="elsewhere__a" data-link-a href="#">
+												<span class="elsewhere__kind">{label}</span>
+												<span class="elsewhere__at" data-link-text />
+											</a>
+										</li>
+									))
+								}
+							</ul>
 
-					<section class="held">
-						<h2 class="held__title">What we hold</h2>
+							<div class="acct__actions acct__actions--profile">
+								<button class="btn" type="button" data-edit-open
+									>Edit your profile</button
+								>
+								<button class="linkish" type="button" data-signout>Sign out</button>
+							</div>
+							<p class="note" data-saved role="status" hidden>Saved.</p>
+						</header>
+					</div>
+
+					<div
+						class="view"
+						role="tabpanel"
+						id="view-details"
+						aria-labelledby="tab-details"
+						tabindex="0"
+						data-view="details"
+						hidden
+					>
 						<p class="held__note">
 							Everything on our side of the record. If a line is wrong, change it
 							&mdash; nobody has to approve it.
@@ -371,24 +420,34 @@ const FACTS = {
 								))
 							}
 						</div>
-					</section>
+					</div>
 
-					<footer class="acct__foot">
-						<p>
-							<strong>Your email address</strong> is what signs you in and where the receipt
-							went, so it is not something this page will change under you. Write to <a
-								class="acct__link"
-								href="mailto:hello@itti.org.in">hello@itti.org.in</a
-							> and we will move it.
-						</p>
-						<p>
-							<strong>To be erased entirely</strong>, write to the same address and
-							Anuja Bali will do it &mdash; not a button that cannot be undone. What we
-							hold and why is set out in <a class="acct__link" href="/privacy"
-								>What we hold, and why</a
-							>.
-						</p>
-					</footer>
+					<div
+						class="view"
+						role="tabpanel"
+						id="view-account"
+						aria-labelledby="tab-account"
+						tabindex="0"
+						data-view="account"
+						hidden
+					>
+						<footer class="acct__foot">
+							<p>
+								<strong>Your email address</strong> is what signs you in and where the receipt
+								went, so it is not something this page will change under you. Write to <a
+									class="acct__link"
+									href="mailto:hello@itti.org.in">hello@itti.org.in</a
+								> and we will move it.
+							</p>
+							<p>
+								<strong>To be erased entirely</strong>, write to the same address and
+								Anuja Bali will do it &mdash; not a button that cannot be undone. What
+								we hold and why is set out in <a class="acct__link" href="/privacy"
+									>What we hold, and why</a
+								>.
+							</p>
+						</footer>
+					</div>
 				</section>
 
 				<!-- The same groups in the same order, now editable. -->
@@ -403,6 +462,29 @@ const FACTS = {
 
 					<form data-edit-form novalidate>
 						<div class="spread">
+							<section class="block block--wide">
+								<h2 class="block__title">The colour of your account</h2>
+								<fieldset class="set">
+									<legend class="u-visually-hidden">Choose a colour</legend>
+									<div class="swatches">
+										{
+											[
+												['teal', 'Teal'],
+												['ochre', 'Ochre'],
+												['rose', 'Rose'],
+												['sage', 'Sage'],
+											].map(([v, l]) => (
+												<label class="swatch" data-accent={v}>
+													<input type="radio" name="accent" value={v} />
+													<span class="swatch__chip" aria-hidden="true" />
+													<span class="swatch__name">{l}</span>
+												</label>
+											))
+										}
+									</div>
+								</fieldset>
+							</section>
+
 							<section class="block block--wide">
 								<h2 class="block__title">In your own words</h2>
 								<div class="field">
@@ -773,13 +855,36 @@ const FACTS = {
 		color: var(--cream);
 		/* Depth rather than a flat fill: the brand teal falling away to its own
 		   abyss, lit from the upper left so the band has a light source. */
+		/* Two stops mixed from one token, so a new colour is one line and never a
+		   new hex. `--lit` is the light source, `--deep` the ground it falls to. */
+		--lit: var(--teal);
+		--deep: var(--teal-deep);
+		--floor: var(--teal-abyss);
 		background:
 			radial-gradient(
 				118% 140% at 12% 0%,
-				color-mix(in srgb, var(--teal) 72%, transparent) 0%,
+				color-mix(in srgb, var(--lit) 72%, transparent) 0%,
 				transparent 62%
 			),
-			linear-gradient(160deg, var(--teal-deep) 0%, var(--teal-abyss) 68%);
+			linear-gradient(160deg, var(--deep) 0%, var(--floor) 68%);
+	}
+
+	.crown[data-accent='ochre'] {
+		--lit: var(--ochre);
+		--deep: color-mix(in srgb, var(--ochre) 34%, var(--ink-deep));
+		--floor: color-mix(in srgb, var(--ochre) 12%, var(--ink-deep));
+	}
+
+	.crown[data-accent='rose'] {
+		--lit: var(--rose);
+		--deep: color-mix(in srgb, var(--rose) 34%, var(--ink-deep));
+		--floor: color-mix(in srgb, var(--rose) 12%, var(--ink-deep));
+	}
+
+	.crown[data-accent='sage'] {
+		--lit: var(--sage);
+		--deep: color-mix(in srgb, var(--sage) 34%, var(--ink-deep));
+		--floor: color-mix(in srgb, var(--sage) 12%, var(--ink-deep));
 	}
 
 	/* The mark, very large and very quiet, bleeding off the right edge. An
@@ -809,15 +914,15 @@ const FACTS = {
 		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='1 0 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
 	}
 
-	/* A hairline in the colour of what they are here for, closing the band. */
+	/* A hairline closing the band, in the same colour lighting it. */
 	.crown__rule {
 		position: absolute;
 		left: 0;
 		right: 0;
 		bottom: 0;
 		height: 2px;
-		background: var(--accent, var(--teal));
-		opacity: 0.85;
+		background: var(--lit, var(--teal));
+		opacity: 0.9;
 	}
 
 	.crown__id {
@@ -865,6 +970,128 @@ const FACTS = {
 		font-size: 1.0625rem;
 		letter-spacing: 0.01em;
 		color: color-mix(in srgb, var(--cream) 86%, transparent);
+	}
+
+	/* ── The bar ─────────────────────────────────────────────────────────── */
+
+	/* Not boxes, and not pills: labels on a rule, with the live one carrying a
+	   weight of colour under it. The rule is the constant, the marker moves. */
+	.tabs {
+		display: flex;
+		gap: clamp(1.25rem, 3vw, 2.25rem);
+		margin: 0 0 clamp(2rem, 5vh, 3rem);
+		border-bottom: 1px solid var(--rule);
+	}
+
+	.tab {
+		position: relative;
+		padding: 0 0 0.85rem;
+		border: 0;
+		background: none;
+		font-family: var(--face-cinzel);
+		font-size: 0.75rem;
+		font-weight: 600;
+		letter-spacing: 0.15em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+		cursor: pointer;
+		transition: color 200ms var(--ease);
+	}
+
+	.tab::after {
+		content: '';
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: -1px;
+		height: 2px;
+		background: var(--teal);
+		transform: scaleX(0);
+		transform-origin: left;
+		transition: transform 260ms var(--ease);
+	}
+
+	.tab:hover {
+		color: var(--ink-soft);
+	}
+
+	.tab[aria-selected='true'] {
+		color: var(--ink);
+	}
+
+	.tab[aria-selected='true']::after {
+		transform: scaleX(1);
+	}
+
+	.tab:focus-visible {
+		outline: 2px solid var(--teal);
+		outline-offset: 3px;
+	}
+
+	/* A panel is focusable so the keyboard lands in it, but it is not a control
+	   and should not draw a ring when it is merely opened. */
+	.view:focus {
+		outline: none;
+	}
+
+	.view:focus-visible {
+		outline: 2px solid var(--teal);
+		outline-offset: 6px;
+	}
+
+	/* ── Choosing a colour ───────────────────────────────────────────────── */
+
+	.swatches {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1.5rem;
+	}
+
+	.swatch {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.6rem;
+		cursor: pointer;
+		font-size: 1rem;
+		color: var(--ink-soft);
+	}
+
+	.swatch input {
+		position: absolute;
+		opacity: 0;
+		pointer-events: none;
+	}
+
+	/* The choice is the colour itself, so the control is a disc of it rather
+	   than a radio button with a colour name beside it. */
+	.swatch__chip {
+		width: 1.6rem;
+		height: 1.6rem;
+		border-radius: 999px;
+		background: var(--accent, var(--teal));
+		box-shadow: 0 0 0 1px color-mix(in srgb, var(--ink) 14%, transparent);
+		transition:
+			box-shadow 200ms var(--ease),
+			transform 200ms var(--ease);
+	}
+
+	.swatch:hover .swatch__chip {
+		transform: scale(1.06);
+	}
+
+	.swatch:has(input:checked) .swatch__chip {
+		box-shadow:
+			0 0 0 2px var(--cream),
+			0 0 0 4px var(--accent, var(--teal));
+	}
+
+	.swatch:has(input:checked) .swatch__name {
+		color: var(--ink);
+	}
+
+	.swatch:has(input:focus-visible) .swatch__chip {
+		outline: 2px solid var(--teal);
+		outline-offset: 5px;
 	}
 
 	/* ── The profile ─────────────────────────────────────────────────────── */
@@ -978,7 +1205,7 @@ const FACTS = {
 		position: relative;
 		width: 100vw;
 		margin-left: calc(50% - 50vw);
-		margin-top: clamp(2.5rem, 6vh, 4rem);
+		margin-top: 0;
 		padding: clamp(2.5rem, 6vh, 3.5rem) 0 clamp(2.75rem, 7vh, 4rem);
 		/* A second surface, a shade down from the page. Two grounds give the
 		   page depth where a single flat field reads as unfinished — and it
@@ -1579,16 +1806,11 @@ const FACTS = {
 			const mast = root.querySelector<HTMLElement>('[data-mast-name]');
 			if (mast) mast.textContent = name ? `${name}.` : 'Your record.';
 
-			// The band closes with a hairline in the colour of what they are here
-			// for — the one place a person's own areas touch the page's chrome.
-			const wants: string[] = Array.isArray(r.interests) ? r.interests : [];
-			const accent =
-				{ neurodivergence: 'ochre', cancer_care: 'rose', claw: 'sage' }[
-					['neurodivergence', 'cancer_care', 'claw'].find((k) => wants.includes(k)) ??
-						''
-				] ?? 'teal';
+			// The colour they chose, or the brand's own if they have not. Set on the
+			// band alone, so the rest of the site stays itself.
+			const accent = (r.accent ?? '') || 'teal';
 			root
-				.querySelector<HTMLElement>('[data-crown-rule]')
+				.querySelector<HTMLElement>('[data-crown]')
 				?.setAttribute('data-accent', accent);
 
 			const bio = (r.bio ?? '').trim();
@@ -1665,6 +1887,49 @@ const FACTS = {
 				group.hidden = !shown;
 			}
 		};
+
+		// ── the bar ────────────────────────────────────────────────────────────
+		//
+		// The keyboard contract for a tablist: one stop in the tab order, and the
+		// arrows move between the tabs once you are inside it. Without the roving
+		// tabindex, somebody reaching for the record would tab through every
+		// heading first, which is the thing tabs exist to prevent.
+		{
+			const tabs = [...root.querySelectorAll<HTMLButtonElement>('[data-tab]')];
+			const views = [...root.querySelectorAll<HTMLElement>('[data-view]')];
+
+			const open = (name: string, focus = false) => {
+				for (const t of tabs) {
+					const on = t.dataset.tab === name;
+					t.setAttribute('aria-selected', String(on));
+					t.tabIndex = on ? 0 : -1;
+					if (on && focus) t.focus();
+				}
+				for (const v of views) v.hidden = v.dataset.view !== name;
+			};
+
+			for (const t of tabs) {
+				t.addEventListener('click', () => open(t.dataset.tab!));
+			}
+
+			root.querySelector('[role="tablist"]')?.addEventListener('keydown', (event) => {
+				const e = event as KeyboardEvent;
+				const at = tabs.findIndex((t) => t.getAttribute('aria-selected') === 'true');
+				const to =
+					e.key === 'ArrowRight' || e.key === 'ArrowDown'
+						? (at + 1) % tabs.length
+						: e.key === 'ArrowLeft' || e.key === 'ArrowUp'
+							? (at - 1 + tabs.length) % tabs.length
+							: e.key === 'Home'
+								? 0
+								: e.key === 'End'
+									? tabs.length - 1
+									: -1;
+				if (to < 0) return;
+				e.preventDefault();
+				open(tabs[to]!.dataset.tab!, true);
+			});
+		}
 
 		// ── the edit form ──────────────────────────────────────────────────────
 

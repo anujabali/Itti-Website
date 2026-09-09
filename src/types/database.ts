@@ -236,6 +236,12 @@ export interface MyRegistration {
 	/** The person's own words about themselves. Up to 600 characters. */
 	bio: string;
 	/**
+	 * The colour their account page wears. Empty means unchosen, which renders
+	 * as the brand teal. All four are already the site's — the brand colour and
+	 * the three the pillars carry.
+	 */
+	accent: '' | 'teal' | 'ochre' | 'rose' | 'sage';
+	/**
 	 * Where else they can be found, keyed by kind. A handle for the social
 	 * kinds, an address for `website` and `email`.
 	 *
