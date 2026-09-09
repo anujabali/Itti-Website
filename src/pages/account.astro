@@ -193,9 +193,12 @@ const FACTS = {
 
 					<div class="spread" aria-hidden="true">
 						{
-							// Four cards, the shape a record actually takes: who you are,
-							// where you are, how we reach you, and the note for the record.
-							[4, 3, 3, 2].map((rows) => (
+							// Three, which is what the details tab holds: who you are, where you
+							// are, how we reach you. It drew a fourth until the note for the
+							// record moved across to the profile, and an outline that promises
+							// a card the record does not deliver is worse than no outline —
+							// the missing one reads as something that failed to load.
+							[4, 3, 3].map((rows) => (
 								<div class="block block--ghost">
 									<span class="ghost ghost--title" />
 									{Array.from({ length: rows }).map(() => (
@@ -1548,6 +1551,32 @@ const FACTS = {
 
 		/* ── While the record is on its way ──────────────────────────────────── */
 
+	/* The page arrives rather than appearing.
+
+	   Everything under the navigation is held until the script knows which of
+	   the six states it is in — a record, an outline, a sign-in form — and
+	   revealing that with `hidden` alone drops the whole page into place in a
+	   single frame, which reads as a jolt on every reload. One short fade, on
+	   the wrapper, so the band and whatever is beneath it arrive together. */
+		[data-account]:not([hidden]) {
+			animation: account-in 420ms var(--ease) both;
+		}
+
+		@keyframes account-in {
+			from {
+				opacity: 0;
+			}
+			to {
+				opacity: 1;
+			}
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			[data-account]:not([hidden]) {
+				animation: none;
+			}
+		}
+
 		/* The record replacing its own outline. Short, and once. */
 		[data-panel='record'][data-first]:not([hidden]) {
 			animation: record-settle 420ms var(--ease) both;
@@ -2631,7 +2660,20 @@ const FACTS = {
 			// ── loading the record ─────────────────────────────────────────────────
 
 			const load = async () => {
-				const { data, error } = await supabase.rpc('my_registration');
+				// `rpc()` returns a query builder, not a promise, so it has no
+				// `.catch` to hang a handler on — reaching for one threw before the
+				// request was ever made. It is awaited inside a try instead, which
+				// is the only shape that catches both the refusal it reports and the
+				// network failure it throws.
+				let data: MyRegistration | null = null;
+				let error: unknown = null;
+				try {
+					({ data, error } = await supabase.rpc('my_registration'));
+				} catch (e) {
+					console.error('[itti/account]', e);
+					fail('We could not reach your record. Check your connection.');
+					return;
+				}
 				if (error) {
 					fail('We could not read your record just now.');
 					return;
@@ -2672,7 +2714,26 @@ const FACTS = {
 			// twice.
 			let opening: Promise<void> | null = null;
 
-			const afterSignIn = () => (opening ??= openRecord());
+			/**
+			 * Nothing that reaches the network is allowed to reject silently.
+			 *
+			 * `supabase.rpc` reports a refusal in its result, but the fetch beneath
+			 * it throws — a dropped connection, a blocked request, a browser that
+			 * has decided the tab is offline. Left unguarded that rejection went
+			 * nowhere and the page sat on its own outline for as long as the reader
+			 * was willing to wait, saying `Opening your record` and never opening
+			 * it. A thrown error is the same event as a returned one, and the page
+			 * says so either way.
+			 *
+			 * The memo is cleared on the way out so a retry is a retry rather than
+			 * a second look at the same rejected promise.
+			 */
+			const afterSignIn = () =>
+				(opening ??= openRecord().catch((e) => {
+					console.error('[itti/account]', e);
+					opening = null;
+					fail('We could not reach your record. Check your connection.');
+				}));
 
 			const openRecord = async () => {
 				const { data, error } = await supabase.rpc('claim_registration');
@@ -2859,7 +2920,20 @@ const FACTS = {
 			root.querySelector('[data-retry]')?.addEventListener('click', () => {
 				reopen();
 				show('loading');
-				void start();
+				// A last resort. If nothing has resolved either way — a request that
+			// neither returns nor fails, which is what a lost connection looks like
+			// to a browser — the page says so rather than waiting for ever.
+			const WAIT = 15000;
+			window.setTimeout(() => {
+				if (root.dataset.stage !== 'loading') return;
+				fail('This is taking longer than it should.');
+				opening = null;
+			}, WAIT);
+
+			void start().catch((e) => {
+				console.error('[itti/account]', e);
+				fail('We could not open your account just now.');
+			});
 			});
 
 			// ── editing ────────────────────────────────────────────────────────────
