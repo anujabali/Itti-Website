@@ -455,7 +455,7 @@ const FACTS = {
 									<div class="swatches">
 										{
 											[
-												['teal', 'The mark'],
+												['teal', 'Itti'],
 												['ochre', 'Neurodivergence'],
 												['rose', 'Cancer Care'],
 												['sage', 'Conservation'],
@@ -849,8 +849,8 @@ const FACTS = {
 			/* Two stops mixed from one token, so a new colour is one line and never a
 		   new hex. `--lit` is the light source, `--deep` the ground it falls to. */
 			--lit: var(--teal);
-			--deep: var(--teal-deep);
-			--floor: var(--teal-abyss);
+			--deep: color-mix(in srgb, var(--teal) 46%, var(--teal-deep));
+			--floor: var(--teal-deep);
 			background:
 				radial-gradient(
 					118% 140% at 12% 0%,
@@ -860,16 +860,17 @@ const FACTS = {
 				linear-gradient(160deg, var(--deep) 0%, var(--floor) 68%);
 		}
 
+		/* Ochre is the lightest of the four, so it carries at a lower proportion. */
 		.crown[data-accent='ochre'] {
 			--lit: var(--ochre);
-			--deep: color-mix(in srgb, var(--ochre) 34%, var(--ink-deep));
-			--floor: color-mix(in srgb, var(--ochre) 12%, var(--ink-deep));
+			--deep: color-mix(in srgb, var(--ochre) 41%, var(--ink-deep));
+			--floor: color-mix(in srgb, var(--ochre) 19%, var(--ink-deep));
 		}
 
 		.crown[data-accent='rose'] {
 			--lit: var(--rose);
-			--deep: color-mix(in srgb, var(--rose) 34%, var(--ink-deep));
-			--floor: color-mix(in srgb, var(--rose) 12%, var(--ink-deep));
+			--deep: color-mix(in srgb, var(--rose) 47%, var(--ink-deep));
+			--floor: color-mix(in srgb, var(--rose) 23%, var(--ink-deep));
 		}
 
 		/* Sage is the least saturated of the four, so at the proportions the
@@ -939,7 +940,10 @@ const FACTS = {
 			font-weight: 500;
 			letter-spacing: 0.2em;
 			text-transform: uppercase;
-			color: color-mix(in srgb, var(--cream) 82%, transparent);
+			/* Solid, not a translucent cream: the type sits on a colour somebody
+			   chooses, and an alpha makes its contrast move every time that colour
+			   does. Opaque, it is measurable once and stays measured. */
+			color: var(--cream);
 		}
 
 		.crown__eyebrow::after {
@@ -964,7 +968,7 @@ const FACTS = {
 			margin: 1rem 0 0;
 			font-size: 1.0625rem;
 			letter-spacing: 0.01em;
-			color: color-mix(in srgb, var(--cream) 86%, transparent);
+			color: var(--cream);
 		}
 
 		/* ── The bar ─────────────────────────────────────────────────────────── */
