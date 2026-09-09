@@ -1749,18 +1749,25 @@ const FACTS = {
 			 * so every touch of it is guarded. The nav simply stays signed out.
 			 */
 			const WHO = 'itti.who';
-			const remember = (name: string) => {
+			const HUE = 'itti.accent';
+			const remember = (name: string, accent = '') => {
 				try {
 					if (name) localStorage.setItem(WHO, name);
 					else localStorage.removeItem(WHO);
+					// The colour travels with the name, for the same reason: so the nav
+					// can paint the person's own disc without asking anybody first.
+					if (name && accent) localStorage.setItem(HUE, accent);
+					else localStorage.removeItem(HUE);
 				} catch {
 					/* Nothing to do: the nav falls back to its signed-out state. */
 				}
-				// The nav decided who it was greeting before this page had signed
-				// anybody in, so telling storage is not enough — it would still read
-				// "Join Us" above a record with the person's own name on it until
-				// they happened to load another page. The nav listens for this.
-				document.dispatchEvent(new CustomEvent('itti:who', { detail: name }));
+				// The nav decided who it was greeting before this page had signed anybody
+				// in, so telling storage is not enough — it would still read "Join Us"
+				// above a record with the person's own name on it until they happened to
+				// load another page. The nav listens for this.
+				document.dispatchEvent(
+					new CustomEvent('itti:who', { detail: { name, accent } }),
+				);
 			};
 
 			/** The address for a handle, per provider. */
@@ -2135,7 +2142,7 @@ const FACTS = {
 					return;
 				}
 				current = data;
-				remember(current.fullName ?? '');
+				remember(current.fullName ?? '', (current.accent ?? '') || 'teal');
 				paint(current);
 				show('record');
 			};
