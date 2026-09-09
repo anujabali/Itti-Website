@@ -65,18 +65,42 @@ const fromEnvFile = async () => {
 const supabaseUrl = process.env.PUBLIC_SUPABASE_URL || (await fromEnvFile());
 const supabase = supabaseUrl ? new URL(supabaseUrl).origin : 'https://*.supabase.co';
 
+/**
+ * Razorpay Checkout.
+ *
+ * It is a hosted window: a script we load, an iframe it draws, and its own
+ * telemetry and API origins. The alternative to naming these is a payment
+ * button that silently does nothing, because a blocked script raises no error
+ * a visitor can see. They are listed here rather than widened with a wildcard
+ * so that adding a second gateway is a visible decision.
+ *
+ * `frame-src` is what the checkout window itself needs; UPI intent links leave
+ * the browser entirely and are not a frame.
+ */
+const RAZORPAY = {
+	script: 'https://checkout.razorpay.com',
+	frames: ['https://api.razorpay.com', 'https://checkout.razorpay.com'],
+	connect: [
+		'https://api.razorpay.com',
+		'https://lumberjack.razorpay.com',
+		'https://lumberjack-cx.razorpay.com',
+	],
+	images: ['https://cdn.razorpay.com', 'https://*.rzp.io'],
+};
+
 const csp = [
 	`default-src 'self'`,
-	`script-src 'self' ${[...hashes].sort().join(' ')}`,
+	`script-src 'self' ${RAZORPAY.script} ${[...hashes].sort().join(' ')}`,
 	// Astro extracts component styles to files, but 35-odd `style=` attributes
 	// remain in the markup. style-src-attr would be tighter; it is not old
 	// enough to rely on alone, and losing it means losing the layout.
 	`style-src 'self' 'unsafe-inline'`,
-	`img-src 'self' data:`,
+	`img-src 'self' data: ${RAZORPAY.images.join(' ')}`,
 	`font-src 'self'`,
 	// api.postalpincode.in resolves an Indian PIN to its district.
-	`connect-src 'self' ${supabase} https://api.postalpincode.in`,
+	`connect-src 'self' ${supabase} https://api.postalpincode.in ${RAZORPAY.connect.join(' ')}`,
 	`form-action 'self'`,
+	`frame-src ${RAZORPAY.frames.join(' ')}`,
 	// Nothing frames this site, including this site. Denying it outright closes
 	// clickjacking rather than narrowing it.
 	`frame-ancestors 'none'`,

@@ -7,9 +7,11 @@
  * it. The policy pages use the label-and-column grid; this one deliberately
  * does not, because a page that asks for money should not read like terms.
  *
- * Everything about how money actually arrives is in GIVING below. With a key
- * the card takes a payment; without one the same card falls back to a direct
- * route at the point of action, rather than opening the page with an apology.
+ * Whether money can actually arrive is asked of the Edge Function at the moment
+ * somebody tries to give, rather than baked in at build time. If the gateway
+ * answers, the card opens it; if it does not, the same card falls back to a
+ * direct route at the point of action, rather than opening the page with an
+ * apology that discourages everyone who reads it.
  *
  * Two facts are switched by constants rather than by editing prose in several
  * places, because both change this year:
@@ -27,15 +29,16 @@ import Base from '../layouts/Base.astro';
 import SiteFooter from '../components/layout/SiteFooter.astro';
 import ClawMark from '../components/brand/ClawMark.astro';
 
-const GIVING = {
-	/** Publishable key id. The secret lives in the Edge Function, never here. */
-	razorpayKey: '',
-	upi: '',
-};
-
+/**
+ * Whether a gateway exists is decided at run time, not at build time.
+ *
+ * The page asks the Edge Function for an order; the function holds the keys and
+ * answers `not_configured` when it has none. So the day the Foundation moves
+ * from test keys to live ones, nothing in this repository changes — and there
+ * is no publishable key sitting in the markup going stale.
+ */
 const HAS_80G = false;
 const ACCEPTS_FOREIGN = false;
-const canTakeMoney = Boolean(GIVING.razorpayKey);
 
 const AMOUNTS = [500, 1000, 2500, 5000, 10000];
 const rupees = (n: number) => `₹${n.toLocaleString('en-IN')}`;
@@ -164,21 +167,18 @@ const AREAS = [
 							<a class="card__fine-link" href="#accounting">Why</a>
 						</p>
 
-						{
-							!canTakeMoney && (
-								<div class="card__interim" data-interim hidden>
-									<p>
-										<strong>Online payment is being set up.</strong> Until it is
-										finished, write to{' '}
-										<a class="card__fine-link" href="mailto:hello@itti.org.in">
-											hello@itti.org.in
-										</a>{' '}
-										with the amount and we will arrange a transfer directly. A person
-										answers, within five working days.
-									</p>
-								</div>
-							)
-						}
+						<p class="card__state" data-state role="status" hidden></p>
+
+						<div class="card__interim" data-interim hidden>
+							<p>
+								<strong>We could not open the payment window.</strong> Write to{' '}
+								<a class="card__fine-link" href="mailto:hello@itti.org.in">
+									hello@itti.org.in
+								</a>{' '}
+								with the amount and we will arrange a transfer directly. A person answers,
+								within five working days.
+							</p>
+						</div>
 					</div>
 				</aside>
 			</section>
@@ -618,6 +618,18 @@ const AREAS = [
 		color: var(--teal);
 	}
 
+	/* What the card is doing, announced as well as shown. `role="status"` means
+	   a screen reader hears it without the focus moving off the button. */
+	.card__state[hidden] {
+		display: none;
+	}
+
+	.card__state {
+		font-size: 0.9375rem;
+		line-height: 1.5;
+		color: var(--teal);
+	}
+
 	.card__interim[hidden] {
 		display: none;
 	}
@@ -926,14 +938,22 @@ const AREAS = [
 
 <script>
 	/**
-	 * The card's own behaviour: choose an amount, name it on the button, and
-	 * hand it to the gateway.
+	 * The card: choose an amount, then hand it to the gateway.
 	 *
-	 * The gateway is not wired yet — there is no key. Until there is, the button
-	 * reveals the direct route rather than failing, which keeps the honest
-	 * sentence at the point where somebody actually tries to give instead of at
-	 * the top of the page where it discourages everyone who reads it.
+	 * Nothing here is trusted with anything. The amount the browser sends is
+	 * checked against the order the server made, the signature the browser
+	 * returns is checked against one computed from a secret the browser has never
+	 * seen, and the donor's own details are read back from the gateway rather
+	 * than from this page. The worst a tampered page can do is ask for an order
+	 * it then has to pay for.
+	 *
+	 * Razorpay's script is fetched on the first click rather than on load, so a
+	 * page that is mostly read costs nobody a third-party request.
 	 */
+	const SUPABASE_URL = import.meta.env.PUBLIC_SUPABASE_URL ?? '';
+	const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY ?? '';
+	const CHECKOUT = 'https://checkout.razorpay.com/v1/checkout.js';
+
 	const card = document.querySelector('[data-give]')?.closest('aside');
 
 	if (card) {
@@ -941,16 +961,25 @@ const AREAS = [
 		const other = card.querySelector<HTMLButtonElement>('[data-amount-other]');
 		const ownWrap = card.querySelector<HTMLElement>('[data-own]');
 		const own = card.querySelector<HTMLInputElement>('#give-own');
+		const area = card.querySelector<HTMLSelectElement>('#give-area');
 		const label = card.querySelector<HTMLElement>('[data-give-label]');
 		const button = card.querySelector<HTMLButtonElement>('[data-give]');
+		const state = card.querySelector<HTMLElement>('[data-state]');
 		const interim = card.querySelector<HTMLElement>('[data-interim]');
 
 		const rupees = (n: number) => `₹${n.toLocaleString('en-IN')}`;
 		let amount = Number(chips[1]?.dataset.amount ?? 0);
+		let working = false;
 
 		const say = () => {
 			if (!label) return;
 			label.textContent = amount > 0 ? `Give ${rupees(amount)}` : 'Give';
+		};
+
+		const tell = (message: string) => {
+			if (!state) return;
+			state.textContent = message;
+			state.hidden = !message;
 		};
 
 		const press = (chosen: HTMLButtonElement | null) => {
@@ -964,6 +993,7 @@ const AREAS = [
 				amount = Number(chip.dataset.amount);
 				press(chip);
 				if (ownWrap) ownWrap.hidden = true;
+				tell('');
 				say();
 			});
 		}
@@ -973,11 +1003,12 @@ const AREAS = [
 			if (ownWrap) ownWrap.hidden = false;
 			own?.focus();
 			amount = Number((own?.value ?? '').replace(/\D/g, '')) || 0;
+			tell('');
 			say();
 		});
 
 		own?.addEventListener('input', () => {
-			// Digits only, and grouped the way the amounts above it are, so the two
+			// Digits only, and grouped the way the fixed amounts are, so the two
 			// read as the same kind of number.
 			const digits = own.value.replace(/\D/g, '').slice(0, 8);
 			amount = Number(digits) || 0;
@@ -985,10 +1016,120 @@ const AREAS = [
 			say();
 		});
 
-		button?.addEventListener('click', () => {
-			if (interim) {
-				interim.hidden = false;
-				interim.scrollIntoView({ block: 'nearest' });
+		/** Loaded once, on demand, and remembered. */
+		let checkout: Promise<void> | null = null;
+		const gateway = () => {
+			checkout ??= new Promise<void>((resolve, reject) => {
+				const tag = document.createElement('script');
+				tag.src = CHECKOUT;
+				tag.onload = () => resolve();
+				tag.onerror = () => {
+					checkout = null;
+					reject(new Error('checkout script'));
+				};
+				document.head.append(tag);
+			});
+			return checkout;
+		};
+
+		const call = async (body: Record<string, unknown>) => {
+			const res = await fetch(`${SUPABASE_URL}/functions/v1/donations`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					apikey: SUPABASE_KEY,
+					Authorization: `Bearer ${SUPABASE_KEY}`,
+				},
+				body: JSON.stringify(body),
+			});
+			return { ok: res.ok, data: await res.json().catch(() => ({})) };
+		};
+
+		const fallback = () => {
+			tell('');
+			if (interim) interim.hidden = false;
+		};
+
+		button?.addEventListener('click', async () => {
+			if (working) return;
+			if (amount < 100) {
+				tell('The smallest gift this page can take is ₹100.');
+				own?.focus();
+				return;
+			}
+
+			working = true;
+			if (button) button.disabled = true;
+			tell('Opening the payment window…');
+
+			try {
+				const order = await call({
+					action: 'create',
+					amountPaise: amount * 100,
+					pillar: area?.value || null,
+				});
+
+				if (!order.ok) {
+					fallback();
+					return;
+				}
+
+				await gateway();
+
+				const rzp = new (window as unknown as { Razorpay: new (o: unknown) => {
+					open: () => void;
+					on: (e: string, h: (r: unknown) => void) => void;
+				} }).Razorpay({
+					key: order.data.keyId,
+					order_id: order.data.orderId,
+					amount: order.data.amountPaise,
+					currency: 'INR',
+					name: 'The Itti Foundation',
+					description: order.data.test ? 'Test donation' : 'Donation',
+					// Razorpay draws its own window; these are the only two colours
+					// of ours it takes.
+					theme: { color: '#1c6b77', backdrop_color: 'rgba(15,20,21,0.72)' },
+					handler: async (response: Record<string, string>) => {
+						tell('Confirming…');
+						const done = await call({
+							action: 'verify',
+							orderId: response.razorpay_order_id,
+							paymentId: response.razorpay_payment_id,
+							signature: response.razorpay_signature,
+						});
+						tell(
+							done.ok
+								? 'Thank you. Your gift has arrived, and an acknowledgement is on its way to you.'
+								: 'Your payment went through, but we could not confirm it here. Write to hello@itti.org.in and we will sort it out.',
+						);
+						if (button) button.disabled = true;
+					},
+					modal: {
+						ondismiss: () => {
+							tell('');
+							working = false;
+							if (button) button.disabled = false;
+						},
+					},
+				});
+
+				rzp.on('payment.failed', () => {
+					tell('That payment did not go through. You can try again, or write to us.');
+					working = false;
+					if (button) button.disabled = false;
+				});
+
+				rzp.open();
+			} catch (e) {
+				console.error('[itti/donate]', e);
+				fallback();
+			} finally {
+				// The modal keeps the click alive until it is dismissed, so the button
+				// is released by ondismiss rather than here.
+				if (interim && !interim.hidden) {
+					working = false;
+					if (button) button.disabled = false;
+				}
 			}
 		});
 
