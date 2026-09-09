@@ -18,5 +18,18 @@
 		"directory": "./dist",
 		"not_found_handling": "404-page"
 	},
+	// The domain is attached here rather than clicked into the dashboard, so it
+	// moves with the repository like the build settings did. Both hostnames are
+	// custom domains rather than routes: a route needs a worker in front of an
+	// existing origin, and there is no origin — the worker is the whole site.
+	// Adding routes turns the workers.dev hostname off unless it is asked for
+	// back. It is worth keeping: it is how the site can be checked on Cloudflare
+	// while the domain still points somewhere else, and it stays a way in if the
+	// custom domain is ever the thing that is broken.
+	"workers_dev": true,
+	"routes": [
+		{ "pattern": "itti.org.in", "custom_domain": true },
+		{ "pattern": "www.itti.org.in", "custom_domain": true }
+	],
 	"observability": { "enabled": true }
 }
