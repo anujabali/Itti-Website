@@ -2,24 +2,27 @@
 /**
  * Your account — the registration, back in the hands of the person who made it.
  *
- * Until now a registration was a one-way message: they filled the form, we sent
- * a receipt, and correcting a digit meant writing to us and waiting. This is
- * the same record, readable and correctable by the person it describes.
+ * Not built on the document layout the privacy and terms pages share, which is
+ * where this started and why it read like one. A policy is the foundation
+ * addressing everybody; this is one person's own record, and it should open
+ * with their name rather than with a heading about them.
  *
- * Sign-in is a link sent to the address already on the registration, which is
- * the only credential that exists here — no password is set, stored or asked
- * for. Proving control of the address is what binds an account to a record, and
- * `claim_registration()` does the binding server-side; nothing on this page can
- * assert whose record it is.
+ * The facts are grouped the way somebody checking them would think — who you
+ * are, where you are, how we reach you, what you are here for — rather than
+ * poured out in one column of sixteen rows. Editing keeps the same groups in
+ * the same places, so it reads as this page becoming editable rather than as a
+ * form arriving to replace it.
  *
- * Every panel below is in the markup and toggled with `hidden`, never built by
- * script. Elements created in JavaScript carry no scope attribute, so a scoped
- * rule written here would silently not reach them.
+ * Every field is in the markup and filled by script, never created by it.
+ * Elements made in JavaScript carry no scope attribute, so a scoped rule
+ * written here would silently not reach them — which is also what lets the
+ * design live in this file instead of leaking into a global stylesheet.
  *
  * With scripting off nothing here can work, so nothing here is shown: the
  * <noscript> block is the whole page in that case, and it points at a person.
  */
-import Doc from '../layouts/Doc.astro';
+import Base from '../layouts/Base.astro';
+import SiteFooter from '../components/layout/SiteFooter.astro';
 
 /**
  * Whether the sign-in email carries a six-digit code as well as a link.
@@ -33,7 +36,7 @@ import Doc from '../layouts/Doc.astro';
  */
 const CODE_SIGNIN = true;
 
-/** Kept in step with the registration form; the database accepts these. */
+/** Kept in step with the registration form; these are the words it showed. */
 const ROLES = [
 	['patient', 'Patient / Beneficiary'],
 	['caregiver', 'Caregiver / Family Member'],
@@ -66,452 +69,747 @@ const LANGUAGES = [
 	['as', 'Assamese'],
 ];
 
+/** The accents the three areas already carry on the home page. */
 const PILLARS = [
-	['neurodivergence', 'Neurodivergence'],
-	['cancer_care', 'Cancer Care'],
-	['claw', 'CLAW'],
-	['not_sure', "I'm not sure yet"],
+	['neurodivergence', 'Neurodivergence', 'ochre'],
+	['cancer_care', 'Cancer Care', 'rose'],
+	['claw', 'CLAW', 'sage'],
+	['not_sure', "I'm not sure yet", 'teal'],
 ];
+
+/** Read-only rows, and the groups they sit in. */
+const FACTS = {
+	you: [
+		['fullName', 'Name'],
+		['role', 'You are'],
+		['dateOfBirth', 'Date of birth'],
+		['gender', 'Gender'],
+	],
+	place: [
+		['city', 'City'],
+		['pincode', 'PIN code'],
+		['preferredLanguage', 'Language'],
+	],
+	reach: [
+		['email', 'Email'],
+		['phone', 'Phone'],
+		['channels', 'Contact by'],
+	],
+	guardian: [
+		['guardianName', 'Name'],
+		['guardianEmail', 'Email'],
+		['guardianPhone', 'Phone'],
+	],
+	record: [
+		['heardFrom', 'How you found us'],
+		['registeredAt', 'With us since'],
+	],
+};
 ---
 
-<Doc
+<Base
 	title="Your account — The Itti Foundation"
 	description="Sign in to see the details The Itti Foundation holds about you, and correct anything that is wrong."
-	eyebrow="Your account"
-	heading="What we hold about you."
-	lede="Sign in with the address you registered with, and the record is yours to read and to correct."
 >
-	<noscript>
-		<section class="doc__section">
-			<h2 class="doc__h">Scripting is off</h2>
-			<div class="doc__body">
-				<p>
-					This page reads your record from our registry as you open it, which it cannot
-					do with scripting switched off. Every other page on this site works without
-					it.
-				</p>
-				<p>
-					Write to <a class="doc__link" href="mailto:hello@itti.org.in"
-						>hello@itti.org.in</a
-					>
-					instead and we will send you what we hold, or change it, by hand. We answer within
-					five working days.
-				</p>
-			</div>
-		</section>
-	</noscript>
-
-	<div class="acct" data-account hidden>
-		<!-- Opening the page, or coming back from the link with a token in the
-		     address. Neither is instant, and a blank page reads as a broken one. -->
-		<section class="doc__section" data-panel="loading">
-			<h2 class="doc__h">One moment</h2>
-			<div class="doc__body">
-				<p>Looking for your record.</p>
-			</div>
-		</section>
-
-		<section class="doc__section" data-panel="signin" hidden>
-			<h2 class="doc__h">Sign in</h2>
-			<div class="doc__body">
-				<p>
-					Give us the address you registered with and we will send a link that signs you
-					in. There is no password to remember, and we never set one.
-				</p>
-				<form class="acct__form" data-signin-form novalidate>
-					<div class="acct__field">
-						<label class="acct__label" for="acct-email">Your email address</label>
-						<input
-							class="acct__input"
-							id="acct-email"
-							name="email"
-							type="email"
-							autocomplete="email"
-							inputmode="email"
-							spellcheck="false"
-							required
-						/>
-					</div>
-					<button class="acct__go" type="submit" data-signin-go>Send me a link</button>
-				</form>
-				<p class="acct__note">
-					If you have not registered yet, <a class="doc__link" href="/join"
-						>start here</a
-					>.
-				</p>
-			</div>
-		</section>
-
-		<section class="doc__section" data-panel="sent" hidden>
-			<h2 class="doc__h">Check your email</h2>
-			<div class="doc__body">
-				<p>
-					If we have a registration for <strong data-sent-address></strong>, a sign-in
-					link is on its way. It works once, and it stops working after an hour.
-				</p>
-				<p>
-					Open it on any device &mdash; the link carries the sign-in with it, so it does
-					not have to be the browser you asked from.
-				</p>
-				{
-					CODE_SIGNIN && (
-						<p>
-							The message carries a six-digit code as well. If you are reading it on a
-							different device from this one, type the code in here instead &mdash; it
-							does the same thing.
-						</p>
-					)
-				}
-				<form class="acct__form" data-code-form novalidate hidden={!CODE_SIGNIN}>
-					<div class="acct__field">
-						<label class="acct__label" for="acct-code">Six-digit code</label>
-						<input
-							class="acct__input acct__input--code"
-							id="acct-code"
-							name="token"
-							type="text"
-							inputmode="numeric"
-							autocomplete="one-time-code"
-							maxlength="6"
-							spellcheck="false"
-						/>
-					</div>
-					<p class="acct__error" data-code-error role="alert" hidden></p>
-					<button class="acct__go" type="submit" data-code-go>Sign me in</button>
-				</form>
-				<p class="acct__note">
-					Nothing arrived? Look in the spam folder, then{' '}
-					<button class="acct__again" type="button" data-signin-again
-						>try a different address</button
-					>.
-				</p>
-			</div>
-		</section>
-
-		<section class="doc__section" data-panel="none" hidden>
-			<h2 class="doc__h">Nothing under that address</h2>
-			<div class="doc__body">
-				<p>
-					You are signed in as <strong data-none-address></strong>, and we hold no
-					registration against it. That usually means the registration was made with a
-					different address.
-				</p>
-				<p>
-					It can also mean you registered with a phone number and no email at all. We
-					can only sign people in by email at the moment, so write to{' '}
-					<a class="doc__link" href="mailto:hello@itti.org.in">hello@itti.org.in</a> from
-					the address you would like to use and we will attach it to your record.
-				</p>
-				<p>
-					Otherwise <a class="doc__link" href="/join">register now</a>, or{' '}
-					<button class="acct__again" type="button" data-signout>sign out</button> and try
-					another address.
-				</p>
-			</div>
-		</section>
-
-		<!-- The record as we hold it, in the order the receipt uses. A line
-		     nobody filled in is not shown, so this reads as what they said
-		     rather than as a form with gaps in it. -->
-		<section class="doc__section" data-panel="record" hidden>
-			<h2 class="doc__h">Your record</h2>
-			<div class="doc__body">
-				<p>
-					This is everything we hold about you. If a line is wrong, change it &mdash;
-					nobody has to approve it.
-				</p>
-				<dl class="doc__list" data-record-list></dl>
-				<div class="acct__actions">
-					<button class="acct__go" type="button" data-edit-open>Change something</button
-					>
-					<button class="acct__again" type="button" data-signout>Sign out</button>
+	<div class="page">
+		<main class="acct" id="main">
+			<noscript>
+				<header class="acct__mast">
+					<p class="acct__eyebrow">Your account</p>
+					<h1 class="acct__title">Scripting is off.</h1>
+				</header>
+				<div class="acct__prose">
+					<p>
+						This page reads your record from our registry as you open it, which it
+						cannot do with scripting switched off. Every other page on this site works
+						without it.
+					</p>
+					<p>
+						Write to <a class="acct__link" href="mailto:hello@itti.org.in"
+							>hello@itti.org.in</a
+						> and we will send you what we hold, or change it, by hand. We answer within five
+						working days.
+					</p>
 				</div>
-			</div>
-		</section>
+			</noscript>
 
-		<section class="doc__section" data-panel="edit" hidden>
-			<h2 class="doc__h">Change your details</h2>
-			<div class="doc__body">
-				<form class="acct__form" data-edit-form novalidate>
-					<div class="acct__field">
-						<label class="acct__label" for="acct-name">Name</label>
-						<input
-							class="acct__input"
-							id="acct-name"
-							name="fullName"
-							type="text"
-							maxlength="120"
-							autocomplete="name"
-							required
-						/>
-					</div>
+			<div data-account hidden>
+				<!-- Opening the page, or coming back from the link with a token in
+				     the address. Neither is instant, and a blank page reads as a
+				     broken one. -->
+				<section data-panel="loading">
+					<header class="acct__mast">
+						<p class="acct__eyebrow">Your account</p>
+						<h1 class="acct__title">One moment.</h1>
+						<p class="acct__lede">Looking for your record.</p>
+					</header>
+				</section>
 
-					<div class="acct__field">
-						<label class="acct__label" for="acct-role">You are</label>
-						<select class="acct__input" id="acct-role" name="role" required>
-							{ROLES.map(([v, l]) => <option value={v}>{l}</option>)}
-						</select>
-					</div>
+				<section data-panel="signin" hidden>
+					<header class="acct__mast">
+						<p class="acct__eyebrow">Your account</p>
+						<h1 class="acct__title">Welcome back.</h1>
+						<p class="acct__lede">
+							Give us the address you registered with and we will send a link that signs
+							you in. There is no password to remember, and we never set one.
+						</p>
+					</header>
+					<form class="acct__gate" data-signin-form novalidate>
+						<div class="field">
+							<label class="field__label" for="acct-email">Your email address</label>
+							<input
+								class="field__input"
+								id="acct-email"
+								name="email"
+								type="email"
+								autocomplete="email"
+								inputmode="email"
+								spellcheck="false"
+								placeholder="you@example.com"
+								required
+							/>
+						</div>
+						<button class="btn" type="submit" data-signin-go>Send me a link</button>
+					</form>
+					<p class="acct__aside">
+						Not registered yet? <a class="acct__link" href="/join">Start here</a>.
+					</p>
+				</section>
 
-					<div class="acct__field">
-						<label class="acct__label" for="acct-phone">Phone</label>
-						<input
-							class="acct__input"
-							id="acct-phone"
-							name="phone"
-							type="tel"
-							autocomplete="tel"
-							placeholder="+91 98765 43210"
-						/>
-						<p class="acct__hint">
-							With the country code. Leave it empty if you would rather we only wrote.
+				<section data-panel="sent" hidden>
+					<header class="acct__mast">
+						<p class="acct__eyebrow">Your account</p>
+						<h1 class="acct__title">Check your email.</h1>
+						<p class="acct__lede">
+							If we have a registration for <strong data-sent-address></strong>, a
+							sign-in link is on its way. It works once, and it stops working after an
+							hour.
+						</p>
+					</header>
+					<p class="acct__aside">
+						Open it on any device &mdash; the link carries the sign-in with it, so it
+						does not have to be the browser you asked from.
+					</p>
+					{
+						CODE_SIGNIN && (
+							<p class="acct__aside">
+								The message carries a six-digit code as well. If you are reading it
+								somewhere else, type the code here instead.
+							</p>
+						)
+					}
+					<form class="acct__gate" data-code-form novalidate hidden={!CODE_SIGNIN}>
+						<div class="field">
+							<label class="field__label" for="acct-code">Six-digit code</label>
+							<input
+								class="field__input field__input--code"
+								id="acct-code"
+								name="token"
+								type="text"
+								inputmode="numeric"
+								autocomplete="one-time-code"
+								maxlength="6"
+								placeholder="000000"
+								spellcheck="false"
+							/>
+						</div>
+						<p class="note note--wrong" data-code-error role="alert" hidden></p>
+						<button class="btn" type="submit" data-code-go>Sign me in</button>
+					</form>
+					<p class="acct__aside">
+						Nothing arrived? Look in the spam folder, then{' '}
+						<button class="linkish" type="button" data-signin-again
+							>try a different address</button
+						>.
+					</p>
+				</section>
+
+				<section data-panel="none" hidden>
+					<header class="acct__mast">
+						<p class="acct__eyebrow">Your account</p>
+						<h1 class="acct__title">Nothing under that address.</h1>
+						<p class="acct__lede">
+							You are signed in as <strong data-none-address></strong>, and we hold no
+							registration against it.
+						</p>
+					</header>
+					<div class="acct__prose">
+						<p>
+							That usually means the registration was made with a different address. It
+							can also mean you registered with a phone number and no email at all
+							&mdash; we can only sign people in by email at the moment, so write to{
+								' '
+							}
+							<a class="acct__link" href="mailto:hello@itti.org.in">hello@itti.org.in</a
+							> from the address you would like to use and we will attach it to your record.
+						</p>
+						<p>
+							Otherwise <a class="acct__link" href="/join">register now</a>, or{' '}
+							<button class="linkish" type="button" data-signout>sign out</button> and try
+							another address.
 						</p>
 					</div>
+				</section>
 
-					<div class="acct__field">
-						<label class="acct__label" for="acct-city">City</label>
-						<input
-							class="acct__input"
-							id="acct-city"
-							name="city"
-							type="text"
-							maxlength="100"
-							autocomplete="address-level2"
-							required
-						/>
-					</div>
+				<!-- The record. It opens with their name because it is theirs. -->
+				<section data-panel="record" hidden>
+					<header class="acct__mast">
+						<p class="acct__eyebrow">Your account</p>
+						<h1 class="acct__title" data-mast-name></h1>
+						<p class="acct__lede" data-mast-meta></p>
+						<div class="acct__marks" data-mast-marks aria-hidden="true">
+							{
+								PILLARS.map(([id, label, accent]) => (
+									<span class="mark" data-mark={id} data-accent={accent} hidden>
+										{label}
+									</span>
+								))
+							}
+						</div>
+					</header>
 
-					<div class="acct__field">
-						<label class="acct__label" for="acct-pincode">PIN code</label>
-						<input
-							class="acct__input"
-							id="acct-pincode"
-							name="pincode"
-							type="text"
-							inputmode="numeric"
-							maxlength="6"
-							autocomplete="postal-code"
-						/>
-					</div>
-
-					<div class="acct__field">
-						<label class="acct__label" for="acct-dob">Date of birth</label>
-						<input class="acct__input" id="acct-dob" name="dateOfBirth" type="date" />
-					</div>
-
-					<div class="acct__field">
-						<label class="acct__label" for="acct-gender">Gender</label>
-						<select class="acct__input" id="acct-gender" name="gender">
-							{GENDERS.map(([v, l]) => <option value={v}>{l}</option>)}
-						</select>
-					</div>
-
-					<div class="acct__field" data-gender-other hidden>
-						<label class="acct__label" for="acct-gender-other">In your own words</label>
-						<input
-							class="acct__input"
-							id="acct-gender-other"
-							name="genderSelfDescribed"
-							type="text"
-							maxlength="60"
-						/>
-					</div>
-
-					<div class="acct__field">
-						<label class="acct__label" for="acct-lang">Preferred language</label>
-						<select class="acct__input" id="acct-lang" name="language">
-							<option value="">No preference</option>
-							{LANGUAGES.map(([v, l]) => <option value={v}>{l}</option>)}
-							<option value="other">Another language</option>
-						</select>
-					</div>
-
-					<div class="acct__field" data-lang-other hidden>
-						<label class="acct__label" for="acct-lang-other">Which language</label>
-						<input
-							class="acct__input"
-							id="acct-lang-other"
-							name="languageOther"
-							type="text"
-							maxlength="40"
-						/>
-					</div>
-
-					<fieldset class="acct__set">
-						<legend class="acct__label">What you are here for</legend>
+					<div class="spread">
 						{
-							PILLARS.map(([v, l]) => (
-								<label class="acct__check">
-									<input type="checkbox" name="interests" value={v} />
-									<span>{l}</span>
-								</label>
+							[
+								['you', 'Who you are'],
+								['place', 'Where you are'],
+								['reach', 'How we reach you'],
+								['guardian', 'Your parent or guardian'],
+								['record', 'For the record'],
+							].map(([key, title]) => (
+								<section class="block" data-group={key} hidden>
+									<h2 class="block__title">{title}</h2>
+									<dl class="facts">
+										{FACTS[key as keyof typeof FACTS].map(([id, label]) => (
+											<div class="fact" data-fact={id} hidden>
+												<dt class="fact__label">{label}</dt>
+												<dd class="fact__value" data-value={id} />
+											</div>
+										))}
+									</dl>
+								</section>
 							))
 						}
-					</fieldset>
 
-					<fieldset class="acct__set">
-						<legend class="acct__label">We may contact you by</legend>
-						<label class="acct__check">
-							<input type="checkbox" name="consentWhatsapp" />
-							<span>WhatsApp</span>
-						</label>
-						<label class="acct__check">
-							<input type="checkbox" name="consentSms" />
-							<span>SMS</span>
-						</label>
-						<label class="acct__check">
-							<input type="checkbox" name="consentEmail" />
-							<span>Email</span>
-						</label>
-					</fieldset>
-
-					<p class="acct__error" data-edit-error role="alert" hidden></p>
+						<section class="block block--areas" data-group="areas" hidden>
+							<h2 class="block__title">What you are here for</h2>
+							<div class="areas" data-areas>
+								{
+									PILLARS.map(([id, label, accent]) => (
+										<span class="area" data-area={id} data-accent={accent} hidden>
+											{label}
+										</span>
+									))
+								}
+							</div>
+						</section>
+					</div>
 
 					<div class="acct__actions">
-						<button class="acct__go" type="submit" data-edit-save>Save changes</button>
-						<button class="acct__again" type="button" data-edit-cancel>Cancel</button>
+						<button class="btn" type="button" data-edit-open>Change something</button>
+						<button class="linkish" type="button" data-signout>Sign out</button>
 					</div>
-				</form>
-			</div>
-		</section>
 
-		<section class="doc__section" data-panel="fail" hidden>
-			<h2 class="doc__h">That did not work</h2>
-			<div class="doc__body">
-				<p data-fail-note>Something went wrong at our end.</p>
-				<p>
-					Try again in a moment. If it keeps happening, write to{' '}
-					<a class="doc__link" href="mailto:hello@itti.org.in">hello@itti.org.in</a> and we
-					will sort it out by hand.
-				</p>
-				<p><button class="acct__again" type="button" data-retry>Start again</button></p>
-			</div>
-		</section>
+					<p class="note" data-saved role="status" hidden>Saved.</p>
 
-		<!-- Not editable here, and said so rather than left to be discovered.
-		     The address is the account; changing it is an identity change, not a
-		     correction, and it goes through a person. -->
-		<section class="doc__section" data-panel="footnote" hidden>
-			<h2 class="doc__h">Two things we do by hand</h2>
-			<div class="doc__body">
-				<dl class="doc__list">
-					<dt>Your email address</dt>
-					<dd>
-						It is what signs you in and where the receipt went, so it is not something
-						this page will change under you. Write to{' '}
-						<a class="doc__link" href="mailto:hello@itti.org.in">hello@itti.org.in</a> and
-						we will move it.
-					</dd>
-					<dt>Deleting everything</dt>
-					<dd>
-						You can ask us to erase the whole record and we will, but not with a button
-						that cannot be undone. Write to the same address and{' '}
-						<strong>Anuja Bali</strong> will do it. What we hold and why is set out in{
-							' '
-						}
-						<a class="doc__link" href="/privacy">What we hold, and why</a>.
-					</dd>
-				</dl>
+					<footer class="acct__foot">
+						<p>
+							<strong>Your email address</strong> is what signs you in and where the receipt
+							went, so it is not something this page will change under you. Write to <a
+								class="acct__link"
+								href="mailto:hello@itti.org.in">hello@itti.org.in</a
+							> and we will move it.
+						</p>
+						<p>
+							<strong>To be erased entirely</strong>, write to the same address and
+							Anuja Bali will do it &mdash; not a button that cannot be undone. What we
+							hold and why is set out in <a class="acct__link" href="/privacy"
+								>What we hold, and why</a
+							>.
+						</p>
+					</footer>
+				</section>
+
+				<!-- The same groups in the same order, now editable. -->
+				<section data-panel="edit" hidden>
+					<header class="acct__mast">
+						<p class="acct__eyebrow">Your account</p>
+						<h1 class="acct__title">Change your details.</h1>
+						<p class="acct__lede">
+							Nobody has to approve any of this. It takes effect the moment you save.
+						</p>
+					</header>
+
+					<form data-edit-form novalidate>
+						<div class="spread">
+							<section class="block">
+								<h2 class="block__title">Who you are</h2>
+								<div class="field">
+									<label class="field__label" for="acct-name">Name</label>
+									<input
+										class="field__input"
+										id="acct-name"
+										name="fullName"
+										type="text"
+										maxlength="120"
+										autocomplete="name"
+										required
+									/>
+								</div>
+								<div class="field">
+									<label class="field__label" for="acct-role">You are</label>
+									<select class="field__input" id="acct-role" name="role" required>
+										{ROLES.map(([v, l]) => <option value={v}>{l}</option>)}
+									</select>
+								</div>
+								<div class="field">
+									<label class="field__label" for="acct-dob">Date of birth</label>
+									<input
+										class="field__input"
+										id="acct-dob"
+										name="dateOfBirth"
+										type="date"
+									/>
+								</div>
+								<div class="field">
+									<label class="field__label" for="acct-gender">Gender</label>
+									<select class="field__input" id="acct-gender" name="gender">
+										{GENDERS.map(([v, l]) => <option value={v}>{l}</option>)}
+									</select>
+								</div>
+								<div class="field" data-gender-other hidden>
+									<label class="field__label" for="acct-gender-other"
+										>In your own words</label
+									>
+									<input
+										class="field__input"
+										id="acct-gender-other"
+										name="genderSelfDescribed"
+										type="text"
+										maxlength="60"
+									/>
+								</div>
+							</section>
+
+							<section class="block">
+								<h2 class="block__title">Where you are</h2>
+								<div class="field">
+									<label class="field__label" for="acct-city">City</label>
+									<input
+										class="field__input"
+										id="acct-city"
+										name="city"
+										type="text"
+										maxlength="100"
+										autocomplete="address-level2"
+										required
+									/>
+								</div>
+								<div class="field">
+									<label class="field__label" for="acct-pincode">PIN code</label>
+									<input
+										class="field__input"
+										id="acct-pincode"
+										name="pincode"
+										type="text"
+										inputmode="numeric"
+										maxlength="6"
+										autocomplete="postal-code"
+									/>
+								</div>
+								<div class="field">
+									<label class="field__label" for="acct-lang">Preferred language</label>
+									<select class="field__input" id="acct-lang" name="language">
+										<option value="">No preference</option>
+										{LANGUAGES.map(([v, l]) => <option value={v}>{l}</option>)}
+										<option value="other">Another language</option>
+									</select>
+								</div>
+								<div class="field" data-lang-other hidden>
+									<label class="field__label" for="acct-lang-other"
+										>Which language</label
+									>
+									<input
+										class="field__input"
+										id="acct-lang-other"
+										name="languageOther"
+										type="text"
+										maxlength="40"
+									/>
+								</div>
+							</section>
+
+							<section class="block">
+								<h2 class="block__title">How we reach you</h2>
+								<div class="field">
+									<label class="field__label" for="acct-phone">Phone</label>
+									<input
+										class="field__input"
+										id="acct-phone"
+										name="phone"
+										type="tel"
+										autocomplete="tel"
+										placeholder="+91 98765 43210"
+									/>
+									<p class="note">
+										With the country code. Leave it empty if you would rather we only
+										wrote.
+									</p>
+								</div>
+								<fieldset class="set">
+									<legend class="field__label">You are happy to hear from us by</legend>
+									<label class="check">
+										<input type="checkbox" name="consentWhatsapp" />
+										<span>WhatsApp</span>
+									</label>
+									<label class="check">
+										<input type="checkbox" name="consentSms" />
+										<span>SMS</span>
+									</label>
+									<label class="check">
+										<input type="checkbox" name="consentEmail" />
+										<span>Email</span>
+									</label>
+								</fieldset>
+							</section>
+
+							<section class="block">
+								<h2 class="block__title">What you are here for</h2>
+								<fieldset class="set">
+									<legend class="u-visually-hidden">The areas you want</legend>
+									{
+										PILLARS.map(([v, l, accent]) => (
+											<label class="check check--area" data-accent={accent}>
+												<input type="checkbox" name="interests" value={v} />
+												<span>{l}</span>
+											</label>
+										))
+									}
+								</fieldset>
+							</section>
+						</div>
+
+						<p class="note note--wrong" data-edit-error role="alert" hidden></p>
+
+						<div class="acct__actions">
+							<button class="btn" type="submit" data-edit-save>Save changes</button>
+							<button class="linkish" type="button" data-edit-cancel>Cancel</button>
+						</div>
+					</form>
+				</section>
+
+				<section data-panel="fail" hidden>
+					<header class="acct__mast">
+						<p class="acct__eyebrow">Your account</p>
+						<h1 class="acct__title">That did not work.</h1>
+						<p class="acct__lede" data-fail-note>Something went wrong at our end.</p>
+					</header>
+					<div class="acct__prose">
+						<p>
+							Try again in a moment. If it keeps happening, write to{' '}
+							<a class="acct__link" href="mailto:hello@itti.org.in">hello@itti.org.in</a
+							> and we will sort it out by hand.
+						</p>
+						<p><button class="linkish" type="button" data-retry>Start again</button></p>
+					</div>
+				</section>
 			</div>
-		</section>
+		</main>
+
+		<SiteFooter />
 	</div>
-</Doc>
+</Base>
 
 <style>
-	.acct__form {
-		display: grid;
-		gap: 1.5rem;
-		margin: 0.5rem 0 0;
+	/* The ground reaches the bottom of the window even when the record is
+	   short, so the footer never sits on the dark behind the page. */
+	.page {
+		display: flex;
+		flex-direction: column;
+		min-height: 100svh;
+		background: var(--cream);
 	}
 
-	/* Ruled lines rather than boxes, the same as the registration form. */
-	.acct__field {
-		display: grid;
-		gap: 0.4rem;
+	.acct {
+		flex: 1 0 auto;
+		width: 100%;
+		max-width: 58rem;
+		margin: 0 auto;
+		padding: calc(var(--nav-h) + clamp(2.5rem, 7vh, 4.5rem)) var(--gutter)
+			clamp(3rem, 8vh, 5rem);
 	}
 
-	.acct__label {
+	/* ── The masthead ────────────────────────────────────────────────────── */
+
+	/* Their name, at the size the home page gives its own lines. A record that
+	   opens with a heading about somebody reads as a file on them; one that
+	   opens with their name reads as theirs. */
+	.acct__mast {
+		padding-bottom: clamp(2rem, 5vh, 3rem);
+		border-bottom: 1px solid var(--rule);
+		margin-bottom: clamp(2rem, 5vh, 3rem);
+	}
+
+	.acct__eyebrow {
+		font-family: var(--face-cinzel);
+		font-size: 0.6875rem;
+		font-weight: 500;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: var(--teal);
+		margin: 0 0 1rem;
+	}
+
+	.acct__title {
+		margin: 0;
+		font-family: var(--face-bodoni);
+		font-size: clamp(2.25rem, 5.2vw, 3.5rem);
+		font-weight: 450;
+		line-height: 1.02;
+		letter-spacing: -0.02em;
+		color: var(--ink);
+	}
+
+	.acct__lede {
+		margin: 1rem 0 0;
+		max-width: 34rem;
+		font-size: 1.125rem;
+		line-height: 1.55;
+		color: var(--ink-soft);
+	}
+
+	/* The three areas, carried up beside the name as marks rather than left as
+	   a line of text further down. It is the fastest true thing about somebody
+	   on this page. */
+	.acct__marks {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem 1.25rem;
+		margin-top: 1.5rem;
+	}
+
+	.mark {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
 		font-family: var(--face-cinzel);
 		font-size: 0.6875rem;
 		font-weight: 600;
-		letter-spacing: 0.15em;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+	}
+
+	.mark::before {
+		content: '';
+		width: 1.75rem;
+		height: 2px;
+		background: var(--accent, var(--teal));
+	}
+
+	[data-accent='ochre'] {
+		--accent: var(--ochre);
+		--accent-ink: var(--ochre-ink);
+	}
+	[data-accent='rose'] {
+		--accent: var(--rose);
+		--accent-ink: var(--rose-ink);
+	}
+	[data-accent='sage'] {
+		--accent: var(--sage);
+		--accent-ink: var(--sage-ink);
+	}
+	[data-accent='teal'] {
+		--accent: var(--teal);
+		--accent-ink: var(--teal);
+	}
+
+	/* ── The record ──────────────────────────────────────────────────────── */
+
+	/* Two columns where there is room, so a record is a spread to glance over
+	   rather than one long column to scroll. */
+	.spread {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
+		gap: clamp(2rem, 4vw, 3.25rem);
+		align-items: start;
+	}
+
+	.block__title {
+		margin: 0 0 1rem;
+		font-family: var(--face-cinzel);
+		font-size: 0.75rem;
+		font-weight: 600;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		color: var(--teal);
+	}
+
+	.facts {
+		margin: 0;
+		display: grid;
+	}
+
+	/* Ruled, not boxed. The rule belongs to the row above it, so a group never
+	   ends on a line with nothing under it. */
+	.fact {
+		display: grid;
+		grid-template-columns: minmax(8rem, 36%) 1fr;
+		gap: 0 1rem;
+		padding: 0.7rem 0;
+		border-bottom: 1px solid var(--rule);
+	}
+
+	.fact__label {
+		font-family: var(--face-cinzel);
+		font-size: 0.625rem;
+		font-weight: 600;
+		letter-spacing: 0.13em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+		align-self: baseline;
+		padding-top: 0.2em;
+	}
+
+	.fact__value {
+		margin: 0;
+		font-size: 1.0625rem;
+		line-height: 1.45;
+		color: var(--ink);
+		overflow-wrap: anywhere;
+	}
+
+	.areas {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.6rem;
+	}
+
+	/* A named thing in its own colour, which is how the three read everywhere
+	   else on the site. */
+	.area {
+		display: inline-flex;
+		align-items: center;
+		padding: 0.4rem 0.85rem;
+		border: 1px solid var(--accent, var(--teal));
+		border-radius: 999px;
+		font-family: var(--face-cinzel);
+		font-size: 0.6875rem;
+		font-weight: 600;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--accent-ink, var(--teal));
+	}
+
+	/* ── Fields ──────────────────────────────────────────────────────────── */
+
+	/* The registration form's vocabulary, because this edits what that form
+	   collected: tracked caps above a ruled line, and no boxes anywhere. */
+	.field {
+		display: grid;
+		gap: 0.3rem;
+		margin-bottom: 1.35rem;
+	}
+
+	.field__label {
+		font-family: var(--face-cinzel);
+		font-size: 0.625rem;
+		font-weight: 600;
+		letter-spacing: 0.13em;
 		text-transform: uppercase;
 		color: var(--ink-faint);
 		padding: 0;
 	}
 
-	.acct__input {
+	.field__input {
 		width: 100%;
-		padding: 0.5rem 0;
+		padding: 0.4rem 0;
 		border: 0;
 		border-bottom: 1px solid var(--rule);
 		border-radius: 0;
 		background: transparent;
-		font-family: inherit;
+		font-family: var(--body);
 		font-size: 1.0625rem;
 		line-height: 1.5;
 		color: var(--ink);
 		transition: border-color 180ms var(--ease);
 	}
 
-	.acct__input:hover {
-		border-bottom-color: color-mix(in srgb, var(--teal) 45%, var(--rule));
+	.field__input::placeholder {
+		color: color-mix(in srgb, var(--ink-faint) 55%, transparent);
 	}
 
-	.acct__input:focus {
+	.field__input:hover {
+		border-bottom-color: rgba(44, 39, 33, 0.45);
+	}
+
+	.field__input:focus {
 		outline: none;
 		border-bottom-color: var(--teal);
 	}
 
-	.acct__input:focus-visible {
+	/* Keyboard focus gets a ring; a click does not. Both keep the rule. */
+	.field__input:focus-visible {
 		outline: 2px solid var(--teal);
 		outline-offset: 4px;
 	}
 
-	select.acct__input {
+	select.field__input {
 		appearance: none;
 		cursor: pointer;
 	}
 
-	/* Six characters, spaced out, so it reads as a code being checked off rather
-	   than as a word. */
-	.acct__input--code {
-		max-width: 9rem;
+	.field__input--code {
+		max-width: 8.5rem;
 		font-family: var(--face-cinzel);
-		font-size: 1.375rem;
-		letter-spacing: 0.35em;
+		font-size: 1.5rem;
+		letter-spacing: 0.3em;
 	}
 
-	.acct__hint {
-		font-size: 0.875rem;
-		color: var(--ink-faint);
-	}
-
-	.acct__set {
+	.set {
 		display: grid;
 		gap: 0.55rem;
-		margin: 0;
+		margin: 0 0 1.35rem;
 		padding: 0;
 		border: 0;
 	}
 
-	.acct__set legend {
-		padding: 0 0 0.35rem;
+	.set legend {
+		padding: 0 0 0.5rem;
 	}
 
-	.acct__check {
+	.check {
 		display: flex;
-		align-items: baseline;
+		align-items: center;
 		gap: 0.6rem;
 		cursor: pointer;
 		font-size: 1.0625rem;
 		color: var(--ink-soft);
 	}
 
-	.acct__check input {
-		accent-color: var(--teal);
-		width: 0.95rem;
-		height: 0.95rem;
+	.check input {
+		accent-color: var(--accent, var(--teal));
+		width: 1rem;
+		height: 1rem;
+		flex: none;
+	}
+
+	.check input:focus-visible {
+		outline: 2px solid var(--teal);
+		outline-offset: 3px;
+	}
+
+	/* Checked, an area takes its own colour, so the edit view says the same
+	   thing the record view did. */
+	.check--area:has(input:checked) span {
+		color: var(--accent-ink, var(--teal));
+	}
+
+	/* ── Actions and asides ──────────────────────────────────────────────── */
+
+	.acct__gate {
+		max-width: 24rem;
+		margin-top: 0.5rem;
 	}
 
 	.acct__actions {
@@ -519,11 +817,12 @@ const PILLARS = [
 		flex-wrap: wrap;
 		align-items: center;
 		gap: 1.5rem;
-		margin-top: 0.5rem;
+		margin-top: clamp(2rem, 5vh, 3rem);
+		padding-top: 1.75rem;
+		border-top: 1px solid var(--rule);
 	}
 
-	.acct__go {
-		justify-self: start;
+	.btn {
 		padding: 0.7rem 1.6rem;
 		border: 1px solid var(--teal);
 		border-radius: 0;
@@ -540,19 +839,18 @@ const PILLARS = [
 			color 200ms var(--ease);
 	}
 
-	.acct__go:hover {
+	.btn:hover {
 		background: transparent;
 		color: var(--teal);
 	}
 
-	.acct__go[disabled] {
+	.btn[disabled] {
 		opacity: 0.5;
 		cursor: progress;
 	}
 
-	/* A second action next to the first, weighted as a link rather than a
-	   button, so the page has one obvious thing to press. */
-	.acct__again {
+	/* Weighted as a link, so the page has one obvious thing to press. */
+	.linkish {
 		padding: 0;
 		border: 0;
 		background: none;
@@ -565,30 +863,83 @@ const PILLARS = [
 		cursor: pointer;
 	}
 
-	.acct__again:hover {
+	.linkish:hover {
 		text-decoration-color: var(--teal);
 	}
 
-	.acct__note {
+	.acct__link {
+		color: var(--teal);
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
+		text-decoration-thickness: 1px;
+		text-decoration-color: color-mix(in srgb, var(--teal) 40%, transparent);
+	}
+
+	.acct__link:hover {
+		text-decoration-color: var(--teal);
+	}
+
+	.acct__prose {
+		display: grid;
+		gap: 1.15rem;
+		max-width: 36rem;
+		font-size: 1.0625rem;
+		line-height: 1.65;
+		color: var(--ink-soft);
+	}
+
+	.acct__aside {
+		margin: 1.25rem 0 0;
+		max-width: 34rem;
 		font-size: 0.9375rem;
+		line-height: 1.6;
 		color: var(--ink-faint);
 	}
 
-	.acct__error {
-		margin: 0;
-		padding: 0.75rem 0 0;
+	.note {
+		margin: 0.4rem 0 0;
+		font-size: 0.875rem;
+		line-height: 1.5;
+		color: var(--ink-faint);
+	}
+
+	.note--wrong {
+		margin-top: 1.5rem;
+		padding-top: 0.75rem;
 		border-top: 1px solid color-mix(in srgb, var(--rose-ink) 35%, transparent);
-		font-size: 0.9375rem;
 		color: var(--rose-ink);
 	}
 
 	/* The field a message points at, marked so it is not only the words that
 	   say which one it is. */
-	.acct__field[data-wrong] .acct__input {
+	.field[data-wrong] .field__input {
 		border-bottom-color: var(--rose-ink);
 	}
-</style>
 
+	.acct__foot {
+		display: grid;
+		gap: 1rem;
+		max-width: 36rem;
+		margin-top: clamp(2.5rem, 6vh, 3.5rem);
+		padding-top: 1.75rem;
+		border-top: 1px solid var(--rule);
+		font-size: 0.9375rem;
+		line-height: 1.6;
+		color: var(--ink-faint);
+	}
+
+	.acct__foot strong {
+		font-weight: 600;
+		color: var(--ink-soft);
+	}
+
+	@media (max-width: 34rem) {
+		.fact {
+			grid-template-columns: 1fr;
+			gap: 0.15rem;
+		}
+	}
+</style>
 <script>
 	import { supabase } from '../lib/supabase';
 	import type { MyRegistration } from '../types/database';
@@ -719,54 +1070,89 @@ const PILLARS = [
 			return `${parts.slice(0, -1).join(', ')} and ${parts[parts.length - 1]}`;
 		};
 
-		const rows = (r: MyRegistration): [string, string][] => {
+		/**
+		 * The record as text, keyed by the field each value belongs to.
+		 *
+		 * A blank is a question nobody answered rather than a value, and the row
+		 * for it is hidden rather than shown empty — a record full of dashes reads
+		 * as a form somebody failed.
+		 */
+		const values = (r: MyRegistration): Record<string, string> => {
 			const channels = [
 				r.consentWhatsapp ? 'WhatsApp' : '',
 				r.consentSms ? 'SMS' : '',
 				r.consentEmail ? 'Email' : '',
 			].filter(Boolean);
 
-			const interests: string[] = Array.isArray(r.interests) ? r.interests : [];
-
-			return (
-				[
-					['Name', r.fullName ?? ''],
-					['You are', ROLE[r.role] ?? r.role ?? ''],
-					['Phone', r.phone ?? ''],
-					['Email', r.email ?? ''],
-					['City', r.city ?? ''],
-					['PIN code', r.pincode ?? ''],
-					['Date of birth', asDate(r.dateOfBirth ?? '')],
-					['Gender', r.genderOther || (GENDER[r.gender] ?? r.gender ?? '')],
-					[
-						'Preferred language',
-						LANG[r.preferredLanguage] ?? r.preferredLanguage ?? '',
-					],
-					['Areas', sentence(interests.map((p) => PILLAR[p] ?? p))],
-					['How you found us', r.heardFromOther || (HEARD[r.heardFrom] ?? '')],
-					['We may contact you by', sentence(channels)],
-					['Parent or guardian', r.guardianName ?? ''],
-					["Guardian's email", r.guardianEmail ?? ''],
-					["Guardian's phone", r.guardianPhone ?? ''],
-					['Registered', r.registeredAt ?? ''],
-				] as [string, string][]
-			).filter(([, v]) => v !== '');
+			return {
+				fullName: r.fullName ?? '',
+				role: ROLE[r.role] ?? r.role ?? '',
+				dateOfBirth: asDate(r.dateOfBirth ?? ''),
+				gender: r.genderOther || (GENDER[r.gender] ?? r.gender ?? ''),
+				city: r.city ?? '',
+				pincode: r.pincode ?? '',
+				preferredLanguage: LANG[r.preferredLanguage] ?? r.preferredLanguage ?? '',
+				email: r.email ?? '',
+				phone: r.phone ?? '',
+				channels: sentence(channels),
+				guardianName: r.guardianName ?? '',
+				guardianEmail: r.guardianEmail ?? '',
+				guardianPhone: r.guardianPhone ?? '',
+				heardFrom: r.heardFromOther || (HEARD[r.heardFrom] ?? ''),
+				registeredAt: r.registeredAt ?? '',
+			};
 		};
 
 		/**
-		 * Built with the DOM rather than innerHTML. The values are the person's
-		 * own, but they were typed, and typed text is never markup.
+		 * Fills the fields that are already in the markup rather than building
+		 * any. Elements made here would carry no scope attribute, so every rule
+		 * written for this page would silently miss them.
 		 */
 		const paint = (r: MyRegistration) => {
-			const list = root.querySelector<HTMLElement>('[data-record-list]');
-			if (!list) return;
-			list.textContent = '';
-			for (const [key, value] of rows(r)) {
-				const dt = document.createElement('dt');
-				dt.textContent = key;
-				const dd = document.createElement('dd');
-				dd.textContent = value;
-				list.append(dt, dd);
+			const v = values(r);
+
+			const name = (r.fullName ?? '').trim();
+			const mast = root.querySelector<HTMLElement>('[data-mast-name]');
+			if (mast) mast.textContent = name ? `${name}.` : 'Your record.';
+
+			// Who they said they are, and how long we have had them — the two
+			// things worth reading before any single field.
+			const meta = root.querySelector<HTMLElement>('[data-mast-meta]');
+			if (meta) {
+				const bits = [v.role, v.registeredAt ? `with us since ${v.registeredAt}` : '']
+					.filter(Boolean)
+					.join(' \u00b7 ');
+				meta.textContent = bits;
+				meta.hidden = bits === '';
+			}
+
+			for (const el of root.querySelectorAll<HTMLElement>('[data-fact]')) {
+				const key = el.dataset.fact!;
+				const slot = el.querySelector<HTMLElement>('[data-value]');
+				const text = v[key] ?? '';
+				if (slot) slot.textContent = text;
+				el.hidden = text === '';
+			}
+
+			const interests: string[] = Array.isArray(r.interests) ? r.interests : [];
+			for (const el of root.querySelectorAll<HTMLElement>('[data-area]')) {
+				el.hidden = !interests.includes(el.dataset.area!);
+			}
+			for (const el of root.querySelectorAll<HTMLElement>('[data-mark]')) {
+				el.hidden = !interests.includes(el.dataset.mark!);
+			}
+
+			// A group with nothing under it is a heading over a gap. The guardian
+			// block in particular belongs only to the people who have one.
+			for (const group of root.querySelectorAll<HTMLElement>('[data-group]')) {
+				if (group.dataset.group === 'areas') {
+					group.hidden = interests.length === 0;
+					continue;
+				}
+				const shown = [...group.querySelectorAll<HTMLElement>('[data-fact]')].some(
+					(f) => !f.hidden,
+				);
+				group.hidden = !shown;
 			}
 		};
 
@@ -1064,6 +1450,8 @@ const PILLARS = [
 
 		root.querySelector('[data-edit-open]')?.addEventListener('click', () => {
 			if (!current) return;
+			const saved = root.querySelector<HTMLElement>('[data-saved]');
+			if (saved) saved.hidden = true;
 			fill(current);
 			show('edit');
 			(root.querySelector('#acct-name') as HTMLInputElement | null)?.focus();
@@ -1074,6 +1462,7 @@ const PILLARS = [
 		});
 
 		const save = root.querySelector<HTMLButtonElement>('[data-edit-save]');
+		let savedFor = 0;
 
 		form?.addEventListener('submit', async (event) => {
 			event.preventDefault();
@@ -1148,6 +1537,19 @@ const PILLARS = [
 			}
 
 			await load();
+
+			// Saving returns them to the record, where the change is its own
+			// evidence — but only if they happen to be looking at the line they
+			// changed. A live region says it once, for the people reading the
+			// page and for anyone listening to it.
+			const saved = root.querySelector<HTMLElement>('[data-saved]');
+			if (saved) {
+				saved.hidden = false;
+				window.clearTimeout(savedFor);
+				savedFor = window.setTimeout(() => {
+					saved.hidden = true;
+				}, 4000);
+			}
 		});
 
 		// ── start ──────────────────────────────────────────────────────────────
