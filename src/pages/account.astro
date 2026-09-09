@@ -311,27 +311,32 @@ const FACTS = {
 					  three short views are easier to hold in the head than one long column.
 					*/
 					}
-					<div class="tabs" role="tablist" aria-label="Your account">
-						{
-							[
-								['profile', 'Profile'],
-								['details', 'Your details'],
-								['account', 'Account'],
-							].map(([id, label], i) => (
-								<button
-									class="tab"
-									type="button"
-									role="tab"
-									id={`tab-${id}`}
-									aria-controls={`view-${id}`}
-									aria-selected={i === 0 ? 'true' : 'false'}
-									tabindex={i === 0 ? 0 : -1}
-									data-tab={id}
-								>
-									<span>{label}</span>
-								</button>
-							))
-						}
+					<div class="bar">
+						<div class="tabs" role="tablist" aria-label="Your account">
+							{
+								[
+									['profile', 'Profile'],
+									['details', 'Your details'],
+									['account', 'Account'],
+								].map(([id, label], i) => (
+									<button
+										class="tab"
+										type="button"
+										role="tab"
+										id={`tab-${id}`}
+										aria-controls={`view-${id}`}
+										aria-selected={i === 0 ? 'true' : 'false'}
+										tabindex={i === 0 ? 0 : -1}
+										data-tab={id}
+									>
+										<span>{label}</span>
+									</button>
+								))
+							}
+						</div>
+						<button class="btn btn--quiet" type="button" data-edit-open>
+							Edit your profile
+						</button>
 					</div>
 
 					<div
@@ -345,10 +350,7 @@ const FACTS = {
 						<header class="profile">
 							<p class="profile__bio" data-bio hidden></p>
 							<p class="profile__invite" data-bio-empty hidden>
-								You have not written anything about yourself yet.{' '}
-								<button class="linkish" type="button" data-edit-open
-									>Say something</button
-								>.
+								You have not written anything about yourself yet.
 							</p>
 
 							<div class="profile__marks" data-mast-marks aria-hidden="true">
@@ -374,2059 +376,2115 @@ const FACTS = {
 								}
 							</ul>
 
-							<div class="acct__actions acct__actions--profile">
-								<button class="btn" type="button" data-edit-open
-									>Edit your profile</button
-								>
-								<button class="linkish" type="button" data-signout>Sign out</button>
-							</div>
 							<p class="note" data-saved role="status" hidden>Saved.</p>
 						</header>
-					</div>
 
-					<div
-						class="view"
-						role="tabpanel"
-						id="view-details"
-						aria-labelledby="tab-details"
-						tabindex="0"
-						data-view="details"
-						hidden
-					>
-						<p class="held__note">
-							Everything on our side of the record. If a line is wrong, change it
-							&mdash; nobody has to approve it.
-						</p>
-						<div class="spread">
-							{
-								[
-									['you', 'Who you are'],
-									['place', 'Where you are'],
-									['reach', 'How we reach you'],
-									['guardian', 'Your parent or guardian'],
-									['record', 'For the record'],
-								].map(([key, title]) => (
-									<section class="block" data-group={key} hidden>
-										<h3 class="block__title">{title}</h3>
-										<dl class="facts">
-											{FACTS[key as keyof typeof FACTS].map(([id, label]) => (
-												<div class="fact" data-fact={id} hidden>
-													<dt class="fact__label">{label}</dt>
-													<dd class="fact__value" data-value={id} />
-												</div>
-											))}
-										</dl>
-									</section>
-								))
-							}
-						</div>
-					</div>
-
-					<div
-						class="view"
-						role="tabpanel"
-						id="view-account"
-						aria-labelledby="tab-account"
-						tabindex="0"
-						data-view="account"
-						hidden
-					>
-						<footer class="acct__foot">
-							<p>
-								<strong>Your email address</strong> is what signs you in and where the receipt
-								went, so it is not something this page will change under you. Write to <a
-									class="acct__link"
-									href="mailto:hello@itti.org.in">hello@itti.org.in</a
-								> and we will move it.
-							</p>
-							<p>
-								<strong>To be erased entirely</strong>, write to the same address and
-								Anuja Bali will do it &mdash; not a button that cannot be undone. What
-								we hold and why is set out in <a class="acct__link" href="/privacy"
-									>What we hold, and why</a
-								>.
-							</p>
-						</footer>
-					</div>
-				</section>
-
-				<!-- The same groups in the same order, now editable. -->
-				<section data-panel="edit" hidden>
-					<header class="acct__mast">
-						<p class="acct__eyebrow">Your account</p>
-						<h1 class="acct__title">Change your details.</h1>
-						<p class="acct__lede">
-							Nobody has to approve any of this. It takes effect the moment you save.
-						</p>
-					</header>
-
-					<form data-edit-form novalidate>
-						<div class="spread">
-							<section class="block block--wide">
-								<h2 class="block__title">The colour of your account</h2>
-								<fieldset class="set">
-									<legend class="u-visually-hidden">Choose a colour</legend>
-									<div class="swatches">
-										{
-											[
-												['teal', 'Teal'],
-												['ochre', 'Ochre'],
-												['rose', 'Rose'],
-												['sage', 'Sage'],
-											].map(([v, l]) => (
-												<label class="swatch" data-accent={v}>
-													<input type="radio" name="accent" value={v} />
-													<span class="swatch__chip" aria-hidden="true" />
-													<span class="swatch__name">{l}</span>
-												</label>
-											))
-										}
-									</div>
-								</fieldset>
-							</section>
-
-							<section class="block block--wide">
-								<h2 class="block__title">In your own words</h2>
-								<div class="field">
-									<label class="field__label" for="acct-bio">
-										Anything you would like people here to know
-									</label>
-									<textarea
-										class="field__input field__input--bio"
-										id="acct-bio"
-										name="bio"
-										rows="4"
-										maxlength="600"
-										placeholder="What brings you here, what you care about, what you are working on."
-									></textarea>
-									<p class="note"><span data-bio-count>0</span> of 600</p>
-									<p class="note note--wrong" data-field-error hidden></p>
-								</div>
-							</section>
-
-							<section class="block">
-								<h2 class="block__title">Who you are</h2>
-								<div class="field">
-									<label class="field__label" for="acct-name">Name</label>
-									<input
-										class="field__input"
-										id="acct-name"
-										name="fullName"
-										type="text"
-										maxlength="120"
-										autocomplete="name"
-										required
-									/>
-									<p class="note note--wrong" data-field-error hidden></p>
-								</div>
-								<div class="field">
-									<label class="field__label" for="acct-role">You are</label>
-									<select class="field__input" id="acct-role" name="role" required>
-										{ROLES.map(([v, l]) => <option value={v}>{l}</option>)}
-									</select>
-									<p class="note note--wrong" data-field-error hidden></p>
-								</div>
-								<div class="field">
-									<label class="field__label" for="acct-dob">Date of birth</label>
-									<input
-										class="field__input"
-										id="acct-dob"
-										name="dateOfBirth"
-										type="date"
-									/>
-									<p class="note note--wrong" data-field-error hidden></p>
-								</div>
-								<div class="field">
-									<label class="field__label" for="acct-gender">Gender</label>
-									<select class="field__input" id="acct-gender" name="gender">
-										{GENDERS.map(([v, l]) => <option value={v}>{l}</option>)}
-									</select>
-									<p class="note note--wrong" data-field-error hidden></p>
-								</div>
-								<div class="field" data-gender-other hidden>
-									<label class="field__label" for="acct-gender-other"
-										>In your own words</label
-									>
-									<input
-										class="field__input"
-										id="acct-gender-other"
-										name="genderSelfDescribed"
-										type="text"
-										maxlength="60"
-									/>
-									<p class="note note--wrong" data-field-error hidden></p>
-								</div>
-							</section>
-
-							<section class="block">
-								<h2 class="block__title">Where you are</h2>
-								<div class="field">
-									<label class="field__label" for="acct-city">City</label>
-									<input
-										class="field__input"
-										id="acct-city"
-										name="city"
-										type="text"
-										maxlength="100"
-										autocomplete="address-level2"
-										required
-									/>
-									<p class="note note--wrong" data-field-error hidden></p>
-								</div>
-								<div class="field">
-									<label class="field__label" for="acct-pincode">PIN code</label>
-									<input
-										class="field__input"
-										id="acct-pincode"
-										name="pincode"
-										type="text"
-										inputmode="numeric"
-										maxlength="6"
-										autocomplete="postal-code"
-									/>
-									<p class="note note--wrong" data-field-error hidden></p>
-								</div>
-								<div class="field">
-									<label class="field__label" for="acct-lang">Preferred language</label>
-									<select class="field__input" id="acct-lang" name="language">
-										<option value="">No preference</option>
-										{LANGUAGES.map(([v, l]) => <option value={v}>{l}</option>)}
-										<option value="other">Another language</option>
-									</select>
-									<p class="note note--wrong" data-field-error hidden></p>
-								</div>
-								<div class="field" data-lang-other hidden>
-									<label class="field__label" for="acct-lang-other"
-										>Which language</label
-									>
-									<input
-										class="field__input"
-										id="acct-lang-other"
-										name="languageOther"
-										type="text"
-										maxlength="40"
-									/>
-									<p class="note note--wrong" data-field-error hidden></p>
-								</div>
-							</section>
-
-							<section class="block">
-								<h2 class="block__title">How we reach you</h2>
-								<div class="field">
-									<label class="field__label" for="acct-phone">Phone</label>
-									<input
-										class="field__input"
-										id="acct-phone"
-										name="phone"
-										type="tel"
-										autocomplete="tel"
-										placeholder="+91 98765 43210"
-									/>
-									<p class="note">
-										With the country code. Leave it empty if you would rather we only
-										wrote.
-									</p>
-									<p class="note note--wrong" data-field-error hidden></p>
-								</div>
-								<fieldset class="set">
-									<legend class="field__label">You are happy to hear from us by</legend>
-									<label class="check">
-										<input type="checkbox" name="consentWhatsapp" />
-										<span>WhatsApp</span>
-									</label>
-									<label class="check">
-										<input type="checkbox" name="consentSms" />
-										<span>SMS</span>
-									</label>
-									<label class="check">
-										<input type="checkbox" name="consentEmail" />
-										<span>Email</span>
-									</label>
-								</fieldset>
-							</section>
-
-							<section class="block">
-								<h2 class="block__title">What you are here for</h2>
-								<fieldset class="set">
-									<legend class="u-visually-hidden">The areas you want</legend>
-									{
-										PILLARS.map(([v, l, accent]) => (
-											<label class="check check--area" data-accent={accent}>
-												<input type="checkbox" name="interests" value={v} />
-												<span>{l}</span>
-											</label>
-										))
-									}
-								</fieldset>
-							</section>
-						</div>
-
-						<section class="block block--wide">
-							<h2 class="block__title">Where else to find you</h2>
+						<div
+							class="view"
+							role="tabpanel"
+							id="view-details"
+							aria-labelledby="tab-details"
+							tabindex="0"
+							data-view="details"
+							hidden
+						>
 							<p class="held__note">
-								Optional, and shown on your profile. A handle or a whole address &mdash;
-								we will tidy it either way. Leave one empty to remove it.
+								Everything on our side of the record. If a line is wrong, change it
+								&mdash; nobody has to approve it.
 							</p>
-							<div class="linkfields">
+							<div class="spread">
 								{
-									LINKS.map(([id, label, prefix]) => (
-										<div class="field" data-link-field={id}>
-											<label class="field__label" for={`acct-link-${id}`}>
-												{label}
-											</label>
-											<div class="linkfields__row">
-												{prefix && <span class="linkfields__prefix">{prefix}</span>}
-												<input
-													class="field__input"
-													id={`acct-link-${id}`}
-													name={`link_${id}`}
-													type="text"
-													maxlength="200"
-													autocomplete="off"
-													spellcheck="false"
-												/>
-											</div>
-											<p class="note note--wrong" data-field-error hidden />
-										</div>
+									[
+										['you', 'Who you are'],
+										['place', 'Where you are'],
+										['reach', 'How we reach you'],
+										['guardian', 'Your parent or guardian'],
+										['record', 'For the record'],
+									].map(([key, title]) => (
+										<section class="block" data-group={key} hidden>
+											<h3 class="block__title">{title}</h3>
+											<dl class="facts">
+												{FACTS[key as keyof typeof FACTS].map(([id, label]) => (
+													<div class="fact" data-fact={id} hidden>
+														<dt class="fact__label">{label}</dt>
+														<dd class="fact__value" data-value={id} />
+													</div>
+												))}
+											</dl>
+										</section>
 									))
 								}
 							</div>
-						</section>
-
-						<p class="note note--wrong" data-edit-error role="alert" hidden></p>
-
-						<div class="acct__actions">
-							<button class="btn" type="submit" data-edit-save>Save changes</button>
-							<button class="linkish" type="button" data-edit-cancel>Cancel</button>
 						</div>
-					</form>
-				</section>
 
-				<section data-panel="fail" hidden>
-					<header class="acct__mast">
-						<p class="acct__eyebrow">Your account</p>
-						<h1 class="acct__title">That did not work.</h1>
-						<p class="acct__lede" data-fail-note>Something went wrong at our end.</p>
-					</header>
-					<div class="acct__prose">
-						<p>
-							Try again in a moment. If it keeps happening, write to{' '}
-							<a class="acct__link" href="mailto:hello@itti.org.in">hello@itti.org.in</a
-							> and we will sort it out by hand.
-						</p>
-						<p><button class="linkish" type="button" data-retry>Start again</button></p>
+						<div
+							class="view"
+							role="tabpanel"
+							id="view-account"
+							aria-labelledby="tab-account"
+							tabindex="0"
+							data-view="account"
+							hidden
+						>
+							<footer class="acct__foot">
+								<p>
+									<strong>Your email address</strong> is what signs you in and where the receipt
+									went, so it is not something this page will change under you. Write to <a
+										class="acct__link"
+										href="mailto:hello@itti.org.in">hello@itti.org.in</a
+									> and we will move it.
+								</p>
+								<p>
+									<strong>To be erased entirely</strong>, write to the same address and
+									Anuja Bali will do it &mdash; not a button that cannot be undone. What
+									we hold and why is set out in <a class="acct__link" href="/privacy"
+										>What we hold, and why</a
+									>.
+								</p>
+							</footer>
+							<div class="acct__actions">
+								<button class="linkish" type="button" data-signout>Sign out</button>
+							</div>
+						</div>
 					</div>
+
+					<!-- The same groups in the same order, now editable. -->
+					<section data-panel="edit" hidden>
+						<header class="acct__mast">
+							<p class="acct__eyebrow">Your account</p>
+							<h1 class="acct__title">Change your details.</h1>
+							<p class="acct__lede">
+								Nobody has to approve any of this. It takes effect the moment you save.
+							</p>
+						</header>
+
+						<form data-edit-form novalidate>
+							<div class="spread">
+								<section class="block block--wide">
+									<h2 class="block__title">The colour of your account</h2>
+									<p class="held__note">
+										The Foundation's own teal, or the colour of one of the three things
+										we work on.
+									</p>
+									<fieldset class="set">
+										<legend class="u-visually-hidden">Choose a colour</legend>
+										<div class="swatches">
+											{
+												[
+													['teal', 'The mark'],
+													['ochre', 'Neurodivergence'],
+													['rose', 'Cancer Care'],
+													['sage', 'CLAW'],
+												].map(([v, l]) => (
+													<label class="swatch" data-accent={v}>
+														<input type="radio" name="accent" value={v} />
+														<span class="swatch__chip" aria-hidden="true" />
+														<span class="swatch__name">{l}</span>
+													</label>
+												))
+											}
+										</div>
+									</fieldset>
+								</section>
+
+								<section class="block block--wide">
+									<h2 class="block__title">In your own words</h2>
+									<div class="field">
+										<label class="field__label" for="acct-bio">
+											Anything you would like people here to know
+										</label>
+										<textarea
+											class="field__input field__input--bio"
+											id="acct-bio"
+											name="bio"
+											rows="4"
+											maxlength="600"
+											placeholder="What brings you here, what you care about, what you are working on."
+										></textarea>
+										<p class="note"><span data-bio-count>0</span> of 600</p>
+										<p class="note note--wrong" data-field-error hidden></p>
+									</div>
+								</section>
+
+								<section class="block">
+									<h2 class="block__title">Who you are</h2>
+									<div class="field">
+										<label class="field__label" for="acct-name">Name</label>
+										<input
+											class="field__input"
+											id="acct-name"
+											name="fullName"
+											type="text"
+											maxlength="120"
+											autocomplete="name"
+											required
+										/>
+										<p class="note note--wrong" data-field-error hidden></p>
+									</div>
+									<div class="field">
+										<label class="field__label" for="acct-role">You are</label>
+										<select class="field__input" id="acct-role" name="role" required>
+											{ROLES.map(([v, l]) => <option value={v}>{l}</option>)}
+										</select>
+										<p class="note note--wrong" data-field-error hidden></p>
+									</div>
+									<div class="field">
+										<label class="field__label" for="acct-dob">Date of birth</label>
+										<input
+											class="field__input"
+											id="acct-dob"
+											name="dateOfBirth"
+											type="date"
+										/>
+										<p class="note note--wrong" data-field-error hidden></p>
+									</div>
+									<div class="field">
+										<label class="field__label" for="acct-gender">Gender</label>
+										<select class="field__input" id="acct-gender" name="gender">
+											{GENDERS.map(([v, l]) => <option value={v}>{l}</option>)}
+										</select>
+										<p class="note note--wrong" data-field-error hidden></p>
+									</div>
+									<div class="field" data-gender-other hidden>
+										<label class="field__label" for="acct-gender-other"
+											>In your own words</label
+										>
+										<input
+											class="field__input"
+											id="acct-gender-other"
+											name="genderSelfDescribed"
+											type="text"
+											maxlength="60"
+										/>
+										<p class="note note--wrong" data-field-error hidden></p>
+									</div>
+								</section>
+
+								<section class="block">
+									<h2 class="block__title">Where you are</h2>
+									<div class="field">
+										<label class="field__label" for="acct-city">City</label>
+										<input
+											class="field__input"
+											id="acct-city"
+											name="city"
+											type="text"
+											maxlength="100"
+											autocomplete="address-level2"
+											required
+										/>
+										<p class="note note--wrong" data-field-error hidden></p>
+									</div>
+									<div class="field">
+										<label class="field__label" for="acct-pincode">PIN code</label>
+										<input
+											class="field__input"
+											id="acct-pincode"
+											name="pincode"
+											type="text"
+											inputmode="numeric"
+											maxlength="6"
+											autocomplete="postal-code"
+										/>
+										<p class="note note--wrong" data-field-error hidden></p>
+									</div>
+									<div class="field">
+										<label class="field__label" for="acct-lang"
+											>Preferred language</label
+										>
+										<select class="field__input" id="acct-lang" name="language">
+											<option value="">No preference</option>
+											{LANGUAGES.map(([v, l]) => <option value={v}>{l}</option>)}
+											<option value="other">Another language</option>
+										</select>
+										<p class="note note--wrong" data-field-error hidden></p>
+									</div>
+									<div class="field" data-lang-other hidden>
+										<label class="field__label" for="acct-lang-other"
+											>Which language</label
+										>
+										<input
+											class="field__input"
+											id="acct-lang-other"
+											name="languageOther"
+											type="text"
+											maxlength="40"
+										/>
+										<p class="note note--wrong" data-field-error hidden></p>
+									</div>
+								</section>
+
+								<section class="block">
+									<h2 class="block__title">How we reach you</h2>
+									<div class="field">
+										<label class="field__label" for="acct-phone">Phone</label>
+										<input
+											class="field__input"
+											id="acct-phone"
+											name="phone"
+											type="tel"
+											autocomplete="tel"
+											placeholder="+91 98765 43210"
+										/>
+										<p class="note">
+											With the country code. Leave it empty if you would rather we only
+											wrote.
+										</p>
+										<p class="note note--wrong" data-field-error hidden></p>
+									</div>
+									<fieldset class="set">
+										<legend class="field__label"
+											>You are happy to hear from us by</legend
+										>
+										<label class="check">
+											<input type="checkbox" name="consentWhatsapp" />
+											<span>WhatsApp</span>
+										</label>
+										<label class="check">
+											<input type="checkbox" name="consentSms" />
+											<span>SMS</span>
+										</label>
+										<label class="check">
+											<input type="checkbox" name="consentEmail" />
+											<span>Email</span>
+										</label>
+									</fieldset>
+								</section>
+
+								<section class="block">
+									<h2 class="block__title">What you are here for</h2>
+									<fieldset class="set">
+										<legend class="u-visually-hidden">The areas you want</legend>
+										{
+											PILLARS.map(([v, l, accent]) => (
+												<label class="check check--area" data-accent={accent}>
+													<input type="checkbox" name="interests" value={v} />
+													<span>{l}</span>
+												</label>
+											))
+										}
+									</fieldset>
+								</section>
+							</div>
+
+							<section class="block block--wide">
+								<h2 class="block__title">Where else to find you</h2>
+								<p class="held__note">
+									Optional, and shown on your profile. A handle or a whole address
+									&mdash; we will tidy it either way. Leave one empty to remove it.
+								</p>
+								<div class="linkfields">
+									{
+										LINKS.map(([id, label, prefix]) => (
+											<div class="field" data-link-field={id}>
+												<label class="field__label" for={`acct-link-${id}`}>
+													{label}
+												</label>
+												<div class="linkfields__row">
+													{prefix && <span class="linkfields__prefix">{prefix}</span>}
+													<input
+														class="field__input"
+														id={`acct-link-${id}`}
+														name={`link_${id}`}
+														type="text"
+														maxlength="200"
+														autocomplete="off"
+														spellcheck="false"
+													/>
+												</div>
+												<p class="note note--wrong" data-field-error hidden />
+											</div>
+										))
+									}
+								</div>
+							</section>
+
+							<p class="note note--wrong" data-edit-error role="alert" hidden></p>
+
+							<div class="acct__actions">
+								<button class="btn" type="submit" data-edit-save>Save changes</button>
+								<button class="linkish" type="button" data-edit-cancel>Cancel</button>
+							</div>
+						</form>
+					</section>
+
+					<section data-panel="fail" hidden>
+						<header class="acct__mast">
+							<p class="acct__eyebrow">Your account</p>
+							<h1 class="acct__title">That did not work.</h1>
+							<p class="acct__lede" data-fail-note>Something went wrong at our end.</p>
+						</header>
+						<div class="acct__prose">
+							<p>
+								Try again in a moment. If it keeps happening, write to{' '}
+								<a class="acct__link" href="mailto:hello@itti.org.in"
+									>hello@itti.org.in</a
+								> and we will sort it out by hand.
+							</p>
+							<p>
+								<button class="linkish" type="button" data-retry>Start again</button>
+							</p>
+						</div>
+					</section>
 				</section>
 			</div>
 		</main>
-
 		<SiteFooter />
 	</div>
-</Base>
 
-<style>
-	/* The ground reaches the bottom of the window even when the record is
+	<style>
+		/* The ground reaches the bottom of the window even when the record is
 	   short, so the footer never sits on the dark behind the page. */
-	.page {
-		/* A 100vw child is wider than the content box when a scrollbar is
+		.page {
+			/* A 100vw child is wider than the content box when a scrollbar is
 		   present, and that surplus must be clipped rather than scrolled. */
-		overflow-x: clip;
-		display: flex;
-		flex-direction: column;
-		min-height: 100svh;
-		background: var(--cream);
-	}
+			overflow-x: clip;
+			display: flex;
+			flex-direction: column;
+			min-height: 100svh;
+			background: var(--cream);
+		}
 
-	.acct {
-		flex: 1 0 auto;
-		width: 100%;
-		max-width: 58rem;
-		margin: 0 auto;
-		/* Only the nav's height at the top: the crown carries its own space and
+		.acct {
+			flex: 1 0 auto;
+			width: 100%;
+			max-width: 58rem;
+			margin: 0 auto;
+			/* Only the nav's height at the top: the crown carries its own space and
 		   should meet the bar rather than float below it. Panels without a
 		   crown add the breathing room back themselves. */
-		padding: var(--nav-h) var(--gutter) clamp(3rem, 8vh, 5rem);
-	}
+			padding: var(--nav-h) var(--gutter) clamp(3rem, 8vh, 5rem);
+		}
 
-	/* Every panel except the record opens with words, and words need air. */
-	[data-panel]:not([data-panel='record']) .acct__mast,
-	[data-panel]:not([data-panel='record']) > form:first-child {
-		padding-top: clamp(2.5rem, 7vh, 4.5rem);
-	}
+		/* Every panel except the record opens with words, and words need air. */
+		[data-panel]:not([data-panel='record']) .acct__mast,
+		[data-panel]:not([data-panel='record']) > form:first-child {
+			padding-top: clamp(2.5rem, 7vh, 4.5rem);
+		}
 
-	/* ── The masthead ────────────────────────────────────────────────────── */
+		/* ── The masthead ────────────────────────────────────────────────────── */
 
-	/* Their name, at the size the home page gives its own lines. A record that
+		/* Their name, at the size the home page gives its own lines. A record that
 	   opens with a heading about somebody reads as a file on them; one that
 	   opens with their name reads as theirs. */
-	.acct__mast {
-		padding-bottom: clamp(2rem, 5vh, 3rem);
-		border-bottom: 1px solid var(--rule);
-		margin-bottom: clamp(2rem, 5vh, 3rem);
-	}
+		.acct__mast {
+			padding-bottom: clamp(2rem, 5vh, 3rem);
+			border-bottom: 1px solid var(--rule);
+			margin-bottom: clamp(2rem, 5vh, 3rem);
+		}
 
-	.acct__eyebrow {
-		font-family: var(--face-cinzel);
-		font-size: 0.6875rem;
-		font-weight: 500;
-		letter-spacing: 0.18em;
-		text-transform: uppercase;
-		color: var(--teal);
-		margin: 0 0 1rem;
-	}
+		.acct__eyebrow {
+			font-family: var(--face-cinzel);
+			font-size: 0.6875rem;
+			font-weight: 500;
+			letter-spacing: 0.18em;
+			text-transform: uppercase;
+			color: var(--teal);
+			margin: 0 0 1rem;
+		}
 
-	.acct__title {
-		margin: 0;
-		font-family: var(--face-bodoni);
-		font-size: clamp(2.25rem, 5.2vw, 3.5rem);
-		font-weight: 450;
-		line-height: 1.02;
-		letter-spacing: -0.02em;
-		color: var(--ink);
-	}
+		.acct__title {
+			margin: 0;
+			font-family: var(--face-bodoni);
+			font-size: clamp(2.25rem, 5.2vw, 3.5rem);
+			font-weight: 450;
+			line-height: 1.02;
+			letter-spacing: -0.02em;
+			color: var(--ink);
+		}
 
-	.acct__lede {
-		margin: 1rem 0 0;
-		max-width: 34rem;
-		font-size: 1.125rem;
-		line-height: 1.55;
-		color: var(--ink-soft);
-	}
+		.acct__lede {
+			margin: 1rem 0 0;
+			max-width: 34rem;
+			font-size: 1.125rem;
+			line-height: 1.55;
+			color: var(--ink-soft);
+		}
 
-	/* The three areas, carried up beside the name as marks rather than left as
+		/* The three areas, carried up beside the name as marks rather than left as
 	   a line of text further down. It is the fastest true thing about somebody
 	   on this page. */
-	.acct__marks {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.5rem 1.25rem;
-		margin-top: 1.5rem;
-	}
+		.acct__marks {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.5rem 1.25rem;
+			margin-top: 1.5rem;
+		}
 
-	.mark {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.5rem;
-		font-family: var(--face-cinzel);
-		font-size: 0.6875rem;
-		font-weight: 600;
-		letter-spacing: 0.14em;
-		text-transform: uppercase;
-		color: var(--ink-faint);
-	}
+		.mark {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.5rem;
+			font-family: var(--face-cinzel);
+			font-size: 0.6875rem;
+			font-weight: 600;
+			letter-spacing: 0.14em;
+			text-transform: uppercase;
+			color: var(--ink-faint);
+		}
 
-	.mark::before {
-		content: '';
-		width: 0.4rem;
-		height: 0.4rem;
-		border-radius: 999px;
-		background: var(--accent, var(--teal));
-	}
+		.mark::before {
+			content: '';
+			width: 0.4rem;
+			height: 0.4rem;
+			border-radius: 999px;
+			background: var(--accent, var(--teal));
+		}
 
-	[data-accent='ochre'] {
-		--accent: var(--ochre);
-		--accent-ink: var(--ochre-ink);
-	}
-	[data-accent='rose'] {
-		--accent: var(--rose);
-		--accent-ink: var(--rose-ink);
-	}
-	[data-accent='sage'] {
-		--accent: var(--sage);
-		--accent-ink: var(--sage-ink);
-	}
-	[data-accent='teal'] {
-		--accent: var(--teal);
-		--accent-ink: var(--teal);
-	}
+		[data-accent='ochre'] {
+			--accent: var(--ochre);
+			--accent-ink: var(--ochre-ink);
+		}
+		[data-accent='rose'] {
+			--accent: var(--rose);
+			--accent-ink: var(--rose-ink);
+		}
+		[data-accent='sage'] {
+			--accent: var(--sage);
+			--accent-ink: var(--sage-ink);
+		}
+		[data-accent='teal'] {
+			--accent: var(--teal);
+			--accent-ink: var(--teal);
+		}
 
-	/* ── The crown ───────────────────────────────────────────────────────── */
+		/* ── The crown ───────────────────────────────────────────────────────── */
 
-	/* Edge to edge whatever the column does. The page is a centred measure and
+		/* Edge to edge whatever the column does. The page is a centred measure and
 	   this is the one thing that should ignore it. */
-	.crown {
-		position: relative;
-		width: 100vw;
-		margin-left: calc(50% - 50vw);
-		margin-bottom: clamp(2.75rem, 7vh, 4.5rem);
-		padding: clamp(3.5rem, 9vh, 6rem) 0 clamp(2.5rem, 6vh, 4rem);
-		overflow: clip;
-		isolation: isolate;
-		color: var(--cream);
-		/* Depth rather than a flat fill: the brand teal falling away to its own
+		.crown {
+			position: relative;
+			width: 100vw;
+			margin-left: calc(50% - 50vw);
+			margin-bottom: clamp(2.75rem, 7vh, 4.5rem);
+			padding: clamp(3.5rem, 9vh, 6rem) 0 clamp(2.5rem, 6vh, 4rem);
+			overflow: clip;
+			isolation: isolate;
+			color: var(--cream);
+			/* Depth rather than a flat fill: the brand teal falling away to its own
 		   abyss, lit from the upper left so the band has a light source. */
-		/* Two stops mixed from one token, so a new colour is one line and never a
+			/* Two stops mixed from one token, so a new colour is one line and never a
 		   new hex. `--lit` is the light source, `--deep` the ground it falls to. */
-		--lit: var(--teal);
-		--deep: var(--teal-deep);
-		--floor: var(--teal-abyss);
-		background:
-			radial-gradient(
-				118% 140% at 12% 0%,
-				color-mix(in srgb, var(--lit) 72%, transparent) 0%,
-				transparent 62%
-			),
-			linear-gradient(160deg, var(--deep) 0%, var(--floor) 68%);
-	}
+			--lit: var(--teal);
+			--deep: var(--teal-deep);
+			--floor: var(--teal-abyss);
+			background:
+				radial-gradient(
+					118% 140% at 12% 0%,
+					color-mix(in srgb, var(--lit) 72%, transparent) 0%,
+					transparent 62%
+				),
+				linear-gradient(160deg, var(--deep) 0%, var(--floor) 68%);
+		}
 
-	.crown[data-accent='ochre'] {
-		--lit: var(--ochre);
-		--deep: color-mix(in srgb, var(--ochre) 34%, var(--ink-deep));
-		--floor: color-mix(in srgb, var(--ochre) 12%, var(--ink-deep));
-	}
+		.crown[data-accent='ochre'] {
+			--lit: var(--ochre);
+			--deep: color-mix(in srgb, var(--ochre) 34%, var(--ink-deep));
+			--floor: color-mix(in srgb, var(--ochre) 12%, var(--ink-deep));
+		}
 
-	.crown[data-accent='rose'] {
-		--lit: var(--rose);
-		--deep: color-mix(in srgb, var(--rose) 34%, var(--ink-deep));
-		--floor: color-mix(in srgb, var(--rose) 12%, var(--ink-deep));
-	}
+		.crown[data-accent='rose'] {
+			--lit: var(--rose);
+			--deep: color-mix(in srgb, var(--rose) 34%, var(--ink-deep));
+			--floor: color-mix(in srgb, var(--rose) 12%, var(--ink-deep));
+		}
 
-	.crown[data-accent='sage'] {
-		--lit: var(--sage);
-		--deep: color-mix(in srgb, var(--sage) 34%, var(--ink-deep));
-		--floor: color-mix(in srgb, var(--sage) 12%, var(--ink-deep));
-	}
+		.crown[data-accent='sage'] {
+			--lit: var(--sage);
+			--deep: color-mix(in srgb, var(--sage) 34%, var(--ink-deep));
+			--floor: color-mix(in srgb, var(--sage) 12%, var(--ink-deep));
+		}
 
-	/* The mark, very large and very quiet, bleeding off the right edge. An
+		/* The mark, very large and very quiet, bleeding off the right edge. An
 	   ornament the Foundation owns, in place of a photograph it borrowed. */
-	/* A watermark, not a logo: large enough to be a texture in the field and
+		/* A watermark, not a logo: large enough to be a texture in the field and
 	   faint enough that it is felt rather than read. It bleeds off the right so
 	   it never resolves into a badge sitting on the band. */
-	.crown__ornament {
-		position: absolute;
-		top: 50%;
-		right: -8%;
-		transform: translateY(-52%);
-		display: block;
-		color: var(--cream);
-		opacity: 0.07;
-		pointer-events: none;
-	}
+		.crown__ornament {
+			position: absolute;
+			top: 50%;
+			right: -8%;
+			transform: translateY(-52%);
+			display: block;
+			color: var(--cream);
+			opacity: 0.07;
+			pointer-events: none;
+		}
 
-	/* The grain the whole site is laid over, so this band sits in the same air
+		/* The grain the whole site is laid over, so this band sits in the same air
 	   as the plates rather than looking like flat CSS. */
-	.crown__grain {
-		position: absolute;
-		inset: 0;
-		opacity: 0.3;
-		mix-blend-mode: overlay;
-		pointer-events: none;
-		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='1 0 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
-	}
+		.crown__grain {
+			position: absolute;
+			inset: 0;
+			opacity: 0.3;
+			mix-blend-mode: overlay;
+			pointer-events: none;
+			background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='1 0 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+		}
 
-	/* A hairline closing the band, in the same colour lighting it. */
-	.crown__rule {
-		position: absolute;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		height: 2px;
-		background: var(--lit, var(--teal));
-		opacity: 0.9;
-	}
+		/* A hairline closing the band, in the same colour lighting it. */
+		.crown__rule {
+			position: absolute;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			height: 2px;
+			background: var(--lit, var(--teal));
+			opacity: 0.9;
+		}
 
-	.crown__id {
-		position: relative;
-		width: 100%;
-		max-width: 58rem;
-		margin: 0 auto;
-		padding: 0 var(--gutter);
-	}
+		.crown__id {
+			position: relative;
+			width: 100%;
+			max-width: 58rem;
+			margin: 0 auto;
+			padding: 0 var(--gutter);
+		}
 
-	/* Rules either side of the label, the way a plate is captioned in the arc. */
-	.crown__eyebrow {
-		display: flex;
-		align-items: center;
-		gap: 0.9rem;
-		margin: 0 0 1.1rem;
-		font-family: var(--face-cinzel);
-		font-size: 0.6875rem;
-		font-weight: 500;
-		letter-spacing: 0.2em;
-		text-transform: uppercase;
-		color: color-mix(in srgb, var(--cream) 82%, transparent);
-	}
+		/* Rules either side of the label, the way a plate is captioned in the arc. */
+		.crown__eyebrow {
+			display: flex;
+			align-items: center;
+			gap: 0.9rem;
+			margin: 0 0 1.1rem;
+			font-family: var(--face-cinzel);
+			font-size: 0.6875rem;
+			font-weight: 500;
+			letter-spacing: 0.2em;
+			text-transform: uppercase;
+			color: color-mix(in srgb, var(--cream) 82%, transparent);
+		}
 
-	.crown__eyebrow::after {
-		content: '';
-		flex: 1;
-		max-width: 6rem;
-		height: 1px;
-		background: color-mix(in srgb, var(--cream) 34%, transparent);
-	}
+		.crown__eyebrow::after {
+			content: '';
+			flex: 1;
+			max-width: 6rem;
+			height: 1px;
+			background: color-mix(in srgb, var(--cream) 34%, transparent);
+		}
 
-	.crown__name {
-		margin: 0;
-		font-family: var(--face-bodoni);
-		font-size: clamp(2.5rem, 6.4vw, 4.25rem);
-		font-weight: 450;
-		line-height: 0.98;
-		letter-spacing: -0.025em;
-		color: var(--cream);
-	}
+		.crown__name {
+			margin: 0;
+			font-family: var(--face-bodoni);
+			font-size: clamp(2.5rem, 6.4vw, 4.25rem);
+			font-weight: 450;
+			line-height: 0.98;
+			letter-spacing: -0.025em;
+			color: var(--cream);
+		}
 
-	.crown__meta {
-		margin: 1rem 0 0;
-		font-size: 1.0625rem;
-		letter-spacing: 0.01em;
-		color: color-mix(in srgb, var(--cream) 86%, transparent);
-	}
+		.crown__meta {
+			margin: 1rem 0 0;
+			font-size: 1.0625rem;
+			letter-spacing: 0.01em;
+			color: color-mix(in srgb, var(--cream) 86%, transparent);
+		}
 
-	/* ── The bar ─────────────────────────────────────────────────────────── */
+		/* ── The bar ─────────────────────────────────────────────────────────── */
 
-	/* Not boxes, and not pills: labels on a rule, with the live one carrying a
+		/* Not boxes, and not pills: labels on a rule, with the live one carrying a
 	   weight of colour under it. The rule is the constant, the marker moves. */
-	.tabs {
-		display: flex;
-		gap: clamp(1.25rem, 3vw, 2.25rem);
-		margin: 0 0 clamp(2rem, 5vh, 3rem);
-		border-bottom: 1px solid var(--rule);
-	}
+		/* Tabs left, the one action right, both on the same rule. The bar does the
+		   work the lonely button row at the foot was doing, so the profile stops
+		   ending on an empty stretch. */
+		.bar {
+			display: flex;
+			align-items: flex-end;
+			justify-content: space-between;
+			gap: 1.5rem;
+			margin: 0 0 clamp(2rem, 5vh, 3rem);
+			border-bottom: 1px solid var(--rule);
+		}
 
-	.tab {
-		position: relative;
-		padding: 0 0 0.85rem;
-		border: 0;
-		background: none;
-		font-family: var(--face-cinzel);
-		font-size: 0.75rem;
-		font-weight: 600;
-		letter-spacing: 0.15em;
-		text-transform: uppercase;
-		color: var(--ink-faint);
-		cursor: pointer;
-		transition: color 200ms var(--ease);
-	}
+		.tabs {
+			display: flex;
+			gap: clamp(1.25rem, 3vw, 2.25rem);
+		}
 
-	.tab::after {
-		content: '';
-		position: absolute;
-		left: 0;
-		right: 0;
-		bottom: -1px;
-		height: 2px;
-		background: var(--teal);
-		transform: scaleX(0);
-		transform-origin: left;
-		transition: transform 260ms var(--ease);
-	}
+		@media (max-width: 34rem) {
+			.bar {
+				flex-wrap: wrap;
+			}
 
-	.tab:hover {
-		color: var(--ink-soft);
-	}
+			.btn--quiet {
+				margin: 0 0 0.75rem;
+			}
+		}
 
-	.tab[aria-selected='true'] {
-		color: var(--ink);
-	}
+		.tab {
+			position: relative;
+			padding: 0 0 0.85rem;
+			border: 0;
+			background: none;
+			font-family: var(--face-cinzel);
+			font-size: 0.75rem;
+			font-weight: 600;
+			letter-spacing: 0.15em;
+			text-transform: uppercase;
+			color: var(--ink-faint);
+			cursor: pointer;
+			transition: color 200ms var(--ease);
+		}
 
-	.tab[aria-selected='true']::after {
-		transform: scaleX(1);
-	}
+		.tab::after {
+			content: '';
+			position: absolute;
+			left: 0;
+			right: 0;
+			bottom: -1px;
+			height: 2px;
+			background: var(--teal);
+			transform: scaleX(0);
+			transform-origin: left;
+			transition: transform 260ms var(--ease);
+		}
 
-	.tab:focus-visible {
-		outline: 2px solid var(--teal);
-		outline-offset: 3px;
-	}
+		.tab:hover {
+			color: var(--ink-soft);
+		}
 
-	/* A panel is focusable so the keyboard lands in it, but it is not a control
+		.tab[aria-selected='true'] {
+			color: var(--ink);
+		}
+
+		.tab[aria-selected='true']::after {
+			transform: scaleX(1);
+		}
+
+		.tab:focus-visible {
+			outline: 2px solid var(--teal);
+			outline-offset: 3px;
+		}
+
+		/* A panel is focusable so the keyboard lands in it, but it is not a control
 	   and should not draw a ring when it is merely opened. */
-	.view:focus {
-		outline: none;
-	}
+		.view:focus {
+			outline: none;
+		}
 
-	.view:focus-visible {
-		outline: 2px solid var(--teal);
-		outline-offset: 6px;
-	}
+		.view:focus-visible {
+			outline: 2px solid var(--teal);
+			outline-offset: 6px;
+		}
 
-	/* ── Choosing a colour ───────────────────────────────────────────────── */
+		/* ── Choosing a colour ───────────────────────────────────────────────── */
 
-	.swatches {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 1.5rem;
-	}
+		.swatches {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 1.5rem;
+		}
 
-	.swatch {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.6rem;
-		cursor: pointer;
-		font-size: 1rem;
-		color: var(--ink-soft);
-	}
+		.swatch {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.6rem;
+			cursor: pointer;
+			font-size: 1rem;
+			color: var(--ink-soft);
+		}
 
-	.swatch input {
-		position: absolute;
-		opacity: 0;
-		pointer-events: none;
-	}
+		.swatch input {
+			position: absolute;
+			opacity: 0;
+			pointer-events: none;
+		}
 
-	/* The choice is the colour itself, so the control is a disc of it rather
+		/* The choice is the colour itself, so the control is a disc of it rather
 	   than a radio button with a colour name beside it. */
-	.swatch__chip {
-		width: 1.6rem;
-		height: 1.6rem;
-		border-radius: 999px;
-		background: var(--accent, var(--teal));
-		box-shadow: 0 0 0 1px color-mix(in srgb, var(--ink) 14%, transparent);
-		transition:
-			box-shadow 200ms var(--ease),
-			transform 200ms var(--ease);
-	}
+		.swatch__chip {
+			width: 1.6rem;
+			height: 1.6rem;
+			border-radius: 999px;
+			background: var(--accent, var(--teal));
+			box-shadow: 0 0 0 1px color-mix(in srgb, var(--ink) 14%, transparent);
+			transition:
+				box-shadow 200ms var(--ease),
+				transform 200ms var(--ease);
+		}
 
-	.swatch:hover .swatch__chip {
-		transform: scale(1.06);
-	}
+		.swatch:hover .swatch__chip {
+			transform: scale(1.06);
+		}
 
-	.swatch:has(input:checked) .swatch__chip {
-		box-shadow:
-			0 0 0 2px var(--cream),
-			0 0 0 4px var(--accent, var(--teal));
-	}
+		.swatch:has(input:checked) .swatch__chip {
+			box-shadow:
+				0 0 0 2px var(--cream),
+				0 0 0 4px var(--accent, var(--teal));
+		}
 
-	.swatch:has(input:checked) .swatch__name {
-		color: var(--ink);
-	}
+		.swatch:has(input:checked) .swatch__name {
+			color: var(--ink);
+		}
 
-	.swatch:has(input:focus-visible) .swatch__chip {
-		outline: 2px solid var(--teal);
-		outline-offset: 5px;
-	}
+		.swatch:has(input:focus-visible) .swatch__chip {
+			outline: 2px solid var(--teal);
+			outline-offset: 5px;
+		}
 
-	/* ── The profile ─────────────────────────────────────────────────────── */
+		/* ── The profile ─────────────────────────────────────────────────────── */
 
-	/* No labels anywhere in this block. Labels are what make a page read as a
+		/* No labels anywhere in this block. Labels are what make a page read as a
 	   form, and none of this is a form: it is a face, a name, a sentence
 	   somebody wrote, and where else to find them. */
-	.profile {
-		display: grid;
-		gap: clamp(1.75rem, 4vh, 2.5rem);
-		padding-bottom: clamp(1rem, 3vh, 2rem);
-	}
+		.profile {
+			display: grid;
+			gap: clamp(1.75rem, 4vh, 2.5rem);
+			padding-bottom: clamp(1rem, 3vh, 2rem);
+		}
 
-	.profile__meta {
-		margin: 0.6rem 0 0;
-		font-size: 1.0625rem;
-		color: var(--ink-soft);
-	}
+		.profile__meta {
+			margin: 0.6rem 0 0;
+			font-size: 1.0625rem;
+			color: var(--ink-soft);
+		}
 
-	/* Their sentence, at reading size rather than at record size — the one
+		/* Their sentence, at reading size rather than at record size — the one
 	   thing on the page written by the person it is about. */
-	.profile__bio {
-		position: relative;
-		max-width: 36rem;
-		margin: 0;
-		padding-left: clamp(1.25rem, 3vw, 2rem);
-		font-size: clamp(1.1875rem, 1.6vw, 1.375rem);
-		line-height: 1.6;
-		color: var(--ink);
-	}
+		.profile__bio {
+			position: relative;
+			max-width: 36rem;
+			margin: 0;
+			padding-left: clamp(1.25rem, 3vw, 2rem);
+			font-size: clamp(1.1875rem, 1.6vw, 1.375rem);
+			line-height: 1.6;
+			color: var(--ink);
+		}
 
-	/* A rule down the side, the way a magazine sets a standfirst. It says these
+		/* A rule down the side, the way a magazine sets a standfirst. It says these
 	   are somebody's own words without needing to label them. */
-	.profile__bio::before {
-		content: '';
-		position: absolute;
-		left: 0;
-		top: 0.35em;
-		bottom: 0.35em;
-		width: 2px;
-		background: var(--teal);
-		opacity: 0.5;
-	}
+		.profile__bio::before {
+			content: '';
+			position: absolute;
+			left: 0;
+			top: 0.35em;
+			bottom: 0.35em;
+			width: 2px;
+			background: var(--teal);
+			opacity: 0.5;
+		}
 
-	.profile__invite {
-		max-width: 34rem;
-		margin: clamp(1.5rem, 4vh, 2.25rem) 0 0;
-		font-size: 1.0625rem;
-		line-height: 1.6;
-		color: var(--ink-faint);
-	}
+		.profile__invite {
+			max-width: 34rem;
+			margin: clamp(1.5rem, 4vh, 2.25rem) 0 0;
+			font-size: 1.0625rem;
+			line-height: 1.6;
+			color: var(--ink-faint);
+		}
 
-	.profile__marks {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.5rem 1.5rem;
-		margin: 0;
-	}
+		.profile__marks {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.5rem 1.5rem;
+			margin: 0;
+		}
 
-	/* Set as a line of places, not a row of buttons. */
-	.elsewhere {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.5rem 1.75rem;
-		margin: 0;
-		padding: 0;
-		list-style: none;
-	}
+		/* Set as a line of places, not a row of buttons. */
+		.elsewhere {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.5rem 1.75rem;
+			margin: 0;
+			padding: 0;
+			list-style: none;
+		}
 
-	.elsewhere__a {
-		display: inline-flex;
-		align-items: baseline;
-		gap: 0.5rem;
-		color: var(--ink-soft);
-		transition: color 180ms var(--ease);
-	}
+		.elsewhere__a {
+			display: inline-flex;
+			align-items: baseline;
+			gap: 0.5rem;
+			color: var(--ink-soft);
+			transition: color 180ms var(--ease);
+		}
 
-	.elsewhere__a:hover {
-		color: var(--teal);
-	}
+		.elsewhere__a:hover {
+			color: var(--teal);
+		}
 
-	.elsewhere__kind {
-		font-family: var(--face-cinzel);
-		font-size: 0.625rem;
-		font-weight: 600;
-		letter-spacing: 0.14em;
-		text-transform: uppercase;
-		color: var(--ink-faint);
-	}
+		.elsewhere__kind {
+			font-family: var(--face-cinzel);
+			font-size: 0.625rem;
+			font-weight: 600;
+			letter-spacing: 0.14em;
+			text-transform: uppercase;
+			color: var(--ink-faint);
+		}
 
-	.elsewhere__at {
-		font-size: 1rem;
-		border-bottom: 1px solid color-mix(in srgb, var(--ink-faint) 35%, transparent);
-	}
+		.elsewhere__at {
+			font-size: 1rem;
+			border-bottom: 1px solid color-mix(in srgb, var(--ink-faint) 35%, transparent);
+		}
 
-	.elsewhere__a:hover .elsewhere__at {
-		border-bottom-color: var(--teal);
-	}
+		.elsewhere__a:hover .elsewhere__at {
+			border-bottom-color: var(--teal);
+		}
 
-	.acct__actions--profile {
-		border-top: 0;
-		padding-top: 0;
-		margin-top: clamp(2rem, 5vh, 2.75rem);
-	}
+		.acct__actions--profile {
+			border-top: 0;
+			padding-top: 0;
+			margin-top: clamp(2rem, 5vh, 2.75rem);
+		}
 
-	/* ── What we hold ────────────────────────────────────────────────────── */
+		/* ── What we hold ────────────────────────────────────────────────────── */
 
-	/* Deliberately quieter than the profile above it. This half is ours — a
+		/* Deliberately quieter than the profile above it. This half is ours — a
 	   record, and allowed to look like one. */
-	.held {
-		position: relative;
-		width: 100vw;
-		margin-left: calc(50% - 50vw);
-		margin-top: 0;
-		padding: clamp(2.5rem, 6vh, 3.5rem) 0 clamp(2.75rem, 7vh, 4rem);
-		/* A second surface, a shade down from the page. Two grounds give the
+		.held {
+			position: relative;
+			width: 100vw;
+			margin-left: calc(50% - 50vw);
+			margin-top: 0;
+			padding: clamp(2.5rem, 6vh, 3.5rem) 0 clamp(2.75rem, 7vh, 4rem);
+			/* A second surface, a shade down from the page. Two grounds give the
 		   page depth where a single flat field reads as unfinished — and it
 		   separates their half from ours without a border round either. */
-		background: var(--cream-deep);
-		border-top: 1px solid var(--rule);
-		border-bottom: 1px solid var(--rule);
-	}
+			background: var(--cream-deep);
+			border-top: 1px solid var(--rule);
+			border-bottom: 1px solid var(--rule);
+		}
 
-	.held > * {
-		width: 100%;
-		max-width: 58rem;
-		margin-inline: auto;
-		padding-inline: var(--gutter);
-	}
+		.held > * {
+			width: 100%;
+			max-width: 58rem;
+			margin-inline: auto;
+			padding-inline: var(--gutter);
+		}
 
-	.held__title {
-		margin: 0;
-		font-family: var(--face-cinzel);
-		font-size: 0.75rem;
-		font-weight: 600;
-		letter-spacing: 0.16em;
-		text-transform: uppercase;
-		color: var(--ink-faint);
-	}
+		.held__title {
+			margin: 0;
+			font-family: var(--face-cinzel);
+			font-size: 0.75rem;
+			font-weight: 600;
+			letter-spacing: 0.16em;
+			text-transform: uppercase;
+			color: var(--ink-faint);
+		}
 
-	.held__note {
-		margin: 0.75rem 0 clamp(1.75rem, 4vh, 2.5rem);
-		max-width: 34rem;
-		font-size: 0.9375rem;
-		line-height: 1.6;
-		color: var(--ink-faint);
-	}
+		.held__note {
+			margin: 0.75rem 0 clamp(1.75rem, 4vh, 2.5rem);
+			max-width: 34rem;
+			font-size: 0.9375rem;
+			line-height: 1.6;
+			color: var(--ink-faint);
+		}
 
-	.block--wide {
-		grid-column: 1 / -1;
-	}
+		.block--wide {
+			grid-column: 1 / -1;
+		}
 
-	.field__input--bio {
-		border: 1px solid var(--rule);
-		padding: 0.75rem 0.9rem;
-		min-height: 7rem;
-		resize: vertical;
-		line-height: 1.6;
-	}
+		.field__input--bio {
+			border: 1px solid var(--rule);
+			padding: 0.75rem 0.9rem;
+			min-height: 7rem;
+			resize: vertical;
+			line-height: 1.6;
+		}
 
-	.field__input--bio:focus {
-		border-color: var(--teal);
-	}
+		.field__input--bio:focus {
+			border-color: var(--teal);
+		}
 
-	.linkfields {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
-		gap: 0 clamp(1.5rem, 3vw, 2.5rem);
-	}
+		.linkfields {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
+			gap: 0 clamp(1.5rem, 3vw, 2.5rem);
+		}
 
-	.linkfields__row {
-		display: flex;
-		align-items: baseline;
-		gap: 0.15rem;
-		border-bottom: 1px solid var(--rule);
-	}
+		.linkfields__row {
+			display: flex;
+			align-items: baseline;
+			gap: 0.15rem;
+			border-bottom: 1px solid var(--rule);
+		}
 
-	.linkfields__row:focus-within {
-		border-bottom-color: var(--teal);
-	}
+		.linkfields__row:focus-within {
+			border-bottom-color: var(--teal);
+		}
 
-	/* The part of the address nobody should have to type. */
-	.linkfields__prefix {
-		flex: none;
-		font-size: 0.9375rem;
-		color: var(--ink-faint);
-		white-space: nowrap;
-	}
+		/* The part of the address nobody should have to type. */
+		.linkfields__prefix {
+			flex: none;
+			font-size: 0.9375rem;
+			color: var(--ink-faint);
+			white-space: nowrap;
+		}
 
-	.linkfields__row .field__input {
-		border-bottom: 0;
-	}
+		.linkfields__row .field__input {
+			border-bottom: 0;
+		}
 
-	/* ── The record ──────────────────────────────────────────────────────── */
+		/* ── The record ──────────────────────────────────────────────────────── */
 
-	/* Two columns where there is room, so a record is a spread to glance over
+		/* Two columns where there is room, so a record is a spread to glance over
 	   rather than one long column to scroll. */
-	.spread {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(min(13rem, 100%), 1fr));
-		gap: clamp(1.75rem, 3.5vw, 2.75rem);
-		align-items: start;
-	}
+		.spread {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(min(13rem, 100%), 1fr));
+			gap: clamp(1.75rem, 3.5vw, 2.75rem);
+			align-items: start;
+		}
 
-	.block__title {
-		margin: 0 0 1rem;
-		font-family: var(--face-cinzel);
-		font-size: 0.75rem;
-		font-weight: 600;
-		letter-spacing: 0.16em;
-		text-transform: uppercase;
-		color: var(--teal);
-	}
+		.block__title {
+			margin: 0 0 1rem;
+			font-family: var(--face-cinzel);
+			font-size: 0.75rem;
+			font-weight: 600;
+			letter-spacing: 0.16em;
+			text-transform: uppercase;
+			color: var(--teal);
+		}
 
-	.facts {
-		margin: 0;
-		display: grid;
-	}
+		.facts {
+			margin: 0;
+			display: grid;
+		}
 
-	/* Stacked, and not ruled at all. A label beside a value with a line under it
+		/* Stacked, and not ruled at all. A label beside a value with a line under it
 	   is a form however the line is drawn; a small label above its value, with
 	   air between entries, is how a magazine sets a credit block. Same
 	   information, and it stops arguing with the picture above it. */
-	.fact {
-		display: grid;
-		gap: 0.15rem;
-		padding: 0 0 1.1rem;
-	}
+		.fact {
+			display: grid;
+			gap: 0.15rem;
+			padding: 0 0 1.1rem;
+		}
 
-	.fact__label {
-		font-family: var(--face-cinzel);
-		font-size: 0.5625rem;
-		font-weight: 600;
-		letter-spacing: 0.16em;
-		text-transform: uppercase;
-		color: var(--ink-faint);
-	}
+		.fact__label {
+			font-family: var(--face-cinzel);
+			font-size: 0.5625rem;
+			font-weight: 600;
+			letter-spacing: 0.16em;
+			text-transform: uppercase;
+			color: var(--ink-faint);
+		}
 
-	.fact__value {
-		margin: 0;
-		font-size: 1.125rem;
-		line-height: 1.4;
-		color: var(--ink);
-		overflow-wrap: anywhere;
-	}
+		.fact__value {
+			margin: 0;
+			font-size: 1.125rem;
+			line-height: 1.4;
+			color: var(--ink);
+			overflow-wrap: anywhere;
+		}
 
-	.areas {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.6rem;
-	}
+		.areas {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.6rem;
+		}
 
-	/* A named thing in its own colour, which is how the three read everywhere
+		/* A named thing in its own colour, which is how the three read everywhere
 	   else on the site. */
-	.area {
-		display: inline-flex;
-		align-items: center;
-		padding: 0.4rem 0.85rem;
-		border: 1px solid var(--accent, var(--teal));
-		border-radius: 999px;
-		font-family: var(--face-cinzel);
-		font-size: 0.6875rem;
-		font-weight: 600;
-		letter-spacing: 0.12em;
-		text-transform: uppercase;
-		color: var(--accent-ink, var(--teal));
-	}
+		.area {
+			display: inline-flex;
+			align-items: center;
+			padding: 0.4rem 0.85rem;
+			border: 1px solid var(--accent, var(--teal));
+			border-radius: 999px;
+			font-family: var(--face-cinzel);
+			font-size: 0.6875rem;
+			font-weight: 600;
+			letter-spacing: 0.12em;
+			text-transform: uppercase;
+			color: var(--accent-ink, var(--teal));
+		}
 
-	/* ── Fields ──────────────────────────────────────────────────────────── */
+		/* ── Fields ──────────────────────────────────────────────────────────── */
 
-	/* The registration form's vocabulary, because this edits what that form
+		/* The registration form's vocabulary, because this edits what that form
 	   collected: tracked caps above a ruled line, and no boxes anywhere. */
-	.field {
-		display: grid;
-		gap: 0.3rem;
-		margin-bottom: 1.35rem;
-	}
+		.field {
+			display: grid;
+			gap: 0.3rem;
+			margin-bottom: 1.35rem;
+		}
 
-	.field__label {
-		font-family: var(--face-cinzel);
-		font-size: 0.625rem;
-		font-weight: 600;
-		letter-spacing: 0.13em;
-		text-transform: uppercase;
-		color: var(--ink-faint);
-		padding: 0;
-	}
+		.field__label {
+			font-family: var(--face-cinzel);
+			font-size: 0.625rem;
+			font-weight: 600;
+			letter-spacing: 0.13em;
+			text-transform: uppercase;
+			color: var(--ink-faint);
+			padding: 0;
+		}
 
-	.field__input {
-		width: 100%;
-		padding: 0.4rem 0;
-		border: 0;
-		border-bottom: 1px solid var(--rule);
-		border-radius: 0;
-		background: transparent;
-		font-family: var(--body);
-		font-size: 1.0625rem;
-		line-height: 1.5;
-		color: var(--ink);
-		transition: border-color 180ms var(--ease);
-	}
+		.field__input {
+			width: 100%;
+			padding: 0.4rem 0;
+			border: 0;
+			border-bottom: 1px solid var(--rule);
+			border-radius: 0;
+			background: transparent;
+			font-family: var(--body);
+			font-size: 1.0625rem;
+			line-height: 1.5;
+			color: var(--ink);
+			transition: border-color 180ms var(--ease);
+		}
 
-	.field__input::placeholder {
-		color: color-mix(in srgb, var(--ink-faint) 55%, transparent);
-	}
+		.field__input::placeholder {
+			color: color-mix(in srgb, var(--ink-faint) 55%, transparent);
+		}
 
-	.field__input:hover {
-		border-bottom-color: rgba(44, 39, 33, 0.45);
-	}
+		.field__input:hover {
+			border-bottom-color: rgba(44, 39, 33, 0.45);
+		}
 
-	.field__input:focus {
-		outline: none;
-		border-bottom-color: var(--teal);
-	}
+		.field__input:focus {
+			outline: none;
+			border-bottom-color: var(--teal);
+		}
 
-	/* Keyboard focus gets a ring; a click does not. Both keep the rule. */
-	.field__input:focus-visible {
-		outline: 2px solid var(--teal);
-		outline-offset: 4px;
-	}
+		/* Keyboard focus gets a ring; a click does not. Both keep the rule. */
+		.field__input:focus-visible {
+			outline: 2px solid var(--teal);
+			outline-offset: 4px;
+		}
 
-	select.field__input {
-		appearance: none;
-		cursor: pointer;
-	}
+		select.field__input {
+			appearance: none;
+			cursor: pointer;
+		}
 
-	.field__input--code {
-		max-width: 8.5rem;
-		font-family: var(--face-cinzel);
-		font-size: 1.5rem;
-		letter-spacing: 0.3em;
-	}
+		.field__input--code {
+			max-width: 8.5rem;
+			font-family: var(--face-cinzel);
+			font-size: 1.5rem;
+			letter-spacing: 0.3em;
+		}
 
-	.set {
-		display: grid;
-		gap: 0.55rem;
-		margin: 0 0 1.35rem;
-		padding: 0;
-		border: 0;
-	}
+		.set {
+			display: grid;
+			gap: 0.55rem;
+			margin: 0 0 1.35rem;
+			padding: 0;
+			border: 0;
+		}
 
-	.set legend {
-		padding: 0 0 0.5rem;
-	}
+		.set legend {
+			padding: 0 0 0.5rem;
+		}
 
-	.check {
-		display: flex;
-		align-items: center;
-		gap: 0.6rem;
-		cursor: pointer;
-		font-size: 1.0625rem;
-		color: var(--ink-soft);
-	}
+		.check {
+			display: flex;
+			align-items: center;
+			gap: 0.6rem;
+			cursor: pointer;
+			font-size: 1.0625rem;
+			color: var(--ink-soft);
+		}
 
-	.check input {
-		accent-color: var(--accent, var(--teal));
-		width: 1rem;
-		height: 1rem;
-		flex: none;
-	}
+		.check input {
+			accent-color: var(--accent, var(--teal));
+			width: 1rem;
+			height: 1rem;
+			flex: none;
+		}
 
-	.check input:focus-visible {
-		outline: 2px solid var(--teal);
-		outline-offset: 3px;
-	}
+		.check input:focus-visible {
+			outline: 2px solid var(--teal);
+			outline-offset: 3px;
+		}
 
-	/* Checked, an area takes its own colour, so the edit view says the same
+		/* Checked, an area takes its own colour, so the edit view says the same
 	   thing the record view did. */
-	.check--area:has(input:checked) span {
-		color: var(--accent-ink, var(--teal));
-	}
+		.check--area:has(input:checked) span {
+			color: var(--accent-ink, var(--teal));
+		}
 
-	/* ── Actions and asides ──────────────────────────────────────────────── */
+		/* ── Actions and asides ──────────────────────────────────────────────── */
 
-	.acct__gate {
-		max-width: 24rem;
-		margin-top: 0.5rem;
-	}
+		.acct__gate {
+			max-width: 24rem;
+			margin-top: 0.5rem;
+		}
 
-	.acct__actions {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		gap: 1.5rem;
-		margin-top: clamp(2rem, 5vh, 3rem);
-		padding-top: 1.75rem;
-		border-top: 1px solid var(--rule);
-	}
+		.acct__actions {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			gap: 1.5rem;
+			margin-top: clamp(2rem, 5vh, 3rem);
+			padding-top: 1.75rem;
+			border-top: 1px solid var(--rule);
+		}
 
-	.btn {
-		padding: 0.7rem 1.6rem;
-		border: 1px solid var(--teal);
-		border-radius: 0;
-		background: var(--teal);
-		color: var(--cream);
-		font-family: var(--face-cinzel);
-		font-size: 0.75rem;
-		font-weight: 600;
-		letter-spacing: 0.16em;
-		text-transform: uppercase;
-		cursor: pointer;
-		transition:
-			background 200ms var(--ease),
-			color 200ms var(--ease);
-	}
+		.btn {
+			padding: 0.7rem 1.6rem;
+			border: 1px solid var(--teal);
+			border-radius: 0;
+			background: var(--teal);
+			color: var(--cream);
+			font-family: var(--face-cinzel);
+			font-size: 0.75rem;
+			font-weight: 600;
+			letter-spacing: 0.16em;
+			text-transform: uppercase;
+			cursor: pointer;
+			transition:
+				background 200ms var(--ease),
+				color 200ms var(--ease);
+		}
 
-	.btn:hover {
-		background: transparent;
-		color: var(--teal);
-	}
+		.btn:hover {
+			background: transparent;
+			color: var(--teal);
+		}
 
-	.btn[disabled] {
-		opacity: 0.5;
-		cursor: progress;
-	}
+		.btn[disabled] {
+			opacity: 0.5;
+			cursor: progress;
+		}
 
-	/* Weighted as a link, so the page has one obvious thing to press. */
-	.linkish {
-		padding: 0;
-		border: 0;
-		background: none;
-		font: inherit;
-		color: var(--teal);
-		text-decoration: underline;
-		text-underline-offset: 0.2em;
-		text-decoration-thickness: 1px;
-		text-decoration-color: color-mix(in srgb, var(--teal) 40%, transparent);
-		cursor: pointer;
-	}
+		/* The same button, weighted down: this is a way in, not the point of the
+		   page, and a filled block would shout over the tabs beside it. */
+		.btn--quiet {
+			margin-bottom: 0.5rem;
+			padding: 0.5rem 1.1rem;
+			background: transparent;
+			color: var(--teal);
+			border-color: color-mix(in srgb, var(--teal) 40%, transparent);
+		}
 
-	.linkish:hover {
-		text-decoration-color: var(--teal);
-	}
+		.btn--quiet:hover {
+			background: var(--teal);
+			color: var(--cream);
+			border-color: var(--teal);
+		}
 
-	.acct__link {
-		color: var(--teal);
-		text-decoration: underline;
-		text-underline-offset: 0.2em;
-		text-decoration-thickness: 1px;
-		text-decoration-color: color-mix(in srgb, var(--teal) 40%, transparent);
-	}
+		/* Weighted as a link, so the page has one obvious thing to press. */
+		.linkish {
+			padding: 0;
+			border: 0;
+			background: none;
+			font: inherit;
+			color: var(--teal);
+			text-decoration: underline;
+			text-underline-offset: 0.2em;
+			text-decoration-thickness: 1px;
+			text-decoration-color: color-mix(in srgb, var(--teal) 40%, transparent);
+			cursor: pointer;
+		}
 
-	.acct__link:hover {
-		text-decoration-color: var(--teal);
-	}
+		.linkish:hover {
+			text-decoration-color: var(--teal);
+		}
 
-	.acct__prose {
-		display: grid;
-		gap: 1.15rem;
-		max-width: 36rem;
-		font-size: 1.0625rem;
-		line-height: 1.65;
-		color: var(--ink-soft);
-	}
+		.acct__link {
+			color: var(--teal);
+			text-decoration: underline;
+			text-underline-offset: 0.2em;
+			text-decoration-thickness: 1px;
+			text-decoration-color: color-mix(in srgb, var(--teal) 40%, transparent);
+		}
 
-	.acct__aside {
-		margin: 1.25rem 0 0;
-		max-width: 34rem;
-		font-size: 0.9375rem;
-		line-height: 1.6;
-		color: var(--ink-faint);
-	}
+		.acct__link:hover {
+			text-decoration-color: var(--teal);
+		}
 
-	.note {
-		margin: 0.4rem 0 0;
-		font-size: 0.875rem;
-		line-height: 1.5;
-		color: var(--ink-faint);
-	}
+		.acct__prose {
+			display: grid;
+			gap: 1.15rem;
+			max-width: 36rem;
+			font-size: 1.0625rem;
+			line-height: 1.65;
+			color: var(--ink-soft);
+		}
 
-	.note--wrong {
-		margin-top: 1.5rem;
-		padding-top: 0.75rem;
-		border-top: 1px solid color-mix(in srgb, var(--rose-ink) 35%, transparent);
-		color: var(--rose-ink);
-	}
+		.acct__aside {
+			margin: 1.25rem 0 0;
+			max-width: 34rem;
+			font-size: 0.9375rem;
+			line-height: 1.6;
+			color: var(--ink-faint);
+		}
 
-	/* The field a message points at, marked so it is not only the words that
+		.note {
+			margin: 0.4rem 0 0;
+			font-size: 0.875rem;
+			line-height: 1.5;
+			color: var(--ink-faint);
+		}
+
+		.note--wrong {
+			margin-top: 1.5rem;
+			padding-top: 0.75rem;
+			border-top: 1px solid color-mix(in srgb, var(--rose-ink) 35%, transparent);
+			color: var(--rose-ink);
+		}
+
+		/* The field a message points at, marked so it is not only the words that
 	   say which one it is. */
-	.field[data-wrong] .field__input {
-		border-bottom-color: var(--rose-ink);
-	}
+		.field[data-wrong] .field__input {
+			border-bottom-color: var(--rose-ink);
+		}
 
-	.acct__foot {
-		display: grid;
-		gap: 1rem;
-		max-width: 36rem;
-		margin-top: clamp(2.5rem, 6vh, 3.5rem);
-		padding-top: 1.75rem;
-		border-top: 1px solid var(--rule);
-		font-size: 0.9375rem;
-		line-height: 1.6;
-		color: var(--ink-faint);
-	}
+		.acct__foot {
+			display: grid;
+			gap: 1rem;
+			max-width: 36rem;
+			margin-top: clamp(2.5rem, 6vh, 3.5rem);
+			padding-top: 1.75rem;
+			border-top: 1px solid var(--rule);
+			font-size: 0.9375rem;
+			line-height: 1.6;
+			color: var(--ink-faint);
+		}
 
-	.acct__foot strong {
-		font-weight: 600;
-		color: var(--ink-soft);
-	}
+		.acct__foot strong {
+			font-weight: 600;
+			color: var(--ink-soft);
+		}
 
-	@media (prefers-reduced-motion: no-preference) {
-		/* The plate resolves rather than appears, which is the only motion on
+		@media (prefers-reduced-motion: no-preference) {
+			/* The plate resolves rather than appears, which is the only motion on
 		   this page and matches how the opening hands one picture to the next. */
-		.crown__plate img {
-			animation: crown-in 900ms var(--ease) both;
-		}
-	}
-
-	@keyframes crown-in {
-		from {
-			opacity: 0;
-			transform: scale(1.03);
-		}
-		to {
-			opacity: 1;
-			transform: scale(1);
-		}
-	}
-</style>
-<script>
-	import { supabase } from '../lib/supabase';
-	import type { MyRegistration } from '../types/database';
-
-	const root = document.querySelector<HTMLElement>('[data-account]');
-	if (root) {
-		root.hidden = false;
-
-		const panels = new Map<string, HTMLElement>();
-		for (const el of root.querySelectorAll<HTMLElement>('[data-panel]')) {
-			panels.set(el.dataset.panel!, el);
-		}
-
-		/**
-		 * One panel at a time, except the footnote, which belongs beneath the
-		 * two panels where a record is in play and nowhere else.
-		 */
-		const show = (name: string) => {
-			for (const [key, el] of panels) el.hidden = key !== name;
-			const foot = panels.get('footnote');
-			if (foot) foot.hidden = !(name === 'record' || name === 'edit');
-		};
-
-		const fail = (note: string) => {
-			const el = root.querySelector<HTMLElement>('[data-fail-note]');
-			if (el) el.textContent = note;
-			show('fail');
-		};
-
-		// ── the words, not the codes ───────────────────────────────────────────
-
-		const ROLE: Record<string, string> = {
-			patient: 'Patient / Beneficiary',
-			caregiver: 'Caregiver / Family Member',
-			volunteer: 'Volunteer / Supporter',
-			other: 'Member',
-		};
-
-		const GENDER: Record<string, string> = {
-			woman: 'Female',
-			man: 'Male',
-			non_binary: 'Non-binary',
-			self_described: 'Prefer to self-describe',
-			undisclosed: 'Prefer not to say',
-		};
-
-		const LANG: Record<string, string> = {
-			en: 'English',
-			hi: 'Hindi',
-			mr: 'Marathi',
-			gu: 'Gujarati',
-			bn: 'Bengali',
-			ta: 'Tamil',
-			te: 'Telugu',
-			kn: 'Kannada',
-			ml: 'Malayalam',
-			pa: 'Punjabi',
-			ur: 'Urdu',
-			or: 'Odia',
-			as: 'Assamese',
-		};
-
-		const PILLAR: Record<string, string> = {
-			neurodivergence: 'Neurodivergence',
-			cancer_care: 'Cancer Care',
-			claw: 'CLAW',
-			not_sure: "I'm not sure yet",
-			other: 'Other',
-		};
-
-		const HEARD: Record<string, string> = {
-			friend_family: 'A friend or family member',
-			doctor_hospital: 'A doctor or hospital',
-			event: 'An event',
-			podcast: 'A podcast',
-			instagram: 'Instagram',
-			youtube: 'YouTube',
-			whatsapp_group: 'A WhatsApp group',
-			search: 'A search engine',
-			news: 'The news',
-			volunteer_staff: 'Someone from the foundation',
-			other: 'Somewhere else',
-		};
-
-		let current: MyRegistration | null = null;
-
-		/**
-		 * The one thing the nav needs, kept where the nav can read it without
-		 * asking anybody. It is their own name, in their own browser, and it is
-		 * written only once they have proved the address is theirs.
-		 *
-		 * Storage can throw outright — a private window, a browser set to refuse
-		 * site data — and none of that is a reason for the page to stop working,
-		 * so every touch of it is guarded. The nav simply stays signed out.
-		 */
-		const WHO = 'itti.who';
-		const remember = (name: string) => {
-			try {
-				if (name) localStorage.setItem(WHO, name);
-				else localStorage.removeItem(WHO);
-			} catch {
-				/* Nothing to do: the nav falls back to its signed-out state. */
+			.crown__plate img {
+				animation: crown-in 900ms var(--ease) both;
 			}
-			// The nav decided who it was greeting before this page had signed
-			// anybody in, so telling storage is not enough — it would still read
-			// "Join Us" above a record with the person's own name on it until
-			// they happened to load another page. The nav listens for this.
-			document.dispatchEvent(new CustomEvent('itti:who', { detail: name }));
-		};
+		}
 
-		/** The address for a handle, per provider. */
-		const linkHref = (kind: string, handle: string) => {
-			if (kind === 'email') return `mailto:${handle}`;
-			if (kind === 'website') return handle;
-			const base: Record<string, string> = {
-				instagram: 'https://instagram.com/',
-				facebook: 'https://facebook.com/',
-				youtube: 'https://youtube.com/@',
-				linkedin: 'https://linkedin.com/in/',
-			};
-			return (base[kind] ?? 'https://') + handle;
-		};
-
-		/** A web address read as a person would say it, not as it is stored. */
-		const tidyUrl = (url: string) =>
-			url
-				.replace(/^https?:\/\//i, '')
-				.replace(/^www\./i, '')
-				.replace(/\/$/, '');
-
-		const asDate = (iso: string) => {
-			if (!iso) return '';
-			const d = new Date(`${iso}T00:00:00`);
-			return Number.isNaN(d.getTime())
-				? iso
-				: d.toLocaleDateString('en-GB', {
-						day: '2-digit',
-						month: 'short',
-						year: 'numeric',
-					});
-		};
-
-		/** The same lines the receipt shows, in the same order. */
-		/** Spoken, not joined: "A and B", "A, B and C". */
-		const sentence = (parts: string[]): string => {
-			if (parts.length === 0) return '';
-			if (parts.length === 1) return parts[0]!;
-			return `${parts.slice(0, -1).join(', ')} and ${parts[parts.length - 1]}`;
-		};
-
-		/**
-		 * The record as text, keyed by the field each value belongs to.
-		 *
-		 * A blank is a question nobody answered rather than a value, and the row
-		 * for it is hidden rather than shown empty — a record full of dashes reads
-		 * as a form somebody failed.
-		 */
-		const values = (r: MyRegistration): Record<string, string> => {
-			const channels = [
-				r.consentWhatsapp ? 'WhatsApp' : '',
-				r.consentSms ? 'SMS' : '',
-				r.consentEmail ? 'Email' : '',
-			].filter(Boolean);
-
-			return {
-				fullName: r.fullName ?? '',
-				role: ROLE[r.role] ?? r.role ?? '',
-				dateOfBirth: asDate(r.dateOfBirth ?? ''),
-				gender: r.genderOther || (GENDER[r.gender] ?? r.gender ?? ''),
-				city: r.city ?? '',
-				pincode: r.pincode ?? '',
-				preferredLanguage: LANG[r.preferredLanguage] ?? r.preferredLanguage ?? '',
-				email: r.email ?? '',
-				phone: r.phone ?? '',
-				channels: sentence(channels),
-				guardianName: r.guardianName ?? '',
-				guardianEmail: r.guardianEmail ?? '',
-				guardianPhone: r.guardianPhone ?? '',
-				heardFrom: r.heardFromOther || (HEARD[r.heardFrom] ?? ''),
-				registeredAt: r.registeredAt ?? '',
-			};
-		};
-
-		/**
-		 * Fills the fields that are already in the markup rather than building
-		 * any. Elements made here would carry no scope attribute, so every rule
-		 * written for this page would silently miss them.
-		 */
-		const paint = (r: MyRegistration) => {
-			const v = values(r);
-
-			const name = (r.fullName ?? '').trim();
-			const mast = root.querySelector<HTMLElement>('[data-mast-name]');
-			if (mast) mast.textContent = name ? `${name}.` : 'Your record.';
-
-			// The colour they chose, or the brand's own if they have not. Set on the
-			// band alone, so the rest of the site stays itself.
-			const accent = (r.accent ?? '') || 'teal';
-			root
-				.querySelector<HTMLElement>('[data-crown]')
-				?.setAttribute('data-accent', accent);
-
-			const bio = (r.bio ?? '').trim();
-			const bioEl = root.querySelector<HTMLElement>('[data-bio]');
-			const bioEmpty = root.querySelector<HTMLElement>('[data-bio-empty]');
-			if (bioEl) {
-				bioEl.textContent = bio;
-				bioEl.hidden = bio === '';
+		@keyframes crown-in {
+			from {
+				opacity: 0;
+				transform: scale(1.03);
 			}
-			if (bioEmpty) bioEmpty.hidden = bio !== '';
+			to {
+				opacity: 1;
+				transform: scale(1);
+			}
+		}
+	</style>
+	<script>
+		import { supabase } from '../lib/supabase';
+		import type { MyRegistration } from '../types/database';
 
-			// Where else to find them. The stored value is a handle; the address
-			// is built here so it is consistent wherever it is shown.
-			const links = (r.links ?? {}) as Record<string, string>;
-			for (const el of root.querySelectorAll<HTMLElement>('[data-link]')) {
-				const kind = el.dataset.link!;
-				const handle = (links[kind] ?? '').trim();
-				el.hidden = handle === '';
-				if (!handle) continue;
-				const a = el.querySelector<HTMLAnchorElement>('[data-link-a]');
-				const text = el.querySelector<HTMLElement>('[data-link-text]');
-				if (text) text.textContent = kind === 'website' ? tidyUrl(handle) : handle;
-				if (a) {
-					a.href = linkHref(kind, handle);
-					// An address on somebody's profile is a place we are sending a
-					// visitor, not a page of ours.
-					if (kind !== 'email') {
-						a.rel = 'me noopener nofollow ugc';
-						a.target = '_blank';
-					} else {
-						a.removeAttribute('target');
-						a.rel = 'me';
+		const root = document.querySelector<HTMLElement>('[data-account]');
+		if (root) {
+			root.hidden = false;
+
+			const panels = new Map<string, HTMLElement>();
+			for (const el of root.querySelectorAll<HTMLElement>('[data-panel]')) {
+				panels.set(el.dataset.panel!, el);
+			}
+
+			/**
+			 * One panel at a time, except the footnote, which belongs beneath the
+			 * two panels where a record is in play and nowhere else.
+			 */
+			const show = (name: string) => {
+				for (const [key, el] of panels) el.hidden = key !== name;
+				const foot = panels.get('footnote');
+				if (foot) foot.hidden = !(name === 'record' || name === 'edit');
+			};
+
+			const fail = (note: string) => {
+				const el = root.querySelector<HTMLElement>('[data-fail-note]');
+				if (el) el.textContent = note;
+				show('fail');
+			};
+
+			// ── the words, not the codes ───────────────────────────────────────────
+
+			const ROLE: Record<string, string> = {
+				patient: 'Patient / Beneficiary',
+				caregiver: 'Caregiver / Family Member',
+				volunteer: 'Volunteer / Supporter',
+				other: 'Member',
+			};
+
+			const GENDER: Record<string, string> = {
+				woman: 'Female',
+				man: 'Male',
+				non_binary: 'Non-binary',
+				self_described: 'Prefer to self-describe',
+				undisclosed: 'Prefer not to say',
+			};
+
+			const LANG: Record<string, string> = {
+				en: 'English',
+				hi: 'Hindi',
+				mr: 'Marathi',
+				gu: 'Gujarati',
+				bn: 'Bengali',
+				ta: 'Tamil',
+				te: 'Telugu',
+				kn: 'Kannada',
+				ml: 'Malayalam',
+				pa: 'Punjabi',
+				ur: 'Urdu',
+				or: 'Odia',
+				as: 'Assamese',
+			};
+
+			const PILLAR: Record<string, string> = {
+				neurodivergence: 'Neurodivergence',
+				cancer_care: 'Cancer Care',
+				claw: 'CLAW',
+				not_sure: "I'm not sure yet",
+				other: 'Other',
+			};
+
+			const HEARD: Record<string, string> = {
+				friend_family: 'A friend or family member',
+				doctor_hospital: 'A doctor or hospital',
+				event: 'An event',
+				podcast: 'A podcast',
+				instagram: 'Instagram',
+				youtube: 'YouTube',
+				whatsapp_group: 'A WhatsApp group',
+				search: 'A search engine',
+				news: 'The news',
+				volunteer_staff: 'Someone from the foundation',
+				other: 'Somewhere else',
+			};
+
+			let current: MyRegistration | null = null;
+
+			/**
+			 * The one thing the nav needs, kept where the nav can read it without
+			 * asking anybody. It is their own name, in their own browser, and it is
+			 * written only once they have proved the address is theirs.
+			 *
+			 * Storage can throw outright — a private window, a browser set to refuse
+			 * site data — and none of that is a reason for the page to stop working,
+			 * so every touch of it is guarded. The nav simply stays signed out.
+			 */
+			const WHO = 'itti.who';
+			const remember = (name: string) => {
+				try {
+					if (name) localStorage.setItem(WHO, name);
+					else localStorage.removeItem(WHO);
+				} catch {
+					/* Nothing to do: the nav falls back to its signed-out state. */
+				}
+				// The nav decided who it was greeting before this page had signed
+				// anybody in, so telling storage is not enough — it would still read
+				// "Join Us" above a record with the person's own name on it until
+				// they happened to load another page. The nav listens for this.
+				document.dispatchEvent(new CustomEvent('itti:who', { detail: name }));
+			};
+
+			/** The address for a handle, per provider. */
+			const linkHref = (kind: string, handle: string) => {
+				if (kind === 'email') return `mailto:${handle}`;
+				if (kind === 'website') return handle;
+				const base: Record<string, string> = {
+					instagram: 'https://instagram.com/',
+					facebook: 'https://facebook.com/',
+					youtube: 'https://youtube.com/@',
+					linkedin: 'https://linkedin.com/in/',
+				};
+				return (base[kind] ?? 'https://') + handle;
+			};
+
+			/** A web address read as a person would say it, not as it is stored. */
+			const tidyUrl = (url: string) =>
+				url
+					.replace(/^https?:\/\//i, '')
+					.replace(/^www\./i, '')
+					.replace(/\/$/, '');
+
+			const asDate = (iso: string) => {
+				if (!iso) return '';
+				const d = new Date(`${iso}T00:00:00`);
+				return Number.isNaN(d.getTime())
+					? iso
+					: d.toLocaleDateString('en-GB', {
+							day: '2-digit',
+							month: 'short',
+							year: 'numeric',
+						});
+			};
+
+			/** The same lines the receipt shows, in the same order. */
+			/** Spoken, not joined: "A and B", "A, B and C". */
+			const sentence = (parts: string[]): string => {
+				if (parts.length === 0) return '';
+				if (parts.length === 1) return parts[0]!;
+				return `${parts.slice(0, -1).join(', ')} and ${parts[parts.length - 1]}`;
+			};
+
+			/**
+			 * The record as text, keyed by the field each value belongs to.
+			 *
+			 * A blank is a question nobody answered rather than a value, and the row
+			 * for it is hidden rather than shown empty — a record full of dashes reads
+			 * as a form somebody failed.
+			 */
+			const values = (r: MyRegistration): Record<string, string> => {
+				const channels = [
+					r.consentWhatsapp ? 'WhatsApp' : '',
+					r.consentSms ? 'SMS' : '',
+					r.consentEmail ? 'Email' : '',
+				].filter(Boolean);
+
+				return {
+					fullName: r.fullName ?? '',
+					role: ROLE[r.role] ?? r.role ?? '',
+					dateOfBirth: asDate(r.dateOfBirth ?? ''),
+					gender: r.genderOther || (GENDER[r.gender] ?? r.gender ?? ''),
+					city: r.city ?? '',
+					pincode: r.pincode ?? '',
+					preferredLanguage: LANG[r.preferredLanguage] ?? r.preferredLanguage ?? '',
+					email: r.email ?? '',
+					phone: r.phone ?? '',
+					channels: sentence(channels),
+					guardianName: r.guardianName ?? '',
+					guardianEmail: r.guardianEmail ?? '',
+					guardianPhone: r.guardianPhone ?? '',
+					heardFrom: r.heardFromOther || (HEARD[r.heardFrom] ?? ''),
+					registeredAt: r.registeredAt ?? '',
+				};
+			};
+
+			/**
+			 * Fills the fields that are already in the markup rather than building
+			 * any. Elements made here would carry no scope attribute, so every rule
+			 * written for this page would silently miss them.
+			 */
+			const paint = (r: MyRegistration) => {
+				const v = values(r);
+
+				const name = (r.fullName ?? '').trim();
+				const mast = root.querySelector<HTMLElement>('[data-mast-name]');
+				if (mast) mast.textContent = name ? `${name}.` : 'Your record.';
+
+				// The colour they chose, or the brand's own if they have not. Set on the
+				// band alone, so the rest of the site stays itself.
+				const accent = (r.accent ?? '') || 'teal';
+				root
+					.querySelector<HTMLElement>('[data-crown]')
+					?.setAttribute('data-accent', accent);
+
+				const bio = (r.bio ?? '').trim();
+				const bioEl = root.querySelector<HTMLElement>('[data-bio]');
+				const bioEmpty = root.querySelector<HTMLElement>('[data-bio-empty]');
+				if (bioEl) {
+					bioEl.textContent = bio;
+					bioEl.hidden = bio === '';
+				}
+				if (bioEmpty) bioEmpty.hidden = bio !== '';
+
+				// Where else to find them. The stored value is a handle; the address
+				// is built here so it is consistent wherever it is shown.
+				const links = (r.links ?? {}) as Record<string, string>;
+				for (const el of root.querySelectorAll<HTMLElement>('[data-link]')) {
+					const kind = el.dataset.link!;
+					const handle = (links[kind] ?? '').trim();
+					el.hidden = handle === '';
+					if (!handle) continue;
+					const a = el.querySelector<HTMLAnchorElement>('[data-link-a]');
+					const text = el.querySelector<HTMLElement>('[data-link-text]');
+					if (text) text.textContent = kind === 'website' ? tidyUrl(handle) : handle;
+					if (a) {
+						a.href = linkHref(kind, handle);
+						// An address on somebody's profile is a place we are sending a
+						// visitor, not a page of ours.
+						if (kind !== 'email') {
+							a.rel = 'me noopener nofollow ugc';
+							a.target = '_blank';
+						} else {
+							a.removeAttribute('target');
+							a.rel = 'me';
+						}
 					}
 				}
-			}
 
-			// Who they said they are, and how long we have had them — the two
-			// things worth reading before any single field.
-			const meta = root.querySelector<HTMLElement>('[data-mast-meta]');
-			if (meta) {
-				const bits = [v.role, v.registeredAt ? `with us since ${v.registeredAt}` : '']
-					.filter(Boolean)
-					.join(' \u00b7 ');
-				meta.textContent = bits;
-				meta.hidden = bits === '';
-			}
-
-			for (const el of root.querySelectorAll<HTMLElement>('[data-fact]')) {
-				const key = el.dataset.fact!;
-				const slot = el.querySelector<HTMLElement>('[data-value]');
-				const text = v[key] ?? '';
-				if (slot) slot.textContent = text;
-				el.hidden = text === '';
-			}
-
-			const interests: string[] = Array.isArray(r.interests) ? r.interests : [];
-			for (const el of root.querySelectorAll<HTMLElement>('[data-area]')) {
-				el.hidden = !interests.includes(el.dataset.area!);
-			}
-			for (const el of root.querySelectorAll<HTMLElement>('[data-mark]')) {
-				el.hidden = !interests.includes(el.dataset.mark!);
-			}
-
-			// A group with nothing under it is a heading over a gap. The guardian
-			// block in particular belongs only to the people who have one.
-			for (const group of root.querySelectorAll<HTMLElement>('[data-group]')) {
-				if (group.dataset.group === 'areas') {
-					group.hidden = interests.length === 0;
-					continue;
+				// Who they said they are, and how long we have had them — the two
+				// things worth reading before any single field.
+				const meta = root.querySelector<HTMLElement>('[data-mast-meta]');
+				if (meta) {
+					const bits = [v.role, v.registeredAt ? `with us since ${v.registeredAt}` : '']
+						.filter(Boolean)
+						.join(' \u00b7 ');
+					meta.textContent = bits;
+					meta.hidden = bits === '';
 				}
-				const shown = [...group.querySelectorAll<HTMLElement>('[data-fact]')].some(
-					(f) => !f.hidden,
-				);
-				group.hidden = !shown;
-			}
-		};
 
-		// ── the bar ────────────────────────────────────────────────────────────
-		//
-		// The keyboard contract for a tablist: one stop in the tab order, and the
-		// arrows move between the tabs once you are inside it. Without the roving
-		// tabindex, somebody reaching for the record would tab through every
-		// heading first, which is the thing tabs exist to prevent.
-		{
-			const tabs = [...root.querySelectorAll<HTMLButtonElement>('[data-tab]')];
-			const views = [...root.querySelectorAll<HTMLElement>('[data-view]')];
+				for (const el of root.querySelectorAll<HTMLElement>('[data-fact]')) {
+					const key = el.dataset.fact!;
+					const slot = el.querySelector<HTMLElement>('[data-value]');
+					const text = v[key] ?? '';
+					if (slot) slot.textContent = text;
+					el.hidden = text === '';
+				}
 
-			const open = (name: string, focus = false) => {
+				const interests: string[] = Array.isArray(r.interests) ? r.interests : [];
+				for (const el of root.querySelectorAll<HTMLElement>('[data-area]')) {
+					el.hidden = !interests.includes(el.dataset.area!);
+				}
+				for (const el of root.querySelectorAll<HTMLElement>('[data-mark]')) {
+					el.hidden = !interests.includes(el.dataset.mark!);
+				}
+
+				// A group with nothing under it is a heading over a gap. The guardian
+				// block in particular belongs only to the people who have one.
+				for (const group of root.querySelectorAll<HTMLElement>('[data-group]')) {
+					if (group.dataset.group === 'areas') {
+						group.hidden = interests.length === 0;
+						continue;
+					}
+					const shown = [...group.querySelectorAll<HTMLElement>('[data-fact]')].some(
+						(f) => !f.hidden,
+					);
+					group.hidden = !shown;
+				}
+			};
+
+			// ── the bar ────────────────────────────────────────────────────────────
+			//
+			// The keyboard contract for a tablist: one stop in the tab order, and the
+			// arrows move between the tabs once you are inside it. Without the roving
+			// tabindex, somebody reaching for the record would tab through every
+			// heading first, which is the thing tabs exist to prevent.
+			{
+				const tabs = [...root.querySelectorAll<HTMLButtonElement>('[data-tab]')];
+				const views = [...root.querySelectorAll<HTMLElement>('[data-view]')];
+
+				const open = (name: string, focus = false) => {
+					for (const t of tabs) {
+						const on = t.dataset.tab === name;
+						t.setAttribute('aria-selected', String(on));
+						t.tabIndex = on ? 0 : -1;
+						if (on && focus) t.focus();
+					}
+					for (const v of views) v.hidden = v.dataset.view !== name;
+				};
+
 				for (const t of tabs) {
-					const on = t.dataset.tab === name;
-					t.setAttribute('aria-selected', String(on));
-					t.tabIndex = on ? 0 : -1;
-					if (on && focus) t.focus();
+					t.addEventListener('click', () => open(t.dataset.tab!));
 				}
-				for (const v of views) v.hidden = v.dataset.view !== name;
+
+				root.querySelector('[role="tablist"]')?.addEventListener('keydown', (event) => {
+					const e = event as KeyboardEvent;
+					const at = tabs.findIndex((t) => t.getAttribute('aria-selected') === 'true');
+					const to =
+						e.key === 'ArrowRight' || e.key === 'ArrowDown'
+							? (at + 1) % tabs.length
+							: e.key === 'ArrowLeft' || e.key === 'ArrowUp'
+								? (at - 1 + tabs.length) % tabs.length
+								: e.key === 'Home'
+									? 0
+									: e.key === 'End'
+										? tabs.length - 1
+										: -1;
+					if (to < 0) return;
+					e.preventDefault();
+					open(tabs[to]!.dataset.tab!, true);
+				});
+			}
+
+			// ── the edit form ──────────────────────────────────────────────────────
+
+			const form = root.querySelector<HTMLFormElement>('[data-edit-form]');
+			const genderOtherField = root.querySelector<HTMLElement>('[data-gender-other]');
+			const langOtherField = root.querySelector<HTMLElement>('[data-lang-other]');
+			const editError = root.querySelector<HTMLElement>('[data-edit-error]');
+
+			const revealConditionals = () => {
+				if (!form) return;
+				const gender = (form.elements.namedItem('gender') as HTMLSelectElement).value;
+				if (genderOtherField) genderOtherField.hidden = gender !== 'self_described';
+				const lang = (form.elements.namedItem('language') as HTMLSelectElement).value;
+				if (langOtherField) langOtherField.hidden = lang !== 'other';
 			};
 
-			for (const t of tabs) {
-				t.addEventListener('click', () => open(t.dataset.tab!));
-			}
+			const fill = (r: MyRegistration) => {
+				if (!form) return;
+				const set = (name: string, value: string) => {
+					const el = form.elements.namedItem(name) as
+						HTMLInputElement | HTMLSelectElement;
+					if (el) el.value = value;
+				};
 
-			root.querySelector('[role="tablist"]')?.addEventListener('keydown', (event) => {
-				const e = event as KeyboardEvent;
-				const at = tabs.findIndex((t) => t.getAttribute('aria-selected') === 'true');
-				const to =
-					e.key === 'ArrowRight' || e.key === 'ArrowDown'
-						? (at + 1) % tabs.length
-						: e.key === 'ArrowLeft' || e.key === 'ArrowUp'
-							? (at - 1 + tabs.length) % tabs.length
-							: e.key === 'Home'
-								? 0
-								: e.key === 'End'
-									? tabs.length - 1
-									: -1;
-				if (to < 0) return;
-				e.preventDefault();
-				open(tabs[to]!.dataset.tab!, true);
-			});
-		}
+				set('fullName', r.fullName ?? '');
+				set('role', r.role ?? 'other');
+				set('phone', r.phone ?? '');
+				set('city', r.city ?? '');
+				set('pincode', r.pincode ?? '');
+				set('dateOfBirth', r.dateOfBirth ?? '');
+				set('gender', r.gender ?? '');
+				set('genderSelfDescribed', r.genderOther ?? '');
+				set('bio', r.bio ?? '');
+				countBio();
 
-		// ── the edit form ──────────────────────────────────────────────────────
+				const have = (r.links ?? {}) as Record<string, string>;
+				for (const el of form.querySelectorAll<HTMLElement>('[data-link-field]')) {
+					const kind = el.dataset.linkField!;
+					const input = form.elements.namedItem(
+						`link_${kind}`,
+					) as HTMLInputElement | null;
+					// The prefix is printed beside the box, so the box holds the handle
+					// alone — and a website keeps its address, minus the scheme nobody
+					// wants to read.
+					if (input)
+						input.value =
+							kind === 'website' ? tidyUrl(have[kind] ?? '') : (have[kind] ?? '');
+				}
 
-		const form = root.querySelector<HTMLFormElement>('[data-edit-form]');
-		const genderOtherField = root.querySelector<HTMLElement>('[data-gender-other]');
-		const langOtherField = root.querySelector<HTMLElement>('[data-lang-other]');
-		const editError = root.querySelector<HTMLElement>('[data-edit-error]');
+				// Registration stores a code for the languages it lists and the typed
+				// words for anything else. Anything unrecognised is therefore an
+				// answer, not a bad value: put it in the free-text half.
+				const lang: string = r.preferredLanguage ?? '';
+				if (lang && !(lang in LANG)) {
+					set('language', 'other');
+					set('languageOther', lang);
+				} else {
+					set('language', lang);
+					set('languageOther', '');
+				}
 
-		const revealConditionals = () => {
-			if (!form) return;
-			const gender = (form.elements.namedItem('gender') as HTMLSelectElement).value;
-			if (genderOtherField) genderOtherField.hidden = gender !== 'self_described';
-			const lang = (form.elements.namedItem('language') as HTMLSelectElement).value;
-			if (langOtherField) langOtherField.hidden = lang !== 'other';
-		};
+				const interests: string[] = Array.isArray(r.interests) ? r.interests : [];
+				for (const box of form.querySelectorAll<HTMLInputElement>(
+					'input[name="interests"]',
+				)) {
+					box.checked = interests.includes(box.value);
+				}
 
-		const fill = (r: MyRegistration) => {
-			if (!form) return;
-			const set = (name: string, value: string) => {
-				const el = form.elements.namedItem(name) as
-					HTMLInputElement | HTMLSelectElement;
-				if (el) el.value = value;
+				const consents = ['consentWhatsapp', 'consentSms', 'consentEmail'] as const;
+				for (const name of consents) {
+					const box = form.elements.namedItem(name) as HTMLInputElement;
+					if (box) box.checked = r[name];
+				}
+
+				revealConditionals();
+				for (const field of form.querySelectorAll<HTMLElement>('[data-wrong]')) {
+					delete field.dataset.wrong;
+				}
+				if (editError) {
+					editError.hidden = true;
+					editError.textContent = '';
+				}
 			};
 
-			set('fullName', r.fullName ?? '');
-			set('role', r.role ?? 'other');
-			set('phone', r.phone ?? '');
-			set('city', r.city ?? '');
-			set('pincode', r.pincode ?? '');
-			set('dateOfBirth', r.dateOfBirth ?? '');
-			set('gender', r.gender ?? '');
-			set('genderSelfDescribed', r.genderOther ?? '');
-			set('bio', r.bio ?? '');
-			countBio();
-
-			const have = (r.links ?? {}) as Record<string, string>;
-			for (const el of form.querySelectorAll<HTMLElement>('[data-link-field]')) {
-				const kind = el.dataset.linkField!;
-				const input = form.elements.namedItem(
-					`link_${kind}`,
-				) as HTMLInputElement | null;
-				// The prefix is printed beside the box, so the box holds the handle
-				// alone — and a website keeps its address, minus the scheme nobody
-				// wants to read.
-				if (input)
-					input.value =
-						kind === 'website' ? tidyUrl(have[kind] ?? '') : (have[kind] ?? '');
-			}
-
-			// Registration stores a code for the languages it lists and the typed
-			// words for anything else. Anything unrecognised is therefore an
-			// answer, not a bad value: put it in the free-text half.
-			const lang: string = r.preferredLanguage ?? '';
-			if (lang && !(lang in LANG)) {
-				set('language', 'other');
-				set('languageOther', lang);
-			} else {
-				set('language', lang);
-				set('languageOther', '');
-			}
-
-			const interests: string[] = Array.isArray(r.interests) ? r.interests : [];
-			for (const box of form.querySelectorAll<HTMLInputElement>(
-				'input[name="interests"]',
-			)) {
-				box.checked = interests.includes(box.value);
-			}
-
-			const consents = ['consentWhatsapp', 'consentSms', 'consentEmail'] as const;
-			for (const name of consents) {
-				const box = form.elements.namedItem(name) as HTMLInputElement;
-				if (box) box.checked = r[name];
-			}
-
-			revealConditionals();
-			for (const field of form.querySelectorAll<HTMLElement>('[data-wrong]')) {
-				delete field.dataset.wrong;
-			}
-			if (editError) {
-				editError.hidden = true;
-				editError.textContent = '';
-			}
-		};
-
-		// Six hundred characters is a limit somebody should see approaching, not
-		// discover by being refused.
-		const countBio = () => {
-			const box = form?.elements.namedItem('bio') as HTMLTextAreaElement | null;
-			const out = root.querySelector<HTMLElement>('[data-bio-count]');
-			if (box && out) out.textContent = String(box.value.length);
-		};
-		form?.addEventListener('input', (event) => {
-			if ((event.target as HTMLElement).getAttribute('name') === 'bio') countBio();
-		});
-
-		form?.addEventListener('change', (event) => {
-			const name = (event.target as HTMLElement).getAttribute('name');
-			if (name === 'gender' || name === 'language') revealConditionals();
-		});
-
-		// ── loading the record ─────────────────────────────────────────────────
-
-		const load = async () => {
-			const { data, error } = await supabase.rpc('my_registration');
-			if (error) {
-				fail('We could not read your record just now.');
-				return;
-			}
-			if (!data) {
-				const { data: session } = await supabase.auth.getUser();
-				const address = root.querySelector<HTMLElement>('[data-none-address]');
-				if (address) address.textContent = session.user?.email ?? 'this address';
-				remember('');
-				show('none');
-				return;
-			}
-			current = data;
-			remember(current.fullName ?? '');
-			paint(current);
-			show('record');
-		};
-
-		// Supabase announces a session more than once — an initial event, a
-		// sign-in, a token refresh — and `start` looks for one as well. Left
-		// unguarded that ran the claim four times and the read three for a
-		// single sign-in: harmless, because claiming is idempotent by design,
-		// but four writes and three reads to answer a question nobody asked
-		// twice.
-		let opening: Promise<void> | null = null;
-
-		const afterSignIn = () => (opening ??= openRecord());
-
-		const openRecord = async () => {
-			const { data, error } = await supabase.rpc('claim_registration');
-			if (error) {
-				fail('We could not open your record just now.');
-				return;
-			}
-			// `claim_registration` reports why it could not bind; every reason
-			// other than a missing registration is ours, not theirs.
-			if (data && data.ok === false && data.reason !== 'no_registration') {
-				fail('Your sign-in did not complete. Please ask for a new link.');
-				return;
-			}
-			await load();
-		};
-
-		/** Signing out, or starting again, has to let the next sign-in through. */
-		const reopen = () => {
-			opening = null;
-		};
-
-		// ── sign in ────────────────────────────────────────────────────────────
-
-		const signinForm = root.querySelector<HTMLFormElement>('[data-signin-form]');
-		const signinGo = root.querySelector<HTMLButtonElement>('[data-signin-go]');
-		// Verifying a code needs the address it was sent to, and the person
-		// typing it should not have to give it twice.
-		//
-		// It outlives the page, because the obvious way to use a code is to go
-		// and fetch it: open the mail app, come back, and on plenty of phones
-		// coming back means a reload. Held in a variable alone, that stranded
-		// somebody holding a perfectly good code with nothing to check it
-		// against. Session storage, not local: it belongs to this attempt.
-		const SENT = 'itti.sent-to';
-		const readSentTo = () => {
-			try {
-				return sessionStorage.getItem(SENT) ?? '';
-			} catch {
-				return '';
-			}
-		};
-		let sentTo = readSentTo();
-		const rememberSentTo = (address: string) => {
-			sentTo = address;
-			try {
-				if (address) sessionStorage.setItem(SENT, address);
-				else sessionStorage.removeItem(SENT);
-			} catch {
-				/* The code still works for as long as this page stays open. */
-			}
-		};
-
-		signinForm?.addEventListener('submit', async (event) => {
-			event.preventDefault();
-			const input = signinForm.elements.namedItem('email') as HTMLInputElement;
-			const email = input.value.trim();
-			if (!email || !input.checkValidity()) {
-				input.focus();
-				return;
-			}
-
-			if (signinGo) {
-				signinGo.disabled = true;
-				signinGo.textContent = 'Sending';
-			}
-
-			const { error } = await supabase.auth.signInWithOtp({
-				email,
-				options: { emailRedirectTo: `${window.location.origin}/account` },
+			// Six hundred characters is a limit somebody should see approaching, not
+			// discover by being refused.
+			const countBio = () => {
+				const box = form?.elements.namedItem('bio') as HTMLTextAreaElement | null;
+				const out = root.querySelector<HTMLElement>('[data-bio-count]');
+				if (box && out) out.textContent = String(box.value.length);
+			};
+			form?.addEventListener('input', (event) => {
+				if ((event.target as HTMLElement).getAttribute('name') === 'bio') countBio();
 			});
 
-			if (signinGo) {
-				signinGo.disabled = false;
-				signinGo.textContent = 'Send me a link';
+			form?.addEventListener('change', (event) => {
+				const name = (event.target as HTMLElement).getAttribute('name');
+				if (name === 'gender' || name === 'language') revealConditionals();
+			});
+
+			// ── loading the record ─────────────────────────────────────────────────
+
+			const load = async () => {
+				const { data, error } = await supabase.rpc('my_registration');
+				if (error) {
+					fail('We could not read your record just now.');
+					return;
+				}
+				if (!data) {
+					const { data: session } = await supabase.auth.getUser();
+					const address = root.querySelector<HTMLElement>('[data-none-address]');
+					if (address) address.textContent = session.user?.email ?? 'this address';
+					remember('');
+					show('none');
+					return;
+				}
+				current = data;
+				remember(current.fullName ?? '');
+				paint(current);
+				show('record');
+			};
+
+			// Supabase announces a session more than once — an initial event, a
+			// sign-in, a token refresh — and `start` looks for one as well. Left
+			// unguarded that ran the claim four times and the read three for a
+			// single sign-in: harmless, because claiming is idempotent by design,
+			// but four writes and three reads to answer a question nobody asked
+			// twice.
+			let opening: Promise<void> | null = null;
+
+			const afterSignIn = () => (opening ??= openRecord());
+
+			const openRecord = async () => {
+				const { data, error } = await supabase.rpc('claim_registration');
+				if (error) {
+					fail('We could not open your record just now.');
+					return;
+				}
+				// `claim_registration` reports why it could not bind; every reason
+				// other than a missing registration is ours, not theirs.
+				if (data && data.ok === false && data.reason !== 'no_registration') {
+					fail('Your sign-in did not complete. Please ask for a new link.');
+					return;
+				}
+				await load();
+			};
+
+			/** Signing out, or starting again, has to let the next sign-in through. */
+			const reopen = () => {
+				opening = null;
+			};
+
+			// ── sign in ────────────────────────────────────────────────────────────
+
+			const signinForm = root.querySelector<HTMLFormElement>('[data-signin-form]');
+			const signinGo = root.querySelector<HTMLButtonElement>('[data-signin-go]');
+			// Verifying a code needs the address it was sent to, and the person
+			// typing it should not have to give it twice.
+			//
+			// It outlives the page, because the obvious way to use a code is to go
+			// and fetch it: open the mail app, come back, and on plenty of phones
+			// coming back means a reload. Held in a variable alone, that stranded
+			// somebody holding a perfectly good code with nothing to check it
+			// against. Session storage, not local: it belongs to this attempt.
+			const SENT = 'itti.sent-to';
+			const readSentTo = () => {
+				try {
+					return sessionStorage.getItem(SENT) ?? '';
+				} catch {
+					return '';
+				}
+			};
+			let sentTo = readSentTo();
+			const rememberSentTo = (address: string) => {
+				sentTo = address;
+				try {
+					if (address) sessionStorage.setItem(SENT, address);
+					else sessionStorage.removeItem(SENT);
+				} catch {
+					/* The code still works for as long as this page stays open. */
+				}
+			};
+
+			signinForm?.addEventListener('submit', async (event) => {
+				event.preventDefault();
+				const input = signinForm.elements.namedItem('email') as HTMLInputElement;
+				const email = input.value.trim();
+				if (!email || !input.checkValidity()) {
+					input.focus();
+					return;
+				}
+
+				if (signinGo) {
+					signinGo.disabled = true;
+					signinGo.textContent = 'Sending';
+				}
+
+				const { error } = await supabase.auth.signInWithOtp({
+					email,
+					options: { emailRedirectTo: `${window.location.origin}/account` },
+				});
+
+				if (signinGo) {
+					signinGo.disabled = false;
+					signinGo.textContent = 'Send me a link';
+				}
+
+				if (error) {
+					// One message per address per minute. Somebody who presses the
+					// button twice is not looking at a broken site, and telling them
+					// so sends them away from a link already in their inbox.
+					if (error.status === 429) {
+						if (sentTo === email) {
+							show('sent');
+							(root.querySelector('#acct-code') as HTMLInputElement | null)?.focus();
+						} else {
+							fail(
+								'We have already sent one to that address in the last minute. Check your email, or try again shortly.',
+							);
+						}
+						return;
+					}
+					fail('We could not send that link just now.');
+					return;
+				}
+
+				// The same words whether or not we hold a registration for it. Which
+				// addresses are on our list is not something a stranger gets to
+				// learn by typing them in one at a time.
+				rememberSentTo(email);
+				const shown = root.querySelector<HTMLElement>('[data-sent-address]');
+				if (shown) shown.textContent = email;
+				show('sent');
+				(root.querySelector('#acct-code') as HTMLInputElement | null)?.focus();
+			});
+
+			// ── the code, for when the link is on the wrong device ─────────────────
+			//
+			// The same message carries both. A link is one tap where it opens in the
+			// browser that asked for it, and useless where it does not — people read
+			// email on whichever device is nearest. The code does not care.
+
+			const codeForm = root.querySelector<HTMLFormElement>('[data-code-form]');
+			const codeGo = root.querySelector<HTMLButtonElement>('[data-code-go]');
+			const codeError = root.querySelector<HTMLElement>('[data-code-error]');
+
+			const sayCode = (message: string) => {
+				if (!codeError) return;
+				codeError.textContent = message;
+				codeError.hidden = false;
+			};
+
+			codeForm?.addEventListener('submit', async (event) => {
+				event.preventDefault();
+				const input = codeForm.elements.namedItem('token') as HTMLInputElement;
+				// People read a code off a screen and type it back with the spaces
+				// they saw, so take the digits and ignore the rest.
+				const token = input.value.replace(/\D/g, '');
+				if (codeError) codeError.hidden = true;
+
+				if (token.length !== 6) {
+					sayCode('The code is six digits.');
+					input.focus();
+					return;
+				}
+				if (!sentTo) {
+					sayCode(
+						'Give us your email address above first, and we will send you a code.',
+					);
+					return;
+				}
+
+				if (codeGo) {
+					codeGo.disabled = true;
+					codeGo.textContent = 'Checking';
+				}
+
+				const { error } = await supabase.auth.verifyOtp({
+					email: sentTo,
+					token,
+					type: 'email',
+				});
+
+				if (codeGo) {
+					codeGo.disabled = false;
+					codeGo.textContent = 'Sign me in';
+				}
+
+				if (error) {
+					// Wrong, already used, or older than an hour. The page cannot tell
+					// which, and guessing at it out loud would be worse than not.
+					sayCode('That code did not work. It expires after an hour and works once.');
+					input.select();
+					return;
+				}
+				// A success fires SIGNED_IN, which is already wired to open the record.
+			});
+
+			root.querySelector('[data-signin-again]')?.addEventListener('click', () => {
+				show('signin');
+				(root.querySelector('#acct-email') as HTMLInputElement | null)?.focus();
+			});
+
+			for (const button of root.querySelectorAll('[data-signout]')) {
+				button.addEventListener('click', async () => {
+					await supabase.auth.signOut();
+					current = null;
+					remember('');
+					rememberSentTo('');
+					reopen();
+					show('signin');
+				});
 			}
 
-			if (error) {
-				// One message per address per minute. Somebody who presses the
-				// button twice is not looking at a broken site, and telling them
-				// so sends them away from a link already in their inbox.
-				if (error.status === 429) {
-					if (sentTo === email) {
-						show('sent');
-						(root.querySelector('#acct-code') as HTMLInputElement | null)?.focus();
-					} else {
-						fail(
-							'We have already sent one to that address in the last minute. Check your email, or try again shortly.',
-						);
+			root.querySelector('[data-retry]')?.addEventListener('click', () => {
+				reopen();
+				show('loading');
+				void start();
+			});
+
+			// ── editing ────────────────────────────────────────────────────────────
+
+			// querySelectorAll, not querySelector. Two things opened the editor for a
+			// while and only the first was bound — which was inside a prompt hidden
+			// whenever a bio existed, so the button people actually press did nothing.
+			// There is one now, and this stays plural so a second cannot go quiet.
+			for (const opener of root.querySelectorAll('[data-edit-open]')) {
+				opener.addEventListener('click', () => {
+					if (!current) return;
+					const saved = root.querySelector<HTMLElement>('[data-saved]');
+					if (saved) saved.hidden = true;
+					fill(current);
+					show('edit');
+					(root.querySelector('#acct-name') as HTMLInputElement | null)?.focus();
+				});
+			}
+
+			root.querySelector('[data-edit-cancel]')?.addEventListener('click', () => {
+				show('record');
+			});
+
+			const save = root.querySelector<HTMLButtonElement>('[data-edit-save]');
+			let savedFor = 0;
+
+			form?.addEventListener('submit', async (event) => {
+				event.preventDefault();
+				if (!form) return;
+
+				for (const field of form.querySelectorAll<HTMLElement>('[data-wrong]')) {
+					delete field.dataset.wrong;
+				}
+				for (const slot of form.querySelectorAll<HTMLElement>('[data-field-error]')) {
+					slot.textContent = '';
+					slot.hidden = true;
+				}
+				for (const el of form.querySelectorAll('[aria-invalid]')) {
+					el.removeAttribute('aria-invalid');
+					el.removeAttribute('aria-describedby');
+				}
+
+				const value = (name: string) =>
+					(
+						(form.elements.namedItem(name) as HTMLInputElement | HTMLSelectElement)
+							?.value ?? ''
+					).trim();
+				const checked = (name: string) =>
+					Boolean((form.elements.namedItem(name) as HTMLInputElement)?.checked);
+
+				const language = value('language');
+				const payload = {
+					fullName: value('fullName'),
+					role: value('role'),
+					// Spaces are how people write a phone number and not how E.164
+					// stores one. Strip them here rather than refusing the number.
+					phone: value('phone').replace(/[\s()-]/g, ''),
+					city: value('city'),
+					pincode: value('pincode'),
+					dateOfBirth: value('dateOfBirth'),
+					gender: value('gender'),
+					genderSelfDescribed: value('genderSelfDescribed'),
+					preferredLanguage: language === 'other' ? value('languageOther') : language,
+					interests: [
+						...form.querySelectorAll<HTMLInputElement>(
+							'input[name="interests"]:checked',
+						),
+					].map((b) => b.value),
+					bio: value('bio'),
+					// Every kind is sent, including the empty ones: an empty value is
+					// how somebody removes a link, and a kind left out of the object
+					// would simply be left alone.
+					links: Object.fromEntries(
+						[...form.querySelectorAll<HTMLElement>('[data-link-field]')].map((el) => [
+							el.dataset.linkField!,
+							value(`link_${el.dataset.linkField}`),
+						]),
+					),
+					consentWhatsapp: checked('consentWhatsapp'),
+					consentSms: checked('consentSms'),
+					consentEmail: checked('consentEmail'),
+				};
+
+				if (save) {
+					save.disabled = true;
+					save.textContent = 'Saving';
+				}
+
+				const { data, error } = await supabase.rpc('update_my_registration', {
+					payload,
+				});
+
+				if (save) {
+					save.disabled = false;
+					save.textContent = 'Save changes';
+				}
+
+				if (error) {
+					if (editError) {
+						editError.textContent =
+							'We could not save that just now. Please try again.';
+						editError.hidden = false;
 					}
 					return;
 				}
-				fail('We could not send that link just now.');
-				return;
-			}
 
-			// The same words whether or not we hold a registration for it. Which
-			// addresses are on our list is not something a stranger gets to
-			// learn by typing them in one at a time.
-			rememberSentTo(email);
-			const shown = root.querySelector<HTMLElement>('[data-sent-address]');
-			if (shown) shown.textContent = email;
-			show('sent');
-			(root.querySelector('#acct-code') as HTMLInputElement | null)?.focus();
-		});
+				if (data && data.ok === false) {
+					const message = data.message ?? 'Please check that and try again.';
+					// `.field`, not `.acct__field`: the class was renamed when this page
+					// stopped borrowing the document layout, and a selector that matches
+					// nothing fails silently.
+					// A refusal about a link names the kind — `instagram` — while the
+					// input is called `link_instagram`, so both spellings are tried.
+					const field = data.field
+						? (form.querySelector<HTMLElement>(`.field:has([name="${data.field}"])`) ??
+							form.querySelector<HTMLElement>(
+								`.field:has([name="link_${data.field}"])`,
+							) ??
+							form.querySelector<HTMLElement>(
+								`.field:has([name="link_${String(data.field).replace(/_link$/, '')}"])`,
+							))
+						: null;
 
-		// ── the code, for when the link is on the wrong device ─────────────────
-		//
-		// The same message carries both. A link is one tap where it opens in the
-		// browser that asked for it, and useless where it does not — people read
-		// email on whichever device is nearest. The code does not care.
+					// The message goes under the line it is about. Focusing the field
+					// scrolls to it, so a message anywhere else — the foot of the form,
+					// say — is carried off the screen by the very act of pointing at it,
+					// leaving a reddened rule and no reason for it.
+					const slot = field?.querySelector<HTMLElement>('[data-field-error]');
+					const control = field?.querySelector<HTMLInputElement | HTMLSelectElement>(
+						'input, select',
+					);
+					if (field && slot && control) {
+						field.dataset.wrong = '';
+						slot.textContent = message;
+						slot.hidden = false;
+						// Named after the control it belongs to, so a screen reader reads
+						// the reason with the field rather than as a loose announcement.
+						slot.id ||= `${control.name}-wrong`;
+						control.setAttribute('aria-invalid', 'true');
+						control.setAttribute('aria-describedby', slot.id);
+						control.focus();
+						if (editError) editError.hidden = true;
+					} else if (editError) {
+						// Nothing to point at — a refusal about the form as a whole.
+						editError.textContent = message;
+						editError.hidden = false;
+					}
+					return;
+				}
 
-		const codeForm = root.querySelector<HTMLFormElement>('[data-code-form]');
-		const codeGo = root.querySelector<HTMLButtonElement>('[data-code-go]');
-		const codeError = root.querySelector<HTMLElement>('[data-code-error]');
+				await load();
 
-		const sayCode = (message: string) => {
-			if (!codeError) return;
-			codeError.textContent = message;
-			codeError.hidden = false;
-		};
-
-		codeForm?.addEventListener('submit', async (event) => {
-			event.preventDefault();
-			const input = codeForm.elements.namedItem('token') as HTMLInputElement;
-			// People read a code off a screen and type it back with the spaces
-			// they saw, so take the digits and ignore the rest.
-			const token = input.value.replace(/\D/g, '');
-			if (codeError) codeError.hidden = true;
-
-			if (token.length !== 6) {
-				sayCode('The code is six digits.');
-				input.focus();
-				return;
-			}
-			if (!sentTo) {
-				sayCode('Give us your email address above first, and we will send you a code.');
-				return;
-			}
-
-			if (codeGo) {
-				codeGo.disabled = true;
-				codeGo.textContent = 'Checking';
-			}
-
-			const { error } = await supabase.auth.verifyOtp({
-				email: sentTo,
-				token,
-				type: 'email',
+				// Saving returns them to the record, where the change is its own
+				// evidence — but only if they happen to be looking at the line they
+				// changed. A live region says it once, for the people reading the
+				// page and for anyone listening to it.
+				const saved = root.querySelector<HTMLElement>('[data-saved]');
+				if (saved) {
+					saved.hidden = false;
+					window.clearTimeout(savedFor);
+					savedFor = window.setTimeout(() => {
+						saved.hidden = true;
+					}, 4000);
+				}
 			});
 
-			if (codeGo) {
-				codeGo.disabled = false;
-				codeGo.textContent = 'Sign me in';
-			}
+			// ── start ──────────────────────────────────────────────────────────────
 
-			if (error) {
-				// Wrong, already used, or older than an hour. The page cannot tell
-				// which, and guessing at it out loud would be worse than not.
-				sayCode('That code did not work. It expires after an hour and works once.');
-				input.select();
-				return;
-			}
-			// A success fires SIGNED_IN, which is already wired to open the record.
-		});
-
-		root.querySelector('[data-signin-again]')?.addEventListener('click', () => {
-			show('signin');
-			(root.querySelector('#acct-email') as HTMLInputElement | null)?.focus();
-		});
-
-		for (const button of root.querySelectorAll('[data-signout]')) {
-			button.addEventListener('click', async () => {
-				await supabase.auth.signOut();
-				current = null;
-				remember('');
-				rememberSentTo('');
-				reopen();
-				show('signin');
-			});
-		}
-
-		root.querySelector('[data-retry]')?.addEventListener('click', () => {
-			reopen();
-			show('loading');
-			void start();
-		});
-
-		// ── editing ────────────────────────────────────────────────────────────
-
-		root.querySelector('[data-edit-open]')?.addEventListener('click', () => {
-			if (!current) return;
-			const saved = root.querySelector<HTMLElement>('[data-saved]');
-			if (saved) saved.hidden = true;
-			fill(current);
-			show('edit');
-			(root.querySelector('#acct-name') as HTMLInputElement | null)?.focus();
-		});
-
-		root.querySelector('[data-edit-cancel]')?.addEventListener('click', () => {
-			show('record');
-		});
-
-		const save = root.querySelector<HTMLButtonElement>('[data-edit-save]');
-		let savedFor = 0;
-
-		form?.addEventListener('submit', async (event) => {
-			event.preventDefault();
-			if (!form) return;
-
-			for (const field of form.querySelectorAll<HTMLElement>('[data-wrong]')) {
-				delete field.dataset.wrong;
-			}
-			for (const slot of form.querySelectorAll<HTMLElement>('[data-field-error]')) {
-				slot.textContent = '';
-				slot.hidden = true;
-			}
-			for (const el of form.querySelectorAll('[aria-invalid]')) {
-				el.removeAttribute('aria-invalid');
-				el.removeAttribute('aria-describedby');
-			}
-
-			const value = (name: string) =>
-				(
-					(form.elements.namedItem(name) as HTMLInputElement | HTMLSelectElement)
-						?.value ?? ''
-				).trim();
-			const checked = (name: string) =>
-				Boolean((form.elements.namedItem(name) as HTMLInputElement)?.checked);
-
-			const language = value('language');
-			const payload = {
-				fullName: value('fullName'),
-				role: value('role'),
-				// Spaces are how people write a phone number and not how E.164
-				// stores one. Strip them here rather than refusing the number.
-				phone: value('phone').replace(/[\s()-]/g, ''),
-				city: value('city'),
-				pincode: value('pincode'),
-				dateOfBirth: value('dateOfBirth'),
-				gender: value('gender'),
-				genderSelfDescribed: value('genderSelfDescribed'),
-				preferredLanguage: language === 'other' ? value('languageOther') : language,
-				interests: [
-					...form.querySelectorAll<HTMLInputElement>('input[name="interests"]:checked'),
-				].map((b) => b.value),
-				bio: value('bio'),
-				// Every kind is sent, including the empty ones: an empty value is
-				// how somebody removes a link, and a kind left out of the object
-				// would simply be left alone.
-				links: Object.fromEntries(
-					[...form.querySelectorAll<HTMLElement>('[data-link-field]')].map((el) => [
-						el.dataset.linkField!,
-						value(`link_${el.dataset.linkField}`),
-					]),
-				),
-				consentWhatsapp: checked('consentWhatsapp'),
-				consentSms: checked('consentSms'),
-				consentEmail: checked('consentEmail'),
+			const start = async () => {
+				const { data } = await supabase.auth.getSession();
+				if (data.session) {
+					await afterSignIn();
+				} else if (sentTo) {
+					// Came back with a code in hand. Landing them on the email form
+					// again invites them to ask for a second one, which is throttled,
+					// and to abandon a code that is still perfectly good.
+					const shown = root.querySelector<HTMLElement>('[data-sent-address]');
+					if (shown) shown.textContent = sentTo;
+					show('sent');
+					(root.querySelector('#acct-code') as HTMLInputElement | null)?.focus();
+				} else {
+					show('signin');
+				}
 			};
 
-			if (save) {
-				save.disabled = true;
-				save.textContent = 'Saving';
-			}
+			// Arriving from the link, the session is set while the page is already
+			// running. Waiting for the event rather than for getSession alone is
+			// what makes the link land on the record instead of on the sign-in form.
+			supabase.auth.onAuthStateChange((event) => {
+				if (event === 'SIGNED_IN') void afterSignIn();
+			});
 
-			const { data, error } = await supabase.rpc('update_my_registration', { payload });
-
-			if (save) {
-				save.disabled = false;
-				save.textContent = 'Save changes';
-			}
-
-			if (error) {
-				if (editError) {
-					editError.textContent = 'We could not save that just now. Please try again.';
-					editError.hidden = false;
-				}
-				return;
-			}
-
-			if (data && data.ok === false) {
-				const message = data.message ?? 'Please check that and try again.';
-				// `.field`, not `.acct__field`: the class was renamed when this page
-				// stopped borrowing the document layout, and a selector that matches
-				// nothing fails silently.
-				// A refusal about a link names the kind — `instagram` — while the
-				// input is called `link_instagram`, so both spellings are tried.
-				const field = data.field
-					? (form.querySelector<HTMLElement>(`.field:has([name="${data.field}"])`) ??
-						form.querySelector<HTMLElement>(
-							`.field:has([name="link_${data.field}"])`,
-						) ??
-						form.querySelector<HTMLElement>(
-							`.field:has([name="link_${String(data.field).replace(/_link$/, '')}"])`,
-						))
-					: null;
-
-				// The message goes under the line it is about. Focusing the field
-				// scrolls to it, so a message anywhere else — the foot of the form,
-				// say — is carried off the screen by the very act of pointing at it,
-				// leaving a reddened rule and no reason for it.
-				const slot = field?.querySelector<HTMLElement>('[data-field-error]');
-				const control = field?.querySelector<HTMLInputElement | HTMLSelectElement>(
-					'input, select',
-				);
-				if (field && slot && control) {
-					field.dataset.wrong = '';
-					slot.textContent = message;
-					slot.hidden = false;
-					// Named after the control it belongs to, so a screen reader reads
-					// the reason with the field rather than as a loose announcement.
-					slot.id ||= `${control.name}-wrong`;
-					control.setAttribute('aria-invalid', 'true');
-					control.setAttribute('aria-describedby', slot.id);
-					control.focus();
-					if (editError) editError.hidden = true;
-				} else if (editError) {
-					// Nothing to point at — a refusal about the form as a whole.
-					editError.textContent = message;
-					editError.hidden = false;
-				}
-				return;
-			}
-
-			await load();
-
-			// Saving returns them to the record, where the change is its own
-			// evidence — but only if they happen to be looking at the line they
-			// changed. A live region says it once, for the people reading the
-			// page and for anyone listening to it.
-			const saved = root.querySelector<HTMLElement>('[data-saved]');
-			if (saved) {
-				saved.hidden = false;
-				window.clearTimeout(savedFor);
-				savedFor = window.setTimeout(() => {
-					saved.hidden = true;
-				}, 4000);
-			}
-		});
-
-		// ── start ──────────────────────────────────────────────────────────────
-
-		const start = async () => {
-			const { data } = await supabase.auth.getSession();
-			if (data.session) {
-				await afterSignIn();
-			} else if (sentTo) {
-				// Came back with a code in hand. Landing them on the email form
-				// again invites them to ask for a second one, which is throttled,
-				// and to abandon a code that is still perfectly good.
-				const shown = root.querySelector<HTMLElement>('[data-sent-address]');
-				if (shown) shown.textContent = sentTo;
-				show('sent');
-				(root.querySelector('#acct-code') as HTMLInputElement | null)?.focus();
-			} else {
-				show('signin');
-			}
-		};
-
-		// Arriving from the link, the session is set while the page is already
-		// running. Waiting for the event rather than for getSession alone is
-		// what makes the link land on the record instead of on the sign-in form.
-		supabase.auth.onAuthStateChange((event) => {
-			if (event === 'SIGNED_IN') void afterSignIn();
-		});
-
-		void start();
-	}
-</script>
+			void start();
+		}
+	</script>
+</Base>
