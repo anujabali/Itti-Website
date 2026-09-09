@@ -1,0 +1,22 @@
+// Cloudflare, for a site that is only files.
+//
+// Written by hand rather than generated. `wrangler pages project create`
+// detects Astro and offers to install its Cloudflare adapter, which converts
+// the site to server-side rendering — a worker in front of every page, for a
+// site that has no server-side anything. It also stops `_headers` being read,
+// because the assets then go through the worker instead of the CDN, which
+// silently took the Content-Security-Policy off every response.
+//
+// So: no `main`, no adapter, no runtime. `dist` is uploaded as it is built,
+// `_headers` is honoured, and an address that matches nothing gets the 404 the
+// site already writes in its own voice.
+{
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"name": "itti-web",
+	"compatibility_date": "2026-09-09",
+	"assets": {
+		"directory": "./dist",
+		"not_found_handling": "404-page"
+	},
+	"observability": { "enabled": true }
+}

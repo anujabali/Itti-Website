@@ -40,3 +40,6 @@ _local/
 
 # Local Netlify folder
 .netlify
+
+# Wrangler build state, not source.
+.wrangler/
