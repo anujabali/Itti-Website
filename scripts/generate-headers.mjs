@@ -43,11 +43,27 @@ for (const page of pages) {
 }
 
 // The project's own Supabase origin, so the policy names one host rather than
-// every project on supabase.co. Falls back to the wildcard when the variable is
-// not set, which is the case for a local build.
-const supabase = process.env.PUBLIC_SUPABASE_URL
-	? new URL(process.env.PUBLIC_SUPABASE_URL).origin
-	: 'https://*.supabase.co';
+// every project on supabase.co.
+//
+// Astro loads `.env` for the site it builds, but this runs as a separate node
+// process afterwards and does not inherit it. Read the file directly when the
+// variable is not already in the environment: otherwise a local build quietly
+// widens the policy to every project on supabase.co, which still works and so
+// is never noticed.
+const fromEnvFile = async () => {
+	try {
+		const text = await readFile(new URL('../.env', import.meta.url), 'utf8');
+		return text
+			.match(/^\s*PUBLIC_SUPABASE_URL\s*=\s*(.+)$/m)?.[1]
+			.trim()
+			.replace(/^["']|["']$/g, '');
+	} catch {
+		return undefined;
+	}
+};
+
+const supabaseUrl = process.env.PUBLIC_SUPABASE_URL || (await fromEnvFile());
+const supabase = supabaseUrl ? new URL(supabaseUrl).origin : 'https://*.supabase.co';
 
 const csp = [
 	`default-src 'self'`,

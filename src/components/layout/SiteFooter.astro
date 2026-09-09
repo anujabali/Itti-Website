@@ -102,7 +102,10 @@ const year = 2026;
 
 	.foot__top {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
+		/* 15rem put the four items exactly on the boundary at a 1200px window,
+		   so Take Part dropped to a second row on every page. 13rem clears it
+		   with room, and the columns still stack properly on a phone. */
+		grid-template-columns: repeat(auto-fit, minmax(min(13rem, 100%), 1fr));
 		gap: clamp(2.5rem, 5vw, 4rem);
 	}
 
