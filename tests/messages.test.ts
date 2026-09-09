@@ -55,6 +55,17 @@ describe('the welcome message', () => {
 		expect(receipt).toContain('We may contact you by: WhatsApp, SMS and Email');
 	});
 
+	// The catch-all role is the one somebody reads about themselves on a page
+	// that opens with their name, so it is not called "Other".
+	it('calls the catch-all role Member, not Other', () => {
+		const said = (role: string) =>
+			welcome({ firstName: 'Asha', interests: [], role }).text;
+		expect(said('other')).toContain('You are: Member');
+		expect(said('other')).not.toContain('You are: Other');
+		// And the areas keep their own "other", which means something else.
+		expect(welcome({ interests: ['other'] }).text).toContain('connect with Other');
+	});
+
 	// A blank line is a question nobody answered, not a gap to display.
 	it('leaves out what was never filled in', () => {
 		const sparse = welcome({ firstName: 'Asha', interests: [], city: 'Pune' });

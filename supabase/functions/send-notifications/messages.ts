@@ -43,7 +43,7 @@ const ROLE: Record<string, string> = {
 	patient: 'Patient / Beneficiary',
 	caregiver: 'Caregiver / Family Member',
 	volunteer: 'Volunteer / Supporter',
-	other: 'Other',
+	other: 'Member',
 };
 
 const GENDER: Record<string, string> = {

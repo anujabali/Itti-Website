@@ -409,9 +409,9 @@
 									<input type="radio" name="role" value="other" />
 									<span class="f1-choice-card__indicator"></span>
 									<span class="f1-choice-card__body">
-										<span class="f1-choice-card__title">Other</span>
+										<span class="f1-choice-card__title">Member</span>
 										<span class="f1-choice-card__desc"
-											>General community member or interested partner</span
+											>I care about the work, or want to partner with you</span
 										>
 									</span>
 								</label>
@@ -441,7 +441,10 @@
 								aria-labelledby="f1-pillar-label"
 							>
 								<!-- Neurodivergence -->
-								<label class="f1-pillar-card" style="--card-accent: var(--ochre); --card-accent-ink: var(--ochre-ink);">
+								<label
+									class="f1-pillar-card"
+									style="--card-accent: var(--ochre); --card-accent-ink: var(--ochre-ink);"
+								>
 									<input type="checkbox" name="pillars" value="neurodivergence" />
 									<div class="f1-pillar-card__inner">
 										<span class="f1-pillar-card__tag">Pillar I</span>
@@ -451,7 +454,10 @@
 								</label>
 
 								<!-- Cancer Care -->
-								<label class="f1-pillar-card" style="--card-accent: var(--rose); --card-accent-ink: var(--rose-ink);">
+								<label
+									class="f1-pillar-card"
+									style="--card-accent: var(--rose); --card-accent-ink: var(--rose-ink);"
+								>
 									<input type="checkbox" name="pillars" value="cancer_care" />
 									<div class="f1-pillar-card__inner">
 										<span class="f1-pillar-card__tag">Pillar II</span>
@@ -463,7 +469,10 @@
 								</label>
 
 								<!-- CLAW -->
-								<label class="f1-pillar-card" style="--card-accent: var(--sage); --card-accent-ink: var(--sage-ink);">
+								<label
+									class="f1-pillar-card"
+									style="--card-accent: var(--sage); --card-accent-ink: var(--sage-ink);"
+								>
 									<input type="checkbox" name="pillars" value="claw" />
 									<div class="f1-pillar-card__inner">
 										<span class="f1-pillar-card__tag">Pillar III</span>
@@ -475,7 +484,10 @@
 								</label>
 
 								<!-- I'm not sure yet (maps to 'other' in DB) -->
-								<label class="f1-pillar-card" style="--card-accent: var(--teal); --card-accent-ink: var(--teal-ink);">
+								<label
+									class="f1-pillar-card"
+									style="--card-accent: var(--teal); --card-accent-ink: var(--teal-ink);"
+								>
 									<input
 										type="checkbox"
 										name="pillars"
@@ -2409,11 +2421,15 @@
 					// be parsed as markup.
 					// The stored values are enum members. A receipt should read back what
 					// the person chose, in the words the form used.
+					//
+					// One map for roles and areas both, which works only because no
+					// value appears in both sets: `other` here is the role. Adding an
+					// "Other" area would collide and quietly mislabel one of them.
 					const SAID: Record<string, string> = {
 						patient: 'Patient / Beneficiary',
 						caregiver: 'Caregiver / Family Member',
 						volunteer: 'Volunteer / Supporter',
-						other: 'Other',
+						other: 'Member',
 						neurodivergence: 'Neurodivergence',
 						cancer_care: 'Cancer Care',
 						claw: 'CLAW',
