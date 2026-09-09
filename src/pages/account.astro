@@ -1996,6 +1996,15 @@ const FACTS = {
 				set('gender', r.gender ?? '');
 				set('genderSelfDescribed', r.genderOther ?? '');
 				set('bio', r.bio ?? '');
+
+				// Unchosen renders as the brand teal, so that is the one to show as
+				// picked rather than leaving every swatch empty.
+				const chosenAccent = (r.accent ?? '') || 'teal';
+				for (const radio of form.querySelectorAll<HTMLInputElement>(
+					'[name="accent"]',
+				)) {
+					radio.checked = radio.value === chosenAccent;
+				}
 				countBio();
 
 				const have = (r.links ?? {}) as Record<string, string>;
@@ -2350,6 +2359,9 @@ const FACTS = {
 						),
 					].map((b) => b.value),
 					bio: value('bio'),
+					accent:
+						form.querySelector<HTMLInputElement>('[name="accent"]:checked')?.value ??
+						'teal',
 					// Every kind is sent, including the empty ones: an empty value is
 					// how somebody removes a link, and a kind left out of the object
 					// would simply be left alone.
