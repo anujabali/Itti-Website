@@ -154,12 +154,56 @@ const FACTS = {
 				<!-- Opening the page, or coming back from the link with a token in
 				     the address. Neither is instant, and a blank page reads as a
 				     broken one. -->
+				<!-- Opening a record takes a session check and a round trip, and the
+				     page used to spend both of them saying "One moment." and then
+				     jumping to something a different height. This is the record's own
+				     shape, held until the record arrives: the same band, the same bar,
+				     the same three cards. The name and the colour come from what the
+				     browser already remembers, so the band is right from the first
+				     frame and only the details fade in.
+
+				     The crown is repeated here rather than shared, because a
+				     component would carry its own style scope and none of the rules
+				     below would reach it. -->
 				<section data-panel="loading">
-					<header class="acct__mast">
-						<p class="acct__eyebrow">Your account</p>
-						<h1 class="acct__title">One moment.</h1>
-						<p class="acct__lede">Looking for your record.</p>
-					</header>
+					<div class="crown" data-boot-crown data-accent="teal">
+						<span class="crown__ornament" aria-hidden="true">
+							<Mark height="26rem" label="" />
+						</span>
+						<div class="crown__grain" aria-hidden="true"></div>
+						<div class="crown__id">
+							<p class="crown__eyebrow">Your account</p>
+							<h1 class="crown__name" data-boot-name>&nbsp;</h1>
+							<p class="crown__meta" data-boot-meta>Opening your record</p>
+						</div>
+						<span class="crown__rule" aria-hidden="true"></span>
+					</div>
+
+					<div class="bar" aria-hidden="true">
+						<div class="tabs">
+							<span class="tab tab--ghost">Your details</span>
+							<span class="tab tab--ghost">Profile</span>
+							<span class="tab tab--ghost">Account</span>
+						</div>
+					</div>
+
+					<div class="spread" aria-hidden="true">
+						{
+							// Four cards, the shape a record actually takes: who you are,
+							// where you are, how we reach you, and the note for the record.
+							[4, 3, 3, 2].map((rows) => (
+								<div class="block block--ghost">
+									<span class="ghost ghost--title" />
+									{Array.from({ length: rows }).map(() => (
+										<span class="ghost__pair">
+											<span class="ghost ghost--label" />
+											<span class="ghost ghost--value" />
+										</span>
+									))}
+								</div>
+							))
+						}
+					</div>
 				</section>
 
 				<section data-panel="signin" hidden>
@@ -367,38 +411,53 @@ const FACTS = {
 						data-view="profile"
 						hidden
 					>
-						<header class="profile">
-							<p class="profile__bio" data-bio hidden></p>
-							<p class="profile__invite" data-bio-empty hidden>
-								You have not written anything about yourself yet. Edit your profile to
-								add a few words and the places you can be found.
-							</p>
+						<div class="spread spread--profile">
+							<section class="block block--wide">
+								<h3 class="block__title">In your own words</h3>
+								<p class="profile__bio" data-bio hidden></p>
+								<p class="profile__invite" data-bio-empty hidden>
+									You have not written anything about yourself yet. Edit your profile to
+									add a few words and the places you can be found.
+								</p>
+							</section>
 
-							<div class="profile__marks" data-mast-marks aria-hidden="true">
-								{
-									PILLARS.map(([id, label, accent]) => (
-										<span class="mark" data-mark={id} data-accent={accent} hidden>
-											{label}
-										</span>
-									))
-								}
-							</div>
+							<section class="block">
+								<h3 class="block__title">What you are here for</h3>
+								<div class="profile__marks" data-mast-marks>
+									{
+										PILLARS.map(([id, label, accent]) => (
+											<span class="mark" data-mark={id} data-accent={accent} hidden>
+												{label}
+											</span>
+										))
+									}
+								</div>
+								<p class="profile__none" data-marks-empty hidden>
+									You have not told us which part of our work you want yet.
+								</p>
+							</section>
 
-							<ul class="elsewhere" data-links>
-								{
-									LINKS.map(([id, label]) => (
-										<li data-link={id} hidden>
-											<a class="elsewhere__a" data-link-a href="#">
-												<span class="elsewhere__kind">{label}</span>
-												<span class="elsewhere__at" data-link-text />
-											</a>
-										</li>
-									))
-								}
-							</ul>
+							<section class="block">
+								<h3 class="block__title">Where to find you</h3>
+								<ul class="elsewhere" data-links>
+									{
+										LINKS.map(([id, label]) => (
+											<li data-link={id} hidden>
+												<a class="elsewhere__a" data-link-a href="#">
+													<span class="elsewhere__kind">{label}</span>
+													<span class="elsewhere__at" data-link-text />
+												</a>
+											</li>
+										))
+									}
+								</ul>
+								<p class="profile__none" data-links-empty hidden>
+									Nothing added yet. Anything you add here is shown only to you.
+								</p>
+							</section>
+						</div>
 
-							<p class="note" data-saved role="status" hidden>Saved.</p>
-						</header>
+						<p class="note" data-saved role="status" hidden>Saved.</p>
 					</div>
 
 					<div
@@ -410,22 +469,25 @@ const FACTS = {
 						data-view="account"
 						hidden
 					>
-						<footer class="acct__foot">
-							<p>
-								<strong>Your email address</strong> is what signs you in and where the receipt
-								went, so it is not something this page will change under you. Write to <a
-									class="acct__link"
-									href="mailto:hello@itti.org.in">hello@itti.org.in</a
-								> and we will move it.
-							</p>
-							<p>
-								<strong>To be erased entirely</strong>, write to the same address and
-								Anuja Bali will do it &mdash; not a button that cannot be undone. What
-								we hold and why is set out in our <a class="acct__link" href="/policies#privacy"
-									>Privacy Policy</a
-								>.
-							</p>
-						</footer>
+						<div class="spread spread--profile">
+							<section class="block">
+								<h3 class="block__title">Your email address</h3>
+								<p class="block__prose">
+									It is what signs you in, and where the receipt went, so it is not
+									something this page will change under you. Write to{' '}
+									<a class="acct__link" href="mailto:hello@itti.org.in">hello@itti.org.in</a
+									> and we will move it.
+								</p>
+							</section>
+							<section class="block">
+								<h3 class="block__title">Erasing your record</h3>
+								<p class="block__prose">
+									Write to the same address and Anuja Bali will do it &mdash; not a button
+									that cannot be undone. What we hold and why is set out in our{' '}
+									<a class="acct__link" href="/policies#privacy">Privacy Policy</a>.
+								</p>
+							</section>
+						</div>
 						<div class="acct__actions">
 							<button class="linkish" type="button" data-signout>Sign out</button>
 						</div>
@@ -731,7 +793,11 @@ const FACTS = {
 		.acct {
 			flex: 1 0 auto;
 			width: 100%;
-			max-width: 58rem;
+			/* Wider than a reading measure, because the record is a spread of cards
+		   to glance across rather than a column of prose. The panels that are
+		   prose — signing in, the note about erasure — hold their own narrower
+		   measures and are unaffected. */
+			max-width: 66rem;
 			margin: 0 auto;
 			/* Only the nav's height at the top: the crown carries its own space and
 		   should meet the bar rather than float below it. Panels without a
@@ -924,7 +990,7 @@ const FACTS = {
 		.crown__id {
 			position: relative;
 			width: 100%;
-			max-width: 58rem;
+			max-width: 66rem;
 			margin: 0 auto;
 			padding: 0 var(--gutter);
 		}
@@ -1313,13 +1379,234 @@ const FACTS = {
 
 		/* ── The record ──────────────────────────────────────────────────────── */
 
-		/* Two columns where there is room, so a record is a spread to glance over
-	   rather than one long column to scroll. */
+		/* Cards where there was bare text. The same information, but a record now
+	   reads as things you can look at one at a time rather than as three
+	   columns of a form printed onto the page. */
 		.spread {
 			display: grid;
-			grid-template-columns: repeat(auto-fit, minmax(min(13rem, 100%), 1fr));
-			gap: clamp(1.75rem, 3.5vw, 2.75rem);
-			align-items: start;
+			grid-template-columns: repeat(auto-fit, minmax(min(15.5rem, 100%), 1fr));
+			gap: clamp(0.9rem, 1.8vw, 1.35rem);
+			/* Stretch, not start: cards that end at different heights leave a
+		   ragged edge across the row, which reads as unfinished rather than
+		   as varied. */
+			align-items: stretch;
+		}
+
+		.block {
+			position: relative;
+			padding: 1.5rem 1.5rem 0.5rem;
+			background: var(--warm-white, #fff);
+			border: 1px solid var(--rule);
+			border-radius: 4px;
+			box-shadow: 0 1px 2px rgba(44, 39, 33, 0.03);
+			transition:
+				transform 320ms var(--ease),
+				box-shadow 320ms var(--ease);
+		}
+
+		.block:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 14px 30px -22px rgba(44, 39, 33, 0.5);
+		}
+
+		/* The card the accent runs through, so the spread carries the person's own
+	   colour rather than only the band above it. */
+		.block::before {
+			content: '';
+			position: absolute;
+			inset: 0 auto 0 0;
+			width: 2px;
+			border-radius: 4px 0 0 4px;
+			background: var(--band, var(--teal));
+			opacity: 0.55;
+		}
+
+		/* ── While the record is on its way ──────────────────────────────────── */
+
+		/* The record replacing its own outline. Short, and once. */
+		[data-panel='record'][data-first]:not([hidden]) {
+			animation: record-settle 420ms var(--ease) both;
+		}
+
+		@keyframes record-settle {
+			from {
+				opacity: 0;
+			}
+			to {
+				opacity: 1;
+			}
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			[data-panel='record'][data-first]:not([hidden]) {
+				animation: none;
+			}
+		}
+
+		.tab--ghost {
+			color: color-mix(in srgb, var(--ink-faint) 45%, transparent);
+			cursor: default;
+		}
+
+		.block--ghost {
+			display: grid;
+			gap: 0.35rem;
+			padding-bottom: 1.5rem;
+		}
+
+		.block--ghost:hover {
+			transform: none;
+			box-shadow: 0 1px 2px rgba(44, 39, 33, 0.03);
+		}
+
+		.ghost__pair {
+			display: grid;
+			gap: 0.4rem;
+			padding: 0.55rem 0;
+		}
+
+		/* A bar of the ink at its faintest, brightened by a highlight travelling
+	   across it. Slow on purpose: a fast shimmer reads as a page in trouble. */
+		.ghost {
+			display: block;
+			height: 0.55rem;
+			border-radius: 2px;
+			background:
+				linear-gradient(
+						90deg,
+						transparent 0%,
+						color-mix(in srgb, var(--cream) 70%, transparent) 50%,
+						transparent 100%
+					)
+					0 0 / 220% 100% no-repeat,
+				color-mix(in srgb, var(--ink-faint) 15%, transparent);
+			animation: ghost-sweep 1900ms var(--ease) infinite;
+		}
+
+		.ghost--title {
+			width: 7rem;
+			height: 0.6rem;
+			margin-bottom: 0.9rem;
+		}
+
+		.ghost--label {
+			width: 4.5rem;
+			height: 0.45rem;
+		}
+
+		.ghost--value {
+			width: 76%;
+			height: 0.7rem;
+		}
+
+		.ghost__pair:nth-child(3) .ghost--value {
+			width: 58%;
+		}
+
+		.ghost__pair:nth-child(4) .ghost--value {
+			width: 67%;
+		}
+
+		@keyframes ghost-sweep {
+			from {
+				background-position: -120% 0, 0 0;
+			}
+			to {
+				background-position: 220% 0, 0 0;
+			}
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			.ghost {
+				animation: none;
+			}
+
+			.block {
+				transition: none;
+			}
+		}
+
+		[data-band='teal'] .block::before {
+			background: var(--teal);
+		}
+
+		[data-band='ochre'] .block::before {
+			background: var(--ochre-ink);
+		}
+
+		[data-band='rose'] .block::before {
+			background: var(--rose-ink);
+		}
+
+		[data-band='sage'] .block::before {
+			background: var(--sage-ink);
+		}
+
+		/* The profile is one wide card over two, so the bio has a measure to
+	   itself and the two short lists sit beside each other beneath it. */
+		.spread--profile {
+			grid-template-columns: repeat(auto-fit, minmax(min(17rem, 100%), 1fr));
+		}
+
+		.spread--profile .block {
+			padding-bottom: 1.5rem;
+		}
+
+		.block--wide {
+			grid-column: 1 / -1;
+		}
+
+		.spread--profile .profile__bio {
+			margin: 0;
+			max-width: 42rem;
+			font-size: 1.0625rem;
+			line-height: 1.7;
+			color: var(--ink);
+		}
+
+		.spread--profile .profile__invite,
+		.profile__none {
+			margin: 0;
+			max-width: 34rem;
+			font-size: 0.9375rem;
+			line-height: 1.6;
+			color: var(--ink-faint);
+		}
+
+		/* Stacked inside a card rather than run along a line, because a card is
+	   narrow and a wrapped row of chips loses its own alignment. */
+		.spread--profile .profile__marks {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.5rem 1rem;
+			margin: 0;
+		}
+
+		.spread--profile .elsewhere {
+			display: grid;
+			gap: 0.6rem;
+		}
+
+		.spread--profile .elsewhere__a {
+			justify-content: space-between;
+			gap: 1rem;
+			padding-bottom: 0.55rem;
+			border-bottom: 1px solid var(--rule);
+		}
+
+		.spread--profile .elsewhere:has(li:not([hidden])) + .profile__none {
+			display: none;
+		}
+
+		.block__prose {
+			margin: 0;
+			font-size: 0.9375rem;
+			line-height: 1.65;
+			color: var(--ink-soft);
+		}
+
+		.block__prose strong {
+			color: var(--ink);
 		}
 
 		.block__title {
@@ -1538,7 +1825,8 @@ const FACTS = {
 		   page, and a filled block would shout over the tabs beside it. */
 		.btn--quiet {
 			margin-bottom: 0.5rem;
-			padding: 0.5rem 1.1rem;
+			padding: 0.55rem 1.2rem;
+			border-radius: 999px;
 			background: transparent;
 			color: var(--teal);
 			border-color: color-mix(in srgb, var(--teal) 40%, transparent);
@@ -1660,6 +1948,24 @@ const FACTS = {
 		const root = document.querySelector<HTMLElement>('[data-account]');
 		if (root) {
 			root.hidden = false;
+
+			// The name and the colour are already in this browser — the nav paints
+			// its chip from them before this page has asked the server anything. Use
+			// them here too, so the band is right on the first frame and the wait is
+			// spent only on the details.
+			try {
+				const known = localStorage.getItem('itti.who');
+				const hue = localStorage.getItem('itti.accent');
+				if (known) {
+					const name = root.querySelector<HTMLElement>('[data-boot-name]');
+					if (name) name.textContent = `${known}.`;
+				}
+				const band = root.querySelector<HTMLElement>('[data-boot-crown]');
+				if (band && hue) band.dataset.accent = hue;
+				if (hue) root.setAttribute('data-band', hue);
+			} catch {
+				// A browser that refuses storage still gets the shape, just unnamed.
+			}
 
 			const panels = new Map<string, HTMLElement>();
 			for (const el of root.querySelectorAll<HTMLElement>('[data-panel]')) {
@@ -1880,6 +2186,9 @@ const FACTS = {
 				root
 					.querySelector<HTMLElement>('[data-crown]')
 					?.setAttribute('data-accent', accent);
+				// The cards below take the same colour as a hairline down their edge,
+				// so the spread belongs to the band rather than sitting under it.
+				root.setAttribute('data-band', accent);
 
 				const bio = (r.bio ?? '').trim();
 				const bioEl = root.querySelector<HTMLElement>('[data-bio]');
@@ -1893,11 +2202,13 @@ const FACTS = {
 				// Where else to find them. The stored value is a handle; the address
 				// is built here so it is consistent wherever it is shown.
 				const links = (r.links ?? {}) as Record<string, string>;
+				let shownLinks = 0;
 				for (const el of root.querySelectorAll<HTMLElement>('[data-link]')) {
 					const kind = el.dataset.link!;
 					const handle = (links[kind] ?? '').trim();
 					el.hidden = handle === '';
 					if (!handle) continue;
+					shownLinks += 1;
 					const a = el.querySelector<HTMLAnchorElement>('[data-link-a]');
 					const text = el.querySelector<HTMLElement>('[data-link-text]');
 					if (text) text.textContent = kind === 'website' ? tidyUrl(handle) : handle;
@@ -1914,6 +2225,9 @@ const FACTS = {
 						}
 					}
 				}
+
+				const linksEmpty = root.querySelector<HTMLElement>('[data-links-empty]');
+				if (linksEmpty) linksEmpty.hidden = shownLinks > 0;
 
 				// Who they said they are, and how long we have had them — the two things
 				// worth reading before any single field.
@@ -1941,6 +2255,11 @@ const FACTS = {
 				for (const el of root.querySelectorAll<HTMLElement>('[data-mark]')) {
 					el.hidden = !interests.includes(el.dataset.mark!);
 				}
+
+				// A card whose only content is hidden is a heading over a gap. Each of
+				// the two profile cards says what it would have held instead.
+				const marksEmpty = root.querySelector<HTMLElement>('[data-marks-empty]');
+				if (marksEmpty) marksEmpty.hidden = interests.length > 0;
 
 				// A group with nothing under it is a heading over a gap. The guardian
 				// block in particular belongs only to the people who have one.
@@ -2144,6 +2463,20 @@ const FACTS = {
 				current = data;
 				remember(current.fullName ?? '', (current.accent ?? '') || 'teal');
 				paint(current);
+
+				// Only the first arrival fades. Coming back from the editor, or
+				// switching a tab, should be instant — a page that dissolves every
+				// time you touch it feels slow rather than considered.
+				const panel = panels.get('record');
+				if (panel && !panel.dataset.opened) {
+					panel.dataset.opened = 'yes';
+					panel.dataset.first = '';
+					panel.addEventListener(
+						'animationend',
+						() => delete panel.dataset.first,
+						{ once: true },
+					);
+				}
 				show('record');
 			};
 
