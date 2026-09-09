@@ -513,18 +513,18 @@ const MENUS = [
 	   states, and the ring says it just as clearly. */
 	.who__mark {
 		flex: none;
-		transition: transform 200ms var(--ease);
+		transition: background 200ms var(--ease);
 		display: grid;
 		place-items: center;
 		width: 1.85rem;
 		height: 1.85rem;
-		border: 0;
+		/* Ringed, not filled. A hairline in one of these inks read as grey at this
+		   size, so the ring is two pixels rather than one and takes the colour
+		   at full strength — enough for it to register as a colour without the
+		   disc becoming a solid badge. */
+		border: 2px solid var(--who-ring, currentColor);
 		border-radius: 999px;
-		/* Filled, not ringed. A hairline in one of these inks reads as grey at
-		   this size — the colour is the point, so the disc carries it and the
-		   letter becomes the ground it sits on. */
-		background: var(--who-ring, currentColor);
-		color: var(--who-ink, var(--cream));
+		background: transparent;
 		font-family: var(--face-cinzel);
 		font-size: 0.75rem;
 		font-weight: 600;
@@ -553,17 +553,6 @@ const MENUS = [
 	/* On the dark bar the disc sits on near-black, so the letter is that; on
 	   cream it is cream. Either way the letter is the ground, never a third
 	   colour competing with the two already there. */
-	[data-who] {
-		/* --ink-deep, not the teal abyss: measured on all four discs, the abyss
-		   left rose at 4.39 and sage at 4.16 against a small-text requirement of
-		   4.5. This clears every one with room. */
-		--who-ink: var(--ink-deep);
-	}
-
-	.nav.is-light [data-who] {
-		--who-ink: var(--warm-white);
-	}
-
 	.nav.is-light [data-accent='teal'] {
 		--who-ring: var(--teal);
 	}
@@ -577,8 +566,9 @@ const MENUS = [
 		--who-ring: var(--sage-ink);
 	}
 
+	/* The colour washes in rather than the disc changing shape. */
 	.who:hover .who__mark {
-		transform: scale(1.06);
+		background: color-mix(in srgb, var(--who-ring, currentColor) 16%, transparent);
 	}
 
 	.drawer__who {
