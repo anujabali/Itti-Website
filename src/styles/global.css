@@ -68,6 +68,12 @@
 	   a hardcoded rgba cannot. */
 	--rule: rgba(44, 39, 33, 0.14);
 
+	/* The ground the navigation takes when a page asks it to veil. Near-black is
+	   right over a photograph and wrong over a coloured field, where it reads as
+	   a black bar laid on the page rather than as the page continuing. A page
+	   that veils sets `data-band` on the root and gets its own floor back. */
+	--veil: rgba(15, 20, 21, 0.86);
+
 	/* Rhythm */
 	--nav-h: 5.25rem;
 	--gutter: clamp(1.5rem, 5vw, 5rem);
@@ -208,4 +214,22 @@ svg {
 		opacity: 1;
 		transform: none;
 	}
+}
+
+/* The four grounds a veiled bar can take, mixed to sit a shade under the floor
+   of the page beneath it so the line between them still reads. */
+html[data-band='teal'] {
+	--veil: color-mix(in srgb, var(--teal-deep) 88%, var(--ink-deep));
+}
+
+html[data-band='ochre'] {
+	--veil: color-mix(in srgb, var(--ochre) 17%, var(--ink-deep));
+}
+
+html[data-band='rose'] {
+	--veil: color-mix(in srgb, var(--rose) 20%, var(--ink-deep));
+}
+
+html[data-band='sage'] {
+	--veil: color-mix(in srgb, var(--sage) 23%, var(--ink-deep));
 }

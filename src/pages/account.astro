@@ -903,7 +903,10 @@ const FACTS = {
 		.block {
 			--ink: #2c2721;
 			--ink-soft: #5d564d;
-			--ink-faint: #70695f;
+			/* A step darker than the page's own faint ink. The card is a shade
+		   below cream now, and the label sets at nine pixels — the two together
+		   put it under the threshold, measured at 4.4 where 4.5 is needed. */
+			--ink-faint: #655e55;
 			--rule: rgba(44, 39, 33, 0.14);
 			color: var(--ink);
 		}
@@ -1787,7 +1790,8 @@ const FACTS = {
 
 		.fact__label {
 			font-family: var(--face-cinzel);
-			font-size: 0.5625rem;
+			/* Nine pixels of tracked capitals is a size, not a label. */
+			font-size: 0.625rem;
 			font-weight: 600;
 			letter-spacing: 0.16em;
 			text-transform: uppercase;
@@ -2099,6 +2103,10 @@ const FACTS = {
 		const root = document.querySelector<HTMLElement>('[data-account]');
 		if (root) {
 			root.hidden = false;
+			// The outline ships visible, so the stage that shows the band has to be
+			// set here rather than at the first `show()` — otherwise the skeleton
+			// appears without the thing it is an outline of.
+			root.dataset.stage = 'loading';
 
 			// The name and the colour are already in this browser — the nav paints
 			// its chip from them before this page has asked the server anything. Use
@@ -2113,10 +2121,12 @@ const FACTS = {
 				}
 				const band = root.querySelector<HTMLElement>('[data-crown]');
 				if (band && hue) band.dataset.accent = hue;
-				if (hue) {
-					root.setAttribute('data-band', hue);
-					root.closest('.page')?.setAttribute('data-band', hue);
-				}
+				// Teal until told otherwise, so the bar never falls back to the
+				// near-black it takes over a photograph.
+				const chosen = hue || 'teal';
+				root.setAttribute('data-band', chosen);
+				root.closest('.page')?.setAttribute('data-band', chosen);
+				document.documentElement.setAttribute('data-band', chosen);
 			} catch {
 				// A browser that refuses storage still gets the shape, just unnamed.
 			}
@@ -2348,6 +2358,7 @@ const FACTS = {
 				// so the spread belongs to the band rather than sitting under it.
 				root.setAttribute('data-band', accent);
 				root.closest('.page')?.setAttribute('data-band', accent);
+				document.documentElement.setAttribute('data-band', accent);
 
 				const bio = (r.bio ?? '').trim();
 				const bioEl = root.querySelector<HTMLElement>('[data-bio]');
