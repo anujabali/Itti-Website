@@ -1056,6 +1056,13 @@ const FACTS = {
 			outline-offset: 3px;
 		}
 
+		/* A view with almost nothing in it — a profile before anybody has written
+		   a bio — would collapse and leave the footer riding up under the bar. A
+		   floor keeps every view the same shape as the others. */
+		.view {
+			min-height: 16rem;
+		}
+
 		/* A panel is focusable so the keyboard lands in it, but it is not a control
 	   and should not draw a ring when it is merely opened. */
 		.view:focus {
