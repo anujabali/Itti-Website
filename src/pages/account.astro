@@ -127,7 +127,7 @@ const FACTS = {
 <Base
 	title="Your account — The Itti Foundation"
 	description="Sign in to see the details The Itti Foundation holds about you, and correct anything that is wrong."
-	navTheme="dark"
+	navTheme="veil"
 >
 	<div class="page">
 		<!-- The ground the whole account stands on, and the two things that stop it
@@ -174,6 +174,11 @@ const FACTS = {
 					</div>
 					<span class="crown__rule" data-crown-rule aria-hidden="true"></span>
 				</div>
+
+				<!-- Where content begins. The navigation is glass above this line and
+				     takes its own ground below it, because a transparent bar over a
+				     white card is a lockup nobody can read. -->
+				<span class="zone" data-light-zone aria-hidden="true"></span>
 
 				<!-- Opening a record takes a session check and a round trip. This is
 				     the record's own shape, held until the record arrives. -->
@@ -830,19 +835,20 @@ const FACTS = {
 		/* The one filled control on a dark page cannot be filled with the colour of
 	   the page. It takes the cream and gives back the abyss — the same trade
 	   the navigation's own pill makes on the opening arc. */
-		.page .btn {
+		.page .btn:not(.btn--quiet) {
 			background: var(--warm-white);
 			border-color: var(--warm-white);
 			color: var(--teal-deep);
 		}
 
-		.page .btn:hover:not([disabled]) {
+		.page .btn:not(.btn--quiet):hover:not([disabled]) {
 			background: var(--cream);
 			border-color: var(--cream);
 			color: var(--teal-deep);
 		}
 
 		.page .btn--quiet {
+			background: transparent;
 			color: var(--warm-white);
 			border-color: rgba(250, 247, 240, 0.4);
 		}
@@ -1043,15 +1049,15 @@ const FACTS = {
 
 		/* Ochre is the lightest of the four, so it carries at a lower proportion. */
 		.page[data-band='ochre'] {
-			--lit: color-mix(in srgb, var(--ochre) 46%, var(--ink-deep));
-			--deep: color-mix(in srgb, var(--ochre) 30%, var(--ink-deep));
-			--floor: color-mix(in srgb, var(--ochre) 14%, var(--ink-deep));
+			--lit: color-mix(in srgb, var(--ochre) 62%, var(--ink-deep));
+			--deep: color-mix(in srgb, var(--ochre) 40%, var(--ink-deep));
+			--floor: color-mix(in srgb, var(--ochre) 20%, var(--ink-deep));
 		}
 
 		.page[data-band='rose'] {
-			--lit: color-mix(in srgb, var(--rose) 52%, var(--ink-deep));
-			--deep: color-mix(in srgb, var(--rose) 34%, var(--ink-deep));
-			--floor: color-mix(in srgb, var(--rose) 17%, var(--ink-deep));
+			--lit: color-mix(in srgb, var(--rose) 70%, var(--ink-deep));
+			--deep: color-mix(in srgb, var(--rose) 46%, var(--ink-deep));
+			--floor: color-mix(in srgb, var(--rose) 24%, var(--ink-deep));
 		}
 
 		/* Sage is the least saturated of the four, so at the proportions the
@@ -1059,9 +1065,9 @@ const FACTS = {
 		   where the light falls. More of it reaches the ground, and the light
 		   itself is pushed toward the leaf rather than the stone. */
 		.page[data-band='sage'] {
-			--lit: color-mix(in srgb, var(--claw-leaf) 74%, var(--ink-deep));
-			--deep: color-mix(in srgb, var(--sage) 40%, var(--ink-deep));
-			--floor: color-mix(in srgb, var(--sage) 20%, var(--ink-deep));
+			--lit: color-mix(in srgb, var(--claw-leaf) 96%, var(--ink-deep));
+			--deep: color-mix(in srgb, var(--sage) 52%, var(--ink-deep));
+			--floor: color-mix(in srgb, var(--sage) 27%, var(--ink-deep));
 		}
 
 		/* The mark, very large and very quiet, bleeding off the right edge. An
@@ -1510,7 +1516,7 @@ const FACTS = {
 		.block {
 			position: relative;
 			padding: 1.5rem 1.5rem 0.5rem;
-			background: var(--warm-white, #fff);
+			background: color-mix(in srgb, var(--cream) 93%, var(--floor));
 			border: 1px solid var(--rule);
 			border-radius: 4px;
 			box-shadow: 0 1px 2px rgba(44, 39, 33, 0.03);

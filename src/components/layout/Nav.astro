@@ -315,7 +315,8 @@ const MENUS = [
 	   the bar — a cream card, in the case of the form — so it needs the same
 	   ground the light state has, in its own colour. Without it the lockup and
 	   the links are white on cream for as long as the card is behind them. */
-	:global(body[data-nav-theme='dark']) .nav__inner {
+	:global(body[data-nav-theme='dark']) .nav__inner,
+	:global(body[data-nav-theme='veil']) .nav.is-veiled .nav__inner {
 		background: rgba(15, 20, 21, 0.86);
 		/* The bar is the same colour as the ground, so this line is the only
 		   thing marking where one ends. In teal it does that and carries the
@@ -323,6 +324,20 @@ const MENUS = [
 		border-bottom: 1px solid color-mix(in srgb, var(--teal) 55%, transparent);
 		-webkit-backdrop-filter: blur(12px);
 		backdrop-filter: blur(12px);
+	}
+
+	/* The ground arrives rather than appearing, so the bar does not blink as the
+	   first card reaches it. */
+	:global(body[data-nav-theme='veil']) .nav__inner {
+		transition:
+			background-color 260ms var(--ease),
+			border-color 260ms var(--ease);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		:global(body[data-nav-theme='veil']) .nav__inner {
+			transition: none;
+		}
 	}
 
 	.nav__inner {

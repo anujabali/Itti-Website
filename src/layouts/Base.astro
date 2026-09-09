@@ -10,8 +10,13 @@ interface Props {
 	 * How the bar is coloured. `auto` binds it to what is behind it, which is
 	 * what the opening arc needs. A page that is dark all the way down has no
 	 * such moment, so it says so.
+	 *
+	 * `veil` is for a page that is dark the whole way down but wants the bar to
+	 * blend into the ground while nothing is behind it. It starts as glass and
+	 * takes its ground the moment `[data-light-zone]` reaches it — because a
+	 * transparent bar over a white card is a lockup nobody can read.
 	 */
-	navTheme?: 'auto' | 'light' | 'dark';
+	navTheme?: 'auto' | 'light' | 'dark' | 'veil';
 }
 
 const {
@@ -120,6 +125,34 @@ const GRAIN =
 	if (nav) {
 		if (navTheme === 'dark') {
 			// Dark all the way down; there is no ground change to follow.
+		} else if (navTheme === 'veil') {
+			// Glass until something is behind it. Same sentinel as `auto`, read the
+			// other way round: `auto` asks whether the ground has turned light,
+			// this asks whether there is any ground at all.
+			let queued = false;
+			const settle = () => {
+				queued = false;
+				const behind = zone
+					? zone.getBoundingClientRect().top <= nav.offsetHeight
+					: window.scrollY > 24;
+				nav.classList.toggle('is-veiled', behind);
+			};
+			const schedule = () => {
+				if (queued) return;
+				queued = true;
+				requestAnimationFrame(settle);
+			};
+			document.addEventListener('scroll', schedule, { passive: true });
+			window.addEventListener('resize', schedule);
+			// The sentinel may still be inside something hidden when this first
+			// runs — the account page reveals its content only once it knows
+			// whether there is a session — and a hidden element measures as though
+			// it were at the very top, which is the opposite answer. Watching the
+			// document's own height catches the moment it appears.
+			if ('ResizeObserver' in window) {
+				new ResizeObserver(schedule).observe(document.documentElement);
+			}
+			settle();
 		} else if (navTheme === 'light' || !zone) {
 			// Pages without the opening arc start on cream.
 			nav.classList.add('is-light');
