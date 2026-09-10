@@ -81,16 +81,27 @@ permits `.trycloudflare.com` for preview. Add any other tunnel domain there.
 
 ## Deployment
 
-Hosted on **Netlify**, built from `main`. Every push to `main` redeploys the live site, and
-every pull request gets its own preview URL — that is the whole reason the repository is
-connected rather than a folder being uploaded.
+Hosted on **Cloudflare** as the Worker `itti-web`, which serves `dist` as static files.
+Configuration lives in [wrangler.jsonc](wrangler.jsonc), written by hand — `wrangler pages
+project create` detects Astro and installs its adapter, which converts the site to
+server-side rendering and quietly stops `_headers` being read.
 
-Build settings live in [netlify.toml](netlify.toml), not in the dashboard, so they are
-reviewable and survive the site connection being rebuilt.
+**Nothing watches this repository.** A push does not deploy. Shipping is three steps, in
+this order:
 
 ```sh
-npm run build      # exactly what Netlify runs
-npm run preview    # serve the result locally
+npm run build           # must run with .env present — see below
+npx wrangler deploy     # uploads dist; this is the step that goes live
+git push origin main    # the repository is the record, not the trigger
+```
+
+`.env` holds `PUBLIC_SUPABASE_URL` and `PUBLIC_SUPABASE_ANON_KEY`, and Astro bakes both into
+the JavaScript at build time. A build without it ships a mock Supabase client that breaks
+registration and sign-in while every page still returns 200, so check `dist` for
+`mock-itti-project` before uploading.
+
+```sh
+npm run preview         # serve the built result locally
 ```
 
 **Before this is a public launch:** the plates total roughly 3 MB and are served straight from

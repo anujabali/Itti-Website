@@ -16,7 +16,6 @@
 		"test:watch": "vitest"
 	},
 	"dependencies": {
-		"@astrojs/netlify": "^8.2.0",
 		"@fontsource-variable/bodoni-moda": "^5.3.0",
 		"@fontsource-variable/cinzel": "^5.3.0",
 		"@fontsource-variable/eb-garamond": "^5.3.0",
