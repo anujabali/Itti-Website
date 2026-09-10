@@ -253,8 +253,14 @@ Let us create a world where no one struggles in silence.`,
 									srcset={plateSet(mv.plate, 'jpg')}
 									sizes="100vw"
 									alt=""
-									loading={i === 0 ? 'eager' : 'lazy'}
-									fetchpriority={i === 0 ? 'high' : 'auto'}
+									{/* All three are fetched, not just the first. Lazy-loading the
+									    second and third meant the browser went looking for a
+									    1440×1992 picture at the moment the dissolve wanted it, and
+									    a fetch plus a decode in the middle of a hand-over is the
+									    stutter. They queue behind the first rather than competing
+									    with it. */}
+									loading="eager"
+									fetchpriority={i === 0 ? 'high' : 'low'}
 									decoding="async"
 								/>
 							</picture>
@@ -713,6 +719,23 @@ Let us create a world where no one struggles in silence.`,
 	// that drive them.
 	const layers = [...document.querySelectorAll<HTMLElement>('[data-layer]')];
 	const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+	/**
+	 * Decode every plate before the arc can need one.
+	 *
+	 * Fetching them is not enough. A picture that has arrived but not been
+	 * decoded is decoded at the moment it is first painted, and for these that
+	 * moment is the middle of a dissolve — a 1440×1992 decode on the main thread,
+	 * exactly where the hand-over is. `decode()` does the work off that thread
+	 * and resolves when the bitmap is ready, so by the time the second picture
+	 * has to appear there is nothing left to do but show it.
+	 *
+	 * Nothing waits on this. If a decode fails or the browser has no `decode`,
+	 * the arc runs as it did before.
+	 */
+	for (const img of document.querySelectorAll<HTMLImageElement>('.mv__plate img')) {
+		img.decode?.().catch(() => {});
+	}
 
 	if (movements.length && !reduced.matches) {
 		const clamp = (n: number) => (n < 0 ? 0 : n > 1 ? 1 : n);
