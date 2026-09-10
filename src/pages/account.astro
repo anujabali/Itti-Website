@@ -1585,6 +1585,127 @@ const FACTS = {
 			opacity: 0.55;
 		}
 
+		/* ── The editor is a sheet, not a stack of boxes ─────────────────────── */
+
+		/* A record is a set of separate things to glance across, so it is cards.
+	   Editing it is one continuous act, and seven bordered rectangles around
+	   seven groups of fields made it read as a machine — every group in its
+	   own container, none of them related.
+
+	   So the editor borrows the registration form's own structure instead: one
+	   sheet of paper, sections divided by hairlines, and each section's name
+	   set in the margin beside its fields rather than in a box above them.
+	   Nothing here changes the markup; the cards simply stop behaving like
+	   cards once they are inside the editor. */
+		[data-panel='edit'] [data-edit-form] {
+			padding: clamp(1.5rem, 3.5vw, 3rem) clamp(1.5rem, 4vw, 3.25rem)
+				clamp(1.5rem, 3vw, 2.5rem);
+			border-radius: 4px;
+			background: color-mix(in srgb, var(--cream) 93%, var(--floor));
+			/* The sheet is paper, so the page's inverted ink is put back. */
+			--ink: #2c2721;
+			--ink-soft: #5d564d;
+			--ink-faint: #655e55;
+			--rule: rgba(44, 39, 33, 0.14);
+			color: var(--ink);
+		}
+
+		/* The page speaks in cream because its ground is dark. The sheet is paper,
+	   so anything inside it goes back to speaking in teal — Cancel arrived
+	   cream on cream and could only be found by hovering it. */
+		[data-panel='edit'] [data-edit-form] .linkish,
+		[data-panel='edit'] [data-edit-form] .acct__link {
+			color: var(--teal);
+			text-decoration-color: color-mix(in srgb, var(--teal) 40%, transparent);
+		}
+
+		[data-panel='edit'] [data-edit-form] .linkish:hover,
+		[data-panel='edit'] [data-edit-form] .acct__link:hover {
+			text-decoration-color: var(--teal);
+		}
+
+		/* The filled control on paper is teal on cream, not the cream-on-abyss
+	   trade the dark page asks for. */
+		[data-panel='edit'] [data-edit-form] .btn:not(.btn--quiet) {
+			background: var(--teal);
+			border-color: var(--teal);
+			color: var(--warm-white);
+		}
+
+		[data-panel='edit'] [data-edit-form] .btn:not(.btn--quiet):hover:not([disabled]) {
+			background: var(--teal-deep);
+			border-color: var(--teal-deep);
+			color: var(--warm-white);
+		}
+
+		/* The last section already closes on its own padding; the actions add
+	   their own rule and do not need a second gap before it. */
+		[data-panel='edit'] .acct__actions {
+			margin-top: 0;
+		}
+
+		[data-panel='edit'] .spread {
+			display: block;
+		}
+
+		[data-panel='edit'] .block {
+			display: grid;
+			/* Wide enough that "How we reach you" and "The colour of your account"
+		   sit on one line. At a fifth of the sheet they both broke, and a
+		   section name that wraps reads as an accident. */
+			grid-template-columns: minmax(7.5rem, 25%) minmax(0, 1fr);
+			column-gap: clamp(1.5rem, 4vw, 3.5rem);
+			min-height: 0;
+			padding: 2.25rem 0 0.9rem;
+			border: 0;
+			border-top: 1px solid var(--rule);
+			border-radius: 0;
+			background: none;
+			box-shadow: none;
+			transform: none;
+		}
+
+		/* The first section opens the sheet; it needs no rule above it. */
+		[data-panel='edit'] .block:first-of-type {
+			padding-top: 0;
+			border-top: 0;
+		}
+
+		[data-panel='edit'] .block:hover {
+			transform: none;
+			box-shadow: none;
+		}
+
+		/* The stripe was the card's edge. There is no card now. */
+		[data-panel='edit'] .block::before {
+			display: none;
+		}
+
+		[data-panel='edit'] .block__title {
+			grid-column: 1;
+			margin: 0;
+			padding-top: 0.1rem;
+		}
+
+		[data-panel='edit'] .block > *:not(.block__title) {
+			grid-column: 2;
+		}
+
+		@media (max-width: 46rem) {
+			[data-panel='edit'] .block {
+				grid-template-columns: 1fr;
+			}
+
+			[data-panel='edit'] .block__title {
+				grid-column: 1;
+				margin-bottom: 1.35rem;
+			}
+
+			[data-panel='edit'] .block > *:not(.block__title) {
+				grid-column: 1;
+			}
+		}
+
 		/* ── While the record is on its way ──────────────────────────────────── */
 
 	/* The page arrives rather than appearing.
@@ -1889,13 +2010,17 @@ const FACTS = {
 			outline-offset: 4px;
 		}
 
+		/* The -ink accents were mixed to clear 4.5 against cream. The editor's
+	   sheet is a shade under cream — mixed toward the ground so it does not
+	   glare on the dark page — and at that shade all three fell to about 4.35.
+	   Pulled toward the ink, which keeps the hue and buys back the contrast. */
 		.pillar__tag {
 			font-family: var(--body);
 			font-size: 0.625rem;
 			font-weight: 600;
 			letter-spacing: 0.18em;
 			text-transform: uppercase;
-			color: var(--card-accent-ink);
+			color: color-mix(in srgb, var(--card-accent-ink) 80%, var(--ink));
 		}
 
 		.pillar__title {
@@ -1908,7 +2033,7 @@ const FACTS = {
 		}
 
 		.pillar:has(input:checked) .pillar__title {
-			color: var(--card-accent-ink);
+			color: color-mix(in srgb, var(--card-accent-ink) 80%, var(--ink));
 		}
 
 		.pillar__motto {
