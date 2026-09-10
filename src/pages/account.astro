@@ -201,10 +201,13 @@ const FACTS = {
 					<span class="crown__rule" data-crown-rule aria-hidden="true"></span>
 				</div>
 
-				<!-- Where content begins. The navigation is glass above this line and
-				     takes its own ground below it, because a transparent bar over a
-				     white card is a lockup nobody can read. -->
-				<span class="zone" data-light-zone aria-hidden="true"></span>
+				<!-- No sentinel here on purpose. The masthead this page shares is
+				     empty until a record arrives, so a marker placed after it sat at
+				     the very top of the document and the bar took its ground at rest
+				     — a flat mid-teal band across the lightest part of the page's
+				     own gradient. Without a marker the bar follows the scroll
+				     instead: glass while nothing has moved under it, its own ground
+				     the moment anything has. -->
 
 				<!-- Opening a record takes a session check and a round trip. This is
 				     the record's own shape, held until the record arrives. -->
@@ -274,27 +277,18 @@ const FACTS = {
 					<header class="acct__mast">
 						<p class="acct__eyebrow">Your account</p>
 						<h1 class="acct__title">Check your email.</h1>
+						{/* Conditional on purpose: this page must not confirm whether an
+						    address is registered. */}
 						<p class="acct__lede">
 							If we have a registration for <strong data-sent-address></strong>, a
-							sign-in link is on its way. It works once, and it stops working after an
-							hour.
+							sign-in link is on its way. It works once, for an hour, on any device.
 						</p>
 					</header>
-					<p class="acct__aside">
-						Open it on any device &mdash; the link carries the sign-in with it, so it
-						does not have to be the browser you asked from.
-					</p>
-					{
-						CODE_SIGNIN && (
-							<p class="acct__aside">
-								The message carries a six-digit code as well. If you are reading it
-								somewhere else, type the code here instead.
-							</p>
-						)
-					}
 					<form class="acct__gate" data-code-form novalidate hidden={!CODE_SIGNIN}>
 						<div class="field">
-							<label class="field__label" for="acct-code">Six-digit code</label>
+							<label class="field__label" for="acct-code">
+								Or the six-digit code from the message
+							</label>
 							<input
 								class="field__input field__input--code"
 								id="acct-code"
@@ -2178,6 +2172,22 @@ const FACTS = {
 		.field__input:focus-visible {
 			outline: 2px solid var(--teal);
 			outline-offset: 4px;
+		}
+
+		/* Chrome fills a remembered field with its own pale blue ground and
+	   ignores `background-color` on it — a solid box over a page that has no
+	   boxes. It applies that colour as a transition, so a delay long enough
+	   never arrives. The text and the caret take their colour from properties
+	   the autofill state does not override. */
+		.field__input:-webkit-autofill,
+		.field__input:-webkit-autofill:hover,
+		.field__input:-webkit-autofill:focus,
+		.field__input:-webkit-autofill:active {
+			-webkit-text-fill-color: var(--ink);
+			caret-color: var(--ink);
+			transition:
+				border-color 180ms var(--ease),
+				background-color 8000s 8000s;
 		}
 
 		select.field__input {
