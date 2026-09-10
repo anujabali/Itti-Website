@@ -6,6 +6,13 @@
  * Donate is deliberately dominant; the other three are equal to each other and
  * quieter than it. The form posts nowhere yet — wiring it up needs a provider
  * decision, and a privacy line that means something.
+ *
+ * Donate points at the donate page. It pointed at the registration form for as
+ * long as there was no donate page to point at, and stayed there after there
+ * was — which left the most prominent word on the home page sending people to
+ * fill in a form instead. The bar's own Donate pill only appears once somebody
+ * has signed in, so for everybody else this and the footer are the whole of the
+ * way there.
  */
 
 const PATHS = [
@@ -40,7 +47,7 @@ const PATHS = [
 	</div>
 
 	<div class="join__paths">
-		<a class="path path--primary" href="/join">
+		<a class="path path--primary" href="/donate">
 			<span class="path__primary-text">
 				<span class="path__label">Donate</span>
 				<span class="path__line"
