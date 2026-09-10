@@ -188,6 +188,13 @@ const SLIDES = MOVEMENTS.flatMap((mv, plate) =>
 		plate,
 		/** The first beat of a movement is the one that brings its picture in. */
 		opens: bi === 0,
+		/**
+		 * Where the camera stands on this picture. A movement with two lines
+		 * starts at the top of its plate and travels to the bottom between them,
+		 * which is what makes the first gesture a journey down the drawing rather
+		 * than a cut. A movement with one line does not move.
+		 */
+		cam: mv.beats.length > 1 ? bi / (mv.beats.length - 1) : 0,
 		...beat,
 	})),
 );
@@ -314,6 +321,7 @@ Let us create a world where no one struggles in silence.`,
 					id={slide.id}
 					data-arc-slide
 					data-plate={slide.plate}
+					data-cam={slide.cam}
 					data-first={i === 0 ? '' : undefined}
 					data-last={i === SLIDES.length - 1 ? '' : undefined}
 					aria-hidden={i === 0 ? undefined : 'true'}
@@ -448,27 +456,21 @@ Let us create a world where no one struggles in silence.`,
 		transform-origin: 50% 40%;
 	}
 
-	/* The camera. A slow push that begins when the picture becomes the one on
-	   screen and runs for a fixed nine seconds however the reader scrolls — the
-	   move the old arc drove from the scroll offset, given its own clock. */
-	.arc__layer[data-on] .mv__plate {
-		animation: camera 9s var(--ease) forwards;
-	}
-
-	@keyframes camera {
-		from {
-			transform: translate3d(0, 0, 0) scale(1);
-		}
-		to {
-			transform: translate3d(0, -4.5%, 0) scale(1.07);
-		}
+	/* The camera. Where it stands is a number the slide sets, and moving between
+	   two of them takes the same time however the gesture was made. The first
+	   gesture is a slow journey down the drawing; a gesture that changes picture
+	   leaves the camera where it was and lets the fade do the work. */
+	.mv__plate {
+		transform: translate3d(0, calc(var(--cam, 0) * -9%), 0)
+			scale(calc(1 + var(--cam, 0) * 0.11));
+		transition: transform 1700ms var(--ease);
 	}
 
 	/* One picture leaves by fading; the one behind it was solid all along, so
 	   there is never a gap to see black through. */
 	.arc__layer {
 		opacity: 1;
-		transition: opacity 900ms var(--ease);
+		transition: opacity 760ms var(--ease);
 	}
 
 	.arc__layer[data-gone] {
@@ -799,8 +801,11 @@ Let us create a world where no one struggles in silence.`,
 	}
 
 	if (arc && slides.length && layers.length) {
-		/** How long a hand-over takes, and how long the deck ignores the wheel. */
-		const STEP = 620;
+		/** A gesture that changes the picture, and a gesture that only walks the
+		 *  camera down one. The journey is the slower of the two on purpose: it
+		 *  is a move through a drawing rather than a cut between two. */
+		const FADE = 760;
+		const TRAVEL = 1700;
 		const last = slides.length - 1;
 		let index = -1;
 		let locked = false;
@@ -808,8 +813,12 @@ Let us create a world where no one struggles in silence.`,
 
 		const show = (next: number) => {
 			if (next === index) return;
+			const from = index;
 			index = next;
 			const plate = Number(slides[index]!.dataset.plate ?? 0);
+			const was = from < 0 ? -1 : Number(slides[from]!.dataset.plate ?? 0);
+			// Which of the two things this gesture is.
+			const travelling = was === plate;
 
 			slides.forEach((slide, i) => {
 				const on = i === index;
@@ -831,7 +840,24 @@ Let us create a world where no one struggles in silence.`,
 				if (label) label.inert = i !== plate;
 			});
 
+			// The camera moves only on the picture being shown. A picture arriving
+			// is placed where its slide wants it before it fades up, so nothing is
+			// ever seen travelling and dissolving at once.
+			const plateEl = layers[plate]?.querySelector<HTMLElement>('.mv__plate');
+			if (plateEl) {
+				const cam = slides[index]!.dataset.cam ?? '0';
+				if (travelling) plateEl.style.setProperty('--cam', cam);
+				else {
+					// No transition on a picture nobody can see yet.
+					plateEl.style.transition = 'none';
+					plateEl.style.setProperty('--cam', cam);
+					void plateEl.offsetHeight;
+					plateEl.style.transition = '';
+				}
+			}
+
 			arc.dataset.slide = String(index);
+			return travelling;
 		};
 
 		show(0);
@@ -846,15 +872,18 @@ Let us create a world where no one struggles in silence.`,
 		const step = (dir: number) => {
 			const next = index + dir;
 			if (next < 0 || next > last) return false;
-			show(next);
+			const travelling = show(next);
 			locked = true;
 			window.clearTimeout(unlock);
 			// The lock outlasts the transition by a little, because a trackpad
 			// keeps sending for a while after the hand has stopped and every one
 			// of those would otherwise be a slide.
-			unlock = window.setTimeout(() => {
-				locked = false;
-			}, STEP + 220);
+			unlock = window.setTimeout(
+				() => {
+					locked = false;
+				},
+				(travelling ? TRAVEL : FADE) + 220,
+			);
 			return true;
 		};
 
