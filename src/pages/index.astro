@@ -375,10 +375,13 @@ Let us create a world where no one struggles in silence.`,
 <style>
 	/* A dark room. The brand's teal is held back for the turn, which is what
 	   makes the turn land. */
+	/* Taller than the screen the deck runs on. The deck holds the page still
+	   until its last line; after that the extra height is runway, and the last
+	   picture rises out of the way over three quarters of a screen instead of
+	   being replaced the instant the gesture is handed back. */
 	.arc {
 		position: relative;
-		height: 100svh;
-		overflow: clip;
+		height: 178svh;
 		color: var(--warm-white);
 		background: #0a0c0d;
 	}
@@ -387,8 +390,9 @@ Let us create a world where no one struggles in silence.`,
 	   ever a frame arriving and a frame leaving. The negative margin takes back
 	   the height it occupies, so putting it here costs the arc no scroll. */
 	.arc__frame {
-		position: absolute;
-		inset: 0;
+		position: sticky;
+		top: 0;
+		height: 100svh;
 		overflow: clip;
 		background: #0a0c0d;
 		/* A stacking context of its own, so the layers inside can be ordered
@@ -638,7 +642,7 @@ Let us create a world where no one struggles in silence.`,
 	/* The words arrive when their slide becomes the one in front of the reader,
 	   one after another, on a clock of their own. Held at nothing until then, so
 	   a line never appears before its picture has. */
-	.slide .word {
+	.slide:not([data-seen]) .word {
 		opacity: 0;
 	}
 
@@ -823,6 +827,9 @@ Let us create a world where no one struggles in silence.`,
 			slides.forEach((slide, i) => {
 				const on = i === index;
 				slide.toggleAttribute('data-on', on);
+				// Once a line has been shown its words stay drawn, so leaving is a
+				// fade rather than a disappearance.
+				if (on) slide.setAttribute('data-seen', '');
 				// A slide nobody is looking at is not read out either.
 				if (on) slide.removeAttribute('aria-hidden');
 				else slide.setAttribute('aria-hidden', 'true');
@@ -864,10 +871,7 @@ Let us create a world where no one struggles in silence.`,
 
 		/** True while the deck is the screen — which is the only time it answers
 		 *  a gesture rather than letting the page have it. */
-		const holdsScreen = () => {
-			const r = arc.getBoundingClientRect();
-			return r.top <= 1 && r.bottom >= window.innerHeight - 1;
-		};
+		const holdsScreen = () => arc.getBoundingClientRect().top >= -1;
 
 		const step = (dir: number) => {
 			const next = index + dir;
