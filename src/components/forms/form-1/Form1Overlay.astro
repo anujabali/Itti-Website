@@ -37,6 +37,14 @@
 						Enough to reach you, and enough to point you to the right part of the
 						foundation.
 					</p>
+					<!-- Somebody who registered months ago and pressed Join Us out of habit
+					     had no way back from here. The bar offers this under Join Us, but
+					     the person who has already clicked through is exactly the one who
+					     needs it. -->
+					<p class="f1-already">
+						Already registered?{' '}
+						<a class="f1-already__link" href="/account">Log in instead</a>.
+					</p>
 				</header>
 
 				<!-- Global error banner (hidden by default) -->
@@ -752,6 +760,33 @@
 		line-height: 1.05;
 		letter-spacing: -0.015em;
 		color: var(--ink);
+	}
+
+	/* The card is cream, whatever the page behind it is doing. This sits under
+	   the subtitle in the same column, not in the margin beside it. */
+	.f1-already {
+		grid-column: 2;
+		margin-top: 1.15rem;
+		font-size: 0.9375rem;
+		color: var(--ink-faint);
+	}
+
+	.f1-already__link {
+		color: var(--teal);
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
+		text-decoration-color: color-mix(in srgb, var(--teal) 40%, transparent);
+		transition: text-decoration-color 180ms var(--ease);
+	}
+
+	.f1-already__link:hover {
+		text-decoration-color: var(--teal);
+	}
+
+	@media (max-width: 46rem) {
+		.f1-already {
+			grid-column: 1;
+		}
 	}
 
 	.f1-subtitle {
