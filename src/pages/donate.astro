@@ -298,9 +298,10 @@ const WAYS = [
 
 		<article class="give">
 			<!-- ── Where it goes ────────────────────────────────────────────────── -->
-			<section class="give__band" aria-labelledby="give-areas-heading" data-reveal>
-				<header class="give__band-head">
+			<section class="give__band" aria-labelledby="give-areas-heading">
+				<header class="give__band-head give__band-head--wide" data-reveal>
 					<h2 class="give__band-title" id="give-areas-heading">Where your gift goes</h2>
+					<span class="give__band-rule" aria-hidden="true"></span>
 				</header>
 
 				{/* The same three plates the opening moves through, hung again here —
@@ -310,11 +311,8 @@ const WAYS = [
 				    stacked read as a list. */}
 				<ol class="plates">
 					{
-						AREAS.map((area, i) => (
-							<li
-								class="plate"
-								data-reveal
-								style={`--accent: var(--${area.accent}); --delay: ${i * 110}ms`}>
+						AREAS.map((area) => (
+							<li class="plate" data-reveal style={`--accent: var(--${area.accent})`}>
 								<figure class="plate__frame">
 									<picture>
 										<source type="image/avif" srcset={plateSet(area.plate, 'avif')} sizes={PLATE_SIZES} />
@@ -743,6 +741,12 @@ const WAYS = [
 	   carries a hairline of its own colour, the device the registration form
 	   already uses to head its three pillars and the triptych uses beside its
 	   numerals. Radios, so the card answers before any script runs. */
+	/* Slightly more air under this legend than under the amounts: the tiles are
+	   a taller, quieter block and sat too close to the words naming them. */
+	.card__group:has(.picks) {
+		gap: 1rem;
+	}
+
 	.picks {
 		display: grid;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -793,17 +797,19 @@ const WAYS = [
 		width: 2.4rem;
 	}
 
+	/* A wash of the colour rather than a block of it. Filled, the tile was the
+	   darkest thing in a cream card and read as heavier than the button that
+	   actually does something. Tinted, the card's own ink stays on it, which is
+	   both lighter to look at and easier to read. */
 	.pick:has(input:checked) {
-		/* Pulled toward the ink until every accent carries cream at 4.5. At 72%
-		   ochre measured 4.21 and rose and sage sat on the line. */
-		border-color: color-mix(in srgb, var(--accent) 58%, var(--ink));
-		background: color-mix(in srgb, var(--accent) 58%, var(--ink));
-		color: var(--cream);
+		border-color: color-mix(in srgb, var(--accent) 62%, var(--ink));
+		background: color-mix(in srgb, var(--accent) 20%, var(--cream));
+		color: var(--ink);
 	}
 
 	.pick:has(input:checked) .pick__rule {
 		width: 2.4rem;
-		background: var(--cream);
+		background: color-mix(in srgb, var(--accent) 72%, var(--ink));
 	}
 
 	.pick:has(input:focus-visible) {
@@ -815,22 +821,18 @@ const WAYS = [
 	   A line, not four more pills. The card already carries two rows of pressed
 	   buttons and a grid of tiles; a third pill shape under the button was one
 	   system too many for something nobody chooses. */
+	/* Justified: set flush to both edges of the button above it, with the space
+	   falling between the words rather than after them. Equal columns put UPI
+	   adrift in the middle of a wide cell and crowded NETBANKING in its own. */
 	.card__rails {
 		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		gap: 0.3rem 0.55rem;
-		font-size: 0.6875rem;
+		justify-content: space-between;
+		gap: 0.5rem;
+		font-size: 0.625rem;
 		font-weight: 600;
-		letter-spacing: 0.1em;
+		letter-spacing: 0.06em;
 		text-transform: uppercase;
 		color: var(--ink-faint);
-	}
-
-	.card__rails span + span::before {
-		content: '·';
-		padding-right: 0.55rem;
-		color: var(--rule);
 	}
 
 	.card__go {
@@ -967,6 +969,26 @@ const WAYS = [
 		.give__band--spread .give__band-foot {
 			padding-top: 1.25rem;
 		}
+	}
+
+	/* The two sections below this are spreads, which use their right half. This
+	   one cannot — the triptych needs the width — so the heading takes a rule to
+	   the edge rather than leaving the half empty. */
+	.give__band-head--wide {
+		display: flex;
+		align-items: center;
+		gap: clamp(1.25rem, 3vw, 2.25rem);
+		max-width: none;
+	}
+
+	.give__band-rule {
+		flex: 1;
+		height: 1px;
+		background: linear-gradient(
+			90deg,
+			var(--rule) 0%,
+			color-mix(in srgb, var(--rule) 30%, transparent) 100%
+		);
 	}
 
 	.give__band-title {
@@ -1330,17 +1352,33 @@ const WAYS = [
 
 	/* The armed state is added by script, never by the stylesheet, so a page
 	   without JavaScript renders every section rather than none of them. */
+	/* The transition is declared on the armed state, not on the arrival. An
+	   element that gains its transition in the same class change that moves it
+	   is not reliably transitioned — Chrome was snapping every one of these from
+	   nothing to solid inside a frame, which is why the section appeared rather
+	   than arrived. Declared here, the transition already exists when `is-in`
+	   changes the values. */
 	[data-reveal].is-armed {
 		opacity: 0;
 		translate: 0 1.25rem;
+		transition:
+			opacity 700ms var(--ease),
+			translate 700ms var(--ease);
+		transition-delay: var(--delay, 0ms);
 	}
 
 	[data-reveal].is-armed.is-in {
 		opacity: 1;
 		translate: none;
+	}
+
+	/* A picture is a heavier thing than a paragraph, so it travels further and
+	   takes longer to settle. */
+	.plate[data-reveal].is-armed {
+		translate: 0 2.25rem;
 		transition:
-			opacity 700ms var(--ease),
-			translate 700ms var(--ease);
+			opacity 950ms var(--ease),
+			translate 950ms var(--ease);
 		transition-delay: var(--delay, 0ms);
 	}
 
