@@ -352,8 +352,16 @@ const MENUS = [
 	}
 
 	/* The ground arrives rather than appearing, so the bar does not blink as the
-	   first card reaches it. */
+	   first card reaches it.
+
+	   The border is declared here as well, at zero visibility, because border
+	   width does not transition with border colour. Without it the un-veiled bar
+	   had no bottom border at all, so the width snapped to 1px the instant the
+	   ground was added while the colour animated away from `currentColor` —
+	   cream on every page that veils. The result was a white hairline flashing
+	   under the bar for the length of the fade. */
 	:global(body[data-nav-theme='veil']) .nav__inner {
+		border-bottom: 1px solid transparent;
 		transition:
 			background-color 380ms var(--ease),
 			border-color 380ms var(--ease);

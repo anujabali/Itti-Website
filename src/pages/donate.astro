@@ -314,20 +314,22 @@ const WAYS = [
 						AREAS.map((area) => (
 							<li class="plate" data-reveal style={`--accent: var(--${area.accent})`}>
 								<figure class="plate__frame">
-									<picture>
-										<source type="image/avif" srcset={plateSet(area.plate, 'avif')} sizes={PLATE_SIZES} />
-										<source type="image/webp" srcset={plateSet(area.plate, 'webp')} sizes={PLATE_SIZES} />
-										<img
-											class="plate__img"
-											src={plateFallback(area.plate)}
-											srcset={plateSet(area.plate, 'jpg')}
-											sizes={PLATE_SIZES}
-											style={`object-position:${area.focus}`}
-											alt={area.alt}
-											loading="lazy"
-											decoding="async"
-										/>
-									</picture>
+									<span class="plate__stage">
+										<picture>
+											<source type="image/avif" srcset={plateSet(area.plate, 'avif')} sizes={PLATE_SIZES} />
+											<source type="image/webp" srcset={plateSet(area.plate, 'webp')} sizes={PLATE_SIZES} />
+											<img
+												class="plate__img"
+												src={plateFallback(area.plate)}
+												srcset={plateSet(area.plate, 'jpg')}
+												sizes={PLATE_SIZES}
+												style={`object-position:${area.focus}`}
+												alt={area.alt}
+												loading="lazy"
+												decoding="async"
+											/>
+										</picture>
+									</span>
 									<span class="plate__wash" aria-hidden="true" />
 									<figcaption class="plate__label">
 										<p class="plate__numeral">
@@ -1036,7 +1038,7 @@ const WAYS = [
 	.plates {
 		display: grid;
 		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: clamp(0.85rem, 1.8vw, 1.5rem);
+		gap: clamp(1rem, 2.2vw, 1.9rem);
 		list-style: none;
 		margin: 0;
 		padding: 0;
@@ -1047,6 +1049,7 @@ const WAYS = [
 	.plate__frame {
 		position: relative;
 		margin: 0;
+		aspect-ratio: 3 / 4;
 		border-radius: 5px;
 		overflow: hidden;
 		background: var(--floor);
@@ -1054,6 +1057,16 @@ const WAYS = [
 			0 1px 0 rgba(250, 247, 240, 0.14) inset,
 			0 26px 60px -34px rgba(4, 26, 30, 0.9);
 		isolation: isolate;
+		transition:
+			transform 520ms var(--ease),
+			box-shadow 520ms var(--ease);
+	}
+
+	.plate__frame:hover {
+		transform: translateY(-5px);
+		box-shadow:
+			0 1px 0 rgba(250, 247, 240, 0.2) inset,
+			0 40px 74px -34px rgba(4, 26, 30, 0.95);
 	}
 
 	.plate__frame::after {
@@ -1065,14 +1078,31 @@ const WAYS = [
 		pointer-events: none;
 	}
 
-	/* Upright, at the proportion two of the three plates were drawn in. */
+	.plate__stage {
+		position: absolute;
+		inset: 0;
+		overflow: hidden;
+	}
+
+	/* Taller than the frame that holds it, so the picture has somewhere to
+	   travel. The opening arc moves a camera over each of these three plates;
+	   this is the same move at a hundredth of the distance — enough that the
+	   frames feel alive as they pass, not enough to notice as an effect.
+	   `translate` and `scale` are separate properties, so the drift and the
+	   close do not have to be composed into one transform. */
 	.plate__img {
+		position: absolute;
+		inset: -7% 0;
 		display: block;
 		width: 100%;
-		aspect-ratio: 3 / 4;
+		height: 114%;
 		object-fit: cover;
-		/* The slow close a picture gets when you stand in front of it. */
+		translate: 0 var(--drift, 0%);
 		transition: scale 900ms var(--ease);
+	}
+
+	.plate__frame:hover .plate__img {
+		scale: 1.04;
 	}
 
 	/* The ground brought up over the foot of the picture, so the label is read
@@ -1088,6 +1118,11 @@ const WAYS = [
 			var(--floor) 86%
 		);
 		pointer-events: none;
+		transition: opacity 520ms var(--ease);
+	}
+
+	.plate__frame:hover .plate__wash {
+		opacity: 0.88;
 	}
 
 	/* Every label clears the same strip at the foot, whether or not its plate
@@ -1100,19 +1135,23 @@ const WAYS = [
 		padding: 0 clamp(1.1rem, 1.8vw, 1.6rem);
 	}
 
+	/* The Bodoni italic figure the rest of the page numbers things with, rather
+	   than a line of small capitals. At tracked-caps size the numeral was doing
+	   nothing the rule beside it was not already doing. */
 	.plate__numeral {
 		display: flex;
 		align-items: center;
-		gap: 0.7rem;
-		font-family: var(--face-cinzel);
-		font-size: 0.6875rem;
-		font-weight: 500;
-		letter-spacing: 0.22em;
+		gap: 0.75rem;
 		color: var(--warm-white);
 	}
 
 	.plate__numeral-mark {
-		font-size: 0.8125rem;
+		font-family: var(--face-bodoni);
+		font-size: 1.5rem;
+		font-style: italic;
+		font-weight: 400;
+		line-height: 1;
+		letter-spacing: 0.02em;
 	}
 
 	/* The one place the pillar's own colour is allowed on this page: a rule, not
@@ -1121,6 +1160,11 @@ const WAYS = [
 		width: 2rem;
 		height: 2px;
 		background: var(--accent);
+		transition: width 520ms var(--ease);
+	}
+
+	.plate__frame:hover .plate__numeral-rule {
+		width: 3rem;
 	}
 
 	.plate__name {
@@ -1162,15 +1206,18 @@ const WAYS = [
 		color: rgba(250, 247, 240, 0.7);
 	}
 
-	.plate__frame:hover .plate__img {
-		scale: 1.04;
-	}
-
 	@media (prefers-reduced-motion: reduce) {
 		.plate__img,
 		.plate__frame:hover .plate__img {
 			transition: none;
 			scale: 1;
+			translate: none;
+		}
+
+		.plate__frame,
+		.plate__frame:hover {
+			transition: none;
+			transform: none;
 		}
 	}
 
@@ -1184,7 +1231,7 @@ const WAYS = [
 			grid-column: 1 / -1;
 		}
 
-		.plate:last-child .plate__img {
+		.plate:last-child .plate__frame {
 			aspect-ratio: 16 / 9;
 		}
 	}
@@ -1198,8 +1245,8 @@ const WAYS = [
 			grid-column: auto;
 		}
 
-		.plate__img,
-		.plate:last-child .plate__img {
+		.plate__frame,
+		.plate:last-child .plate__frame {
 			aspect-ratio: 4 / 3;
 		}
 	}
@@ -1686,5 +1733,48 @@ const WAYS = [
 		);
 
 		for (const el of revealing) watcher.observe(el);
+	}
+
+	/**
+	 * The camera, at a hundredth of the distance the opening arc moves it.
+	 *
+	 * Each picture is taller than the frame holding it, and drifts within it as
+	 * the frame crosses the screen. Three plates hanging dead still is a
+	 * photograph of a gallery; this is standing in one.
+	 *
+	 * Only the frames actually on screen are written to, and only one write per
+	 * frame per animation frame — the whole thing is three custom-property sets
+	 * on a scroll that is already happening.
+	 */
+	const drifting = [...document.querySelectorAll<HTMLElement>('.plate')];
+	const TRAVEL = 3.2;
+
+	if (drifting.length > 0 && !still) {
+		let queued = false;
+
+		const settle = () => {
+			queued = false;
+			const view = window.innerHeight;
+			for (const plate of drifting) {
+				const box = plate.getBoundingClientRect();
+				if (box.bottom < -160 || box.top > view + 160) continue;
+				// −1 with the frame's middle at the bottom of the screen, +1 at the
+				// top, so the picture rises as the frame does.
+				const middle = box.top + box.height / 2;
+				const reach = view / 2 + box.height / 2;
+				const place = Math.max(-1, Math.min(1, (middle - view / 2) / reach));
+				plate.style.setProperty('--drift', `${(place * -TRAVEL).toFixed(2)}%`);
+			}
+		};
+
+		const schedule = () => {
+			if (queued) return;
+			queued = true;
+			requestAnimationFrame(settle);
+		};
+
+		document.addEventListener('scroll', schedule, { passive: true });
+		window.addEventListener('resize', schedule);
+		settle();
 	}
 </script>
