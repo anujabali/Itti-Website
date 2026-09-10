@@ -308,13 +308,12 @@ Let us create a world where no one struggles in silence.`,
 					</div>
 				))
 			}
-		</div>
 
-		{
-			/* One screen per beat. The slide carries the words and says which
-		    picture it wants; nothing here is tied to a scroll offset. */
-		}
-		{
+			{
+				/* One screen per beat, inside the frame so they are measured
+			    against the screen and pinned with the picture. */
+			}
+			{
 			SLIDES.map((slide, i) => (
 				<section
 					class="slide"
@@ -344,7 +343,8 @@ Let us create a world where no one struggles in silence.`,
 					{i === 0 && <span class="cue" aria-hidden="true" />}
 				</section>
 			))
-		}
+			}
+		</div>
 	</div>
 
 	<!-- ── The turn: one gear-change, everything at once ────────────────── -->
@@ -433,23 +433,28 @@ Let us create a world where no one struggles in silence.`,
 	.slide {
 		position: absolute;
 		inset: 0;
+		/* Above the pictures it is written over. */
+		z-index: 5;
 		/* The wall labels live in the frame beneath these, so left alone a slide
 		   swallows every click meant for a credit. Only the poem takes the
 		   pointer; the rest of the slide lets the click through to the picture. */
 		pointer-events: none;
 		opacity: 0;
-		visibility: hidden;
-		transition:
-			opacity 620ms var(--ease),
-			visibility 0s linear 620ms;
+		transition: opacity 760ms var(--ease);
 	}
 
 	.slide[data-on] {
 		opacity: 1;
-		visibility: visible;
-		transition:
-			opacity 620ms var(--ease),
-			visibility 0s;
+	}
+
+	/* A small rise under the fade, so the line arrives rather than appears. */
+	.slide__beat .line {
+		translate: 0 1.1rem;
+		transition: translate 900ms var(--ease);
+	}
+
+	.slide[data-on] .line {
+		translate: none;
 	}
 
 	/* The plate IS the frame: full width, natural height, always taller than the
@@ -639,26 +644,14 @@ Let us create a world where no one struggles in silence.`,
 		opacity: var(--in, 1);
 	}
 
-	/* The words arrive when their slide becomes the one in front of the reader,
-	   one after another, on a clock of their own. Held at nothing until then, so
-	   a line never appears before its picture has. */
-	.slide:not([data-seen]) .word {
-		opacity: 0;
+	/* The line arrives as one thing. It used to come in a word at a time, each
+	   on its own thousand-millisecond animation staggered behind the last, so a
+	   four-word line was still assembling one and a half seconds after the
+	   gesture that called it — which is the lag. */
+	.word {
+		opacity: 1;
 	}
 
-	.slide[data-on] .word {
-		animation: word-in 1000ms var(--ease) forwards;
-		animation-delay: calc(var(--w) * 130ms + 320ms);
-	}
-
-	@keyframes word-in {
-		from {
-			opacity: 0;
-		}
-		to {
-			opacity: 1;
-		}
-	}
 
 	.word:last-child {
 		margin-right: 0;
@@ -827,9 +820,6 @@ Let us create a world where no one struggles in silence.`,
 			slides.forEach((slide, i) => {
 				const on = i === index;
 				slide.toggleAttribute('data-on', on);
-				// Once a line has been shown its words stay drawn, so leaving is a
-				// fade rather than a disappearance.
-				if (on) slide.setAttribute('data-seen', '');
 				// A slide nobody is looking at is not read out either.
 				if (on) slide.removeAttribute('aria-hidden');
 				else slide.setAttribute('aria-hidden', 'true');
