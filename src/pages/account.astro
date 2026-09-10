@@ -2224,17 +2224,16 @@ const FACTS = {
 			cursor: pointer;
 		}
 
-		/* Six figures centred over their own rule. Tracking puts a space after
-	   the last figure as well as between them, and centring counts that space
-	   as part of the line — so the six sat a little left of the middle with a
-	   gap on the right. The indent gives that trailing space back. */
+		/* The field is exactly as wide as six tracked figures, so the six fill it
+	   edge to edge and there is no slack for them to sit off-centre in.
+	   Centring the text did the same job but put the caret in the middle of an
+	   empty field, which is not where anyone starts typing. Six figures measure
+	   105.6px at this size, which is the width below. */
 		.field__input--code {
-			max-width: 9rem;
+			max-width: 6.6rem;
 			font-family: var(--face-cinzel);
-			font-size: 1.5rem;
+			font-size: 1.3125rem;
 			letter-spacing: 0.3em;
-			text-indent: 0.3em;
-			text-align: center;
 		}
 
 		/* 0.75rem is a deliberate half of the 1.35rem that separates fields: the
