@@ -1502,8 +1502,10 @@ const FACTS = {
 			line-height: 1.6;
 		}
 
-		.field__input--bio:focus {
-			border-color: var(--teal);
+		.field__input--bio:focus,
+		.field__input--bio:focus-visible {
+			border-color: var(--focus);
+			box-shadow: none;
 		}
 
 		.linkfields {
@@ -1520,7 +1522,8 @@ const FACTS = {
 		}
 
 		.linkfields__row:focus-within {
-			border-bottom-color: var(--teal);
+			border-bottom-color: var(--focus);
+			box-shadow: 0 1px 0 0 var(--focus);
 		}
 
 		/* The part of the address nobody should have to type. */
@@ -1529,6 +1532,11 @@ const FACTS = {
 			font-size: 0.9375rem;
 			color: var(--ink-faint);
 			white-space: nowrap;
+		}
+
+		.linkfields__row .field__input:focus,
+		.linkfields__row .field__input:focus-visible {
+			box-shadow: none;
 		}
 
 		.linkfields__row .field__input {
@@ -2163,13 +2171,34 @@ const FACTS = {
 			border-bottom-color: rgba(44, 39, 33, 0.45);
 		}
 
-		.field__input:focus {
-			outline: none;
-			border-bottom-color: var(--teal);
+		/* The teal, pulled toward whatever ink the field is standing in. Brand
+	   teal on this page's own teal measured 1.41 against the ground — the ring
+	   it replaced was the same colour and no more visible, only louder. Mixed
+	   with the local ink it comes out light on the dark page and deep inside
+	   the cream editing sheet, and reads in both. */
+		.field {
+			--focus: color-mix(in srgb, var(--teal) 45%, var(--ink));
 		}
 
-		/* Keyboard focus gets a ring; a click does not. Both keep the rule. */
+		/* The rule thickens by painting a second one under it, so nothing shifts.
+	   The same treatment the registration form gives its fields.
+
+	   No ring here. A text input matches `:focus-visible` whenever it is
+	   focused, however it was focused — that is what the selector is specified
+	   to do for text entry — so a ring drew a hard rectangle around a field
+	   that has no rectangle the instant anyone clicked into it, on a page whose
+	   fields are ruled lines. The doubled rule is the visible focus indicator,
+	   and it belongs to the shape the field already has. */
+		.field__input:focus,
 		.field__input:focus-visible {
+			outline: none;
+			border-bottom-color: var(--focus);
+			box-shadow: 0 1px 0 0 var(--focus);
+		}
+
+		/* A select is not text entry, so `:focus-visible` there means what it
+	   says: reached by keyboard. That one keeps its ring. */
+		select.field__input:focus-visible {
 			outline: 2px solid var(--teal);
 			outline-offset: 4px;
 		}
@@ -2195,11 +2224,17 @@ const FACTS = {
 			cursor: pointer;
 		}
 
+		/* Six figures centred over their own rule. Tracking puts a space after
+	   the last figure as well as between them, and centring counts that space
+	   as part of the line — so the six sat a little left of the middle with a
+	   gap on the right. The indent gives that trailing space back. */
 		.field__input--code {
-			max-width: 8.5rem;
+			max-width: 9rem;
 			font-family: var(--face-cinzel);
 			font-size: 1.5rem;
 			letter-spacing: 0.3em;
+			text-indent: 0.3em;
+			text-align: center;
 		}
 
 		/* 0.75rem is a deliberate half of the 1.35rem that separates fields: the
