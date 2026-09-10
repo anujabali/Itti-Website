@@ -41,9 +41,9 @@ const MENUS = [
 			{
 				title: 'Our Pillars',
 				links: [
-					{ label: 'Neurodivergence', href: '/commitments/neurodivergence' },
-					{ label: 'Cancer Care', href: '/commitments/cancer-care' },
-					{ label: 'Conservation', href: '/commitments/conservation' },
+					{ label: 'Neurodivergence', href: '/commitments/neurodivergence', accent: 'ochre' },
+					{ label: 'Cancer Care', href: '/commitments/cancer-care', accent: 'rose' },
+					{ label: 'Conservation', href: '/commitments/conservation', accent: 'sage' },
 				],
 			},
 			{
@@ -126,21 +126,41 @@ const MENUS = [
 
 							<div class="mega" id={`mega-${i}`} data-menu-panel hidden>
 								<div class="mega__inner">
-									{menu.groups.map((group) => (
-										<section class="mega__group">
-											<h2 class="mega__title">{group.title}</h2>
-											<ul class="mega__links">
-												{group.links.map((link) => (
-													<li>
-														<a href={link.href}>{link.label}</a>
-													</li>
-												))}
-											</ul>
-										</section>
-									))}
-									<p class="mega__aside">
-										<a href={menu.href}>All of {menu.label} &rarr;</a>
-									</p>
+									<span class="mega__edge" aria-hidden="true" />
+									<div class="mega__cols">
+										{menu.groups.map((group) => (
+											<section class="mega__group">
+												<h2 class="mega__title">
+													<span class="mega__title-rule" aria-hidden="true" />
+													{group.title}
+												</h2>
+												<ul class="mega__links">
+													{group.links.map((link) => (
+														<li>
+															<a
+																class="mega__link"
+																href={link.href}
+																style={
+																	'accent' in link
+																		? `--accent: var(--${(link as { accent: string }).accent}); --accent-ink: var(--${(link as { accent: string }).accent}-ink)`
+																		: undefined
+																}
+															>
+																<span>{link.label}</span>
+																<span class="mega__link-arrow" aria-hidden="true">
+																	&rarr;
+																</span>
+															</a>
+														</li>
+													))}
+												</ul>
+											</section>
+										))}
+									</div>
+									<a class="mega__all" href={menu.href}>
+										<span>All of {menu.label}</span>
+										<span class="mega__all-arrow" aria-hidden="true">&rarr;</span>
+									</a>
 								</div>
 							</div>
 						</li>
@@ -756,9 +776,14 @@ const MENUS = [
 
 	/* The contents arrive just behind the panel, so it unfolds rather than
 	   appearing whole. */
+	/* The stagger adds the rise and nothing else. It used to fade in from
+	   nothing with `backwards`, which meant the contents were held invisible
+	   until the animation ran — a panel whose text only exists if an animation
+	   plays is a panel that is sometimes empty. The panel's own fade covers the
+	   arrival; this only gives it a direction. */
 	.mega[data-open] .mega__group,
-	.mega[data-open] .mega__aside {
-		animation: mega-rise 380ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+	.mega[data-open] .mega__all {
+		animation: mega-rise 380ms cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
 	.mega[data-open] .mega__group:nth-of-type(1) {
@@ -766,29 +791,27 @@ const MENUS = [
 	}
 
 	.mega[data-open] .mega__group:nth-of-type(2) {
-		animation-delay: 105ms;
+		animation-delay: 95ms;
 	}
 
-	.mega[data-open] .mega__aside {
-		animation-delay: 145ms;
+	.mega[data-open] .mega__all {
+		animation-delay: 135ms;
 	}
 
 	@keyframes mega-rise {
 		from {
-			opacity: 0;
 			transform: translateY(0.5rem);
 		}
 	}
 
 	.mega__inner {
-		display: grid;
-		/* No gap — the rules below carry the rhythm instead. */
-		gap: 0;
+		position: relative;
 		width: max-content;
-		min-width: 13.25rem;
-		max-width: 18rem;
-		padding: 1.1rem 1.3rem 0.95rem;
-		border-radius: 0.8rem;
+		min-width: 20rem;
+		max-width: min(34rem, calc(100vw - 2 * var(--gutter)));
+		padding: 1.35rem 1.5rem 0.6rem;
+		border-radius: 10px;
+		overflow: hidden;
 		/* Solid. A panel you can see the artwork through can never read as
 		   crisper than the artwork behind it, and no amount of blur fixes that.
 		   The glass belongs on the wall label, which sits still; this one has a
@@ -797,63 +820,143 @@ const MENUS = [
 		border: 1px solid rgba(44, 39, 33, 0.1);
 		color: var(--ink);
 		box-shadow:
+			0 1px 0 rgba(255, 255, 255, 0.6) inset,
 			0 2px 8px rgba(6, 7, 8, 0.14),
-			0 26px 52px -22px rgba(6, 7, 8, 0.5);
+			0 30px 60px -24px rgba(6, 7, 8, 0.55);
 	}
 
-	/* A hairline between subsections, and before the catch-all link. */
-	.mega__group + .mega__group,
-	.mega__aside {
-		margin-top: 0.85rem;
-		padding-top: 0.85rem;
-		border-top: 1px solid rgba(44, 39, 33, 0.11);
+	/* The three bodies of work, drawn across the head of the panel. The giving
+	   card and the registration sheet carry the same line; a menu that opens
+	   over any page on the site should be recognisably from it. */
+	.mega__edge {
+		position: absolute;
+		inset: 0 0 auto;
+		height: 2px;
+		background: linear-gradient(
+			90deg,
+			var(--ochre) 0%,
+			var(--rose) 50%,
+			var(--sage) 100%
+		);
+	}
+
+	/* Side by side rather than stacked. Two groups down a narrow card read as
+	   one long list with a line through it; two columns read as a panel. */
+	.mega__cols {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0 clamp(1.25rem, 3vw, 2.25rem);
 	}
 
 	.mega__title {
-		margin-bottom: 0.55rem;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-bottom: 0.7rem;
 		font-family: var(--body);
 		font-size: 0.625rem;
-		font-weight: 500;
-		letter-spacing: 0.17em;
+		font-weight: 600;
+		letter-spacing: 0.16em;
 		text-transform: uppercase;
-		/* Teal rather than grey. The subheadings were the flattest thing in the
-		   panel and they are what the eye lands on first. */
+		white-space: nowrap;
 		color: var(--teal);
-		opacity: 0.8;
+	}
+
+	/* The short rule the plates hang their numerals from. */
+	.mega__title-rule {
+		flex: none;
+		width: 0.9rem;
+		height: 1px;
+		background: color-mix(in srgb, var(--teal) 55%, transparent);
 	}
 
 	.mega__links {
 		display: grid;
-		gap: 0.36rem;
-		margin: 0;
+		margin: 0 -0.55rem;
 		padding: 0;
 		list-style: none;
 	}
 
-	.mega__links a {
-		display: inline-block;
+	/* The whole row is the target and the whole row lights, which is what the
+	   donate page does with its three other ways to help. A link you have to
+	   hit exactly is a link that feels unfinished. */
+	.mega__link {
+		/* Teal unless the link is one of the three bodies of work, which answer
+		   in their own colour — the same three the triptych and the giving card
+		   are marked with. */
+		--accent: var(--teal);
+		--accent-ink: var(--teal);
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 0.75rem;
+		padding: 0.42rem 0.55rem 0.46rem;
+		border-radius: 5px;
 		font-family: var(--display);
 		font-size: 1.0625rem;
+		line-height: 1.25;
 		color: var(--ink);
 		transition:
-			color 180ms var(--ease),
-			transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+			background-color 200ms var(--ease),
+			color 200ms var(--ease);
 	}
 
-	.mega__links a:hover {
-		color: var(--teal);
-		transform: translateX(3px);
+	/* The ink is pulled toward the page's own so every colour clears 4.5 on its
+	   own wash. At full strength the three sat at 4.34 to 4.43 — the -ink
+	   variants are tuned against plain cream, and a wash of the same hue lifts
+	   the ground out from under them. */
+	.mega__link:hover,
+	.mega__link:focus-visible {
+		background: color-mix(in srgb, var(--accent) 12%, transparent);
+		color: color-mix(in srgb, var(--accent-ink) 85%, var(--ink));
 	}
 
-	.mega__aside {
+	.mega__link-arrow {
+		flex: none;
+		font-size: 0.875rem;
+		opacity: 0;
+		translate: -0.4rem 0;
+		transition:
+			opacity 200ms var(--ease),
+			translate 260ms var(--ease);
+	}
+
+	.mega__link:hover .mega__link-arrow,
+	.mega__link:focus-visible .mega__link-arrow {
+		opacity: 1;
+		translate: 0 0;
+	}
+
+	/* The way through to everything, given the foot of the panel and the full
+	   width of it. */
+	.mega__all {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		margin: 0.9rem -1.5rem 0;
+		padding: 0.7rem 1.5rem 0.75rem;
+		border-top: 1px solid rgba(44, 39, 33, 0.11);
 		font-size: 0.8125rem;
+		letter-spacing: 0.02em;
 		color: var(--teal);
+		transition: background-color 200ms var(--ease);
 	}
 
-	.mega__aside a:hover {
-		text-decoration: underline;
-		text-underline-offset: 0.25em;
+	.mega__all:hover,
+	.mega__all:focus-visible {
+		background: color-mix(in srgb, var(--teal) 7%, transparent);
 	}
+
+	.mega__all-arrow {
+		transition: translate 260ms var(--ease);
+	}
+
+	.mega__all:hover .mega__all-arrow,
+	.mega__all:focus-visible .mega__all-arrow {
+		translate: 0.25rem 0;
+	}
+
 
 	/* ── Mobile ─────────────────────────────────────────────────────────── */
 
