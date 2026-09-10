@@ -71,11 +71,17 @@ const LANGUAGES = [
 ];
 
 /** The accents the three areas already carry on the home page. */
+/**
+ * The three areas and the fourth answer, with the same tags and mottoes the
+ * registration form shows. Somebody changing this later should recognise the
+ * choice they were given when they first made it — the same words, in the same
+ * order, in the same colours.
+ */
 const PILLARS = [
-	['neurodivergence', 'Neurodivergence', 'ochre'],
-	['cancer_care', 'Cancer Care', 'rose'],
-	['claw', 'Conservation', 'sage'],
-	['not_sure', "I'm not sure yet", 'teal'],
+	['neurodivergence', 'Neurodivergence', 'ochre', 'Pillar I', 'A mind met, not mended.'],
+	['cancer_care', 'Cancer Care', 'rose', 'Pillar II', 'A cancer caught, not carried.'],
+	['claw', 'Conservation', 'sage', 'Pillar III', 'A forest saved, not mourned.'],
+	['not_sure', "I'm not sure yet", 'teal', 'General', 'Point me where I am needed.'],
 ];
 
 /**
@@ -705,26 +711,36 @@ const FACTS = {
 								</fieldset>
 							</section>
 
-							<section class="block">
-								<h2 class="block__title">What you are here for</h2>
-								<fieldset class="set">
-									<legend class="u-visually-hidden">The areas you want</legend>
-									{
-										PILLARS.map(([v, l, accent]) => (
-											<label class="check check--area" data-accent={accent}>
-												<input
-													type="checkbox"
-													name="interests"
-													value={v}
-													data-exclusive={v === 'not_sure' ? '' : undefined}
-												/>
-												<span>{l}</span>
-											</label>
-										))
-									}
-								</fieldset>
-							</section>
 						</div>
+
+						<!-- The full width, and the registration form's own cards rather
+						     than a column of tick boxes. This is the one question on the
+						     page with any weight to it, and it was the smallest thing on
+						     it. -->
+						<section class="block block--wide">
+							<h2 class="block__title" id="acct-areas">What you are here for</h2>
+							<div class="pillars" role="group" aria-labelledby="acct-areas">
+								{
+									PILLARS.map(([v, l, accent, tag, motto]) => (
+										<label
+											class="pillar"
+											style={`--card-accent: var(--${accent}); --card-accent-ink: var(--${accent}-ink)`}>
+											<input
+												type="checkbox"
+												name="interests"
+												value={v}
+												data-exclusive={v === 'not_sure' ? '' : undefined}
+											/>
+											<span class="pillar__inner">
+												<span class="pillar__tag">{tag}</span>
+												<span class="pillar__title">{l}</span>
+												<span class="pillar__motto">&ldquo;{motto}&rdquo;</span>
+											</span>
+										</label>
+									))
+								}
+							</div>
+						</section>
 
 						<section class="block block--wide">
 							<h2 class="block__title">Where else to find you</h2>
@@ -1821,6 +1837,92 @@ const FACTS = {
 
 		.spread--profile .elsewhere:has(li:not([hidden])) + .profile__none {
 			display: none;
+		}
+
+		/* The registration form's pillar cards, brought across so the choice looks
+	   the same wherever it is made. Nothing is boxed: the rule above each one
+	   thickens into its own colour, which is unmistakable at a glance and does
+	   not turn the card into a button. */
+		.pillars {
+			display: grid;
+			/* Four across the card at every desktop width. Thirteen rems plus the
+		   form's own gap came to more than the card is wide and the fourth
+		   dropped to a row of its own. */
+			grid-template-columns: repeat(auto-fit, minmax(min(11rem, 100%), 1fr));
+			column-gap: clamp(1rem, 2vw, 1.75rem);
+			row-gap: 1.75rem;
+		}
+
+		.pillar {
+			position: relative;
+			display: block;
+			cursor: pointer;
+		}
+
+		.pillar input {
+			position: absolute;
+			opacity: 0;
+			pointer-events: none;
+		}
+
+		.pillar__inner {
+			display: grid;
+			gap: 0.3rem;
+			padding: 0.9rem 0 0;
+			border-top: 3px solid color-mix(in srgb, var(--card-accent) 34%, transparent);
+			transition:
+				border-color 200ms var(--ease),
+				box-shadow 200ms var(--ease);
+		}
+
+		.pillar:hover .pillar__inner {
+			border-top-color: color-mix(in srgb, var(--card-accent) 70%, transparent);
+		}
+
+		.pillar:has(input:checked) .pillar__inner {
+			border-top-color: var(--card-accent);
+			box-shadow: 0 -2px 0 0 var(--card-accent);
+		}
+
+		.pillar:has(input:focus-visible) .pillar__inner {
+			outline: 2px solid var(--teal);
+			outline-offset: 4px;
+		}
+
+		.pillar__tag {
+			font-family: var(--body);
+			font-size: 0.625rem;
+			font-weight: 600;
+			letter-spacing: 0.18em;
+			text-transform: uppercase;
+			color: var(--card-accent-ink);
+		}
+
+		.pillar__title {
+			font-family: var(--face-bodoni);
+			font-size: 1.375rem;
+			font-weight: 500;
+			line-height: 1.15;
+			color: var(--ink);
+			transition: color 180ms var(--ease);
+		}
+
+		.pillar:has(input:checked) .pillar__title {
+			color: var(--card-accent-ink);
+		}
+
+		.pillar__motto {
+			font-size: 0.875rem;
+			font-style: italic;
+			line-height: 1.4;
+			color: var(--ink-soft);
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			.pillar__inner,
+			.pillar__title {
+				transition: none;
+			}
 		}
 
 		.block__prose {

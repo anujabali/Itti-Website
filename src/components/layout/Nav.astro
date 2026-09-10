@@ -157,8 +157,13 @@ const MENUS = [
 		*/
 		}
 		<a class="signin" href="/account" data-signed-out>Log in</a>
+		<!-- Donate does not come and go. Signing in replaces Join Us with the
+		     account, and leaves the way to give exactly where it was — for a
+		     visitor who has not registered, the bar and the footer are otherwise
+		     the only two routes to it. Outlined beside Join Us so the two do not
+		     compete, filled once Join Us has gone and it is the only action left. -->
+		<a class="pill pill--outline" href="/donate">Donate</a>
 		<a class="pill" href="/join" data-signed-out>Join Us</a>
-		<a class="pill" href="/donate" data-signed-in hidden>Donate</a>
 		<a class="who" href="/account" data-who data-accent="teal" data-signed-in hidden>
 			<span class="who__name" data-who-name></span>
 			<span class="u-visually-hidden">— your account</span>
@@ -205,8 +210,8 @@ const MENUS = [
 				))
 			}
 			<a class="drawer__who" href="/account" data-signed-out>Log in</a>
+			<a class="pill pill--drawer pill--outline" href="/donate">Donate</a>
 			<a class="pill pill--drawer" href="/join" data-signed-out>Join Us</a>
-			<a class="pill pill--drawer" href="/donate" data-signed-in hidden>Donate</a>
 			<a
 				class="drawer__who"
 				href="/account"
@@ -472,6 +477,42 @@ const MENUS = [
 		background: var(--teal);
 		color: var(--warm-white);
 	}
+
+	/* Beside Join Us it is the quieter of the two; alone it takes the full
+	   weight, because there is nothing left for it to defer to. */
+	.pill--outline {
+		background: transparent;
+		border: 1px solid color-mix(in srgb, var(--cream) 55%, transparent);
+		color: var(--cream);
+	}
+
+	.pill--outline:hover {
+		background: color-mix(in srgb, var(--cream) 14%, transparent);
+	}
+
+	.nav.is-light .pill--outline {
+		background: transparent;
+		border-color: color-mix(in srgb, var(--teal) 45%, transparent);
+		color: var(--teal);
+	}
+
+	.nav.is-light .pill--outline:hover {
+		background: color-mix(in srgb, var(--teal) 8%, transparent);
+	}
+
+	/* Signed in, Join Us is gone and Donate is the only thing being asked. */
+	.nav:has([data-signed-in]:not([hidden])) .pill--outline {
+		background: var(--cream);
+		border-color: var(--cream);
+		color: var(--teal-deep);
+	}
+
+	.nav.is-light:has([data-signed-in]:not([hidden])) .pill--outline {
+		background: var(--teal);
+		border-color: var(--teal);
+		color: var(--warm-white);
+	}
+
 
 	.pill:hover {
 		transform: translateY(-1px);
