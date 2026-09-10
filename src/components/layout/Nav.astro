@@ -356,9 +356,25 @@ const MENUS = [
 	.nav__inner {
 		display: flex;
 		align-items: center;
-		gap: clamp(1rem, 3vw, 3rem);
+		/* Named, so the pair of actions at the end can measure itself against the
+		   bar's own spacing rather than repeating the number. */
+		--nav-gap: clamp(1rem, 3vw, 3rem);
+		gap: var(--nav-gap);
 		height: var(--nav-h);
 		padding-inline: var(--gutter);
+	}
+
+	/* The two actions are a pair. Set at the bar's own spacing they read as two
+	   unrelated items that happen to look alike; closed up a little they read as
+	   one choice with two answers, and the gap before them still separates them
+	   from the menu.
+
+	   `min` keeps this at zero on narrow screens, where the bar's gap is already
+	   tighter than the pair wants to be and pulling further would push them into
+	   each other. */
+	.nav__inner .pill + .pill,
+	.nav__inner .pill + .who {
+		margin-left: min(0px, calc(1.5rem - var(--nav-gap)));
 	}
 
 	/* ── Brand ──────────────────────────────────────────────────────────── */
