@@ -168,6 +168,30 @@ const MOVEMENTS = [
 	},
 ];
 
+/**
+ * The arc as slides.
+ *
+ * Every beat of the poem becomes one screen. A scroll gesture moves the page
+ * to the next screen and the browser snaps it there; what happens then — the
+ * dissolve, the camera, the words arriving — runs on its own fixed clock and
+ * does not care how fast anybody scrolled. That is the whole change. The old
+ * arc welded every one of those to the scroll offset, so the rate a picture
+ * faded at was whatever rate the page happened to be moving, and a wheel notch
+ * is a hundred pixels at once.
+ *
+ * Derived from MOVEMENTS rather than typed again, so the poem and the plates
+ * stay in one place.
+ */
+const SLIDES = MOVEMENTS.flatMap((mv, plate) =>
+	mv.beats.map((beat, bi) => ({
+		id: bi === 0 ? mv.id : `${mv.id}-${bi}`,
+		plate,
+		/** The first beat of a movement is the one that brings its picture in. */
+		opens: bi === 0,
+		...beat,
+	})),
+);
+
 const PILLARS = [
 	{
 		numeral: 'I',
@@ -280,49 +304,35 @@ Let us create a world where no one struggles in silence.`,
 		</div>
 
 		{
-			/* The movements themselves are now only the scroll they take and the
-		    poem laid over it. */
+			/* One screen per beat. The slide carries the words and says which
+		    picture it wants; nothing here is tied to a scroll offset. */
 		}
 		{
-			MOVEMENTS.map((mv, i) => (
+			SLIDES.map((slide, i) => (
 				<section
-					class="mv"
-					id={mv.id}
-					data-mv
-					data-last={i === MOVEMENTS.length - 1 ? '' : undefined}
-					data-pan={mv.pan}
-					data-zoom={mv.zoom}
+					class="slide"
+					id={slide.id}
+					data-arc-slide
+					data-plate={slide.plate}
+					data-first={i === 0 ? '' : undefined}
+					data-last={i === SLIDES.length - 1 ? '' : undefined}
 				>
-					<div class="mv__beats">
-						{mv.beats.map((beat, bi) => (
-							<div
-								class="beat"
-								data-side={beat.side}
-								data-first={i === 0 && bi === 0 ? '' : undefined}
-								data-lead={bi === 0 ? '' : undefined}
-								style={`--text-y:${beat.y};--hold:${beat.hold}`}
-							>
-								<div class="beat__hold">
-									<div class="beat__text">
-										{(() => {
-											const Tag = beat.hero ? 'h1' : 'p';
-											return (
-												<Tag class:list={['line', beat.hero && 'line--hero']}>
-													{beat.line.split(' ').map((word, w) => (
-														<span class="word" style={`--w:${w}`}>
-															<span set:html={word} />
-														</span>
-													))}
-												</Tag>
-											);
-										})()}
-									</div>
-
-									{beat.hero && <span class="cue" aria-hidden="true" />}
-								</div>
-							</div>
-						))}
+					<div class="slide__beat" data-side={slide.side} style={`--text-y:${slide.y}`}>
+						{(() => {
+							const Tag = slide.hero ? 'h1' : 'p';
+							return (
+								<Tag class:list={['line', slide.hero && 'line--hero']}>
+									{slide.line.split(' ').map((word, w) => (
+										<span class="word" style={`--w:${w}`}>
+											<span set:html={word} />
+										</span>
+									))}
+								</Tag>
+							);
+						})()}
 					</div>
+
+					{i === 0 && <span class="cue" aria-hidden="true" />}
 				</section>
 			))
 		}
@@ -404,15 +414,21 @@ Let us create a world where no one struggles in silence.`,
 
 	/* ── Movements ──────────────────────────────────────────────────────── */
 
-	.mv {
+	/* One screen, and the page settles on it. Proximity rather than mandatory:
+	   the snap points only exist on these four, so the rest of the page — five
+	   thousand pixels of it — scrolls exactly as it did. */
+	:global(html) {
+		scroll-snap-type: y proximity;
+	}
+
+	.slide {
 		position: relative;
-		/* A block formatting context, so nothing inside can collapse a margin
-		   through and push the next movement down. */
-		display: flow-root;
-		/* A movement is a tall empty block laid over the frame, and the wall
-		   labels live in the frame beneath it — so left alone it swallows every
-		   click meant for a credit. Only the poem takes the pointer; the rest of
-		   the movement lets the click through to the picture behind it. */
+		height: 100svh;
+		scroll-snap-align: start;
+		scroll-snap-stop: always;
+		/* The wall labels live in the frame beneath these, so left alone a slide
+		   swallows every click meant for a credit. Only the poem takes the
+		   pointer; the rest of the slide lets the click through to the picture. */
 		pointer-events: none;
 	}
 
@@ -422,7 +438,50 @@ Let us create a world where no one struggles in silence.`,
 		position: absolute;
 		inset: 0 0 auto;
 		transform-origin: 50% 40%;
-		will-change: transform;
+	}
+
+	/* The camera. A slow push that begins when the picture becomes the one on
+	   screen and runs for a fixed nine seconds however the reader scrolls — the
+	   move the old arc drove from the scroll offset, given its own clock. */
+	.arc__layer[data-on] .mv__plate {
+		animation: camera 9s var(--ease) forwards;
+	}
+
+	@keyframes camera {
+		from {
+			transform: translate3d(0, 0, 0) scale(1);
+		}
+		to {
+			transform: translate3d(0, -4.5%, 0) scale(1.07);
+		}
+	}
+
+	/* One picture leaves by fading; the one behind it was solid all along, so
+	   there is never a gap to see black through. */
+	.arc__layer {
+		opacity: 1;
+		transition: opacity 900ms var(--ease);
+	}
+
+	.arc__layer[data-gone] {
+		opacity: 0;
+	}
+
+	.arc__layer[data-ahead] {
+		visibility: hidden;
+	}
+
+	/* One credit at a time. Two half-present pictures read as a dissolve; two
+	   half-present credits just read as two credits, so this hands over faster
+	   than the picture does. */
+	.arc__layer .mv__label {
+		opacity: 0;
+		transition: opacity 420ms var(--ease);
+	}
+
+	.arc__layer[data-on] .mv__label {
+		opacity: 1;
+		transition-delay: 380ms;
 	}
 
 	/* A movement taller than the viewport, holding a stage exactly one viewport
@@ -474,21 +533,9 @@ Let us create a world where no one struggles in silence.`,
 	/* ── Beats ──────────────────────────────────────────────────────────── */
 
 	/* Laid back over the stage, so the type is on the picture, not after it. */
-	.mv__beats {
+	.slide__beat {
 		position: relative;
-	}
-
-	/* Taller than the viewport: the surplus is the hold, the stretch of scroll
-	   where the line stays put and only the picture moves. */
-	.beat {
-		position: relative;
-		min-height: calc(var(--hold, 380) * 1svh);
-	}
-
-	.beat__hold {
-		position: sticky;
-		top: 0;
-		height: 100svh;
+		height: 100%;
 		pointer-events: none;
 	}
 
@@ -541,22 +588,22 @@ Let us create a world where no one struggles in silence.`,
 		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='1 0 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
 	}
 
-	.beat__text {
+	.slide__beat .line {
 		/* Still selectable — it is the words that catch the pointer, not the
 		   empty frame around them. */
 		pointer-events: auto;
 		position: absolute;
-		top: calc(var(--text-y, 50) * 1svh);
+		top: calc(var(--text-y, 50) * 1%);
 		translate: 0 -50%;
 		max-width: min(40rem, 54%);
 	}
 
-	.beat[data-side='right'] .beat__text {
+	.slide__beat[data-side='right'] .line {
 		right: var(--gutter);
 		text-align: right;
 	}
 
-	.beat[data-side='left'] .beat__text {
+	.slide__beat[data-side='left'] .line {
 		left: var(--gutter);
 		text-align: left;
 	}
@@ -578,11 +625,16 @@ Let us create a world where no one struggles in silence.`,
 		opacity: var(--in, 1);
 	}
 
-	/* The opening line is already in frame when the page loads, so it reveals
-	   on a timer rather than on a scroll position it will never reach. */
-	.beat[data-first] .word {
-		animation: word-in 1100ms var(--ease) backwards;
-		animation-delay: calc(var(--w) * 150ms + 250ms);
+	/* The words arrive when their slide becomes the one in front of the reader,
+	   one after another, on a clock of their own. Held at nothing until then, so
+	   a line never appears before its picture has. */
+	.slide .word {
+		opacity: 0;
+	}
+
+	.slide[data-on] .word {
+		animation: word-in 1000ms var(--ease) forwards;
+		animation-delay: calc(var(--w) * 130ms + 320ms);
 	}
 
 	@keyframes word-in {
@@ -677,13 +729,9 @@ Let us create a world where no one struggles in silence.`,
 	}
 
 	@media (max-width: 60rem) {
-		.beat {
-			min-height: calc(var(--hold, 380) * 0.72svh);
-		}
-
-		.beat__text,
-		.beat[data-side='right'] .beat__text,
-		.beat[data-side='left'] .beat__text {
+		.slide__beat .line,
+		.slide__beat[data-side='right'] .line,
+		.slide__beat[data-side='left'] .line {
 			left: var(--gutter);
 			right: var(--gutter);
 			max-width: none;
@@ -712,335 +760,94 @@ Let us create a world where no one struggles in silence.`,
 </style>
 
 <script>
-	// The only motion in the arc: each plate travelling down inside its own
-	// movement. No fades — one movement scrolls off, the next scrolls on.
-	const movements = [...document.querySelectorAll<HTMLElement>('[data-mv]')];
-	// The pictures live in the one frame, in the same order as the movements
-	// that drive them.
-	const layers = [...document.querySelectorAll<HTMLElement>('[data-layer]')];
-	const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-
 	/**
-	 * Decode every plate before the arc can need one.
+	 * The arc, driven by which slide you are on.
 	 *
-	 * Fetching them is not enough. A picture that has arrived but not been
-	 * decoded is decoded at the moment it is first painted, and for these that
-	 * moment is the middle of a dissolve — a 1440×1992 decode on the main thread,
-	 * exactly where the hand-over is. `decode()` does the work off that thread
-	 * and resolves when the bitmap is ready, so by the time the second picture
-	 * has to appear there is nothing left to do but show it.
+	 * Nothing here reads a scroll offset. An observer says which screen is in
+	 * front of the reader; everything else is a fixed-duration CSS transition
+	 * that starts when that answer changes. So the dissolve takes the same time
+	 * whether the page was nudged or flung, which is what the old arc could not
+	 * do — it welded the fade to the scroll position, and the rate it faded at
+	 * was whatever rate the page happened to be moving.
 	 *
-	 * Nothing waits on this. If a decode fails or the browser has no `decode`,
-	 * the arc runs as it did before.
+	 * The pictures are stacked with the first on top and are all opaque. Fading
+	 * one out reveals the one already behind it rather than opening a gap, which
+	 * is why a hand-over never shows black.
 	 */
+	const slides = [...document.querySelectorAll<HTMLElement>('[data-arc-slide]')];
+	const layers = [...document.querySelectorAll<HTMLElement>('[data-layer]')];
+
+	// Decode every plate before the arc can need one. Fetching is not enough: a
+	// picture that has arrived but not been decoded is decoded the first time it
+	// is painted, and for these that moment is the middle of a dissolve.
 	for (const img of document.querySelectorAll<HTMLImageElement>('.mv__plate img')) {
 		img.decode?.().catch(() => {});
 	}
 
-	if (movements.length && !reduced.matches) {
-		const clamp = (n: number) => (n < 0 ? 0 : n > 1 ? 1 : n);
-		// Smoothstep. Linear scroll-linked motion starts and stops abruptly;
-		// easing the progress is most of what "smoother" means here.
-		const ease = (n: number) => n * n * (3 - 2 * n);
-		// Smootherstep, for the camera alone. Smoothstep arrives at rest with no
-		// speed but still with acceleration, and the moment a movement hands over
-		// is exactly where that shows: the picture stops, and the stop has a
-		// corner on it. This one has neither speed nor acceleration at either
-		// end, so the camera eases out of rest and back into it. It costs a
-		// slightly quicker middle, which is scroll the picture is already
-		// travelling through rather than a join anybody is looking at.
-		const glide = (n: number) => n * n * n * (n * (n * 6 - 15) + 10);
+	if (slides.length && layers.length) {
+		let current = -1;
 
-		// Geometry stays welded to the scroll offset — a picture that lags the
-		// page reads as sliding. What the eye reads as brightness does not have
-		// to. Bound rigidly to scroll position, the rate a picture fades at is
-		// whatever rate the page happens to be moving, and a wheel notch is a
-		// hundred pixels at once while the tail of a flick arrives in uneven
-		// steps. Every one of those lands as a jump.
-		//
-		// So the dissolve is given its own clock: each frame it closes a fixed
-		// fraction of the distance to wherever the scroll says it should be. It
-		// then runs at an even rate however unevenly the page is being moved,
-		// and keeps settling after the scroll has stopped.
-		// 260 rather than 145, which was measured rather than guessed: a wheel
-		// notch used to step the brightness by 0.15 and now steps it by 0.12.
-		// Lag is safe in this direction — a picture that fades late stays
-		// covering the one behind it, and only fading early could open a gap.
-		const SETTLE_MS = 260;
-		// The camera used to settle faster than the dissolve, on the reasoning
-		// that the eye is quicker to call a picture late than a brightness late.
-		// Measurement disagreed: damping the camera harder is the single thing
-		// that most reduces how far a plate moves between two frames, 41.8px to
-		// 36.1px across the arc, and none of the lag it buys is visible. The
-		// frame the camera moves inside is pinned and still, so there is nothing
-		// on screen for a late picture to be out of step with.
-		const GLIDE_MS = 280;
-		const camera = movements.map(() => ({ at: 0, started: false }));
-		const shade = movements.map(() => ({
-			shown: 1,
-			started: false,
-			label: 1,
-			labelStarted: false,
-		}));
-		let lastFrame = 0;
+		const show = (index: number) => {
+			if (index === current) return;
+			current = index;
+			const plate = Number(slides[index]!.dataset.plate ?? 0);
 
-		const draw = (now = performance.now()) => {
-			// Clamped, so a backgrounded tab returning does not jump the fade.
-			const elapsed = typeof now === 'number' ? now - lastFrame : NaN;
-			const dt = lastFrame && elapsed > 0 ? Math.min(64, elapsed) : 16.7;
-			lastFrame = now;
-			// Read every measurement first, then write, so scrolling never
-			// interleaves layout reads with style writes.
-			const vh = window.innerHeight;
+			slides.forEach((slide, i) => slide.toggleAttribute('data-on', i === index));
 
-			const last = movements.length - 1;
-
-			const reads = movements.map((mv, index) => {
-				const layer = layers[index];
-				const plate = layer?.querySelector<HTMLElement>('[data-plate]');
-				const img = plate?.querySelector('img');
-				if (!layer || !plate || !img) return null;
-
-				// Once a line's hold releases it is shepherded out a little faster
-				// than the page scrolls, so it has cleared the frame before the
-				// next line arrives. Two lines are never both legible at once.
-				const exits: {
-					el: HTMLElement;
-					by: number;
-					fade: number;
-					words: HTMLElement[];
-					arrival: number;
-				}[] = [];
-				for (const beat of mv.querySelectorAll<HTMLElement>('.beat')) {
-					const text = beat.querySelector<HTMLElement>('.beat__text');
-					if (!text) continue;
-					const r = beat.getBoundingClientRect();
-					const past = -r.top - (r.height - vh);
-					// 0 when the frame is a full viewport away, 1 once it has pinned.
-					// A beat that opens a movement waits for the picture behind it to
-					// finish dissolving through; one that continues the same uncut
-					// picture has nothing to wait for.
-					const lead = beat.hasAttribute('data-lead');
-					// A lead line used to resolve over a fixed viewport, which set
-					// the floor on how short a movement could be: the arrival
-					// finished exactly where the pin let go, so taking scroll out
-					// of the hold started the line leaving before it had arrived.
-					//
-					// Where there is a real pin to work inside, the arrival is a
-					// fraction of it instead — resolved by halfway, still for the
-					// rest. The hold is then the only number to turn: shorten a
-					// movement and its line arrives sooner rather than overrunning
-					// the end of the movement it belongs to.
-					const held = r.height - vh;
-					const paced = lead && held > vh * 0.2;
-					// A continuing beat starts before it pins — waiting for the pin
-					// left a whole viewport of scroll with nothing on it. It still
-					// finishes in place, and the words never move, so it reads as
-					// resolving rather than as rising into frame.
-					const delay = lead ? (paced ? held * 0.1 : vh * 0.35) : vh * -0.55;
-					const window = lead ? (paced ? held * 0.4 : vh * 1) : vh * 0.5;
-					const settled = (-r.top - delay) / window;
-					// A line that has been let go is on its way out of the frame, and
-					// for the last line of a movement that journey lands on top of
-					// the dissolve — where the pictures are deliberately still. Left
-					// at full strength it is then the only thing moving, and it moves
-					// half again as fast as the page. So it leaves under a fade: it
-					// still rises the way every line before it did, but it is gone
-					// within half a viewport rather than sliding out over the
-					// hand-over.
-					const leaving = past > 0 ? clamp(past / (vh * 0.26)) : 0;
-					exits.push({
-						el: text,
-						by: past > 0 ? past * 0.5 : 0,
-						fade: 1 - ease(leaving),
-						words: beat.hasAttribute('data-first')
-							? []
-							: [...text.querySelectorAll<HTMLElement>('.word')],
-						arrival: settled < 0 ? 0 : settled > 1 ? 1 : settled,
-					});
-				}
-
-				return {
-					mv,
-					plate,
-					img,
-					layer,
-					label: layer.querySelector<HTMLElement>('[data-label]'),
-					// The last movement hands over to the turn, not to another
-					// picture. Dipping it to black would put a blackout right where
-					// the page is supposed to open onto cream.
-					exits_dark: index !== last,
-					exits,
-					top: mv.getBoundingClientRect().top,
-					travel: mv.offsetHeight - vh,
-					stageH: vh,
-					// Never pan past the bottom of the picture.
-					room: Math.max(0, plate.offsetHeight - vh),
-					pan: Number(mv.dataset.pan ?? 0.5),
-					zoom: Number(mv.dataset.zoom ?? 0.05),
-				};
-			});
-
-			let settling = false;
-
-			reads.forEach((r, index) => {
-				if (!r || r.travel <= 0) return;
-				const raw = clamp(-r.top / r.travel);
-				const p = ease(raw);
-				const distance = Math.min(r.room, r.stageH * r.pan);
-				const overrun = (-r.top - r.travel) / r.stageH;
-
-				// The camera, on the same clock as the dissolve.
-				//
-				// It used to be a CSS animation bound to the scroll offset, which is
-				// exact but inherits whatever the scroll is doing: on a wheel the
-				// picture moved on ten frames out of a hundred and ten, in jumps of
-				// forty-one pixels. It hopped rather than travelled.
-				//
-				// It can be damped now, and could not be before. While each movement
-				// carried its own frame, that frame travelled with the page, so the
-				// picture had to stay welded to the scroll or it would read as
-				// sliding against everything around it. The frame is pinned and
-				// still now — the camera is motion inside a stationary window, with
-				// nothing on screen to be out of step with — so it can close a fixed
-				// fraction of the distance each frame and glide instead.
-				//
-				// It runs from the moment the picture starts arriving to the end of
-				// its own movement: already moving when it is revealed, at rest
-				// before it begins to fade.
-				const aim = glide(clamp((vh - r.top) / (vh + r.travel)));
-				const cam = camera[index];
-				if (!cam.started) {
-					cam.at = aim;
-					cam.started = true;
-				} else {
-					cam.at += (aim - cam.at) * (1 - Math.exp(-dt / GLIDE_MS));
-				}
-				if (Math.abs(aim - cam.at) > 0.0004) settling = true;
-				r.plate.style.transform = `translate3d(0, ${(-distance * cam.at).toFixed(2)}px, 0) scale(${(1 + r.zoom * cam.at).toFixed(4)})`;
-
-				// A movement now leaves by dissolving into the one held behind it,
-				// so what a hand-over needs is a fade rather than a depth of
-				// shadow. It runs on the same clock as the dip did: a fade pinned
-				// to scroll position steps once per notch of the wheel, because
-				// the rate it fades at is whatever rate the page is moving.
-				const target = r.exits_dark ? 1 - ease(clamp(overrun)) : 1;
-				const st = shade[index];
-				// First frame lands on the answer rather than fading up to it,
-				// which would otherwise show as a flash on load or after a jump to
-				// an anchor.
-				if (!st.started) {
-					st.shown = target;
-					st.started = true;
-				} else {
-					st.shown += (target - st.shown) * (1 - Math.exp(-dt / SETTLE_MS));
-				}
-				if (Math.abs(target - st.shown) > 0.0015) settling = true;
-				r.layer.style.opacity = st.shown.toFixed(3);
-
-				// The wall label hands over faster than the picture does. Two
-				// pictures may be half-present at once and read as a dissolve; two
-				// credits half-present at once just read as two credits. So this
-				// one is gone before the next one starts: out across the first
-				// half of the hand-over, in across the second.
-				const arriving = clamp(r.top / (r.stageH * 0.5));
-				const leaving = r.exits_dark ? clamp(overrun / 0.5) : 0;
-				const labelTarget = (1 - ease(arriving)) * (1 - ease(leaving));
-				if (!st.labelStarted) {
-					st.label = labelTarget;
-					st.labelStarted = true;
-				} else {
-					st.label += (labelTarget - st.label) * (1 - Math.exp(-dt / SETTLE_MS));
-				}
-				if (Math.abs(labelTarget - st.label) > 0.0015) settling = true;
-				if (r.label) {
-					r.label.style.opacity = st.label.toFixed(3);
-					// A faded label is still a button in the tab order and still
-					// something a screen reader will read out, so take it out of both
-					// while its picture is not the one on screen.
-					r.label.inert = st.label < 0.05;
-				}
-				// Each movement gets its own camera: the Cajal descends, the
-				// Bourgery pushes in, the heron lifts. One move repeated three
-				// times is an effect; three different moves is cinematography.
-				for (const exit of r.exits) {
-					exit.el.style.transform = `translate3d(0, ${-exit.by.toFixed(1)}px, 0)`;
-					exit.el.style.opacity = exit.fade.toFixed(3);
-					// Words land one after another, the last one home just as the
-					// frame settles.
-					const stagger = 0.17;
-					exit.words.forEach((word, i) => {
-						const span = 1 - stagger * (exit.words.length - 1);
-						const v = clamp((exit.arrival - stagger * i) / span);
-						word.style.setProperty('--in', ease(v).toFixed(3));
-					});
-				}
-			});
-
-			return settling;
-		};
-
-		let queued = false;
-		const schedule = () => {
-			if (queued) return;
-			queued = true;
-			requestAnimationFrame((now) => {
-				queued = false;
-				// The dip is still on its way somewhere, so keep drawing even
-				// though the page has stopped moving.
-				if (draw(now)) schedule();
-			});
-		};
-
-		draw();
-		// A lazily loaded plate has no height until it arrives, and the camera's
-		// reach is measured from that height — so it must be measured again once
-		// the picture is actually there.
-		for (const mv of movements) {
-			const im = mv.querySelector<HTMLImageElement>('[data-plate] img');
-			if (im && !im.complete) im.addEventListener('load', schedule, { once: true });
-		}
-		document.addEventListener('scroll', schedule, { passive: true });
-		window.addEventListener('resize', schedule);
-		// Called, not passed: `then(draw)` would hand draw() the FontFaceSet as
-		// its timestamp, and the frame delta computed from it is NaN — which then
-		// poisons the damped value permanently.
-		document.fonts?.ready.then(() => draw());
-	} else if (movements.length && layers.length) {
-		// Motion is off, but the arc still has three pictures in it and a reader
-		// who has asked not to be shown motion should still be shown all three.
-		// Which one is up changes at the join instead of dissolving across it:
-		// no camera, no fade, nothing that moves. The pictures are stacked with
-		// the first on top, so hiding the ones already past reveals the current.
-		const cut = () => {
-			const middle = window.innerHeight / 2;
-			let current = 0;
-			movements.forEach((mv, i) => {
-				const r = mv.getBoundingClientRect();
-				if (r.top <= middle && r.bottom > middle) current = i;
-				else if (r.bottom <= middle) current = Math.max(current, i);
-			});
 			layers.forEach((layer, i) => {
-				layer.style.opacity = i < current ? '0' : '1';
+				// Everything before the wanted picture is faded out; the wanted one
+				// is solid.
+				layer.toggleAttribute('data-gone', i < plate);
+				layer.toggleAttribute('data-on', i === plate);
+				// Pictures still ahead are taken out of the paint entirely. Each
+				// layer carries its own vignette, and three of those stacked
+				// multiply into a nearly black frame even though the picture on top
+				// is fully opaque.
+				layer.toggleAttribute('data-ahead', i > plate);
 				const label = layer.querySelector<HTMLElement>('[data-label]');
 				if (label) {
-					label.style.opacity = i === current ? '1' : '0';
-					label.inert = i !== current;
+					// A faded credit is still a tab stop and still read aloud, so it
+					// leaves both while its picture is not the one on screen.
+					label.inert = i !== plate;
 				}
 			});
 		};
 
-		let pending = false;
-		const tick = () => {
-			if (pending) return;
-			pending = true;
-			requestAnimationFrame(() => {
-				pending = false;
-				cut();
+		// Whichever slide holds the middle of the screen is the one in front of
+		// the reader. A band rather than a line, so a slide that is merely passing
+		// cannot claim it.
+		const watcher = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) {
+					if (entry.isIntersecting) show(slides.indexOf(entry.target as HTMLElement));
+				}
+			},
+			{ rootMargin: '-45% 0px -45% 0px', threshold: 0 },
+		);
+
+		for (const slide of slides) watcher.observe(slide);
+
+		// Whatever is under the middle when the page opens — which is the first
+		// slide on a fresh load, and the right one after a reload part-way down.
+		const settle = () => {
+			const middle = window.innerHeight / 2;
+			let found = 0;
+			slides.forEach((slide, i) => {
+				const r = slide.getBoundingClientRect();
+				if (r.top <= middle && r.bottom > middle) found = i;
+				else if (r.bottom <= middle) found = Math.max(found, i);
 			});
+			show(found);
 		};
-		cut();
-		document.addEventListener('scroll', tick, { passive: true });
-		window.addEventListener('resize', tick);
+		settle();
+		window.addEventListener('resize', settle);
+		// The observer is the mechanism; this is the guarantee. Deciding which
+		// slide holds the middle is four rectangle reads and no writes unless the
+		// answer changed, so it is safe to ask on every scroll — and it means a
+		// browser that throttles or coalesces observer callbacks still hands over
+		// at the right moment. Nothing here is scroll-*linked*: the answer is a
+		// slide number, and everything that follows from it is a fixed-duration
+		// transition.
+		document.addEventListener('scroll', settle, { passive: true });
 	}
 </script>
