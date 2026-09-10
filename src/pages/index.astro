@@ -316,6 +316,7 @@ Let us create a world where no one struggles in silence.`,
 					data-plate={slide.plate}
 					data-first={i === 0 ? '' : undefined}
 					data-last={i === SLIDES.length - 1 ? '' : undefined}
+					aria-hidden={i === 0 ? undefined : 'true'}
 				>
 					<div class="slide__beat" data-side={slide.side} style={`--text-y:${slide.y}`}>
 						{(() => {
@@ -368,6 +369,8 @@ Let us create a world where no one struggles in silence.`,
 	   makes the turn land. */
 	.arc {
 		position: relative;
+		height: 100svh;
+		overflow: clip;
 		color: var(--warm-white);
 		background: #0a0c0d;
 	}
@@ -376,10 +379,8 @@ Let us create a world where no one struggles in silence.`,
 	   ever a frame arriving and a frame leaving. The negative margin takes back
 	   the height it occupies, so putting it here costs the arc no scroll. */
 	.arc__frame {
-		position: sticky;
-		top: 0;
-		height: 100svh;
-		margin-bottom: -100svh;
+		position: absolute;
+		inset: 0;
 		overflow: clip;
 		background: #0a0c0d;
 		/* A stacking context of its own, so the layers inside can be ordered
@@ -414,22 +415,29 @@ Let us create a world where no one struggles in silence.`,
 
 	/* ── Movements ──────────────────────────────────────────────────────── */
 
-	/* One screen, and the page settles on it. Proximity rather than mandatory:
-	   the snap points only exist on these four, so the rest of the page — five
-	   thousand pixels of it — scrolls exactly as it did. */
-	:global(html) {
-		scroll-snap-type: y proximity;
-	}
-
+	/* The slides are stacked on one screen, not laid out down the page. A scroll
+	   gesture changes which one is showing; the page itself does not move until
+	   the last one has been seen. */
 	.slide {
-		position: relative;
-		height: 100svh;
-		scroll-snap-align: start;
-		scroll-snap-stop: always;
+		position: absolute;
+		inset: 0;
 		/* The wall labels live in the frame beneath these, so left alone a slide
 		   swallows every click meant for a credit. Only the poem takes the
 		   pointer; the rest of the slide lets the click through to the picture. */
 		pointer-events: none;
+		opacity: 0;
+		visibility: hidden;
+		transition:
+			opacity 620ms var(--ease),
+			visibility 0s linear 620ms;
+	}
+
+	.slide[data-on] {
+		opacity: 1;
+		visibility: visible;
+		transition:
+			opacity 620ms var(--ease),
+			visibility 0s;
 	}
 
 	/* The plate IS the frame: full width, natural height, always taller than the
@@ -761,93 +769,175 @@ Let us create a world where no one struggles in silence.`,
 
 <script>
 	/**
-	 * The arc, driven by which slide you are on.
+	 * The arc as a presentation.
 	 *
-	 * Nothing here reads a scroll offset. An observer says which screen is in
-	 * front of the reader; everything else is a fixed-duration CSS transition
-	 * that starts when that answer changes. So the dissolve takes the same time
-	 * whether the page was nudged or flung, which is what the old arc could not
-	 * do — it welded the fade to the scroll position, and the rate it faded at
-	 * was whatever rate the page happened to be moving.
+	 * The page does not move through it. It is one screen, the pictures and the
+	 * lines are stacked on that screen, and a scroll gesture advances to the next
+	 * one — the way a slide deck answers a click. What happens then is a fixed
+	 * transition on its own clock, so a nudge and a flick produce the same
+	 * hand-over. That is the point of doing it this way: nothing the reader does
+	 * can change the speed of the thing they are watching.
+	 *
+	 * At either end the gesture is handed back to the page, so scrolling past the
+	 * last line carries on down the site as normal and scrolling up from the turn
+	 * walks back through the deck.
 	 *
 	 * The pictures are stacked with the first on top and are all opaque. Fading
 	 * one out reveals the one already behind it rather than opening a gap, which
 	 * is why a hand-over never shows black.
 	 */
+	const arc = document.querySelector<HTMLElement>('.arc');
 	const slides = [...document.querySelectorAll<HTMLElement>('[data-arc-slide]')];
 	const layers = [...document.querySelectorAll<HTMLElement>('[data-layer]')];
+	const still = matchMedia('(prefers-reduced-motion: reduce)');
 
 	// Decode every plate before the arc can need one. Fetching is not enough: a
 	// picture that has arrived but not been decoded is decoded the first time it
-	// is painted, and for these that moment is the middle of a dissolve.
+	// is painted, and for these that moment is the middle of a hand-over.
 	for (const img of document.querySelectorAll<HTMLImageElement>('.mv__plate img')) {
 		img.decode?.().catch(() => {});
 	}
 
-	if (slides.length && layers.length) {
-		let current = -1;
+	if (arc && slides.length && layers.length) {
+		/** How long a hand-over takes, and how long the deck ignores the wheel. */
+		const STEP = 620;
+		const last = slides.length - 1;
+		let index = -1;
+		let locked = false;
+		let unlock: number | undefined;
 
-		const show = (index: number) => {
-			if (index === current) return;
-			current = index;
+		const show = (next: number) => {
+			if (next === index) return;
+			index = next;
 			const plate = Number(slides[index]!.dataset.plate ?? 0);
 
-			slides.forEach((slide, i) => slide.toggleAttribute('data-on', i === index));
+			slides.forEach((slide, i) => {
+				const on = i === index;
+				slide.toggleAttribute('data-on', on);
+				// A slide nobody is looking at is not read out either.
+				if (on) slide.removeAttribute('aria-hidden');
+				else slide.setAttribute('aria-hidden', 'true');
+			});
 
 			layers.forEach((layer, i) => {
-				// Everything before the wanted picture is faded out; the wanted one
-				// is solid.
 				layer.toggleAttribute('data-gone', i < plate);
 				layer.toggleAttribute('data-on', i === plate);
-				// Pictures still ahead are taken out of the paint entirely. Each
-				// layer carries its own vignette, and three of those stacked
-				// multiply into a nearly black frame even though the picture on top
-				// is fully opaque.
+				// Pictures still ahead leave the paint entirely. Each carries its
+				// own vignette, and three of those stacked multiply into a nearly
+				// black frame even though the one on top is fully opaque.
 				layer.toggleAttribute('data-ahead', i > plate);
 				const label = layer.querySelector<HTMLElement>('[data-label]');
-				if (label) {
-					// A faded credit is still a tab stop and still read aloud, so it
-					// leaves both while its picture is not the one on screen.
-					label.inert = i !== plate;
-				}
+				// A faded credit is still a tab stop and still read aloud.
+				if (label) label.inert = i !== plate;
 			});
+
+			arc.dataset.slide = String(index);
 		};
 
-		// Whichever slide holds the middle of the screen is the one in front of
-		// the reader. A band rather than a line, so a slide that is merely passing
-		// cannot claim it.
-		const watcher = new IntersectionObserver(
-			(entries) => {
-				for (const entry of entries) {
-					if (entry.isIntersecting) show(slides.indexOf(entry.target as HTMLElement));
-				}
+		show(0);
+
+		/** True while the deck is the screen — which is the only time it answers
+		 *  a gesture rather than letting the page have it. */
+		const holdsScreen = () => {
+			const r = arc.getBoundingClientRect();
+			return r.top <= 1 && r.bottom >= window.innerHeight - 1;
+		};
+
+		const step = (dir: number) => {
+			const next = index + dir;
+			if (next < 0 || next > last) return false;
+			show(next);
+			locked = true;
+			window.clearTimeout(unlock);
+			// The lock outlasts the transition by a little, because a trackpad
+			// keeps sending for a while after the hand has stopped and every one
+			// of those would otherwise be a slide.
+			unlock = window.setTimeout(() => {
+				locked = false;
+			}, STEP + 220);
+			return true;
+		};
+
+		/** Whether this gesture belongs to the deck or to the page. */
+		const mine = (dir: number) =>
+			holdsScreen() && !still.matches && ((dir > 0 && index < last) || (dir < 0 && index > 0));
+
+		window.addEventListener(
+			'wheel',
+			(event) => {
+				const dir = event.deltaY > 0 ? 1 : -1;
+				if (!mine(dir)) return;
+				// Taken before the lock is checked: while the deck is mid-hand-over
+				// the page must still not move, or the picture slides away under
+				// the transition.
+				event.preventDefault();
+				if (locked || Math.abs(event.deltaY) < 2) return;
+				step(dir);
 			},
-			{ rootMargin: '-45% 0px -45% 0px', threshold: 0 },
+			{ passive: false },
 		);
 
-		for (const slide of slides) watcher.observe(slide);
+		// Touch, on the same terms.
+		let from: number | null = null;
+		window.addEventListener(
+			'touchstart',
+			(event) => {
+				from = event.touches[0]?.clientY ?? null;
+			},
+			{ passive: true },
+		);
+		window.addEventListener(
+			'touchmove',
+			(event) => {
+				if (from === null) return;
+				const y = event.touches[0]?.clientY ?? from;
+				const moved = from - y;
+				const dir = moved > 0 ? 1 : -1;
+				if (!mine(dir)) return;
+				event.preventDefault();
+				if (locked || Math.abs(moved) < 28) return;
+				from = y;
+				step(dir);
+			},
+			{ passive: false },
+		);
+		window.addEventListener('touchend', () => {
+			from = null;
+		});
 
-		// Whatever is under the middle when the page opens — which is the first
-		// slide on a fresh load, and the right one after a reload part-way down.
-		const settle = () => {
-			const middle = window.innerHeight / 2;
-			let found = 0;
-			slides.forEach((slide, i) => {
-				const r = slide.getBoundingClientRect();
-				if (r.top <= middle && r.bottom > middle) found = i;
-				else if (r.bottom <= middle) found = Math.max(found, i);
+		// And the keyboard, which is the only way through for anyone not using a
+		// wheel or a finger.
+		window.addEventListener('keydown', (event) => {
+			const down = event.key === 'ArrowDown' || event.key === 'PageDown' || event.key === ' ';
+			const up = event.key === 'ArrowUp' || event.key === 'PageUp';
+			if (!down && !up) return;
+			const dir = down ? 1 : -1;
+			if (!mine(dir)) return;
+			event.preventDefault();
+			if (locked) return;
+			step(dir);
+		});
+
+		// Coming back up to the deck from the page below should land on its last
+		// line, not on whatever was showing when it was left.
+		window.addEventListener(
+			'scroll',
+			() => {
+				if (!holdsScreen()) return;
+				if (window.scrollY <= 1 && index < 0) show(0);
+			},
+			{ passive: true },
+		);
+
+		// Motion off: no deck, no gesture handling. The four lines are laid out
+		// down the page and the pictures change at the joins, which is the same
+		// content without anything that moves.
+		if (still.matches) {
+			arc.setAttribute('data-still', '');
+			slides.forEach((slide) => {
+				slide.setAttribute('data-on', '');
+				slide.removeAttribute('aria-hidden');
 			});
-			show(found);
-		};
-		settle();
-		window.addEventListener('resize', settle);
-		// The observer is the mechanism; this is the guarantee. Deciding which
-		// slide holds the middle is four rectangle reads and no writes unless the
-		// answer changed, so it is safe to ask on every scroll — and it means a
-		// browser that throttles or coalesces observer callbacks still hands over
-		// at the right moment. Nothing here is scroll-*linked*: the answer is a
-		// slide number, and everything that follows from it is a fixed-duration
-		// transition.
-		document.addEventListener('scroll', settle, { passive: true });
+		}
 	}
 </script>
