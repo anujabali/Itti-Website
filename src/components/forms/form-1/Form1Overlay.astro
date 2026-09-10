@@ -19,12 +19,25 @@
 	data-form1-overlay
 >
 	<div class="f1-scroller" data-f1-scroller>
+		<!-- Where the sheet begins. Above this line the bar is glass over the
+		     ground; below it the bar takes its own, because a transparent bar
+		     over a cream sheet is a lockup nobody can read. -->
+		<span class="f1-zone" data-light-zone aria-hidden="true"></span>
+
 		<div class="f1-card" data-f1-card>
 			<div class="f1-topbar">
 				<a class="f1-back" href="/">
 					<span class="f1-back__arrow" aria-hidden="true">&larr;</span>
 					<span>Back to the site</span>
 				</a>
+
+				<!-- Somebody who registered months ago and pressed Join Us out of habit
+				     had no way back from here. It sat in the header as a sentence, which
+				     is not something anybody presses. -->
+				<p class="f1-already">
+					<span class="f1-already__ask">Already registered?</span>{' '}
+					<a class="f1-already__link" href="/account">Log in</a>
+				</p>
 			</div>
 
 			<!-- Main Form Content -->
@@ -36,14 +49,6 @@
 					<p class="f1-subtitle">
 						Enough to reach you, and enough to point you to the right part of the
 						foundation.
-					</p>
-					<!-- Somebody who registered months ago and pressed Join Us out of habit
-					     had no way back from here. The bar offers this under Join Us, but
-					     the person who has already clicked through is exactly the one who
-					     needs it. -->
-					<p class="f1-already">
-						Already registered?{' '}
-						<a class="f1-already__link" href="/account">Log in instead</a>.
 					</p>
 				</header>
 
@@ -659,18 +664,56 @@
 
 <style>
 	/* ── Scrim & Overlay Container ────────────────────────────────────────── */
+	/* The form is the page. The ground stays dark, as it was asked to be, but it
+	   is lit from the upper left and carries the faintest teal in the light, so
+	   the sheet has something to cast against instead of sitting on a flat
+	   fill. */
 	.f1-overlay {
-		/* The form is the page, on a plain dark ground. */
 		position: relative;
+		isolation: isolate;
 		display: block;
 		min-height: 100svh;
+		overflow-x: clip;
 		padding: calc(var(--nav-h) + clamp(1.5rem, 5vh, 3.5rem)) var(--gutter)
 			clamp(3rem, 9vh, 6rem);
-		background: var(--ink-deep);
+		background:
+			/* The light blooms below the bar, not under it: the bar is a flat
+			   dark here, and a glow that reached the top of the page would put a
+			   seam across it. */
+			radial-gradient(
+				135% 92% at 20% 16%,
+				color-mix(in srgb, var(--teal) 38%, transparent) 0%,
+				color-mix(in srgb, var(--teal) 11%, transparent) 44%,
+				transparent 76%
+			),
+			linear-gradient(
+				172deg,
+				color-mix(in srgb, var(--teal) 9%, var(--ink-deep)) 0%,
+				var(--ink-deep) 58%
+			);
+	}
+
+	/* The same grain the rest of the site is laid over. Without it a ground this
+	   dark bands wherever the gradient is shallowest. */
+	.f1-overlay::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		opacity: 0.3;
+		mix-blend-mode: overlay;
+		pointer-events: none;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='1 0 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
 	}
 
 	.f1-scroller {
+		position: relative;
+		z-index: 1;
+	}
+
+	.f1-zone {
 		display: block;
+		height: 0;
 	}
 
 	/* ── Main Modal Card ──────────────────────────────────────────────────── */
@@ -681,13 +724,29 @@
 		background: var(--cream-deep);
 		color: var(--ink);
 		border: 0;
-		border-radius: 3px;
+		border-radius: 6px;
 		box-shadow:
-			0 2px 8px rgba(4, 12, 14, 0.3),
-			0 18px 40px -12px rgba(4, 12, 14, 0.55),
-			0 60px 120px -40px rgba(4, 12, 14, 0.78);
-		padding: clamp(2rem, 4.5vw, 3.75rem);
+			0 1px 0 rgba(255, 255, 255, 0.5) inset,
+			0 2px 8px rgba(4, 12, 14, 0.34),
+			0 18px 40px -12px rgba(4, 12, 14, 0.58),
+			0 70px 140px -44px rgba(4, 12, 14, 0.82);
+		overflow: hidden;
+		padding: clamp(2.75rem, 4.5vw, 3.75rem) clamp(2rem, 4.5vw, 3.75rem)
+			clamp(2rem, 4.5vw, 3.75rem);
 		animation: f1-rise 620ms cubic-bezier(0.16, 1, 0.3, 1) both;
+	}
+
+	.f1-card::before {
+		content: '';
+		position: absolute;
+		inset: 0 0 auto;
+		height: 3px;
+		background: linear-gradient(
+			90deg,
+			var(--ochre) 0%,
+			var(--rose) 50%,
+			var(--sage) 100%
+		);
 	}
 
 	@keyframes f1-rise {
@@ -705,6 +764,11 @@
 
 	/* ── Topbar (Brand & Close) ────────────────────────────────────────────── */
 	.f1-topbar {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.75rem 1.5rem;
 		margin-bottom: 1.25rem;
 		padding-bottom: 0.9rem;
 		border-bottom: 1px solid rgba(44, 39, 33, 0.1);
@@ -762,21 +826,44 @@
 		color: var(--ink);
 	}
 
-	/* The card is cream, whatever the page behind it is doing. This sits under
-	   the subtitle in the same column, not in the margin beside it. */
+	/* A question and a thing to press, not a sentence with a link buried in it.
+	   The card is cream whatever the page behind it is doing, so the pill is
+	   drawn in ink and teal rather than in the bar's cream-on-dark. */
 	.f1-already {
-		grid-column: 2;
-		margin-top: 1.15rem;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.75rem;
+		margin: 0;
 		font-size: 0.9375rem;
 		color: var(--ink-faint);
 	}
 
 	.f1-already__link {
+		padding: 0.42rem 1.05rem;
+		border: 1px solid color-mix(in srgb, var(--teal) 45%, transparent);
+		border-radius: 999px;
+		font-size: 0.875rem;
+		letter-spacing: 0.02em;
 		color: var(--teal);
-		text-decoration: underline;
-		text-underline-offset: 0.2em;
-		text-decoration-color: color-mix(in srgb, var(--teal) 40%, transparent);
-		transition: text-decoration-color 180ms var(--ease);
+		text-decoration: none;
+		white-space: nowrap;
+		transition:
+			border-color 180ms var(--ease),
+			background-color 180ms var(--ease),
+			color 180ms var(--ease);
+	}
+
+	.f1-already__link:hover,
+	.f1-already__link:focus-visible {
+		border-color: var(--teal);
+		background: var(--teal);
+		color: var(--cream);
+	}
+
+	@media (max-width: 34rem) {
+		.f1-already__ask {
+			display: none;
+		}
 	}
 
 	.f1-already__link:hover {
@@ -1271,28 +1358,44 @@
 	.f1-consent-grid {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.4rem 2rem;
-		margin-top: 0.9rem;
+		gap: 0.55rem;
+		margin-top: 1rem;
 	}
 
+	/* Three things to press, not three tick boxes with words beside them. The
+	   whole pill is the target and the whole pill answers. */
 	.f1-consent {
 		position: relative;
 		display: inline-flex;
 		align-items: center;
 		gap: 0.6rem;
-		padding: 0.5rem 0;
-		border: 0;
+		padding: 0.55rem 1.15rem 0.55rem 0.95rem;
+		border: 1px solid rgba(44, 39, 33, 0.2);
+		border-radius: 999px;
 		background: transparent;
 		cursor: pointer;
-		transition: color 180ms var(--ease);
+		transition:
+			border-color 180ms var(--ease),
+			background-color 180ms var(--ease),
+			color 180ms var(--ease);
+	}
+
+	.f1-consent:hover {
+		border-color: color-mix(in srgb, var(--teal) 55%, transparent);
+		background: color-mix(in srgb, var(--teal) 6%, transparent);
 	}
 
 	.f1-consent:hover .f1-consent__text {
 		color: var(--teal);
 	}
 
+	.f1-consent:has(input[type='checkbox']:checked) {
+		border-color: var(--teal);
+		background: var(--teal);
+	}
+
 	.f1-consent:has(input[type='checkbox']:checked) .f1-consent__text {
-		color: var(--teal);
+		color: var(--cream);
 	}
 
 	.f1-consent input[type='checkbox'] {
@@ -1303,6 +1406,7 @@
 
 	.f1-consent__indicator {
 		flex: none;
+		color: var(--cream);
 		width: 1rem;
 		height: 1rem;
 		border: 1px solid rgba(44, 39, 33, 0.38);
@@ -1318,8 +1422,8 @@
 		content: '';
 		width: 0.55rem;
 		height: 0.3rem;
-		border-left: 1.5px solid var(--warm-white);
-		border-bottom: 1.5px solid var(--warm-white);
+		border-left: 1.5px solid currentColor;
+		border-bottom: 1.5px solid currentColor;
 		transform: rotate(-45deg) scale(0.6);
 		opacity: 0;
 		transition:
@@ -1328,8 +1432,8 @@
 	}
 
 	.f1-consent input[type='checkbox']:checked + .f1-consent__indicator {
-		border-color: var(--teal);
-		background: var(--teal);
+		border-color: var(--cream);
+		background: transparent;
 	}
 
 	.f1-consent input[type='checkbox']:checked + .f1-consent__indicator::after {
@@ -1523,8 +1627,9 @@
 		align-items: center;
 		justify-content: center;
 		gap: 0.75rem;
-		padding: 1.05rem 3rem;
-		border-radius: 2px;
+		width: min(22rem, 100%);
+		padding: 1.1rem 3rem;
+		border-radius: 4px;
 		background: var(--teal);
 		color: var(--cream);
 		font-family: var(--body);
@@ -1534,13 +1639,17 @@
 		text-transform: uppercase;
 		border: none;
 		cursor: pointer;
-		transition: background 180ms var(--ease);
+		box-shadow: 0 12px 26px -14px color-mix(in srgb, var(--teal) 82%, transparent);
+		transition:
+			background 180ms var(--ease),
+			transform 180ms var(--ease),
+			box-shadow 180ms var(--ease);
 	}
 
 	.f1-submit-btn:hover {
 		background: var(--teal-abyss);
 		transform: translateY(-2px);
-		box-shadow: 0 8px 20px color-mix(in srgb, var(--teal) 40%, transparent);
+		box-shadow: 0 16px 34px -14px color-mix(in srgb, var(--teal) 92%, transparent);
 	}
 
 	.f1-submit-btn:active {
@@ -1579,6 +1688,19 @@
 	.f1-btn-secondary:hover {
 		border-color: var(--teal);
 		color: var(--teal);
+	}
+
+	.f1-footer__link {
+		color: var(--teal);
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
+		text-decoration-thickness: 1px;
+		text-decoration-color: color-mix(in srgb, var(--teal) 40%, transparent);
+		transition: text-decoration-color 180ms var(--ease);
+	}
+
+	.f1-footer__link:hover {
+		text-decoration-color: var(--teal);
 	}
 
 	.f1-footer__disclaimer {
@@ -1697,19 +1819,6 @@
 		.f1-title,
 		.f1-subtitle,
 		.f1-footer__action,
-		.f1-footer__link {
-			color: var(--teal);
-			text-decoration: underline;
-			text-underline-offset: 0.2em;
-			text-decoration-thickness: 1px;
-			text-decoration-color: color-mix(in srgb, var(--teal) 40%, transparent);
-			transition: text-decoration-color 180ms var(--ease);
-		}
-
-		.f1-footer__link:hover {
-			text-decoration-color: var(--teal);
-		}
-
 		.f1-footer__disclaimer {
 			grid-column: 1;
 		}
