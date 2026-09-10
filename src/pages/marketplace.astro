@@ -4,9 +4,13 @@
  *
  * One page with five anchors rather than five pages, because the navigation
  * promises five destinations and four of them would have been a heading over a
- * paragraph. `/policies` is built the same way and for the same reason: a
- * section that arrives as part of a whole reads better than a page that has
- * nothing under its own masthead.
+ * paragraph. `/policies` is built the same way and for the same reason.
+ *
+ * Two grounds. The page opens on a full-bleed photograph with the masthead over
+ * it, the way the rest of the site opens on artwork; the goods sit on cream
+ * below, where a thing being sold can be seen; and it closes on the teal the
+ * donate page stands on, because that is where the site keeps its asks. A shop
+ * that is one flat colour throughout is a catalogue, not a storefront.
  *
  * There is no cart. Buying is an enquiry that opens a letter, because a cart
  * needs stock, shipping rates, GST treatment and a set of sale-of-goods terms
@@ -22,8 +26,8 @@ import { ITEMS, PILLARS, MAKERS, STEPS, type Pillar } from '../data/marketplace'
 const rupees = (n: number) => `₹${n.toLocaleString('en-IN')}`;
 
 /** A maker's stamp for a thing that has no photograph yet. Two letters, taken
- *  from the name, so nine unphotographed goods do not read as nine copies of
- *  the same card. */
+ *  from the name, so eight unphotographed goods do not read as eight copies of
+ *  the same panel. */
 const monogram = (name: string) =>
 	name
 		.split(/[\s,]+/)
@@ -53,21 +57,21 @@ const enquiry = (name: string) =>
 <Base
 	title="Marketplace — The Itti Foundation"
 	description="What the Foundation's workshops make, who makes it, and how the money reaches them."
+	navTheme="veil"
+	band="ink"
 >
 	<script is:inline>
 		/**
 		 * Arriving at a section, without the page showing the top first.
 		 *
-		 * The bar links to five anchors on this page. Without this the browser
-		 * paints the masthead, then parses as far as the target, then scrolls —
-		 * and scrolls again when the fonts land and every height above the target
-		 * changes. The reader sees the top, a snap, and a second smaller snap.
+		 * The bar links to five anchors here. Without this the browser paints the
+		 * masthead, parses as far as the target, scrolls — and scrolls again when
+		 * the fonts land and every height above the target changes.
 		 *
-		 * So the words are held until they can be placed. The ground and the bar
-		 * paint at once; only the document waits. `visibility` rather than
-		 * `display`, because the layout has to happen for the scroll position to
-		 * be computable at all, and a cap so a font that never arrives cannot
-		 * leave the page blank. The same arrangement the policies page uses.
+		 * So the page is held until the target can be placed. `visibility` rather
+		 * than `display`, because the layout has to happen for the scroll position
+		 * to be computable, and a cap so a font that never arrives cannot leave
+		 * the page blank.
 		 */
 		document.documentElement.style.scrollBehavior = 'auto';
 
@@ -99,78 +103,97 @@ const enquiry = (name: string) =>
 	</script>
 
 	<div class="mkt-page">
-		<span class="mkt-page__ornament" aria-hidden="true">
-			<Mark height="30rem" label="" />
-		</span>
+		<!-- ── The storefront ───────────────────────────────────────────────────
+		     A photograph, full width, with the masthead over it. The one thing
+		     actually made is also the thing that opens the page, so the newest
+		     item and the front of the shop are one object rather than two that
+		     repeat each other. -->
+		<section class="front" id="new" aria-labelledby="mkt-title">
+			<div class="front__stage">
+				<img
+					class="front__img"
+					src={featured.plate || undefined}
+					alt={`${featured.name}, front and back`}
+					loading="eager"
+					fetchpriority="high"
+					decoding="async"
+					width="1471"
+					height="805"
+				/>
+			</div>
+			<span class="front__wash" aria-hidden="true"></span>
+			<span class="front__grain" aria-hidden="true"></span>
+
+			<div class="front__inner">
+				<div class="front__lead">
+					<p class="front__eyebrow">Marketplace</p>
+					<h1 class="front__title" id="mkt-title">
+						Somebody made this, and somebody is paid for it.
+					</h1>
+					<p class="front__lede">
+						Made in the workshops, by the people the Foundation teaches.
+					</p>
+				</div>
+
+				<!-- The wall label the plates carry on the opening arc, doing a
+				     shop's job: what it is, what it costs, and the way to ask. -->
+				<aside
+					class="label"
+					style={`--accent: var(--${PILLARS[featured.pillar].accent})`}
+					aria-label="The newest thing"
+				>
+					<p class="label__pillar">
+						<span class="label__rule" aria-hidden="true"></span>
+						{PILLARS[featured.pillar].label}
+					</p>
+					<h2 class="label__name">{featured.name}</h2>
+					<p class="label__line">{featured.line}</p>
+					<p class="label__foot">
+						<span class="label__price">{rupees(featured.price)}</span>
+						<a class="label__ask" href={enquiry(featured.name)}>
+							Ask about this
+							<span class="label__arrow" aria-hidden="true">&rarr;</span>
+						</a>
+					</p>
+				</aside>
+			</div>
+
+			<p class="front__note">
+				The first making cycle is still running. Prices are indicative.
+			</p>
+		</section>
 
 		<article class="mkt">
-			<!-- ── Masthead ─────────────────────────────────────────────────────── -->
-			<header class="mkt__mast">
-				<p class="mkt__eyebrow">Marketplace</p>
-				<h1 class="mkt__title">Somebody made this, and somebody is paid for it.</h1>
-				<p class="mkt__lede">Made in the workshops, by the people the Foundation teaches.</p>
-				<p class="mkt__note">The first making cycle is still running. Prices are indicative.</p>
-			</header>
-
-			<!-- ── New arrivals ─────────────────────────────────────────────────── -->
-			<section class="mkt__band" id="new" aria-labelledby="mkt-new" data-reveal>
-				<header class="mkt__head">
-					<h2 class="mkt__h" id="mkt-new">Newest</h2>
-					<span class="mkt__rule" aria-hidden="true"></span>
-				</header>
-
-				<div class="hero" style={`--accent: var(--${PILLARS[featured.pillar].accent})`}>
-					<div class="hero__plate">
-						<img
-							src={featured.plate || undefined}
-							alt={`${featured.name} — front and back`}
-							loading="eager"
-							decoding="async"
-							width="1471"
-							height="805"
-						/>
-					</div>
-					<div class="hero__side">
-						<p class="hero__pillar">
-							<span class="hero__pillar-rule" aria-hidden="true"></span>
-							{PILLARS[featured.pillar].label}
-						</p>
-						<h3 class="hero__name">{featured.name}</h3>
-						<p class="hero__line">{featured.line}</p>
-						<dl class="hero__facts">
-							<dt>Made</dt>
-							<dd>{featured.craft}</dd>
-							<dt>Indicative</dt>
-							<dd>{rupees(featured.price)}</dd>
-						</dl>
-						<a class="btn" href={enquiry(featured.name)}>
-							<span>Ask about this</span>
-							<span class="btn__arrow" aria-hidden="true">&rarr;</span>
-						</a>
-					</div>
-				</div>
-			</section>
+			<span class="mkt__ornament" aria-hidden="true">
+				<Mark height="32rem" label="" />
+			</span>
 
 			<!-- ── Everything ───────────────────────────────────────────────────── -->
-			<section class="mkt__band" id="all" aria-labelledby="mkt-all" data-reveal>
-				<header class="mkt__head">
-					<h2 class="mkt__h" id="mkt-all">Everything made</h2>
-					<span class="mkt__rule" aria-hidden="true"></span>
+			<section class="band" id="all" aria-labelledby="mkt-all" data-reveal>
+				<header class="band__head">
+					<h2 class="band__h" id="mkt-all">Everything made</h2>
+					<span class="band__rule" aria-hidden="true"></span>
+					<p class="band__count">{ITEMS.length} things</p>
 				</header>
 
+				{/* A mosaic rather than a uniform grid: every third panel runs tall,
+				    so the eye moves down the page instead of reading it as rows. No
+				    borders — the panel is the object, and a bordered card inside a
+				    ruled section is what makes a shop look like a form. */}
 				<ul class="goods">
 					{
-						rest.map((item) => (
+						rest.map((item, i) => (
 							<li
 								class="good"
 								data-reveal
+								data-tall={i % 3 === 0 ? '' : undefined}
 								style={`--accent: var(--${PILLARS[item.pillar].accent}); --accent-ink: var(--${PILLARS[item.pillar].accent}-ink)`}
 							>
 								<a class="good__link" href={enquiry(item.name)}>
-									{/* No photograph yet, so the card is set rather than filled. An
-									    invented picture of a thing nobody has made would be worse
-									    than an honest absence. */}
-									<span class="good__plate" aria-hidden="true">
+									{/* No photograph yet, so the panel is stamped rather than
+									    filled. An invented picture of a thing nobody has made
+									    would be worse than an honest absence. */}
+									<span class="good__panel" aria-hidden="true">
 										<span class="good__monogram">{monogram(item.name)}</span>
 										<span class="good__mark">
 											{PILLARS[item.pillar].mark === 'claw' ? (
@@ -185,19 +208,15 @@ const enquiry = (name: string) =>
 										<span class="good__craft">{item.craft}</span>
 									</span>
 									<span class="good__body">
-										<span class="good__pillar">
-											<span class="good__pillar-rule" aria-hidden="true" />
-											{PILLARS[item.pillar].label}
-										</span>
-										<span class="good__name">{item.name}</span>
-										<span class="good__line">{item.line}</span>
-										<span class="good__foot">
+										<span class="good__top">
+											<span class="good__name">{item.name}</span>
 											<span class="good__price">{rupees(item.price)}</span>
-											<span class="good__ask">
-												Ask
-												<span class="good__arrow" aria-hidden="true">
-													&rarr;
-												</span>
+										</span>
+										<span class="good__line">{item.line}</span>
+										<span class="good__ask">
+											Ask
+											<span class="good__arrow" aria-hidden="true">
+												&rarr;
 											</span>
 										</span>
 									</span>
@@ -209,22 +228,35 @@ const enquiry = (name: string) =>
 			</section>
 
 			<!-- ── Collections ──────────────────────────────────────────────────── -->
-			<section class="mkt__band" id="collections" aria-labelledby="mkt-collections" data-reveal>
-				<header class="mkt__head">
-					<h2 class="mkt__h" id="mkt-collections">Collections</h2>
-					<span class="mkt__rule" aria-hidden="true"></span>
+			<section class="band" id="collections" aria-labelledby="mkt-collections" data-reveal>
+				<header class="band__head">
+					<h2 class="band__h" id="mkt-collections">Collections</h2>
+					<span class="band__rule" aria-hidden="true"></span>
 				</header>
 
 				<ul class="sets">
 					{
 						COLLECTIONS.map((set) => (
-							<li class="set" style={`--accent: var(--${set.accent})`} data-reveal>
-								<span class="set__rule" aria-hidden="true" />
-								<h3 class="set__name">{set.label}</h3>
-								<p class="set__note">{set.note}</p>
-								<p class="set__count">
+							<li
+								class="set"
+								style={`--accent: var(--${set.accent}); --accent-ink: var(--${set.accent}-ink)`}
+								data-reveal
+							>
+								<span class="set__mark" aria-hidden="true">
+									{set.mark === 'claw' ? (
+										<ClawMark mono />
+									) : (
+										<span class="set__raster" style={`--mark:url('${set.mark}')`} />
+									)}
+								</span>
+								<span class="set__text">
+									<span class="set__rule" aria-hidden="true" />
+									<span class="set__name">{set.label}</span>
+									<span class="set__note">{set.note}</span>
+								</span>
+								<span class="set__count">
 									{set.items.length === 1 ? '1 thing' : `${set.items.length} things`}
-								</p>
+								</span>
 							</li>
 						))
 					}
@@ -232,10 +264,10 @@ const enquiry = (name: string) =>
 			</section>
 
 			<!-- ── Makers ───────────────────────────────────────────────────────── -->
-			<section class="mkt__band mkt__band--spread" id="makers" aria-labelledby="mkt-makers" data-reveal>
-				<header class="mkt__head mkt__head--side">
-					<h2 class="mkt__h" id="mkt-makers">Who makes it</h2>
-					<p class="mkt__aside">Livelihood is the point, not a by-product.</p>
+			<section class="band band--spread" id="makers" aria-labelledby="mkt-makers" data-reveal>
+				<header class="band__head band__head--side">
+					<h2 class="band__h" id="mkt-makers">Who makes it</h2>
+					<p class="band__aside">Livelihood is the point, not a by-product.</p>
 				</header>
 
 				<ul class="rows">
@@ -256,15 +288,10 @@ const enquiry = (name: string) =>
 			</section>
 
 			<!-- ── How it works ─────────────────────────────────────────────────── -->
-			<section
-				class="mkt__band mkt__band--spread"
-				id="how-it-works"
-				aria-labelledby="mkt-how"
-				data-reveal
-			>
-				<header class="mkt__head mkt__head--side">
-					<h2 class="mkt__h" id="mkt-how">How it works</h2>
-					<p class="mkt__aside">No cart, no account, no warehouse.</p>
+			<section class="band band--spread band--last" id="how-it-works" aria-labelledby="mkt-how" data-reveal>
+				<header class="band__head band__head--side">
+					<h2 class="band__h" id="mkt-how">How it works</h2>
+					<p class="band__aside">No cart, no account, no warehouse.</p>
 				</header>
 
 				<ol class="steps">
@@ -281,27 +308,28 @@ const enquiry = (name: string) =>
 					}
 				</ol>
 			</section>
+		</article>
 
-			<!-- ── The way in ───────────────────────────────────────────────────── -->
-			<section class="close" aria-labelledby="mkt-close" data-reveal>
-				<span class="close__edge" aria-hidden="true"></span>
+		<!-- ── The way in ───────────────────────────────────────────────────────
+		     On the ground the donate page stands on, so the page closes where the
+		     rest of the site keeps its asks. -->
+		<section class="close" aria-labelledby="mkt-close" data-reveal>
+			<span class="close__grain" aria-hidden="true"></span>
+			<div class="close__inner">
 				<h2 class="close__line" id="mkt-close">Ask about anything here.</h2>
 				<p class="close__note">Within five working days, by a person.</p>
-				<a class="btn btn--wide" href={enquiry('the marketplace')}>
+				<a class="btn" href={enquiry('the marketplace')}>
 					<span>Write to us</span>
 					<span class="btn__arrow" aria-hidden="true">&rarr;</span>
 				</a>
-			</section>
-		</article>
+			</div>
+		</section>
 
 		<SiteFooter />
 	</div>
 </Base>
 
 <style>
-	/* The ground runs the width of the page so the footer — which sets no
-	   background of its own and whose ink assumes cream — has something to sit
-	   on. The same arrangement the policies page uses. */
 	.mkt-page {
 		position: relative;
 		isolation: isolate;
@@ -312,25 +340,220 @@ const enquiry = (name: string) =>
 		background: var(--cream);
 	}
 
-	/* The Foundation's own mark, very large and very quiet, so a cream page has
-	   something behind it. */
-	.mkt-page__ornament {
+	/* Held while the page is being placed on a fragment arrival. The bar paints
+	   at once; only the page waits. See the inline script. */
+	:global(html[data-locating]) .mkt-page {
+		visibility: hidden;
+	}
+
+	/* ══ The storefront ═══════════════════════════════════════════════════════ */
+
+	.front {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-end;
+		min-height: min(46rem, 100svh);
+		padding: calc(var(--nav-h) + clamp(3rem, 10vh, 6rem)) var(--gutter)
+			clamp(1.75rem, 4vh, 2.5rem);
+		overflow: hidden;
+		background: var(--ink-deep);
+		color: var(--warm-white);
+	}
+
+	.front__stage {
 		position: absolute;
-		top: calc(var(--nav-h) + 6rem);
-		right: -10%;
+		inset: 0;
 		z-index: 0;
-		display: block;
-		color: var(--teal);
-		opacity: 0.045;
+	}
+
+	/* The photograph is the ground, not an illustration beside the words. */
+	.front__img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: 50% 30%;
+	}
+
+	/* Brought down to the Foundation's own dark from the left, so the words are
+	   read off the page rather than off the picture. */
+	.front__wash {
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		background:
+			linear-gradient(
+				92deg,
+				color-mix(in srgb, var(--ink-deep) 95%, transparent) 0%,
+				color-mix(in srgb, var(--ink-deep) 82%, transparent) 44%,
+				color-mix(in srgb, var(--ink-deep) 38%, transparent) 76%,
+				color-mix(in srgb, var(--ink-deep) 20%, transparent) 100%
+			),
+			linear-gradient(
+				180deg,
+				color-mix(in srgb, var(--ink-deep) 66%, transparent) 0%,
+				transparent 36%,
+				color-mix(in srgb, var(--ink-deep) 58%, transparent) 100%
+			);
 		pointer-events: none;
 	}
 
-	/* Held while the document is being placed on a fragment arrival. The ground
-	   and the bar paint at once; only the words wait. See the inline script. */
-	:global(html[data-locating]) .mkt,
-	:global(html[data-locating] .foot) {
-		visibility: hidden;
+	.front__grain {
+		position: absolute;
+		inset: 0;
+		z-index: 2;
+		opacity: 0.22;
+		mix-blend-mode: overlay;
+		pointer-events: none;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='1 0 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
 	}
+
+	.front__inner {
+		position: relative;
+		z-index: 3;
+		display: grid;
+		gap: clamp(2rem, 5vh, 3rem);
+		align-items: end;
+		width: 100%;
+		max-width: 74rem;
+		margin: 0 auto;
+	}
+
+	@media (min-width: 62rem) {
+		.front__inner {
+			grid-template-columns: minmax(0, 1fr) minmax(17rem, 21rem);
+			column-gap: clamp(2.5rem, 6vw, 5rem);
+		}
+	}
+
+	.front__eyebrow {
+		font-family: var(--face-cinzel);
+		font-size: 0.6875rem;
+		font-weight: 500;
+		letter-spacing: 0.2em;
+		text-transform: uppercase;
+		color: color-mix(in srgb, var(--cream) 82%, var(--ink-deep));
+	}
+
+	.front__title {
+		margin-top: 1.15rem;
+		max-width: 15ch;
+		font-family: var(--face-bodoni);
+		font-size: clamp(2.4rem, 5.2vw, 4rem);
+		font-weight: var(--display-weight);
+		line-height: 1.03;
+		letter-spacing: -0.02em;
+		color: var(--cream);
+		text-wrap: balance;
+	}
+
+	.front__lede {
+		margin-top: 1.3rem;
+		max-width: 28rem;
+		font-size: 1.125rem;
+		line-height: 1.55;
+		color: color-mix(in srgb, var(--cream) 88%, var(--ink-deep));
+	}
+
+	.front__note {
+		position: relative;
+		z-index: 3;
+		width: 100%;
+		max-width: 74rem;
+		margin: clamp(2rem, 5vh, 3rem) auto 0;
+		padding-top: 1rem;
+		border-top: 1px solid rgba(250, 247, 240, 0.16);
+		font-size: 0.8125rem;
+		color: rgba(250, 247, 240, 0.72);
+	}
+
+	/* ══ The wall label ═══════════════════════════════════════════════════════ */
+
+	.label {
+		padding: 1.35rem 1.4rem 1.4rem;
+		border-radius: 6px;
+		background: rgba(15, 20, 21, 0.62);
+		border: 1px solid rgba(250, 247, 240, 0.18);
+		-webkit-backdrop-filter: blur(14px);
+		backdrop-filter: blur(14px);
+	}
+
+	.label__pillar {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		font-family: var(--body);
+		font-size: 0.5625rem;
+		font-weight: 600;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		color: rgba(250, 247, 240, 0.85);
+	}
+
+	.label__rule {
+		width: 1.5rem;
+		height: 2px;
+		background: var(--accent);
+	}
+
+	.label__name {
+		margin-top: 0.75rem;
+		font-family: var(--face-bodoni);
+		font-size: 1.5rem;
+		font-weight: var(--display-weight);
+		line-height: 1.1;
+		color: var(--cream);
+	}
+
+	.label__line {
+		margin-top: 0.5rem;
+		font-size: 0.875rem;
+		line-height: 1.55;
+		color: rgba(250, 247, 240, 0.82);
+	}
+
+	.label__foot {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-top: 1.1rem;
+		padding-top: 0.9rem;
+		border-top: 1px solid rgba(250, 247, 240, 0.18);
+	}
+
+	.label__price {
+		font-family: var(--face-bodoni);
+		font-size: 1.25rem;
+		font-weight: var(--display-weight);
+		color: var(--cream);
+	}
+
+	.label__ask {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		font-size: 0.875rem;
+		color: var(--cream);
+		text-decoration: underline;
+		text-underline-offset: 0.25em;
+		text-decoration-color: rgba(250, 247, 240, 0.4);
+		transition: text-decoration-color 180ms var(--ease);
+	}
+
+	.label__ask:hover {
+		text-decoration-color: var(--cream);
+	}
+
+	.label__arrow {
+		transition: translate 220ms var(--ease);
+	}
+
+	.label__ask:hover .label__arrow {
+		translate: 0.25rem 0;
+	}
+
+	/* ══ The body ═════════════════════════════════════════════════════════════ */
 
 	.mkt {
 		position: relative;
@@ -339,84 +562,47 @@ const enquiry = (name: string) =>
 		width: 100%;
 		max-width: 74rem;
 		margin: 0 auto;
-		padding: calc(var(--nav-h) + clamp(2.5rem, 7vh, 5rem)) var(--gutter)
-			clamp(3rem, 8vh, 5rem);
+		padding: 0 var(--gutter);
 	}
 
-	/* ══ Masthead ═════════════════════════════════════════════════════════════ */
-
-	.mkt__mast {
-		max-width: 46rem;
-		padding-bottom: clamp(2.5rem, 6vh, 4rem);
-	}
-
-	.mkt__eyebrow {
-		font-family: var(--face-cinzel);
-		font-size: 0.6875rem;
-		font-weight: 500;
-		letter-spacing: 0.2em;
-		text-transform: uppercase;
+	.mkt__ornament {
+		position: absolute;
+		top: 24rem;
+		right: -12%;
+		z-index: -1;
+		display: block;
 		color: var(--teal);
+		opacity: 0.04;
+		pointer-events: none;
 	}
 
-	.mkt__title {
-		margin-top: 1.15rem;
-		font-family: var(--face-bodoni);
-		font-size: clamp(2.35rem, 5vw, 3.75rem);
-		font-weight: var(--display-weight);
-		line-height: 1.04;
-		letter-spacing: -0.02em;
-		text-wrap: balance;
-	}
-
-	.mkt__lede {
-		margin-top: 1.35rem;
-		max-width: 34rem;
-		font-size: 1.1875rem;
-		line-height: 1.55;
-		color: var(--ink-soft);
-	}
-
-	/* Said once, quietly, and not repeated on every card. */
-	.mkt__note {
-		margin-top: 1.5rem;
-		padding-top: 1.1rem;
-		max-width: 34rem;
-		border-top: 1px solid var(--rule);
-		font-size: 0.875rem;
-		line-height: 1.6;
-		color: var(--ink-faint);
-	}
-
-	/* ══ Bands ════════════════════════════════════════════════════════════════ */
-
-	.mkt__band {
-		padding: clamp(2.75rem, 7vh, 4.5rem) 0;
-		border-top: 1px solid var(--rule);
-		/* The bar is fixed, so an anchor that lands at the top of the viewport
-		   lands underneath it. */
+	.band {
+		padding: clamp(3rem, 8vh, 5rem) 0;
+		border-bottom: 1px solid var(--rule);
 		scroll-margin-top: calc(var(--nav-h) + 1.5rem);
 	}
 
-	.mkt__head {
+	.band--last {
+		border-bottom: 0;
+	}
+
+	.band__head {
 		display: flex;
-		align-items: center;
+		align-items: baseline;
 		gap: clamp(1.25rem, 3vw, 2.25rem);
 		padding-bottom: clamp(1.75rem, 4vh, 2.5rem);
 	}
 
-	.mkt__h {
+	.band__h {
 		font-family: var(--face-bodoni);
-		font-size: clamp(1.6rem, 2.8vw, 2.15rem);
+		font-size: clamp(1.7rem, 3vw, 2.35rem);
 		font-weight: var(--display-weight);
 		line-height: 1.1;
-		letter-spacing: -0.01em;
+		letter-spacing: -0.012em;
 		white-space: nowrap;
 	}
 
-	/* Runs to the edge of the column, so a heading never sits alone against an
-	   empty half. */
-	.mkt__rule {
+	.band__rule {
 		flex: 1;
 		height: 1px;
 		background: linear-gradient(
@@ -426,124 +612,40 @@ const enquiry = (name: string) =>
 		);
 	}
 
-	/* Heading on the left, the thing itself down the right. */
-	@media (min-width: 62rem) {
-		.mkt__band--spread {
-			display: grid;
-			grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
-			column-gap: clamp(2.5rem, 6vw, 5rem);
-			align-items: start;
-		}
-
-		.mkt__head--side {
-			display: block;
-			padding-bottom: 0;
-		}
-
-		.mkt__head--side .mkt__h {
-			white-space: normal;
-			font-size: clamp(1.5rem, 2.4vw, 1.9rem);
-		}
-	}
-
-	.mkt__aside {
-		margin-top: 1rem;
-		font-size: 0.9375rem;
-		line-height: 1.6;
-		color: var(--ink-faint);
-	}
-
-	/* ══ The newest thing ═════════════════════════════════════════════════════ */
-
-	.hero {
-		display: grid;
-		gap: clamp(1.5rem, 3vw, 2.5rem);
-		align-items: center;
-	}
-
-	@media (min-width: 54rem) {
-		.hero {
-			grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
-		}
-	}
-
-	.hero__plate {
-		position: relative;
-		border-radius: 6px;
-		overflow: hidden;
-		background: color-mix(in srgb, var(--ink) 5%, var(--cream));
-		box-shadow:
-			0 1px 0 rgba(255, 255, 255, 0.6) inset,
-			0 2px 6px rgba(6, 7, 8, 0.1),
-			0 26px 54px -28px rgba(6, 7, 8, 0.4);
-	}
-
-	.hero__plate img {
-		display: block;
-		width: 100%;
-		height: auto;
-	}
-
-	.hero__pillar {
-		display: flex;
-		align-items: center;
-		gap: 0.6rem;
-		font-family: var(--body);
-		font-size: 0.625rem;
-		font-weight: 600;
-		letter-spacing: 0.16em;
-		text-transform: uppercase;
-		color: var(--ink-faint);
-	}
-
-	.hero__pillar-rule {
-		width: 1.6rem;
-		height: 2px;
-		background: var(--accent);
-	}
-
-	.hero__name {
-		margin-top: 0.85rem;
-		font-family: var(--face-bodoni);
-		font-size: clamp(1.75rem, 3.2vw, 2.35rem);
-		font-weight: var(--display-weight);
-		line-height: 1.08;
-		letter-spacing: -0.015em;
-	}
-
-	.hero__line {
-		margin-top: 0.7rem;
-		max-width: 26rem;
-		font-size: 1rem;
-		line-height: 1.6;
-		color: var(--ink-soft);
-	}
-
-	.hero__facts {
-		display: grid;
-		grid-template-columns: minmax(0, 7rem) minmax(0, 1fr);
-		gap: 0.4rem 1rem;
-		margin: 1.4rem 0 1.6rem;
-		padding: 1.1rem 0;
-		border-top: 1px solid var(--rule);
-		border-bottom: 1px solid var(--rule);
-	}
-
-	.hero__facts dt {
+	.band__count {
+		flex: none;
 		font-family: var(--body);
 		font-size: 0.625rem;
 		font-weight: 600;
 		letter-spacing: 0.14em;
 		text-transform: uppercase;
 		color: var(--ink-faint);
-		padding-top: 0.2rem;
 	}
 
-	.hero__facts dd {
-		margin: 0;
+	@media (min-width: 62rem) {
+		.band--spread {
+			display: grid;
+			grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+			column-gap: clamp(2.5rem, 6vw, 5rem);
+			align-items: start;
+		}
+
+		.band__head--side {
+			display: block;
+			padding-bottom: 0;
+		}
+
+		.band__head--side .band__h {
+			white-space: normal;
+			font-size: clamp(1.5rem, 2.4vw, 1.9rem);
+		}
+	}
+
+	.band__aside {
+		margin-top: 0.9rem;
 		font-size: 0.9375rem;
-		line-height: 1.5;
-		color: var(--ink);
+		line-height: 1.6;
+		color: var(--ink-faint);
 	}
 
 	/* ══ The goods ════════════════════════════════════════════════════════════ */
@@ -551,10 +653,11 @@ const enquiry = (name: string) =>
 	.goods {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(min(15rem, 100%), 1fr));
-		gap: clamp(1rem, 2.2vw, 1.75rem);
+		gap: clamp(1.75rem, 3.5vw, 3rem) clamp(1.25rem, 2.5vw, 2rem);
 		list-style: none;
 		margin: 0;
 		padding: 0;
+		align-items: start;
 	}
 
 	.good {
@@ -562,82 +665,84 @@ const enquiry = (name: string) =>
 		--accent-ink: var(--teal);
 	}
 
-	/* The whole card is the target. A card with a small link in the corner is a
-	   card that has to be aimed at. */
 	.good__link {
 		display: grid;
-		grid-template-rows: auto 1fr;
-		height: 100%;
-		border: 1px solid var(--rule);
-		border-radius: 6px;
-		overflow: hidden;
-		background: color-mix(in srgb, var(--cream) 88%, #fff);
+		gap: 0.9rem;
 		color: inherit;
-		transition:
-			border-color 240ms var(--ease),
-			transform 320ms var(--ease),
-			box-shadow 320ms var(--ease);
 	}
 
-	.good__link:hover,
-	.good__link:focus-visible {
-		border-color: color-mix(in srgb, var(--accent) 55%, transparent);
-		transform: translateY(-3px);
-		box-shadow: 0 22px 44px -26px rgba(6, 7, 8, 0.5);
-	}
-
-	/* The plate stands in for a photograph, and says what the thing is made of
-	   rather than pretending to show it. */
-	.good__plate {
+	/* The panel is the object. No border, no card. */
+	.good__panel {
 		position: relative;
 		display: grid;
 		place-items: center;
-		aspect-ratio: 4 / 3;
-		border-bottom: 1px solid var(--rule);
+		aspect-ratio: 4 / 5;
+		border-radius: 4px;
+		overflow: hidden;
 		background:
 			radial-gradient(
-				110% 95% at 50% 8%,
-				color-mix(in srgb, var(--accent) 26%, transparent) 0%,
-				color-mix(in srgb, var(--accent) 7%, transparent) 55%,
-				transparent 78%
+				108% 92% at 50% 4%,
+				color-mix(in srgb, var(--accent) 42%, transparent) 0%,
+				color-mix(in srgb, var(--accent) 13%, transparent) 54%,
+				color-mix(in srgb, var(--accent) 4%, transparent) 82%
 			),
-			color-mix(in srgb, var(--cream) 78%, #fff);
-		overflow: hidden;
+			color-mix(in srgb, var(--cream) 68%, #fff);
+		box-shadow:
+			0 1px 0 rgba(255, 255, 255, 0.7) inset,
+			0 1px 2px rgba(6, 7, 8, 0.06),
+			0 18px 36px -26px rgba(6, 7, 8, 0.4);
+		transition:
+			transform 420ms var(--ease),
+			box-shadow 420ms var(--ease);
+	}
+
+	/* Every third one runs tall, so the eye moves down the page rather than
+	   reading it as even rows. */
+	.good[data-tall] .good__panel {
+		aspect-ratio: 4 / 6.1;
+	}
+
+	.good__link:hover .good__panel,
+	.good__link:focus-visible .good__panel {
+		transform: translateY(-6px);
+		box-shadow:
+			0 1px 0 rgba(255, 255, 255, 0.7) inset,
+			0 2px 4px rgba(6, 7, 8, 0.08),
+			0 32px 58px -26px rgba(6, 7, 8, 0.5);
 	}
 
 	/* The stamp: two letters in the inscriptional face, the way a maker marks a
 	   thing that is not photographed. */
 	.good__monogram {
 		font-family: var(--face-cinzel);
-		font-size: clamp(2.5rem, 6vw, 3.25rem);
+		font-size: clamp(2.6rem, 6vw, 3.5rem);
 		font-weight: 500;
 		letter-spacing: 0.12em;
 		line-height: 1;
 		text-indent: 0.12em;
-		color: color-mix(in srgb, var(--accent-ink) 78%, var(--ink));
-		opacity: 0.62;
-		transition: opacity 320ms var(--ease);
+		color: color-mix(in srgb, var(--accent-ink) 82%, var(--ink));
+		opacity: 0.72;
+		transition:
+			opacity 380ms var(--ease),
+			scale 520ms var(--ease);
 	}
 
 	.good__link:hover .good__monogram,
 	.good__link:focus-visible .good__monogram {
-		opacity: 0.72;
+		opacity: 0.78;
+		scale: 1.04;
 	}
 
-	/* The body of work it belongs to, small, in the corner. */
 	.good__mark {
 		position: absolute;
 		top: 0.85rem;
 		right: 0.9rem;
 		display: grid;
 		place-items: center;
-		width: 1.75rem;
-		height: 1.75rem;
+		width: 1.6rem;
+		height: 1.6rem;
 		color: var(--accent-ink);
-		opacity: 0.38;
-		transition:
-			opacity 320ms var(--ease),
-			scale 420ms var(--ease);
+		opacity: 0.55;
 	}
 
 	.good__mark :global(svg) {
@@ -656,20 +761,14 @@ const enquiry = (name: string) =>
 		mask: var(--mark) center / contain no-repeat;
 	}
 
-	.good__link:hover .good__mark,
-	.good__link:focus-visible .good__mark {
-		opacity: 0.6;
-		scale: 1.06;
-	}
-
 	.good__craft {
 		position: absolute;
-		inset: auto 0 0.9rem;
+		inset: auto 0 1rem;
 		padding: 0 1.1rem;
 		font-family: var(--body);
-		font-size: 0.625rem;
+		font-size: 0.5625rem;
 		font-weight: 600;
-		letter-spacing: 0.12em;
+		letter-spacing: 0.14em;
 		text-transform: uppercase;
 		text-align: center;
 		color: var(--ink-faint);
@@ -677,34 +776,33 @@ const enquiry = (name: string) =>
 
 	.good__body {
 		display: grid;
-		align-content: start;
-		gap: 0.45rem;
-		padding: 1.1rem 1.15rem 1.2rem;
+		gap: 0.35rem;
 	}
 
-	.good__pillar {
+	/* Name and price on one line over a rule, the way a catalogue sets an
+	   entry. */
+	.good__top {
 		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		font-family: var(--body);
-		font-size: 0.5625rem;
-		font-weight: 600;
-		letter-spacing: 0.16em;
-		text-transform: uppercase;
-		color: var(--ink-faint);
-	}
-
-	.good__pillar-rule {
-		width: 1rem;
-		height: 2px;
-		background: var(--accent);
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 1rem;
+		padding-bottom: 0.5rem;
+		border-bottom: 1px solid var(--rule);
 	}
 
 	.good__name {
 		font-family: var(--face-bodoni);
-		font-size: 1.25rem;
+		font-size: 1.1875rem;
 		font-weight: var(--display-weight);
 		line-height: 1.15;
+	}
+
+	.good__price {
+		flex: none;
+		font-family: var(--face-bodoni);
+		font-size: 1rem;
+		font-weight: var(--display-weight);
+		color: var(--ink-soft);
 	}
 
 	.good__line {
@@ -714,74 +812,101 @@ const enquiry = (name: string) =>
 		text-wrap: pretty;
 	}
 
-	.good__foot {
-		display: flex;
-		align-items: baseline;
-		justify-content: space-between;
-		gap: 1rem;
-		margin-top: 0.65rem;
-		padding-top: 0.7rem;
-		border-top: 1px solid var(--rule);
-	}
-
-	.good__price {
-		font-family: var(--face-bodoni);
-		font-size: 1.0625rem;
-		font-weight: var(--display-weight);
-	}
-
 	.good__ask {
 		display: inline-flex;
 		align-items: center;
 		gap: 0.35rem;
-		font-size: 0.8125rem;
+		margin-top: 0.15rem;
+		font-size: 0.75rem;
+		font-weight: 600;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
 		color: var(--accent-ink);
+		opacity: 0;
+		translate: 0 -0.25rem;
+		transition:
+			opacity 260ms var(--ease),
+			translate 260ms var(--ease);
+	}
+
+	.good__link:hover .good__ask,
+	.good__link:focus-visible .good__ask {
+		opacity: 1;
+		translate: none;
 	}
 
 	.good__arrow {
 		transition: translate 240ms var(--ease);
 	}
 
-	.good__link:hover .good__arrow,
-	.good__link:focus-visible .good__arrow {
+	.good__link:hover .good__arrow {
 		translate: 0.25rem 0;
 	}
 
 	/* ══ Collections ══════════════════════════════════════════════════════════ */
 
+	/* Three wide bands rather than three small tiles: a collection is a part of
+	   the Foundation, not a product. */
 	.sets {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr));
-		gap: clamp(1rem, 2.2vw, 1.75rem);
 		list-style: none;
 		margin: 0;
 		padding: 0;
+		border-top: 1px solid var(--rule);
 	}
 
 	.set {
 		display: grid;
-		align-content: start;
-		gap: 0.6rem;
-		padding: 1.35rem 1.4rem 1.5rem;
-		border: 1px solid var(--rule);
-		border-radius: 6px;
-		background: color-mix(in srgb, var(--cream) 88%, #fff);
+		grid-template-columns: auto minmax(0, 1fr);
+		align-items: center;
+		gap: 0 clamp(1.25rem, 3vw, 2.25rem);
+		padding: clamp(1.35rem, 3vh, 2rem) 0;
+		border-bottom: 1px solid var(--rule);
+	}
+
+	.set__mark {
+		display: grid;
+		place-items: center;
+		width: clamp(2.75rem, 6vw, 3.75rem);
+		height: clamp(2.75rem, 6vw, 3.75rem);
+		color: var(--accent-ink);
+		opacity: 0.72;
+	}
+
+	.set__mark :global(svg) {
+		width: 100%;
+		height: 100%;
+	}
+
+	.set__raster {
+		display: block;
+		width: 100%;
+		height: 100%;
+		background: currentColor;
+		-webkit-mask: var(--mark) center / contain no-repeat;
+		mask: var(--mark) center / contain no-repeat;
+	}
+
+	.set__text {
+		display: grid;
+		gap: 0.4rem;
 	}
 
 	.set__rule {
-		width: 2.25rem;
+		width: 2rem;
 		height: 2px;
 		background: var(--accent);
 	}
 
 	.set__name {
 		font-family: var(--face-bodoni);
-		font-size: 1.375rem;
+		font-size: clamp(1.3rem, 2.4vw, 1.6rem);
 		font-weight: var(--display-weight);
 		line-height: 1.1;
 	}
 
 	.set__note {
+		max-width: 34rem;
 		font-size: 0.9375rem;
 		line-height: 1.55;
 		color: var(--ink-soft);
@@ -789,13 +914,27 @@ const enquiry = (name: string) =>
 	}
 
 	.set__count {
-		margin-top: 0.25rem;
+		grid-column: 2;
+		margin-top: 0.5rem;
 		font-family: var(--body);
 		font-size: 0.625rem;
 		font-weight: 600;
 		letter-spacing: 0.14em;
 		text-transform: uppercase;
 		color: var(--ink-faint);
+	}
+
+	@media (min-width: 48rem) {
+		.set {
+			grid-template-columns: auto minmax(0, 1fr) auto;
+		}
+
+		.set__count {
+			grid-column: 3;
+			grid-row: 1;
+			margin-top: 0;
+			white-space: nowrap;
+		}
 	}
 
 	/* ══ Makers ═══════════════════════════════════════════════════════════════ */
@@ -848,12 +987,9 @@ const enquiry = (name: string) =>
 
 	/* ══ How it works ═════════════════════════════════════════════════════════ */
 
-	/* Two by two rather than four across. In the right half of a spread, four
-	   columns leave eleven rems each and the fourth step wraps onto a line of
-	   its own, which reads as an accident. */
 	.steps {
 		display: grid;
-		gap: clamp(1.25rem, 2.5vw, 2rem) clamp(1.5rem, 3vw, 2.5rem);
+		gap: clamp(1.35rem, 3vw, 2.25rem);
 		list-style: none;
 		margin: 0;
 		padding: 0;
@@ -899,81 +1035,76 @@ const enquiry = (name: string) =>
 
 	.close {
 		position: relative;
-		margin-top: clamp(2.5rem, 6vh, 4rem);
-		padding: clamp(2.5rem, 6vh, 3.5rem) clamp(1.5rem, 4vw, 3rem)
-			clamp(2.75rem, 6vh, 3.75rem);
-		border-radius: 8px;
-		overflow: hidden;
+		isolation: isolate;
+		padding: clamp(3.5rem, 9vh, 5.5rem) var(--gutter);
 		text-align: center;
+		color: var(--warm-white);
 		background:
 			radial-gradient(
-				120% 120% at 50% 0%,
-				color-mix(in srgb, var(--teal) 10%, transparent) 0%,
-				transparent 70%
+				120% 90% at 50% 0%,
+				color-mix(in srgb, var(--teal) 58%, transparent) 0%,
+				transparent 62%
 			),
-			color-mix(in srgb, var(--cream) 84%, #fff);
-		border: 1px solid var(--rule);
+			linear-gradient(
+				168deg,
+				color-mix(in srgb, var(--teal) 46%, var(--teal-deep)) 0%,
+				var(--teal-deep) 68%
+			);
 	}
 
-	/* The three bodies of work, drawn across the head of the panel — the line
-	   the giving card and the registration sheet already carry. */
-	.close__edge {
+	.close__grain {
 		position: absolute;
-		inset: 0 0 auto;
-		height: 2px;
-		background: linear-gradient(
-			90deg,
-			var(--ochre) 0%,
-			var(--rose) 50%,
-			var(--sage) 100%
-		);
+		inset: 0;
+		z-index: -1;
+		opacity: 0.24;
+		mix-blend-mode: overlay;
+		pointer-events: none;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='1 0 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+	}
+
+	.close__inner {
+		width: 100%;
+		max-width: 40rem;
+		margin: 0 auto;
 	}
 
 	.close__line {
 		font-family: var(--face-bodoni);
-		font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+		font-size: clamp(1.85rem, 3.6vw, 2.75rem);
 		font-weight: var(--display-weight);
 		line-height: 1.1;
 		letter-spacing: -0.015em;
+		color: var(--cream);
 	}
 
 	.close__note {
-		margin: 0.9rem auto 1.75rem;
-		max-width: 32rem;
+		margin: 0.85rem 0 1.85rem;
 		font-size: 1rem;
 		line-height: 1.6;
-		color: var(--ink-soft);
+		color: rgba(250, 247, 240, 0.85);
 	}
-
-	/* ══ The button ═══════════════════════════════════════════════════════════ */
 
 	.btn {
 		display: inline-flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: 1rem;
-		min-width: 13rem;
-		padding: 0.85rem 1.25rem;
+		gap: 1.25rem;
+		min-width: 14rem;
+		padding: 0.9rem 1.35rem;
 		border-radius: 4px;
-		background: var(--teal);
-		color: var(--cream);
+		background: var(--cream);
+		color: var(--teal-deep);
 		font-size: 1rem;
-		box-shadow: 0 12px 26px -14px color-mix(in srgb, var(--teal) 82%, transparent);
+		box-shadow: 0 14px 30px -16px rgba(4, 26, 30, 0.9);
 		transition:
-			background-color 180ms var(--ease),
 			transform 180ms var(--ease),
 			box-shadow 180ms var(--ease);
 	}
 
 	.btn:hover,
 	.btn:focus-visible {
-		background: var(--teal-deep);
-		transform: translateY(-1px);
-		box-shadow: 0 18px 34px -14px color-mix(in srgb, var(--teal) 92%, transparent);
-	}
-
-	.btn--wide {
-		min-width: 15rem;
+		transform: translateY(-2px);
+		box-shadow: 0 22px 42px -16px rgba(4, 26, 30, 0.95);
 	}
 
 	.btn__arrow {
@@ -985,13 +1116,28 @@ const enquiry = (name: string) =>
 		translate: 0.25rem 0;
 	}
 
+	/* ══ Narrow ═══════════════════════════════════════════════════════════════ */
+
+	@media (max-width: 48rem) {
+		.front {
+			min-height: 0;
+		}
+
+		.front__img {
+			object-position: 50% 22%;
+		}
+
+		.good[data-tall] .good__panel {
+			aspect-ratio: 4 / 5;
+		}
+	}
+
 	/* ══ Arrival ══════════════════════════════════════════════════════════════ */
 
 	/* The armed state is added by script, never by the stylesheet, so a reader
-	   without JavaScript gets the whole page rather than a blank one. The
-	   transition is declared here rather than on the arrival: an element that
-	   gains its transition in the same class change that moves it is not
-	   reliably animated. */
+	   without JavaScript gets the whole page. The transition is declared here
+	   rather than on the arrival: an element that gains its transition in the
+	   same class change that moves it is not reliably animated. */
 	[data-reveal].is-armed {
 		opacity: 0;
 		translate: 0 1.25rem;
@@ -1014,8 +1160,8 @@ const enquiry = (name: string) =>
 			transition: none;
 		}
 
-		.good__link,
-		.good__link:hover,
+		.good__panel,
+		.good__link:hover .good__panel,
 		.btn,
 		.btn:hover {
 			transition: none;
@@ -1025,9 +1171,7 @@ const enquiry = (name: string) =>
 </style>
 
 <script>
-	/**
-	 * Sections arrive as they are reached, and each releases once.
-	 */
+	/** Sections arrive as they are reached, and each releases once. */
 	const revealing = [...document.querySelectorAll<HTMLElement>('[data-reveal]')];
 	const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -1039,8 +1183,8 @@ const enquiry = (name: string) =>
 				for (const entry of entries) {
 					if (!entry.isIntersecting) continue;
 					const el = entry.target as HTMLElement;
-					// Cards in the same row follow each other rather than landing
-					// together, which reads as one movement instead of nine.
+					// Panels in the same row follow each other rather than landing
+					// together, which reads as one movement instead of eight.
 					const peers = [...(el.parentElement?.children ?? [])].filter(
 						(n) => (n as HTMLElement).dataset?.reveal !== undefined,
 					);
