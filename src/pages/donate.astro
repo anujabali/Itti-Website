@@ -112,20 +112,22 @@ const WAYS = [
 <Base
 	title="Donate — The Itti Foundation"
 	description="Support The Itti Foundation. Where your gift goes, how we account for it, and where we stand on tax relief and on donations from outside India."
-	navTheme="auto"
+	navTheme="veil"
 >
 	<div class="give-page">
+		<!-- The ground the whole page stands on, and the two things that stop it
+		     reading as flat CSS: the Foundation's own mark, very large and very
+		     quiet, and the grain the rest of the site is laid over. -->
+		<span class="page__ornament" aria-hidden="true">
+			<Mark height="34rem" label="" />
+		</span>
+		<div class="page__grain" aria-hidden="true"></div>
 		<!-- ── The ask ──────────────────────────────────────────────────────────
 		     Full width and dark, so the card that asks for money is the brightest
 		     thing on the page rather than one more cream panel among several. The
 		     nav follows the ground behind it: dark here, light from the moment
 		     `data-light-zone` reaches it. -->
 		<section class="hero">
-			<span class="hero__ornament" aria-hidden="true">
-				<Mark height="30rem" label="" />
-			</span>
-			<div class="hero__grain" aria-hidden="true"></div>
-
 			<div class="hero__inner">
 				<div class="hero__lead">
 					<p class="hero__eyebrow">Donate</p>
@@ -222,10 +224,14 @@ const WAYS = [
 				</aside>
 			</div>
 
-			<span class="hero__rule" aria-hidden="true"></span>
 		</section>
 
-		<article class="give" data-light-zone>
+			<!-- Where the content begins. The bar is glass above this line and takes
+			     its own ground below it, because a card passing behind the lockup
+			     is a lockup nobody can read. -->
+			<span class="zone" data-light-zone aria-hidden="true"></span>
+
+		<article class="give">
 			<!-- ── Where it goes ────────────────────────────────────────────────── -->
 			<section class="give__band" aria-labelledby="give-areas-heading" data-reveal>
 				<header class="give__band-head">
@@ -266,10 +272,6 @@ const WAYS = [
 		     moment; repeating its treatment here would spend it twice. This is
 		     the same argument set in the same face, on paper instead. -->
 		<section class="plinth" aria-labelledby="give-plinth-heading">
-			<span class="plinth__ornament" aria-hidden="true">
-				<Mark height="22rem" label="" />
-			</span>
-			<div class="plinth__grain" aria-hidden="true"></div>
 
 			<div class="plinth__body" data-reveal>
 				<h2 class="plinth__eyebrow" id="give-plinth-heading">And the part nobody funds</h2>
@@ -346,13 +348,71 @@ const WAYS = [
 
 
 <style>
+	/* The whole page stands on the band rather than opening on it. Depth rather
+	   than a flat fill: the brand teal falling away to its own abyss, lit from
+	   the upper left so the page has a light source and the card has something
+	   to cast against.
+
+	   The tokens are redefined here rather than reached into, because custom
+	   properties inherit and the footer reads the same names. */
 	.give-page {
-		background: var(--cream);
+		position: relative;
+		isolation: isolate;
 		min-height: 100svh;
 		display: flex;
 		flex-direction: column;
-		/* The hero and the plinth are full-bleed from inside a centred column. */
 		overflow-x: clip;
+		color: var(--cream);
+
+		--lit: var(--teal);
+		--deep: color-mix(in srgb, var(--teal) 46%, var(--teal-deep));
+		--floor: var(--teal-deep);
+		background:
+			radial-gradient(
+				128% 92% at 10% 0%,
+				color-mix(in srgb, var(--lit) 62%, transparent) 0%,
+				transparent 58%
+			),
+			linear-gradient(168deg, var(--deep) 0%, var(--floor) 62%);
+
+		--ink: var(--warm-white);
+		--ink-soft: rgba(250, 247, 240, 0.78);
+		--ink-faint: rgba(250, 247, 240, 0.62);
+		--rule: rgba(250, 247, 240, 0.16);
+		--accent: var(--warm-white);
+	}
+
+	.page__ornament {
+		position: absolute;
+		top: calc(var(--nav-h) - 4rem);
+		right: -9%;
+		z-index: 0;
+		display: block;
+		color: var(--cream);
+		opacity: 0.05;
+		pointer-events: none;
+	}
+
+	.page__grain {
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		opacity: 0.26;
+		mix-blend-mode: overlay;
+		pointer-events: none;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='1 0 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+	}
+
+	.zone {
+		display: block;
+		height: 0;
+	}
+
+	.give,
+	.plinth,
+	:global(.foot) {
+		position: relative;
+		z-index: 1;
 	}
 
 	/* ══ The hero ═════════════════════════════════════════════════════════════ */
@@ -362,58 +422,12 @@ const WAYS = [
 	   has something to cast against. */
 	.hero {
 		position: relative;
-		isolation: isolate;
 		padding: calc(var(--nav-h) + clamp(3rem, 9vh, 6rem)) var(--gutter)
 			clamp(3.5rem, 10vh, 6.5rem);
-		overflow: clip;
-		color: var(--cream);
-		--lit: var(--teal);
-		--deep: color-mix(in srgb, var(--teal) 46%, var(--teal-deep));
-		--floor: var(--teal-deep);
-		background:
-			radial-gradient(
-				118% 140% at 12% 0%,
-				color-mix(in srgb, var(--lit) 72%, transparent) 0%,
-				transparent 62%
-			),
-			linear-gradient(160deg, var(--deep) 0%, var(--floor) 68%);
 	}
 
-	/* A watermark, not a logo: large enough to be a texture in the field and
-	   faint enough that it is felt rather than read. It sits behind the card and
-	   bleeds off the left, so it never resolves into a badge. */
-	.hero__ornament {
-		position: absolute;
-		top: 50%;
-		left: -9%;
-		transform: translateY(-46%);
-		display: block;
-		color: var(--cream);
-		opacity: 0.06;
-		pointer-events: none;
-	}
 
-	/* The grain the whole site is laid over, so this band sits in the same air
-	   as the plates rather than looking like flat CSS. */
-	.hero__grain {
-		position: absolute;
-		inset: 0;
-		opacity: 0.28;
-		mix-blend-mode: overlay;
-		pointer-events: none;
-		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='1 0 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
-	}
 
-	/* A hairline closing the band, in the colour lighting it. */
-	.hero__rule {
-		position: absolute;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		height: 2px;
-		background: var(--lit);
-		opacity: 0.9;
-	}
 
 	.hero__inner {
 		position: relative;
@@ -473,7 +487,16 @@ const WAYS = [
 	/* The brightest thing on the page, because it is the one that asks. On a
 	   dark ground it needs no border to read as an object; the shadow does it. */
 	.card {
-		background: var(--warm-white, #fff);
+		/* Paper laid on the ground, so the page's inverted ink is put back —
+	   without this every label in the card is cream on cream. A shade under
+	   pure cream so it does not read as lit from a source the page has not
+	   got. */
+		background: color-mix(in srgb, var(--cream) 93%, var(--floor));
+		--ink: #2c2721;
+		--ink-soft: #5d564d;
+		--ink-faint: #655e55;
+		--rule: rgba(44, 39, 33, 0.14);
+		color: var(--ink);
 		border-radius: 4px;
 		box-shadow:
 			0 2px 4px rgba(10, 47, 53, 0.18),
@@ -761,16 +784,19 @@ const WAYS = [
 		color: var(--ink-faint);
 	}
 
+	/* The page's ground is the brand teal, and the brand teal cannot be read on
+	   it. Everything outside a card speaks in cream; teal is kept for the inside
+	   of the paper, where it reads. */
 	.give__link {
-		color: var(--teal);
+		color: var(--warm-white);
 		text-decoration: underline;
 		text-underline-offset: 0.2em;
 		text-decoration-thickness: 1px;
-		text-decoration-color: color-mix(in srgb, var(--teal) 40%, transparent);
+		text-decoration-color: rgba(250, 247, 240, 0.45);
 	}
 
 	.give__link:hover {
-		text-decoration-color: var(--teal);
+		text-decoration-color: var(--warm-white);
 	}
 
 	/* ══ The three areas ══════════════════════════════════════════════════════ */
@@ -793,15 +819,17 @@ const WAYS = [
 		gap: 0.6rem;
 		min-height: 13.5rem;
 		padding: 1.9rem 1.6rem 2.1rem;
-		border: 1px solid color-mix(in srgb, var(--accent) 26%, transparent);
+		border: 0;
 		border-radius: 4px;
+		box-shadow: 0 2px 4px rgba(10, 47, 53, 0.16),
+			0 20px 44px -26px rgba(10, 47, 53, 0.5);
 		overflow: hidden;
-		background:
-			linear-gradient(
-				165deg,
-				color-mix(in srgb, var(--accent) 13%, var(--cream)) 0%,
-				color-mix(in srgb, var(--accent) 5%, var(--cream)) 62%
-			);
+		background: color-mix(in srgb, var(--cream) 93%, var(--floor));
+		/* A card is paper laid on the ground, so it takes the page's ink back. */
+		--ink: #2c2721;
+		--ink-soft: #5d564d;
+		--ink-faint: #655e55;
+		color: var(--ink);
 		transition:
 			transform 320ms var(--ease),
 			box-shadow 320ms var(--ease);
@@ -809,7 +837,9 @@ const WAYS = [
 
 	.area:hover {
 		transform: translateY(-3px);
-		box-shadow: 0 16px 34px -22px color-mix(in srgb, var(--accent-ink) 70%, transparent);
+		box-shadow:
+			0 2px 4px rgba(10, 47, 53, 0.18),
+			0 28px 56px -26px rgba(10, 47, 53, 0.62);
 	}
 
 	.area__rule {
@@ -851,7 +881,9 @@ const WAYS = [
 		font-size: 0.6875rem;
 		font-weight: 500;
 		letter-spacing: 0.22em;
-		color: var(--accent-ink);
+		/* Pulled toward the ink: the -ink accents clear 4.5 against pure cream,
+	   and this card sits a shade under it so it does not glare on the dark. */
+		color: color-mix(in srgb, var(--accent-ink) 80%, var(--ink));
 	}
 
 	.area__name {
@@ -878,31 +910,13 @@ const WAYS = [
 		width: 100vw;
 		margin-left: calc(50% - 50vw);
 		padding: clamp(4rem, 11vh, 7rem) var(--gutter);
-		background: var(--cream-deep);
 		border-top: 1px solid var(--rule);
 		border-bottom: 1px solid var(--rule);
 		overflow: clip;
-		isolation: isolate;
 	}
 
-	.plinth__ornament {
-		position: absolute;
-		top: 50%;
-		right: -8%;
-		transform: translateY(-50%);
-		display: block;
-		color: var(--ink);
-		opacity: 0.035;
-		pointer-events: none;
-	}
 
-	.plinth__grain {
-		display: none;
-	}
 
-	.plinth__rule {
-		display: none;
-	}
 
 	.plinth__body {
 		position: relative;
@@ -918,7 +932,7 @@ const WAYS = [
 		font-weight: 500;
 		letter-spacing: 0.18em;
 		text-transform: uppercase;
-		color: var(--teal);
+		color: color-mix(in srgb, var(--cream) 88%, var(--teal-deep));
 	}
 
 	.plinth__line {
@@ -928,7 +942,7 @@ const WAYS = [
 		font-weight: var(--display-weight);
 		line-height: 1.3;
 		letter-spacing: -0.01em;
-		color: var(--ink);
+		color: var(--cream);
 	}
 
 	.plinth__note {
@@ -1001,7 +1015,7 @@ const WAYS = [
 
 	.way__link {
 		font-size: 0.9375rem;
-		color: var(--teal);
+		color: var(--warm-white);
 		text-decoration: none;
 	}
 
