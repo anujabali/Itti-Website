@@ -68,39 +68,42 @@ const FACTS = [
 	{
 		term: 'Tax relief',
 		body: HAS_80G
-			? 'Eligible for deduction under section 80G. We issue the certificate.'
-			: 'No 80G registration yet, so a gift today does not reduce your tax. We expect it before the end of the year.',
+			? 'Deductible under section 80G. We issue the certificate.'
+			: 'No 80G registration yet, so a gift does not reduce your tax. We expect it this year.',
 	},
 	{
 		term: 'Where you may give from',
 		body: ACCEPTS_FOREIGN
-			? 'Contributions from outside India are received into our designated FCRA account.'
-			: 'Indian sources only. Without FCRA registration, accepting a foreign contribution is an offence rather than an oversight.',
+			? 'Foreign contributions are received into our designated FCRA account.'
+			: 'Indian sources only. We hold no FCRA registration.',
 	},
 	{
 		term: 'What we will tell you',
-		body: 'Ask what a gift was spent on and we will tell you, including the share that went on rent and salaries.',
+		body: 'What any gift was spent on, rent and salaries included.',
 	},
 	{
 		term: 'Refunds',
-		body: 'A gift is put to work as soon as it clears. Duplicate, mistaken and unauthorised payments are returned without argument.',
+		body: 'Duplicate, mistaken and unauthorised payments are returned without argument.',
 	},
 ];
 
 const WAYS = [
 	{
+		numeral: 'I',
 		name: 'Give time',
-		body: 'Hours from someone who knows what they are doing are worth more than the money to buy them.',
+		body: 'An hour from someone who knows what they are doing is worth more than the money to buy it.',
 		cta: 'Tell us what you can do',
 		href: '/join',
 	},
 	{
+		numeral: 'II',
 		name: 'Say it out loud',
-		body: 'The people who need us are reached by someone they already trust, not by advertising.',
+		body: 'The people who need us are reached by someone they trust, not by advertising.',
 		cta: 'Share our work',
 		href: '/policies#contact',
 	},
 	{
+		numeral: 'III',
 		name: 'Bring your organisation',
 		body: 'Partnerships, and companies wanting to do more than a cheque in December.',
 		cta: 'Write to us',
@@ -236,10 +239,6 @@ const WAYS = [
 			<section class="give__band" aria-labelledby="give-areas-heading" data-reveal>
 				<header class="give__band-head">
 					<h2 class="give__band-title" id="give-areas-heading">Where your gift goes</h2>
-					<p class="give__band-line">
-						One conviction, three times over: that a person is worth the trouble of being
-						understood before they are treated.
-					</p>
 				</header>
 
 				<ul class="areas">
@@ -274,14 +273,11 @@ const WAYS = [
 		<section class="plinth" aria-labelledby="give-plinth-heading">
 
 			<div class="plinth__body" data-reveal>
-				<h2 class="plinth__eyebrow" id="give-plinth-heading">And the part nobody funds</h2>
-				<p class="plinth__line">
+				<h2 class="plinth__line" id="give-plinth-heading">
 					The phone answered on a Sunday. The follow-up six months later. The record kept
 					properly, so a family never has to tell its story twice.
-				</p>
-				<p class="plinth__note">
-					Restricted grants rarely reach any of it. Unrestricted giving does.
-				</p>
+				</h2>
+				<p class="plinth__note">Restricted grants rarely reach it. Unrestricted giving does.</p>
 			</div>
 
 		</section>
@@ -295,9 +291,6 @@ const WAYS = [
 				data-reveal>
 				<header class="give__band-head">
 					<h2 class="give__band-title" id="give-account-heading">How we account for it</h2>
-					<p class="give__band-line">
-						Everything a donor is entitled to ask, answered before it is asked.
-					</p>
 				</header>
 
 				<dl class="facts">
@@ -322,13 +315,13 @@ const WAYS = [
 			<section class="give__band" aria-labelledby="give-other-heading" data-reveal>
 				<header class="give__band-head">
 					<h2 class="give__band-title" id="give-other-heading">Other ways to help</h2>
-					<p class="give__band-line">None of these is the lesser gift.</p>
 				</header>
 
 				<ul class="ways">
 					{
 						WAYS.map((way) => (
 							<li class="way">
+								<p class="way__numeral">{way.numeral}</p>
 								<h3 class="way__name">{way.name}</h3>
 								<p class="way__body">{way.body}</p>
 								<a class="way__link" href={way.href}>
@@ -920,7 +913,9 @@ const WAYS = [
 	.plinth__body {
 		position: relative;
 		z-index: 1;
-		max-width: 46rem;
+		/* Wider than a reading measure: at the size this is set, forty-six rems
+	   broke it into five short lines. */
+		max-width: 54rem;
 		margin: 0 auto;
 		text-align: center;
 	}
@@ -935,9 +930,9 @@ const WAYS = [
 	}
 
 	.plinth__line {
-		margin-top: 1.6rem;
+		margin: 0;
 		font-family: var(--face-bodoni);
-		font-size: clamp(1.5rem, 3vw, 2.25rem);
+		font-size: clamp(1.75rem, 3.6vw, 2.9rem);
 		font-weight: var(--display-weight);
 		line-height: 1.3;
 		letter-spacing: -0.01em;
@@ -945,7 +940,7 @@ const WAYS = [
 	}
 
 	.plinth__note {
-		margin: 1.6rem auto 0;
+		margin: 2rem auto 0;
 		max-width: 30rem;
 		font-size: 1rem;
 		line-height: 1.6;
@@ -954,33 +949,76 @@ const WAYS = [
 
 	/* ══ Facts and ways ═══════════════════════════════════════════════════════ */
 
+	/* Four columns divided by hairlines rather than four paragraphs stacked in
+	   pairs. The same words read as a record of what we owe a donor rather than
+	   as more prose, and the rules do the separating that the white space was
+	   failing to do. */
 	.facts {
 		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		column-gap: clamp(1.5rem, 4vw, 3.5rem);
+		grid-template-columns: 1fr;
 		margin: 0;
 		border-top: 1px solid var(--rule);
 	}
 
 	.fact {
-		padding: 1.4rem 0 1.5rem;
+		padding: 1.35rem 0 1.5rem;
 		border-bottom: 1px solid var(--rule);
 	}
 
+	@media (min-width: 44rem) {
+		.facts {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.fact {
+			padding-right: clamp(1.25rem, 2.5vw, 2.25rem);
+		}
+
+		.fact:nth-child(2n) {
+			padding-right: 0;
+			padding-left: clamp(1.25rem, 2.5vw, 2.25rem);
+			border-left: 1px solid var(--rule);
+		}
+	}
+
+	@media (min-width: 70rem) {
+		.facts {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+		}
+
+		.fact {
+			padding-right: clamp(1rem, 1.8vw, 1.6rem);
+			padding-left: clamp(1rem, 1.8vw, 1.6rem);
+			border-left: 1px solid var(--rule);
+			border-bottom: 0;
+		}
+
+		.fact:first-child {
+			padding-left: 0;
+			border-left: 0;
+		}
+
+		.fact:last-child {
+			padding-right: 0;
+		}
+	}
+
 	.fact__term {
-		font-size: 0.6875rem;
-		font-weight: 600;
-		letter-spacing: 0.13em;
+		font-family: var(--face-cinzel);
+		font-size: 0.625rem;
+		font-weight: 500;
+		letter-spacing: 0.16em;
 		text-transform: uppercase;
-		color: var(--ink-faint);
+		color: color-mix(in srgb, var(--cream) 74%, var(--teal-deep));
 	}
 
 	.fact__def {
-		margin: 0.5rem 0 0;
-		max-width: 30rem;
-		font-size: 1rem;
+		margin: 0.6rem 0 0;
+		max-width: 26rem;
+		font-size: 0.9375rem;
 		line-height: 1.6;
 		color: var(--ink-soft);
+		text-wrap: pretty;
 	}
 
 	.ways {
@@ -995,9 +1033,21 @@ const WAYS = [
 	.way {
 		display: grid;
 		align-content: start;
-		gap: 0.7rem;
-		padding-top: 1.4rem;
-		border-top: 1px solid var(--ink);
+		gap: 0.55rem;
+		padding-top: 1.35rem;
+		border-top: 1px solid var(--rule);
+	}
+
+	/* The Bodoni italic numeral the registration form sets its sections in. It
+	   is the site's own device, and it turns three paragraphs into three
+	   numbered things without adding a word. */
+	.way__numeral {
+		font-family: var(--face-bodoni);
+		font-size: 1.75rem;
+		font-style: italic;
+		font-weight: 400;
+		line-height: 1;
+		color: color-mix(in srgb, var(--cream) 52%, var(--teal-deep));
 	}
 
 	.way__name {
