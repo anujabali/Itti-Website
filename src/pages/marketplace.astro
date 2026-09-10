@@ -1,0 +1,984 @@
+---
+/**
+ * The marketplace — what the workshops make, and the way to buy it.
+ *
+ * One page with five anchors rather than five pages, because the navigation
+ * promises five destinations and four of them would have been a heading over a
+ * paragraph. `/policies` is built the same way and for the same reason: a
+ * section that arrives as part of a whole reads better than a page that has
+ * nothing under its own masthead.
+ *
+ * There is no cart. Buying is an enquiry that opens a letter, because a cart
+ * needs stock, shipping rates, GST treatment and a set of sale-of-goods terms
+ * that do not exist yet — and a checkout that takes money it cannot honour is
+ * worse than no checkout at all.
+ */
+import Base from '../layouts/Base.astro';
+import SiteFooter from '../components/layout/SiteFooter.astro';
+import Mark from '../components/brand/Mark.astro';
+import ClawMark from '../components/brand/ClawMark.astro';
+import { ITEMS, PILLARS, MAKERS, STEPS, type Pillar } from '../data/marketplace';
+
+const rupees = (n: number) => `₹${n.toLocaleString('en-IN')}`;
+
+const featured = ITEMS.find((item) => item.featured)!;
+const rest = ITEMS.filter((item) => item !== featured);
+
+/** The three bodies of work, each with what is made for it. */
+const COLLECTIONS = (Object.keys(PILLARS) as Pillar[]).map((key) => ({
+	key,
+	...PILLARS[key],
+	items: ITEMS.filter((item) => item.pillar === key),
+}));
+
+/** A letter, addressed and half-written, so nobody has to compose one. */
+const enquiry = (name: string) =>
+	`mailto:hello@itti.org.in?subject=${encodeURIComponent(`Marketplace — ${name}`)}` +
+	`&body=${encodeURIComponent(
+		`I would like to ask about ${name}.\n\nHow many:\nWhere it would be sent:\n\n`,
+	)}`;
+---
+
+<Base
+	title="Marketplace — The Itti Foundation"
+	description="What the Foundation's workshops make, who makes it, and how the money reaches them."
+>
+	<div class="mkt-page">
+		<span class="mkt-page__ornament" aria-hidden="true">
+			<Mark height="30rem" label="" />
+		</span>
+
+		<article class="mkt">
+			<!-- ── Masthead ─────────────────────────────────────────────────────── -->
+			<header class="mkt__mast">
+				<p class="mkt__eyebrow">Marketplace</p>
+				<h1 class="mkt__title">Somebody made this, and somebody is paid for it.</h1>
+				<p class="mkt__lede">
+					Everything here comes out of the workshops: the crafts the Foundation teaches
+					anyway, made by the people it teaches them to.
+				</p>
+				<p class="mkt__note">
+					The first making cycle is still running, so prices are indicative and nothing is
+					in stock yet. Write to us and we will tell you where a thing actually is.
+				</p>
+			</header>
+
+			<!-- ── New arrivals ─────────────────────────────────────────────────── -->
+			<section class="mkt__band" id="new" aria-labelledby="mkt-new" data-reveal>
+				<header class="mkt__head">
+					<h2 class="mkt__h" id="mkt-new">Newest</h2>
+					<span class="mkt__rule" aria-hidden="true"></span>
+				</header>
+
+				<div class="hero" style={`--accent: var(--${PILLARS[featured.pillar].accent})`}>
+					<div class="hero__plate">
+						<img
+							src={featured.plate || undefined}
+							alt={`${featured.name} — front and back`}
+							loading="eager"
+							decoding="async"
+							width="1471"
+							height="805"
+						/>
+					</div>
+					<div class="hero__side">
+						<p class="hero__pillar">
+							<span class="hero__pillar-rule" aria-hidden="true"></span>
+							{PILLARS[featured.pillar].label}
+						</p>
+						<h3 class="hero__name">{featured.name}</h3>
+						<p class="hero__line">{featured.line}</p>
+						<dl class="hero__facts">
+							<dt>Made</dt>
+							<dd>{featured.craft}</dd>
+							<dt>Indicative</dt>
+							<dd>{rupees(featured.price)}</dd>
+						</dl>
+						<a class="btn" href={enquiry(featured.name)}>
+							<span>Ask about this</span>
+							<span class="btn__arrow" aria-hidden="true">&rarr;</span>
+						</a>
+					</div>
+				</div>
+			</section>
+
+			<!-- ── Everything ───────────────────────────────────────────────────── -->
+			<section class="mkt__band" id="all" aria-labelledby="mkt-all" data-reveal>
+				<header class="mkt__head">
+					<h2 class="mkt__h" id="mkt-all">Everything made</h2>
+					<span class="mkt__rule" aria-hidden="true"></span>
+				</header>
+
+				<ul class="goods">
+					{
+						rest.map((item) => (
+							<li
+								class="good"
+								data-reveal
+								style={`--accent: var(--${PILLARS[item.pillar].accent}); --accent-ink: var(--${PILLARS[item.pillar].accent}-ink)`}
+							>
+								<a class="good__link" href={enquiry(item.name)}>
+									{/* No photograph yet, so the card is set rather than filled. An
+									    invented picture of a thing nobody has made would be worse
+									    than an honest absence. */}
+									<span class="good__plate" aria-hidden="true">
+										<span class="good__mark">
+											{PILLARS[item.pillar].mark === 'claw' ? (
+												<ClawMark mono />
+											) : (
+												<span
+													class="good__raster"
+													style={`--mark:url('${PILLARS[item.pillar].mark}')`}
+												/>
+											)}
+										</span>
+										<span class="good__craft">{item.craft}</span>
+									</span>
+									<span class="good__body">
+										<span class="good__pillar">
+											<span class="good__pillar-rule" aria-hidden="true" />
+											{PILLARS[item.pillar].label}
+										</span>
+										<span class="good__name">{item.name}</span>
+										<span class="good__line">{item.line}</span>
+										<span class="good__foot">
+											<span class="good__price">{rupees(item.price)}</span>
+											<span class="good__ask">
+												Ask
+												<span class="good__arrow" aria-hidden="true">
+													&rarr;
+												</span>
+											</span>
+										</span>
+									</span>
+								</a>
+							</li>
+						))
+					}
+				</ul>
+			</section>
+
+			<!-- ── Collections ──────────────────────────────────────────────────── -->
+			<section class="mkt__band" id="collections" aria-labelledby="mkt-collections" data-reveal>
+				<header class="mkt__head">
+					<h2 class="mkt__h" id="mkt-collections">Collections</h2>
+					<span class="mkt__rule" aria-hidden="true"></span>
+				</header>
+
+				<ul class="sets">
+					{
+						COLLECTIONS.map((set) => (
+							<li class="set" style={`--accent: var(--${set.accent})`} data-reveal>
+								<span class="set__rule" aria-hidden="true" />
+								<h3 class="set__name">{set.label}</h3>
+								<p class="set__note">{set.note}</p>
+								<p class="set__count">
+									{set.items.length === 1 ? '1 thing' : `${set.items.length} things`}
+								</p>
+							</li>
+						))
+					}
+				</ul>
+			</section>
+
+			<!-- ── Makers ───────────────────────────────────────────────────────── -->
+			<section class="mkt__band mkt__band--spread" id="makers" aria-labelledby="mkt-makers" data-reveal>
+				<header class="mkt__head mkt__head--side">
+					<h2 class="mkt__h" id="mkt-makers">Who makes it</h2>
+					<p class="mkt__aside">
+						Livelihood is the point of the skilling, not a by-product of it.
+					</p>
+				</header>
+
+				<ul class="rows">
+					{
+						MAKERS.map((maker) => (
+							<li class="row">
+								<span class="row__numeral" aria-hidden="true">
+									{maker.numeral}
+								</span>
+								<span class="row__text">
+									<span class="row__name">{maker.title}</span>
+									<span class="row__body">{maker.body}</span>
+								</span>
+							</li>
+						))
+					}
+				</ul>
+			</section>
+
+			<!-- ── How it works ─────────────────────────────────────────────────── -->
+			<section
+				class="mkt__band mkt__band--spread"
+				id="how-it-works"
+				aria-labelledby="mkt-how"
+				data-reveal
+			>
+				<header class="mkt__head mkt__head--side">
+					<h2 class="mkt__h" id="mkt-how">How it works</h2>
+					<p class="mkt__aside">
+						No cart, no account, no warehouse. A letter and a person who answers it.
+					</p>
+				</header>
+
+				<ol class="steps">
+					{
+						STEPS.map((step) => (
+							<li class="step">
+								<span class="step__numeral" aria-hidden="true">
+									{step.numeral}
+								</span>
+								<h3 class="step__name">{step.title}</h3>
+								<p class="step__body">{step.body}</p>
+							</li>
+						))
+					}
+				</ol>
+			</section>
+
+			<!-- ── The way in ───────────────────────────────────────────────────── -->
+			<section class="close" aria-labelledby="mkt-close" data-reveal>
+				<span class="close__edge" aria-hidden="true"></span>
+				<h2 class="close__line" id="mkt-close">Ask about anything here.</h2>
+				<p class="close__note">
+					One address, read by people. Tell us what you want and how many, and we will
+					answer within five working days.
+				</p>
+				<a class="btn btn--wide" href={enquiry('the marketplace')}>
+					<span>Write to us</span>
+					<span class="btn__arrow" aria-hidden="true">&rarr;</span>
+				</a>
+			</section>
+		</article>
+
+		<SiteFooter />
+	</div>
+</Base>
+
+<style>
+	/* The ground runs the width of the page so the footer — which sets no
+	   background of its own and whose ink assumes cream — has something to sit
+	   on. The same arrangement the policies page uses. */
+	.mkt-page {
+		position: relative;
+		isolation: isolate;
+		display: flex;
+		flex-direction: column;
+		min-height: 100svh;
+		overflow-x: clip;
+		background: var(--cream);
+	}
+
+	/* The Foundation's own mark, very large and very quiet, so a cream page has
+	   something behind it. */
+	.mkt-page__ornament {
+		position: absolute;
+		top: calc(var(--nav-h) + 6rem);
+		right: -10%;
+		z-index: 0;
+		display: block;
+		color: var(--teal);
+		opacity: 0.045;
+		pointer-events: none;
+	}
+
+	.mkt {
+		position: relative;
+		z-index: 1;
+		flex: 1 0 auto;
+		width: 100%;
+		max-width: 74rem;
+		margin: 0 auto;
+		padding: calc(var(--nav-h) + clamp(2.5rem, 7vh, 5rem)) var(--gutter)
+			clamp(3rem, 8vh, 5rem);
+	}
+
+	/* ══ Masthead ═════════════════════════════════════════════════════════════ */
+
+	.mkt__mast {
+		max-width: 46rem;
+		padding-bottom: clamp(2.5rem, 6vh, 4rem);
+	}
+
+	.mkt__eyebrow {
+		font-family: var(--face-cinzel);
+		font-size: 0.6875rem;
+		font-weight: 500;
+		letter-spacing: 0.2em;
+		text-transform: uppercase;
+		color: var(--teal);
+	}
+
+	.mkt__title {
+		margin-top: 1.15rem;
+		font-family: var(--face-bodoni);
+		font-size: clamp(2.35rem, 5vw, 3.75rem);
+		font-weight: var(--display-weight);
+		line-height: 1.04;
+		letter-spacing: -0.02em;
+		text-wrap: balance;
+	}
+
+	.mkt__lede {
+		margin-top: 1.35rem;
+		max-width: 34rem;
+		font-size: 1.1875rem;
+		line-height: 1.55;
+		color: var(--ink-soft);
+	}
+
+	/* Said once, quietly, and not repeated on every card. */
+	.mkt__note {
+		margin-top: 1.5rem;
+		padding-top: 1.1rem;
+		max-width: 34rem;
+		border-top: 1px solid var(--rule);
+		font-size: 0.875rem;
+		line-height: 1.6;
+		color: var(--ink-faint);
+	}
+
+	/* ══ Bands ════════════════════════════════════════════════════════════════ */
+
+	.mkt__band {
+		padding: clamp(2.75rem, 7vh, 4.5rem) 0;
+		border-top: 1px solid var(--rule);
+	}
+
+	.mkt__head {
+		display: flex;
+		align-items: center;
+		gap: clamp(1.25rem, 3vw, 2.25rem);
+		padding-bottom: clamp(1.75rem, 4vh, 2.5rem);
+	}
+
+	.mkt__h {
+		font-family: var(--face-bodoni);
+		font-size: clamp(1.6rem, 2.8vw, 2.15rem);
+		font-weight: var(--display-weight);
+		line-height: 1.1;
+		letter-spacing: -0.01em;
+		white-space: nowrap;
+	}
+
+	/* Runs to the edge of the column, so a heading never sits alone against an
+	   empty half. */
+	.mkt__rule {
+		flex: 1;
+		height: 1px;
+		background: linear-gradient(
+			90deg,
+			var(--rule) 0%,
+			color-mix(in srgb, var(--rule) 25%, transparent) 100%
+		);
+	}
+
+	/* Heading on the left, the thing itself down the right. */
+	@media (min-width: 62rem) {
+		.mkt__band--spread {
+			display: grid;
+			grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+			column-gap: clamp(2.5rem, 6vw, 5rem);
+			align-items: start;
+		}
+
+		.mkt__head--side {
+			display: block;
+			padding-bottom: 0;
+		}
+
+		.mkt__head--side .mkt__h {
+			white-space: normal;
+			font-size: clamp(1.5rem, 2.4vw, 1.9rem);
+		}
+	}
+
+	.mkt__aside {
+		margin-top: 1rem;
+		font-size: 0.9375rem;
+		line-height: 1.6;
+		color: var(--ink-faint);
+	}
+
+	/* ══ The newest thing ═════════════════════════════════════════════════════ */
+
+	.hero {
+		display: grid;
+		gap: clamp(1.5rem, 3vw, 2.5rem);
+		align-items: center;
+	}
+
+	@media (min-width: 54rem) {
+		.hero {
+			grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+		}
+	}
+
+	.hero__plate {
+		position: relative;
+		border-radius: 6px;
+		overflow: hidden;
+		background: color-mix(in srgb, var(--ink) 5%, var(--cream));
+		box-shadow:
+			0 1px 0 rgba(255, 255, 255, 0.6) inset,
+			0 2px 6px rgba(6, 7, 8, 0.1),
+			0 26px 54px -28px rgba(6, 7, 8, 0.4);
+	}
+
+	.hero__plate img {
+		display: block;
+		width: 100%;
+		height: auto;
+	}
+
+	.hero__pillar {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		font-family: var(--body);
+		font-size: 0.625rem;
+		font-weight: 600;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+	}
+
+	.hero__pillar-rule {
+		width: 1.6rem;
+		height: 2px;
+		background: var(--accent);
+	}
+
+	.hero__name {
+		margin-top: 0.85rem;
+		font-family: var(--face-bodoni);
+		font-size: clamp(1.75rem, 3.2vw, 2.35rem);
+		font-weight: var(--display-weight);
+		line-height: 1.08;
+		letter-spacing: -0.015em;
+	}
+
+	.hero__line {
+		margin-top: 0.7rem;
+		max-width: 26rem;
+		font-size: 1rem;
+		line-height: 1.6;
+		color: var(--ink-soft);
+	}
+
+	.hero__facts {
+		display: grid;
+		grid-template-columns: minmax(0, 7rem) minmax(0, 1fr);
+		gap: 0.4rem 1rem;
+		margin: 1.4rem 0 1.6rem;
+		padding: 1.1rem 0;
+		border-top: 1px solid var(--rule);
+		border-bottom: 1px solid var(--rule);
+	}
+
+	.hero__facts dt {
+		font-family: var(--body);
+		font-size: 0.625rem;
+		font-weight: 600;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+		padding-top: 0.2rem;
+	}
+
+	.hero__facts dd {
+		margin: 0;
+		font-size: 0.9375rem;
+		line-height: 1.5;
+		color: var(--ink);
+	}
+
+	/* ══ The goods ════════════════════════════════════════════════════════════ */
+
+	.goods {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(min(15rem, 100%), 1fr));
+		gap: clamp(1rem, 2.2vw, 1.75rem);
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.good {
+		--accent: var(--teal);
+		--accent-ink: var(--teal);
+	}
+
+	/* The whole card is the target. A card with a small link in the corner is a
+	   card that has to be aimed at. */
+	.good__link {
+		display: grid;
+		grid-template-rows: auto 1fr;
+		height: 100%;
+		border: 1px solid var(--rule);
+		border-radius: 6px;
+		overflow: hidden;
+		background: color-mix(in srgb, var(--cream) 88%, #fff);
+		color: inherit;
+		transition:
+			border-color 240ms var(--ease),
+			transform 320ms var(--ease),
+			box-shadow 320ms var(--ease);
+	}
+
+	.good__link:hover,
+	.good__link:focus-visible {
+		border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+		transform: translateY(-3px);
+		box-shadow: 0 22px 44px -26px rgba(6, 7, 8, 0.5);
+	}
+
+	/* The plate stands in for a photograph, and says what the thing is made of
+	   rather than pretending to show it. */
+	.good__plate {
+		position: relative;
+		display: grid;
+		place-items: center;
+		aspect-ratio: 4 / 3;
+		border-bottom: 1px solid var(--rule);
+		background:
+			radial-gradient(
+				110% 95% at 50% 8%,
+				color-mix(in srgb, var(--accent) 26%, transparent) 0%,
+				color-mix(in srgb, var(--accent) 7%, transparent) 55%,
+				transparent 78%
+			),
+			color-mix(in srgb, var(--cream) 78%, #fff);
+		overflow: hidden;
+	}
+
+	.good__mark {
+		display: grid;
+		place-items: center;
+		width: 7.5rem;
+		height: 7.5rem;
+		color: var(--accent-ink);
+		opacity: 0.28;
+		transition:
+			opacity 320ms var(--ease),
+			scale 420ms var(--ease);
+	}
+
+	.good__mark :global(svg) {
+		width: 100%;
+		height: 100%;
+	}
+
+	/* The pillar marks are raster, so they are used as a mask and take the
+	   accent rather than their own colour. */
+	.good__raster {
+		display: block;
+		width: 100%;
+		height: 100%;
+		background: currentColor;
+		-webkit-mask: var(--mark) center / contain no-repeat;
+		mask: var(--mark) center / contain no-repeat;
+	}
+
+	.good__link:hover .good__mark,
+	.good__link:focus-visible .good__mark {
+		opacity: 0.4;
+		scale: 1.04;
+	}
+
+	.good__craft {
+		position: absolute;
+		inset: auto 0 0.9rem;
+		padding: 0 1.1rem;
+		font-family: var(--body);
+		font-size: 0.625rem;
+		font-weight: 600;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		text-align: center;
+		color: var(--ink-faint);
+	}
+
+	.good__body {
+		display: grid;
+		align-content: start;
+		gap: 0.45rem;
+		padding: 1.1rem 1.15rem 1.2rem;
+	}
+
+	.good__pillar {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-family: var(--body);
+		font-size: 0.5625rem;
+		font-weight: 600;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+	}
+
+	.good__pillar-rule {
+		width: 1rem;
+		height: 2px;
+		background: var(--accent);
+	}
+
+	.good__name {
+		font-family: var(--face-bodoni);
+		font-size: 1.25rem;
+		font-weight: var(--display-weight);
+		line-height: 1.15;
+	}
+
+	.good__line {
+		font-size: 0.875rem;
+		line-height: 1.55;
+		color: var(--ink-soft);
+		text-wrap: pretty;
+	}
+
+	.good__foot {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-top: 0.65rem;
+		padding-top: 0.7rem;
+		border-top: 1px solid var(--rule);
+	}
+
+	.good__price {
+		font-family: var(--face-bodoni);
+		font-size: 1.0625rem;
+		font-weight: var(--display-weight);
+	}
+
+	.good__ask {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+		font-size: 0.8125rem;
+		color: var(--accent-ink);
+	}
+
+	.good__arrow {
+		transition: translate 240ms var(--ease);
+	}
+
+	.good__link:hover .good__arrow,
+	.good__link:focus-visible .good__arrow {
+		translate: 0.25rem 0;
+	}
+
+	/* ══ Collections ══════════════════════════════════════════════════════════ */
+
+	.sets {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr));
+		gap: clamp(1rem, 2.2vw, 1.75rem);
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.set {
+		display: grid;
+		align-content: start;
+		gap: 0.6rem;
+		padding: 1.35rem 1.4rem 1.5rem;
+		border: 1px solid var(--rule);
+		border-radius: 6px;
+		background: color-mix(in srgb, var(--cream) 88%, #fff);
+	}
+
+	.set__rule {
+		width: 2.25rem;
+		height: 2px;
+		background: var(--accent);
+	}
+
+	.set__name {
+		font-family: var(--face-bodoni);
+		font-size: 1.375rem;
+		font-weight: var(--display-weight);
+		line-height: 1.1;
+	}
+
+	.set__note {
+		font-size: 0.9375rem;
+		line-height: 1.55;
+		color: var(--ink-soft);
+		text-wrap: pretty;
+	}
+
+	.set__count {
+		margin-top: 0.25rem;
+		font-family: var(--body);
+		font-size: 0.625rem;
+		font-weight: 600;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+	}
+
+	/* ══ Makers ═══════════════════════════════════════════════════════════════ */
+
+	.rows {
+		display: grid;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		border-top: 1px solid var(--rule);
+	}
+
+	.row {
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr);
+		align-items: baseline;
+		gap: 0 1.35rem;
+		padding: 1.4rem 0 1.5rem;
+		border-bottom: 1px solid var(--rule);
+	}
+
+	.row__numeral {
+		width: 2ch;
+		font-family: var(--face-bodoni);
+		font-size: 1.6rem;
+		font-style: italic;
+		font-weight: 400;
+		line-height: 1;
+		color: var(--ink-faint);
+	}
+
+	.row__text {
+		display: grid;
+		gap: 0.4rem;
+	}
+
+	.row__name {
+		font-family: var(--face-bodoni);
+		font-size: 1.3125rem;
+		font-weight: var(--display-weight);
+	}
+
+	.row__body {
+		max-width: 36rem;
+		font-size: 0.9375rem;
+		line-height: 1.6;
+		color: var(--ink-soft);
+		text-wrap: pretty;
+	}
+
+	/* ══ How it works ═════════════════════════════════════════════════════════ */
+
+	/* Two by two rather than four across. In the right half of a spread, four
+	   columns leave eleven rems each and the fourth step wraps onto a line of
+	   its own, which reads as an accident. */
+	.steps {
+		display: grid;
+		gap: clamp(1.25rem, 2.5vw, 2rem) clamp(1.5rem, 3vw, 2.5rem);
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	@media (min-width: 34rem) {
+		.steps {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	.step {
+		display: grid;
+		align-content: start;
+		gap: 0.5rem;
+		padding-top: 1.1rem;
+		border-top: 2px solid var(--teal);
+	}
+
+	.step__numeral {
+		font-family: var(--face-cinzel);
+		font-size: 0.6875rem;
+		font-weight: 500;
+		letter-spacing: 0.2em;
+		color: var(--teal);
+	}
+
+	.step__name {
+		font-family: var(--face-bodoni);
+		font-size: 1.1875rem;
+		font-weight: var(--display-weight);
+		line-height: 1.15;
+	}
+
+	.step__body {
+		font-size: 0.875rem;
+		line-height: 1.6;
+		color: var(--ink-soft);
+		text-wrap: pretty;
+	}
+
+	/* ══ The way in ═══════════════════════════════════════════════════════════ */
+
+	.close {
+		position: relative;
+		margin-top: clamp(2.5rem, 6vh, 4rem);
+		padding: clamp(2.5rem, 6vh, 3.5rem) clamp(1.5rem, 4vw, 3rem)
+			clamp(2.75rem, 6vh, 3.75rem);
+		border-radius: 8px;
+		overflow: hidden;
+		text-align: center;
+		background:
+			radial-gradient(
+				120% 120% at 50% 0%,
+				color-mix(in srgb, var(--teal) 10%, transparent) 0%,
+				transparent 70%
+			),
+			color-mix(in srgb, var(--cream) 84%, #fff);
+		border: 1px solid var(--rule);
+	}
+
+	/* The three bodies of work, drawn across the head of the panel — the line
+	   the giving card and the registration sheet already carry. */
+	.close__edge {
+		position: absolute;
+		inset: 0 0 auto;
+		height: 2px;
+		background: linear-gradient(
+			90deg,
+			var(--ochre) 0%,
+			var(--rose) 50%,
+			var(--sage) 100%
+		);
+	}
+
+	.close__line {
+		font-family: var(--face-bodoni);
+		font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+		font-weight: var(--display-weight);
+		line-height: 1.1;
+		letter-spacing: -0.015em;
+	}
+
+	.close__note {
+		margin: 0.9rem auto 1.75rem;
+		max-width: 32rem;
+		font-size: 1rem;
+		line-height: 1.6;
+		color: var(--ink-soft);
+	}
+
+	/* ══ The button ═══════════════════════════════════════════════════════════ */
+
+	.btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		min-width: 13rem;
+		padding: 0.85rem 1.25rem;
+		border-radius: 4px;
+		background: var(--teal);
+		color: var(--cream);
+		font-size: 1rem;
+		box-shadow: 0 12px 26px -14px color-mix(in srgb, var(--teal) 82%, transparent);
+		transition:
+			background-color 180ms var(--ease),
+			transform 180ms var(--ease),
+			box-shadow 180ms var(--ease);
+	}
+
+	.btn:hover,
+	.btn:focus-visible {
+		background: var(--teal-deep);
+		transform: translateY(-1px);
+		box-shadow: 0 18px 34px -14px color-mix(in srgb, var(--teal) 92%, transparent);
+	}
+
+	.btn--wide {
+		min-width: 15rem;
+	}
+
+	.btn__arrow {
+		transition: translate 200ms var(--ease);
+	}
+
+	.btn:hover .btn__arrow,
+	.btn:focus-visible .btn__arrow {
+		translate: 0.25rem 0;
+	}
+
+	/* ══ Arrival ══════════════════════════════════════════════════════════════ */
+
+	/* The armed state is added by script, never by the stylesheet, so a reader
+	   without JavaScript gets the whole page rather than a blank one. The
+	   transition is declared here rather than on the arrival: an element that
+	   gains its transition in the same class change that moves it is not
+	   reliably animated. */
+	[data-reveal].is-armed {
+		opacity: 0;
+		translate: 0 1.25rem;
+		transition:
+			opacity 700ms var(--ease),
+			translate 700ms var(--ease);
+		transition-delay: var(--delay, 0ms);
+	}
+
+	[data-reveal].is-armed.is-in {
+		opacity: 1;
+		translate: none;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		[data-reveal].is-armed,
+		[data-reveal].is-armed.is-in {
+			opacity: 1;
+			translate: none;
+			transition: none;
+		}
+
+		.good__link,
+		.good__link:hover,
+		.btn,
+		.btn:hover {
+			transition: none;
+			transform: none;
+		}
+	}
+</style>
+
+<script>
+	/**
+	 * Sections arrive as they are reached, and each releases once.
+	 */
+	const revealing = [...document.querySelectorAll<HTMLElement>('[data-reveal]')];
+	const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+	if (revealing.length > 0 && !still && 'IntersectionObserver' in window) {
+		for (const el of revealing) el.classList.add('is-armed');
+
+		const watcher = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) {
+					if (!entry.isIntersecting) continue;
+					const el = entry.target as HTMLElement;
+					// Cards in the same row follow each other rather than landing
+					// together, which reads as one movement instead of nine.
+					const peers = [...(el.parentElement?.children ?? [])].filter(
+						(n) => (n as HTMLElement).dataset?.reveal !== undefined,
+					);
+					const place = peers.indexOf(el);
+					if (peers.length > 1 && place > 0) {
+						el.style.setProperty('--delay', `${Math.min(place, 6) * 70}ms`);
+					}
+					el.classList.add('is-in');
+					watcher.unobserve(el);
+				}
+			},
+			{ rootMargin: '0px 0px -10% 0px', threshold: 0.05 },
+		);
+
+		for (const el of revealing) watcher.observe(el);
+	}
+</script>

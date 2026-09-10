@@ -10,3 +10,11 @@
 /terms          /policies#terms          301
 /accessibility  /policies#accessibility  301
 /contact        /policies#contact        301
+
+# The marketplace is one page with five anchors, the way the policies are. The
+# navigation used to promise five routes; anyone who saved one still lands.
+/marketplace/all             /marketplace#all             301
+/marketplace/makers          /marketplace#makers          301
+/marketplace/how-it-works    /marketplace#how-it-works    301
+/marketplace/new             /marketplace#new             301
+/marketplace/collections     /marketplace#collections     301
