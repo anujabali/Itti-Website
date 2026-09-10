@@ -821,13 +821,15 @@ const WAYS = [
 	   A line, not four more pills. The card already carries two rows of pressed
 	   buttons and a grid of tiles; a third pill shape under the button was one
 	   system too many for something nobody chooses. */
-	/* Justified: set flush to both edges of the button above it, with the space
-	   falling between the words rather than after them. Equal columns put UPI
-	   adrift in the middle of a wide cell and crowded NETBANKING in its own. */
+	/* Justified, but inset from the button's edges rather than flush to them.
+	   Spread the full width the four words read as four separate notices; drawn
+	   in, they read as one line. The inset is the only number here: raise it to
+	   close the row up further, drop it to open it out. */
 	.card__rails {
 		display: flex;
 		justify-content: space-between;
 		gap: 0.5rem;
+		padding-inline: clamp(1rem, 6%, 1.85rem);
 		font-size: 0.625rem;
 		font-weight: 600;
 		letter-spacing: 0.06em;
