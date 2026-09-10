@@ -124,7 +124,7 @@ const MENUS = [
 								{menu.label}
 							</button>
 
-							<div class="mega" id={`mega-${i}`} data-menu-panel hidden>
+							<div class="mega" id={`mega-${i}`} data-menu-panel>
 								<div class="mega__inner">
 									<span class="mega__edge" aria-hidden="true" />
 									<div class="mega__cols">
@@ -749,15 +749,18 @@ const MENUS = [
 		   hover gap. */
 		padding-top: 0.5rem;
 		opacity: 0;
-		transform: translateY(-0.5rem) scale(0.98);
-		transform-origin: top left;
+		translate: 0 -0.4rem;
+		/* Visibility rather than `display`, so the panel is always laid out and
+		   the transition has something to run on. Toggling `hidden` meant the
+		   browser had to build the panel and then be given two animation frames
+		   before it would animate at all, and that wait is what read as the
+		   jerk. `visibility` also keeps it out of the tab order while closed. */
+		visibility: hidden;
 		pointer-events: none;
-		/* Opacity snaps and the transform carries the motion. Cross-fading a
-		   backdrop-filtered panel means the blur resolves while the panel is
-		   half-transparent, which is what made it look cheap. */
 		transition:
-			opacity 110ms linear,
-			transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+			opacity 160ms var(--ease),
+			translate 200ms var(--ease),
+			visibility 0s linear 200ms;
 	}
 
 	/* The last item would push its panel past the gutter, so it hangs the other
@@ -765,45 +768,34 @@ const MENUS = [
 	.nav__item:last-child .mega {
 		left: auto;
 		right: -1.3rem;
-		transform-origin: top right;
 	}
 
+	/* One movement, one easing, and no scale: type that scales while it fades
+	   shimmers, and the shimmer is most of what reads as cheap. */
 	.mega[data-open] {
 		opacity: 1;
-		transform: none;
+		translate: none;
+		visibility: visible;
 		pointer-events: auto;
+		transition:
+			opacity 200ms var(--ease),
+			translate 340ms cubic-bezier(0.16, 1, 0.3, 1),
+			visibility 0s;
+	}
+
+	/* Moving from one menu straight to the next. A panel is already open and in
+	   place, so the next one takes over rather than arriving from underneath —
+	   two panels each playing their own entrance is what made crossing the bar
+	   feel unsettled. */
+	.mega[data-open][data-immediate] {
+		translate: none;
+		transition:
+			opacity 110ms var(--ease),
+			visibility 0s;
 	}
 
 	/* The contents arrive just behind the panel, so it unfolds rather than
 	   appearing whole. */
-	/* The stagger adds the rise and nothing else. It used to fade in from
-	   nothing with `backwards`, which meant the contents were held invisible
-	   until the animation ran — a panel whose text only exists if an animation
-	   plays is a panel that is sometimes empty. The panel's own fade covers the
-	   arrival; this only gives it a direction. */
-	.mega[data-open] .mega__group,
-	.mega[data-open] .mega__all {
-		animation: mega-rise 380ms cubic-bezier(0.16, 1, 0.3, 1);
-	}
-
-	.mega[data-open] .mega__group:nth-of-type(1) {
-		animation-delay: 55ms;
-	}
-
-	.mega[data-open] .mega__group:nth-of-type(2) {
-		animation-delay: 95ms;
-	}
-
-	.mega[data-open] .mega__all {
-		animation-delay: 135ms;
-	}
-
-	@keyframes mega-rise {
-		from {
-			transform: translateY(0.5rem);
-		}
-	}
-
 	.mega__inner {
 		position: relative;
 		width: max-content;
@@ -1113,21 +1105,30 @@ const MENUS = [
 				const panel = item.querySelector<HTMLElement>('[data-menu-panel]')!;
 				trigger.setAttribute('aria-expanded', 'false');
 				panel.removeAttribute('data-open');
-				panel.hidden = true;
+				panel.removeAttribute('data-immediate');
 			}
 		};
 
+		/**
+		 * The panel is always laid out and always transitionable, so opening it is
+		 * one attribute and the browser does the rest. It used to be toggled with
+		 * `hidden`, which meant building the panel from nothing and then waiting
+		 * two animation frames before it would animate — that wait is what read as
+		 * a jerk, and it was the reason the contents sometimes arrived empty.
+		 */
 		const open = (item: HTMLElement) => {
+			// Crossing from one menu to the next: something is already open and in
+			// place, so the next one takes over rather than playing its own
+			// entrance underneath the first.
+			const crossing = items.some(
+				(other) =>
+					other !== item && other.querySelector('[data-menu-panel][data-open]') !== null,
+			);
 			closeAll();
 			const trigger = item.querySelector<HTMLButtonElement>('[data-menu-trigger]')!;
 			const panel = item.querySelector<HTMLElement>('[data-menu-panel]')!;
-			panel.hidden = false;
-			// Two frames: one for the browser to lay the panel out, one for it to
-			// register the starting state. With a single frame the transition
-			// intermittently did not run at all.
-			requestAnimationFrame(() =>
-				requestAnimationFrame(() => panel.setAttribute('data-open', '')),
-			);
+			if (crossing) panel.setAttribute('data-immediate', '');
+			panel.setAttribute('data-open', '');
 			trigger.setAttribute('aria-expanded', 'true');
 		};
 
@@ -1140,7 +1141,7 @@ const MENUS = [
 			});
 
 			item.addEventListener('pointerleave', () => {
-				openTimer = window.setTimeout(closeAll, 120);
+				openTimer = window.setTimeout(closeAll, 220);
 			});
 
 			trigger.addEventListener('click', () => {
