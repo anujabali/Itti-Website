@@ -339,12 +339,17 @@ const WAYS = [
 										<h3 class="plate__name">{area.name}</h3>
 										<p class="plate__line">{area.line}</p>
 									</figcaption>
-									{area.credit && <p class="plate__credit">{area.credit}</p>}
 								</figure>
 							</li>
 						))
 					}
 				</ol>
+
+				{/* The heron is the one plate of the three under a licence that asks to
+				    be named, and it asks per page. Set once under the row rather than
+				    inside the frame, where it was a fourth line on one label of three
+				    and crowded the foot of its own card. */}
+				<p class="plates__credit">{AREAS.find((area) => area.credit)?.credit}</p>
 			</section>
 		</article>
 
@@ -1125,14 +1130,12 @@ const WAYS = [
 		opacity: 0.88;
 	}
 
-	/* Every label clears the same strip at the foot, whether or not its plate
-	   carries a credit, so the three names hang on one line. */
 	.plate__label {
 		position: absolute;
-		inset: auto 0 2.15rem 0;
+		inset: auto 0 0 0;
 		display: grid;
 		gap: 0.5rem;
-		padding: 0 clamp(1.1rem, 1.8vw, 1.6rem);
+		padding: clamp(1.1rem, 1.8vw, 1.6rem);
 	}
 
 	/* The Bodoni italic figure the rest of the page numbers things with, rather
@@ -1193,17 +1196,17 @@ const WAYS = [
 		}
 	}
 
-	/* Set where the licence asks it to be set: on the picture, at the foot,
-	   where the wash has already brought the frame down to the page's ground.
-	   Over the heron's foliage it measured 2.05. */
-	.plate__credit {
-		position: absolute;
-		inset: auto clamp(1.1rem, 1.8vw, 1.6rem) 0.55rem;
-		margin: 0;
+	/* Quiet, and set to the edge the frames start at. The frames paint a little
+	   below the row that lays them out — an aspect-ratio box overflows its grid
+	   cell by a few pixels — so this both clears them and sits above them. */
+	.plates__credit {
+		position: relative;
+		z-index: 1;
+		margin-top: clamp(1.75rem, 3vw, 2.5rem);
 		font-size: 0.6875rem;
 		letter-spacing: 0.02em;
 		line-height: 1.4;
-		color: rgba(250, 247, 240, 0.7);
+		color: rgba(250, 247, 240, 0.6);
 	}
 
 	@media (prefers-reduced-motion: reduce) {
