@@ -90,8 +90,6 @@ const AREAS = [
 		plate: 'bird',
 		focus: '50% 45%',
 		alt: 'A hummingbird sitting on its nest, watching through a screen of twigs.',
-		/* The only plate of the three under a licence that asks to be named. */
-		credit: 'Lorie Shaull, Hummingbird on the nest, 2023 · CC BY-SA 4.0',
 		line: 'The ordinary defence of places with nobody arguing for them.',
 	},
 ];
@@ -345,11 +343,6 @@ const WAYS = [
 					}
 				</ol>
 
-				{/* The heron is the one plate of the three under a licence that asks to
-				    be named, and it asks per page. Set once under the row rather than
-				    inside the frame, where it was a fourth line on one label of three
-				    and crowded the foot of its own card. */}
-				<p class="plates__credit">{AREAS.find((area) => area.credit)?.credit}</p>
 			</section>
 		</article>
 
@@ -1194,19 +1187,6 @@ const WAYS = [
 		.plate__line {
 			min-height: 2.8125rem;
 		}
-	}
-
-	/* Quiet, and set to the edge the frames start at. The frames paint a little
-	   below the row that lays them out — an aspect-ratio box overflows its grid
-	   cell by a few pixels — so this both clears them and sits above them. */
-	.plates__credit {
-		position: relative;
-		z-index: 1;
-		margin-top: clamp(1.75rem, 3vw, 2.5rem);
-		font-size: 0.6875rem;
-		letter-spacing: 0.02em;
-		line-height: 1.4;
-		color: rgba(250, 247, 240, 0.6);
 	}
 
 	@media (prefers-reduced-motion: reduce) {
