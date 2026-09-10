@@ -171,7 +171,7 @@ const WAYS = [
 			<div class="hero__inner">
 				<div class="hero__lead">
 					<p class="hero__eyebrow">Donate</p>
-					<h1 class="hero__title">Spare a thought for those who can&rsquo;t afford to dream.</h1>
+					<h1 class="hero__title">Spare a thought for those who cannot afford to dream.</h1>
 					<p class="hero__lede">
 						Neurodivergence, cancer care and conservation &mdash; and the long
 						continuation of that work, which no grant covers.
@@ -238,12 +238,14 @@ const WAYS = [
 							<div class="picks">
 								<label class="pick">
 									<input type="radio" name="area" value="" checked />
+									<span class="pick__rule" aria-hidden="true" />
 									<span class="pick__text">Wherever needed</span>
 								</label>
 								{
 									AREAS.map((area) => (
 										<label class="pick" style={`--accent: var(--${area.accent})`}>
 											<input type="radio" name="area" value={area.id} />
+											<span class="pick__rule" aria-hidden="true" />
 											<span class="pick__text">{area.name}</span>
 										</label>
 									))
@@ -736,25 +738,31 @@ const WAYS = [
 	}
 
 	/* ── Where it goes ───────────────────────────────────────────────────────
-	   The interactive choice the registration form offers, rather than a
-	   dropdown. Radios, so the card answers before any script runs, and the
-	   pillar's own colour marks the chosen one. */
+	   Four equal tiles rather than four pills. The pills wrapped two and two at
+	   unequal widths, which reads as an accident; a grid reads as a choice. Each
+	   carries a hairline of its own colour, the device the registration form
+	   already uses to head its three pillars and the triptych uses beside its
+	   numerals. Radios, so the card answers before any script runs. */
 	.picks {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.45rem;
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0.5rem;
 	}
 
 	.pick {
 		--accent: var(--teal);
 		position: relative;
-		display: inline-flex;
-		padding: 0.5rem 0.9rem;
+		display: grid;
+		align-content: start;
+		gap: 0.5rem;
+		padding: 0.7rem 0.8rem 0.75rem;
 		border: 1px solid var(--rule);
-		border-radius: 999px;
+		border-radius: 3px;
 		font-size: 0.875rem;
+		line-height: 1.25;
 		color: var(--ink-soft);
 		cursor: pointer;
+		overflow: hidden;
 		transition:
 			border-color 170ms var(--ease),
 			background-color 170ms var(--ease),
@@ -767,9 +775,22 @@ const WAYS = [
 		pointer-events: none;
 	}
 
+	.pick__rule {
+		width: 1.6rem;
+		height: 2px;
+		background: var(--accent);
+		transition:
+			width 220ms var(--ease),
+			background-color 170ms var(--ease);
+	}
+
 	.pick:hover {
 		border-color: color-mix(in srgb, var(--accent) 55%, transparent);
 		color: var(--ink);
+	}
+
+	.pick:hover .pick__rule {
+		width: 2.4rem;
 	}
 
 	.pick:has(input:checked) {
@@ -780,9 +801,36 @@ const WAYS = [
 		color: var(--cream);
 	}
 
+	.pick:has(input:checked) .pick__rule {
+		width: 2.4rem;
+		background: var(--cream);
+	}
+
 	.pick:has(input:focus-visible) {
 		outline: 2px solid var(--teal);
 		outline-offset: 2px;
+	}
+
+	/* ── What the gateway will offer ─────────────────────────────────────────
+	   A line, not four more pills. The card already carries two rows of pressed
+	   buttons and a grid of tiles; a third pill shape under the button was one
+	   system too many for something nobody chooses. */
+	.card__rails {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.3rem 0.55rem;
+		font-size: 0.6875rem;
+		font-weight: 600;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+	}
+
+	.card__rails span + span::before {
+		content: '·';
+		padding-right: 0.55rem;
+		color: var(--rule);
 	}
 
 	.card__go {
@@ -834,24 +882,6 @@ const WAYS = [
 		font-size: 0.9375rem;
 		line-height: 1.5;
 		color: var(--teal);
-	}
-
-	.card__rails {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.4rem 0.5rem;
-		margin-top: -0.35rem;
-	}
-
-	.card__rails span {
-		padding: 0.28rem 0.55rem;
-		border: 1px solid var(--rule);
-		border-radius: 999px;
-		font-size: 0.6875rem;
-		font-weight: 600;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-		color: var(--ink-faint);
 	}
 
 	.card__fine {
