@@ -46,10 +46,6 @@
 				<header class="f1-header">
 					<p class="f1-eyebrow">Registration</p>
 					<h1 class="f1-title" id="f1-heading">Tell us who you are.</h1>
-					<p class="f1-subtitle">
-						Enough to reach you, and enough to point you to the right part of the
-						foundation.
-					</p>
 				</header>
 
 				<!-- Global error banner (hidden by default) -->
@@ -801,7 +797,8 @@
 		display: grid;
 		grid-template-columns: minmax(6rem, 20%) 1fr;
 		column-gap: clamp(1.5rem, 4vw, 3.5rem);
-		margin-bottom: 3.5rem;
+		align-items: baseline;
+		margin-bottom: 3rem;
 	}
 
 	.f1-eyebrow {
@@ -864,25 +861,6 @@
 		.f1-already__ask {
 			display: none;
 		}
-	}
-
-	.f1-already__link:hover {
-		text-decoration-color: var(--teal);
-	}
-
-	@media (max-width: 46rem) {
-		.f1-already {
-			grid-column: 1;
-		}
-	}
-
-	.f1-subtitle {
-		grid-column: 2;
-		margin-top: 1rem;
-		font-size: 1.125rem;
-		line-height: 1.55;
-		color: var(--ink-soft);
-		max-width: 34rem;
 	}
 
 	/* ── Global Alert ─────────────────────────────────────────────────────── */
@@ -1817,7 +1795,6 @@
 
 		.f1-eyebrow,
 		.f1-title,
-		.f1-subtitle,
 		.f1-footer__action,
 		.f1-footer__disclaimer {
 			grid-column: 1;

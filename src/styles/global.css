@@ -248,10 +248,11 @@ html[data-band='sage'] {
 	--veil: color-mix(in srgb, color-mix(in srgb, var(--sage) 44%, var(--ink-deep)) 82%, transparent);
 }
 
-/* The exception to the 82%. The registration sheet is cream and full width
-   under the bar, so a translucent ground would take its lift from the sheet in
-   the middle of the bar and from the dark page at both ends — one bar in three
-   tones. Opaque, it stays one bar. */
+/* The registration sheet's own ground. Held at 92% rather than the 82% the
+   four bands use: the sheet is cream and full width under the bar, so at 82%
+   the bar took its lift from the sheet in the middle and from the dark page at
+   both ends and read as one bar in three tones. At 92% what passes underneath
+   still shows, and the bar stays one colour. */
 html[data-band='ink'] {
-	--veil: var(--ink-deep);
+	--veil: color-mix(in srgb, color-mix(in srgb, var(--teal) 14%, var(--ink-deep)) 92%, transparent);
 }

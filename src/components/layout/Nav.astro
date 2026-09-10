@@ -917,11 +917,27 @@ const MENUS = [
 		padding: 0.7rem 1.75rem;
 	}
 
-	/* Below this the full lockup cannot fit beside the menu button. */
-	@media (max-width: 26rem) {
+	/* Below this the full lockup cannot fit beside the menu button. At 360 it
+	   was setting THE ITT / FOUNDATI — a clipped wordmark reads as a fault, and
+	   it was taking the room the actions needed. The mark is the identity; the
+	   name is a courtesy the bar cannot afford at this width, and it is at the
+	   top of every page the bar sits on anyway. */
+	@media (max-width: 30rem) {
+		.brand__word {
+			display: none;
+		}
+
 		.brand {
-			--mark-h: 1.9rem;
-			--wordmark-size: 0.9rem;
+			--mark-h: 2rem;
+		}
+	}
+
+	/* Between a phone and a laptop it fits, but not at the size it is set on a
+	   wide screen. */
+	@media (min-width: 30.0625rem) and (max-width: 60rem) {
+		.brand {
+			--mark-h: 2.1rem;
+			--wordmark-size: 0.86rem;
 		}
 	}
 
@@ -936,6 +952,14 @@ const MENUS = [
 
 		.nav__burger {
 			display: flex;
+		}
+
+		/* The action and the menu button are a pair at this width, the way the
+		   two pills are on a wide bar. Closed up, the action sits further from
+		   the lockup and nearer the edge it belongs to. */
+		.cta + .nav__burger,
+		.who + .nav__burger {
+			margin-left: calc(var(--nav-gap) * -0.45);
 		}
 
 		.brand {

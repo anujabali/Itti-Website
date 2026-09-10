@@ -53,7 +53,8 @@ const plateFallback = (plate: string) => {
 
 /** The plates run the width of the body column, so the browser is told that
  *  rather than left to assume the viewport and fetch a size too large. */
-const PLATE_SIZES = '(min-width: 78rem) 71rem, calc(100vw - 2 * var(--gutter, 1.5rem))';
+const PLATE_SIZES =
+	'(min-width: 62rem) 23rem, (min-width: 44rem) calc(50vw - 3rem), calc(100vw - 2 * var(--gutter, 1.5rem))';
 
 const AMOUNTS = [500, 1000, 2500, 5000, 10000];
 const rupees = (n: number) => `₹${n.toLocaleString('en-IN')}`;
@@ -166,7 +167,7 @@ const WAYS = [
 			<div class="hero__inner">
 				<div class="hero__lead">
 					<p class="hero__eyebrow">Donate</p>
-					<h1 class="hero__title">Your gift becomes someone&rsquo;s turning point.</h1>
+					<h1 class="hero__title">Spare a thought for those who can&rsquo;t afford to dream.</h1>
 					<p class="hero__lede">
 						Neurodivergence, cancer care and conservation &mdash; and the long
 						continuation of that work, which no grant covers.
@@ -282,8 +283,9 @@ const WAYS = [
 
 				{/* The same three plates the opening moves through, hung again here —
 				    one to a body of work, so the money has a picture attached to it.
-				    They alternate sides down the page, which is what stops three
-				    wide pictures reading as a stack. */}
+				    Side by side and upright, the way a triptych hangs: three tall
+				    frames read as one work in three parts, where three wide ones
+				    stacked read as a list. */}
 				<ol class="plates">
 					{
 						AREAS.map((area, i) => (
@@ -404,19 +406,6 @@ const WAYS = [
 			</section>
 		</article>
 
-		<!-- ── The closing line ─────────────────────────────────────────────────
-		     The page has argued its case by here. This is the one thing it
-		     wants somebody to leave holding, so it is given a wall of its own
-		     and nothing else on it. -->
-		<section class="coda" data-reveal>
-			<span class="coda__mark" aria-hidden="true">
-				<Mark height="4.25rem" label="" />
-			</span>
-			<blockquote class="coda__quote">
-				<p>Spare a thought for those who can&rsquo;t afford to dream.</p>
-			</blockquote>
-		</section>
-
 		<SiteFooter />
 	</div>
 </Base>
@@ -485,7 +474,6 @@ const WAYS = [
 
 	.give,
 	.plinth,
-	.coda,
 	:global(.foot) {
 		position: relative;
 		z-index: 1;
@@ -555,14 +543,19 @@ const WAYS = [
 		color: color-mix(in srgb, var(--cream) 88%, var(--teal-deep));
 	}
 
+	/* Somebody's words rather than the page's, so the page sets them in the
+	   italic and stands back. */
 	.hero__title {
-		margin-top: 1.25rem;
+		margin-top: 1.35rem;
 		font-family: var(--face-bodoni);
-		font-size: clamp(2.5rem, 5.4vw, 4.25rem);
-		font-weight: var(--display-weight);
-		line-height: 1.02;
-		letter-spacing: -0.02em;
-		max-width: 15ch;
+		font-size: clamp(2.35rem, 5vw, 3.9rem);
+		font-weight: 400;
+		font-style: italic;
+		line-height: 1.1;
+		letter-spacing: -0.015em;
+		max-width: 17ch;
+		color: var(--cream);
+		text-wrap: balance;
 	}
 
 	.hero__lede {
@@ -958,13 +951,15 @@ const WAYS = [
 
 	/* ══ The three plates ═════════════════════════════════════════════════════ */
 
+	/* A triptych: three tall frames side by side, read as one work in three
+	   parts. Stacked wide, the same three pictures read as a list. */
 	.plates {
 		display: grid;
-		gap: clamp(1.25rem, 3vw, 2.25rem);
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: clamp(0.85rem, 1.8vw, 1.5rem);
 		list-style: none;
 		margin: 0;
 		padding: 0;
-		counter-reset: plate;
 	}
 
 	/* A picture hung on the ground, not a card laid on it: no paper, no border,
@@ -990,58 +985,45 @@ const WAYS = [
 		pointer-events: none;
 	}
 
-	/* Wide enough to read as a plate and not a hero. Taller on a phone, where a
-	   letterbox would leave nothing of the picture at all. */
+	/* Upright, at the proportion two of the three plates were drawn in. */
 	.plate__img {
 		display: block;
 		width: 100%;
-		height: clamp(15rem, 34vw, 23rem);
+		aspect-ratio: 3 / 4;
 		object-fit: cover;
 		/* The slow close a picture gets when you stand in front of it. */
 		transition: scale 900ms var(--ease);
 	}
 
-	/* The ground, brought up over the picture from the side the words are on,
-	   so the type is read off the page's own teal rather than off the plate. */
+	/* The ground brought up over the foot of the picture, so the label is read
+	   off the page's own teal rather than off the plate. */
 	.plate__wash {
 		position: absolute;
 		inset: 0;
-		background:
-			linear-gradient(
-				90deg,
-				var(--floor) 0%,
-				color-mix(in srgb, var(--floor) 88%, transparent) 34%,
-				color-mix(in srgb, var(--floor) 40%, transparent) 58%,
-				color-mix(in srgb, var(--floor) 16%, transparent) 100%
-			);
+		background: linear-gradient(
+			178deg,
+			transparent 0%,
+			color-mix(in srgb, var(--floor) 26%, transparent) 30%,
+			color-mix(in srgb, var(--floor) 88%, transparent) 58%,
+			var(--floor) 86%
+		);
 		pointer-events: none;
 	}
 
+	/* Every label clears the same strip at the foot, whether or not its plate
+	   carries a credit, so the three names hang on one line. */
 	.plate__label {
 		position: absolute;
-		inset: 0 auto 0 0;
+		inset: auto 0 2.15rem 0;
 		display: grid;
-		align-content: center;
-		gap: 0.55rem;
-		width: min(24rem, 52%);
-		padding: clamp(1.5rem, 3.5vw, 2.75rem);
-	}
-
-	/* The wall label changes wall every picture. */
-	.plate:nth-child(even) .plate__wash {
-		scale: -1 1;
-	}
-
-	.plate:nth-child(even) .plate__label {
-		inset: 0 0 0 auto;
-		justify-items: end;
-		text-align: right;
+		gap: 0.5rem;
+		padding: 0 clamp(1.1rem, 1.8vw, 1.6rem);
 	}
 
 	.plate__numeral {
 		display: flex;
 		align-items: center;
-		gap: 0.75rem;
+		gap: 0.7rem;
 		font-family: var(--face-cinzel);
 		font-size: 0.6875rem;
 		font-weight: 500;
@@ -1053,21 +1035,17 @@ const WAYS = [
 		font-size: 0.8125rem;
 	}
 
-	.plate:nth-child(even) .plate__numeral {
-		flex-direction: row-reverse;
-	}
-
 	/* The one place the pillar's own colour is allowed on this page: a rule, not
 	   a word, so the teal keeps the page and the accent still marks the work. */
 	.plate__numeral-rule {
-		width: 2.25rem;
+		width: 2rem;
 		height: 2px;
 		background: var(--accent);
 	}
 
 	.plate__name {
 		font-family: var(--face-bodoni);
-		font-size: clamp(1.75rem, 3.4vw, 2.5rem);
+		font-size: clamp(1.4rem, 2.3vw, 1.85rem);
 		font-weight: var(--display-weight);
 		line-height: 1.05;
 		letter-spacing: -0.015em;
@@ -1076,36 +1054,36 @@ const WAYS = [
 	}
 
 	.plate__line {
-		max-width: 22rem;
-		font-size: 1rem;
-		line-height: 1.55;
+		font-size: 0.9375rem;
+		line-height: 1.5;
 		color: rgba(250, 247, 240, 0.82);
+		text-wrap: pretty;
 	}
 
-	/* Set where the licence asks it to be set: on the picture, and on the same
-	   side as the label, because that is the end of the frame the wash has
-	   already brought down to the page's own ground. Over the picture itself it
-	   measured 2.05 against the heron's foliage. */
+	/* Wherever two frames hang side by side, the shorter line reserves the
+	   second row it does not use, so the names hang on one line rather than
+	   stepping with the length of the sentence under them. */
+	@media (min-width: 44rem) {
+		.plate__line {
+			min-height: 2.8125rem;
+		}
+	}
+
+	/* Set where the licence asks it to be set: on the picture, at the foot,
+	   where the wash has already brought the frame down to the page's ground.
+	   Over the heron's foliage it measured 2.05. */
 	.plate__credit {
 		position: absolute;
-		left: clamp(1.5rem, 3.5vw, 2.75rem);
-		bottom: clamp(0.9rem, 1.8vw, 1.35rem);
-		max-width: min(24rem, 52%);
+		inset: auto clamp(1.1rem, 1.8vw, 1.6rem) 0.55rem;
+		margin: 0;
 		font-size: 0.6875rem;
 		letter-spacing: 0.02em;
 		line-height: 1.4;
-		text-align: left;
-		color: rgba(250, 247, 240, 0.72);
-	}
-
-	.plate:nth-child(even) .plate__credit {
-		left: auto;
-		right: clamp(1.5rem, 3.5vw, 2.75rem);
-		text-align: right;
+		color: rgba(250, 247, 240, 0.7);
 	}
 
 	.plate__frame:hover .plate__img {
-		scale: 1.035;
+		scale: 1.04;
 	}
 
 	@media (prefers-reduced-motion: reduce) {
@@ -1116,52 +1094,33 @@ const WAYS = [
 		}
 	}
 
-	/* On a narrow screen there is no room beside the picture, so the words come
-	   off it and sit underneath, and the wash turns to face up the frame. */
+	/* Two across, then one. Below this there is no width to hang three in. */
+	@media (max-width: 62rem) {
+		.plates {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.plate:last-child {
+			grid-column: 1 / -1;
+		}
+
+		.plate:last-child .plate__img {
+			aspect-ratio: 16 / 9;
+		}
+	}
+
 	@media (max-width: 44rem) {
-		.plate__img {
-			height: clamp(13rem, 52vw, 17rem);
+		.plates {
+			grid-template-columns: 1fr;
 		}
 
-		.plate__wash,
-		.plate:nth-child(even) .plate__wash {
-			scale: 1;
-			background: linear-gradient(
-				178deg,
-				color-mix(in srgb, var(--floor) 10%, transparent) 0%,
-				color-mix(in srgb, var(--floor) 62%, transparent) 46%,
-				var(--floor) 100%
-			);
+		.plate:last-child {
+			grid-column: auto;
 		}
 
-		.plate__label,
-		.plate:nth-child(even) .plate__label {
-			inset: auto 0 0 0;
-			width: auto;
-			justify-items: start;
-			text-align: left;
-			padding: 1.25rem;
-		}
-
-		.plate__line {
-			font-size: 0.9375rem;
-		}
-
-		.plate__label,
-		.plate:nth-child(even) .plate__label {
-			padding-bottom: 2.9rem;
-		}
-
-		/* Under the words, on the solid end of the wash. At the top of the frame
-		   it sat on whatever the picture happened to be doing there, which for
-		   the heron was bright foliage. */
-		.plate__credit,
-		.plate:nth-child(even) .plate__credit {
-			right: auto;
-			left: 1.25rem;
-			bottom: 1.1rem;
-			max-width: calc(100% - 2.5rem);
-			text-align: left;
+		.plate__img,
+		.plate:last-child .plate__img {
+			aspect-ratio: 4 / 3;
 		}
 	}
 
@@ -1236,43 +1195,6 @@ const WAYS = [
 		font-size: 1rem;
 		line-height: 1.6;
 		color: var(--ink-soft);
-	}
-
-	/* ══ The coda ═════════════════════════════════════════════════════════════ */
-
-	.coda {
-		width: 100vw;
-		margin-left: calc(50% - 50vw);
-		padding: clamp(4rem, 11vh, 7rem) var(--gutter) clamp(4.5rem, 12vh, 7.5rem);
-		border-top: 1px solid var(--rule);
-		text-align: center;
-	}
-
-	.coda__mark {
-		display: flex;
-		justify-content: center;
-		margin-bottom: clamp(1.25rem, 3vh, 1.85rem);
-		color: var(--cream);
-		opacity: 0.45;
-	}
-
-	/* Italic, because it is somebody's words and not the page's. */
-	.coda__quote {
-		margin: 0 auto;
-		max-width: 44rem;
-		font-family: var(--face-bodoni);
-		font-size: clamp(1.5rem, 3.2vw, 2.5rem);
-		font-style: italic;
-		font-weight: 400;
-		line-height: 1.28;
-		letter-spacing: -0.005em;
-		color: var(--cream);
-		text-wrap: balance;
-	}
-
-	.coda__quote p {
-		margin: 0;
-		font-style: italic;
 	}
 
 	/* ══ Facts and ways ═══════════════════════════════════════════════════════ */
