@@ -711,7 +711,6 @@ const FACTS = {
 								</fieldset>
 							</section>
 
-						</div>
 
 						<!-- The full width, and the registration form's own cards rather
 						     than a column of tick boxes. This is the one question on the
@@ -772,6 +771,7 @@ const FACTS = {
 								}
 							</div>
 						</section>
+						</div>
 
 						<p class="note note--wrong" data-edit-error role="alert" hidden></p>
 
@@ -1488,7 +1488,7 @@ const FACTS = {
 		}
 
 		.held__note {
-			margin: 0.75rem 0 clamp(1.75rem, 4vh, 2.5rem);
+			margin: 0 0 1.35rem;
 			max-width: 34rem;
 			font-size: 0.9375rem;
 			line-height: 1.6;
@@ -2067,16 +2067,24 @@ const FACTS = {
 			letter-spacing: 0.3em;
 		}
 
+		/* 0.75rem is a deliberate half of the 1.35rem that separates fields: the
+	   options of one question belong closer together than two questions do.
+	   At 0.55 they read as smushed against a page whose every other gap is
+	   twice that. */
 		.set {
 			display: grid;
-			gap: 0.55rem;
+			gap: 0.75rem;
 			margin: 0 0 1.35rem;
 			padding: 0;
 			border: 0;
 		}
 
+		/* A legend is laid out by the fieldset, not by the grid inside it, so the
+	   row gap never reaches it and it sat flush against the first option. The
+	   margin puts it back on the same rhythm as the rows it introduces. */
 		.set legend {
-			padding: 0 0 0.5rem;
+			padding: 0;
+			margin-bottom: 0.75rem;
 		}
 
 		.check {
