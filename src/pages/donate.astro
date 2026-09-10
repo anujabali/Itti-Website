@@ -24,13 +24,36 @@
  * behind yet, and inventing one here is what the Foundation's own integrity
  * standard forbids.
  */
+import PLATES from '../data/plates.json';
 import Base from '../layouts/Base.astro';
 import SiteFooter from '../components/layout/SiteFooter.astro';
-import ClawMark from '../components/brand/ClawMark.astro';
 import Mark from '../components/brand/Mark.astro';
 
 const HAS_80G = false;
 const ACCEPTS_FOREIGN = false;
+
+/**
+ * The plates, and the widths of each that exist on disk. Written by
+ * scripts/build-plates.mjs, so a srcset here cannot name a file that was never
+ * built.
+ */
+const plateWidths = (plate: string) => {
+	const widths = (PLATES as Record<string, number[]>)[plate];
+	if (!widths) throw new Error(`No plate variants built for "${plate}".`);
+	return widths;
+};
+const plateSet = (plate: string, ext: string) =>
+	plateWidths(plate)
+		.map((w) => `/plates/${plate}-${w}.${ext} ${w}w`)
+		.join(', ');
+const plateFallback = (plate: string) => {
+	const widths = plateWidths(plate);
+	return `/plates/${plate}-${widths[widths.length - 1]}.jpg`;
+};
+
+/** The plates run the width of the body column, so the browser is told that
+ *  rather than left to assume the viewport and fetch a size too large. */
+const PLATE_SIZES = '(min-width: 78rem) 71rem, calc(100vw - 2 * var(--gutter, 1.5rem))';
 
 const AMOUNTS = [500, 1000, 2500, 5000, 10000];
 const rupees = (n: number) => `₹${n.toLocaleString('en-IN')}`;
@@ -43,7 +66,9 @@ const AREAS = [
 		id: 'neurodivergence',
 		name: 'Neurodivergence',
 		accent: 'ochre',
-		mark: '/brand/pillar-neuro.png',
+		plate: 'cajal',
+		focus: '50% 42%',
+		alt: 'A single nerve cell of the cerebellum, drawn by hand from the slide.',
 		line: 'Assessment a family can afford, and the years of work after it.',
 	},
 	{
@@ -51,7 +76,9 @@ const AREAS = [
 		id: 'cancer_care',
 		name: 'Cancer Care',
 		accent: 'rose',
-		mark: '/brand/pillar-cancer.png',
+		plate: 'thorax',
+		focus: '50% 30%',
+		alt: 'A hand-coloured anatomical plate of the chest, nerves in white and vessels in red.',
 		line: 'Diagnosis is a day. The year that follows is everything else.',
 	},
 	{
@@ -59,7 +86,11 @@ const AREAS = [
 		id: 'claw',
 		name: 'Conservation',
 		accent: 'sage',
-		mark: 'claw',
+		plate: 'bird',
+		focus: '50% 45%',
+		alt: 'A hummingbird sitting on its nest, watching through a screen of twigs.',
+		/* The only plate of the three under a licence that asks to be named. */
+		credit: 'Lorie Shaull, Hummingbird on the nest, 2023 · CC BY-SA 4.0',
 		line: 'The ordinary defence of places with nobody arguing for them.',
 	},
 ];
@@ -116,6 +147,7 @@ const WAYS = [
 	title="Donate — The Itti Foundation"
 	description="Support The Itti Foundation. Where your gift goes, how we account for it, and where we stand on tax relief and on donations from outside India."
 	navTheme="veil"
+	band="teal"
 >
 	<div class="give-page">
 		<!-- The ground the whole page stands on, and the two things that stop it
@@ -205,6 +237,13 @@ const WAYS = [
 
 						<p class="card__state" data-state role="status" hidden></p>
 
+						<p class="card__rails">
+							<span>UPI</span>
+							<span>Cards</span>
+							<span>Netbanking</span>
+							<span>Wallets</span>
+						</p>
+
 						<p class="card__fine">
 							{ACCEPTS_FOREIGN ? 'Indian and foreign gifts accepted.' : 'Indian donors only.'}{
 								' '
@@ -241,28 +280,47 @@ const WAYS = [
 					<h2 class="give__band-title" id="give-areas-heading">Where your gift goes</h2>
 				</header>
 
-				<ul class="areas">
+				{/* The same three plates the opening moves through, hung again here —
+				    one to a body of work, so the money has a picture attached to it.
+				    They alternate sides down the page, which is what stops three
+				    wide pictures reading as a stack. */}
+				<ol class="plates">
 					{
-						AREAS.map((area) => (
+						AREAS.map((area, i) => (
 							<li
-								class="area"
+								class="plate"
 								data-reveal
-								style={`--accent: var(--${area.accent}); --accent-ink: var(--${area.accent}-ink)`}>
-								<span class="area__rule" aria-hidden="true" />
-								<span class="area__sign" aria-hidden="true">
-									{area.mark === 'claw' ? (
-										<ClawMark mono />
-									) : (
-										<span class="area__raster" style={`--mark:url('${area.mark}')`} />
-									)}
-								</span>
-								<p class="area__numeral">{area.numeral}</p>
-								<h3 class="area__name">{area.name}</h3>
-								<p class="area__line">{area.line}</p>
+								style={`--accent: var(--${area.accent}); --delay: ${i * 110}ms`}>
+								<figure class="plate__frame">
+									<picture>
+										<source type="image/avif" srcset={plateSet(area.plate, 'avif')} sizes={PLATE_SIZES} />
+										<source type="image/webp" srcset={plateSet(area.plate, 'webp')} sizes={PLATE_SIZES} />
+										<img
+											class="plate__img"
+											src={plateFallback(area.plate)}
+											srcset={plateSet(area.plate, 'jpg')}
+											sizes={PLATE_SIZES}
+											style={`object-position:${area.focus}`}
+											alt={area.alt}
+											loading="lazy"
+											decoding="async"
+										/>
+									</picture>
+									<span class="plate__wash" aria-hidden="true" />
+									<figcaption class="plate__label">
+										<p class="plate__numeral">
+											<span class="plate__numeral-mark">{area.numeral}</span>
+											<span class="plate__numeral-rule" aria-hidden="true" />
+										</p>
+										<h3 class="plate__name">{area.name}</h3>
+										<p class="plate__line">{area.line}</p>
+									</figcaption>
+									{area.credit && <p class="plate__credit">{area.credit}</p>}
+								</figure>
 							</li>
 						))
 					}
-				</ul>
+				</ol>
 			</section>
 		</article>
 
@@ -273,6 +331,7 @@ const WAYS = [
 		<section class="plinth" aria-labelledby="give-plinth-heading">
 
 			<div class="plinth__body" data-reveal>
+				<p class="plinth__eyebrow">The part nobody funds</p>
 				<h2 class="plinth__line" id="give-plinth-heading">
 					The phone answered on a Sunday. The follow-up six months later. The record kept
 					properly, so a family never has to tell its story twice.
@@ -285,12 +344,17 @@ const WAYS = [
 		<article class="give give--tail">
 			<!-- ── Accounting ───────────────────────────────────────────────────── -->
 			<section
-				class="give__band give__band--open"
+				class="give__band give__band--spread"
 				id="accounting"
 				aria-labelledby="give-account-heading"
 				data-reveal>
 				<header class="give__band-head">
 					<h2 class="give__band-title" id="give-account-heading">How we account for it</h2>
+					<p class="give__band-foot">
+						Read the{' '}
+						<a class="give__link" href="/policies#terms-5">donations and refunds terms</a>{' '}
+						and our <a class="give__link" href="/policies#privacy">Privacy Policy</a>.
+					</p>
 				</header>
 
 				<dl class="facts">
@@ -303,16 +367,13 @@ const WAYS = [
 						))
 					}
 				</dl>
-
-				<p class="give__band-foot">
-					Read the{' '}
-					<a class="give__link" href="/policies#terms-5">donations and refunds terms</a>{' '}
-					and our <a class="give__link" href="/policies#privacy">Privacy Policy</a>.
-				</p>
 			</section>
 
 			<!-- ── Other ways ───────────────────────────────────────────────────── -->
-			<section class="give__band" aria-labelledby="give-other-heading" data-reveal>
+			<section
+				class="give__band give__band--spread"
+				aria-labelledby="give-other-heading"
+				data-reveal>
 				<header class="give__band-head">
 					<h2 class="give__band-title" id="give-other-heading">Other ways to help</h2>
 				</header>
@@ -321,11 +382,20 @@ const WAYS = [
 					{
 						WAYS.map((way) => (
 							<li class="way">
-								<p class="way__numeral">{way.numeral}</p>
-								<h3 class="way__name">{way.name}</h3>
-								<p class="way__body">{way.body}</p>
 								<a class="way__link" href={way.href}>
-									{way.cta} &rarr;
+									<span class="way__numeral" aria-hidden="true">
+										{way.numeral}
+									</span>
+									<span class="way__text">
+										<span class="way__name">{way.name}</span>
+										<span class="way__body">{way.body}</span>
+									</span>
+									<span class="way__cta">
+										{way.cta}
+										<span class="way__arrow" aria-hidden="true">
+											&rarr;
+										</span>
+									</span>
 								</a>
 							</li>
 						))
@@ -333,6 +403,19 @@ const WAYS = [
 				</ul>
 			</section>
 		</article>
+
+		<!-- ── The closing line ─────────────────────────────────────────────────
+		     The page has argued its case by here. This is the one thing it
+		     wants somebody to leave holding, so it is given a wall of its own
+		     and nothing else on it. -->
+		<section class="coda" data-reveal>
+			<span class="coda__mark" aria-hidden="true">
+				<Mark height="4.25rem" label="" />
+			</span>
+			<blockquote class="coda__quote">
+				<p>Spare a thought for those who can&rsquo;t afford to dream.</p>
+			</blockquote>
+		</section>
 
 		<SiteFooter />
 	</div>
@@ -402,6 +485,7 @@ const WAYS = [
 
 	.give,
 	.plinth,
+	.coda,
 	:global(.foot) {
 		position: relative;
 		z-index: 1;
@@ -412,10 +496,36 @@ const WAYS = [
 	/* Depth rather than a flat fill: the brand teal falling away to its own
 	   abyss, lit from the upper left so the band has a light source and the card
 	   has something to cast against. */
+	/* A full opening, not a block of content with room left under it. The hero
+	   takes the screen and centres in it, so what was dead space at the bottom
+	   of the fold becomes the margin the composition stands in. */
 	.hero {
 		position: relative;
-		padding: calc(var(--nav-h) + clamp(3rem, 9vh, 6rem)) var(--gutter)
-			clamp(3.5rem, 10vh, 6.5rem);
+		display: grid;
+		align-content: center;
+		min-height: 100svh;
+		padding: calc(var(--nav-h) + clamp(2rem, 5vh, 3.5rem)) var(--gutter)
+			clamp(3rem, 8vh, 5rem);
+	}
+
+	/* A light behind the card, so it is lifted off the ground rather than laid
+	   on it. Painted on the section and not the card, because a glow inside an
+	   element with `overflow: hidden` is a glow nobody sees. */
+	.hero::after {
+		content: '';
+		position: absolute;
+		z-index: 0;
+		top: 12%;
+		right: -6%;
+		width: min(42rem, 66%);
+		aspect-ratio: 1;
+		border-radius: 50%;
+		background: radial-gradient(
+			circle,
+			color-mix(in srgb, var(--teal) 78%, transparent) 0%,
+			transparent 70%
+		);
+		pointer-events: none;
 	}
 
 
@@ -489,19 +599,24 @@ const WAYS = [
 		--ink-faint: #655e55;
 		--rule: rgba(44, 39, 33, 0.14);
 		color: var(--ink);
-		border-radius: 4px;
+		border-radius: 6px;
 		box-shadow:
-			0 2px 4px rgba(10, 47, 53, 0.18),
-			0 24px 60px -22px rgba(10, 47, 53, 0.55);
+			0 1px 0 rgba(255, 255, 255, 0.5) inset,
+			0 2px 5px rgba(4, 26, 30, 0.22),
+			0 34px 74px -26px rgba(4, 26, 30, 0.68);
 		overflow: hidden;
-		color: var(--ink);
 	}
 
 	.card::before {
 		content: '';
 		display: block;
 		height: 3px;
-		background: linear-gradient(90deg, var(--teal), var(--teal-deep));
+		background: linear-gradient(
+			90deg,
+			var(--ochre) 0%,
+			var(--rose) 50%,
+			var(--sage) 100%
+		);
 	}
 
 	.card__inner {
@@ -543,17 +658,22 @@ const WAYS = [
 
 	.amount {
 		font-family: var(--body);
-		font-size: 0.9375rem;
-		padding: 0.66rem 0.3rem;
+		font-size: 1rem;
+		padding: 0.82rem 0.3rem;
 		border: 1px solid var(--rule);
-		border-radius: 2px;
-		background: none;
+		border-radius: 3px;
+		background: color-mix(in srgb, var(--cream) 55%, transparent);
 		color: var(--ink);
 		cursor: pointer;
 		transition:
 			border-color 160ms var(--ease),
 			background-color 160ms var(--ease),
-			color 160ms var(--ease);
+			color 160ms var(--ease),
+			transform 160ms var(--ease);
+	}
+
+	.amount:active {
+		transform: translateY(1px);
 	}
 
 	.amount:hover {
@@ -565,6 +685,7 @@ const WAYS = [
 		border-color: var(--teal);
 		background: var(--teal);
 		color: var(--cream);
+		box-shadow: 0 6px 16px -8px rgba(10, 47, 53, 0.7);
 	}
 
 	.amount--own {
@@ -696,6 +817,24 @@ const WAYS = [
 		color: var(--teal);
 	}
 
+	.card__rails {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem 0.5rem;
+		margin-top: -0.35rem;
+	}
+
+	.card__rails span {
+		padding: 0.28rem 0.55rem;
+		border: 1px solid var(--rule);
+		border-radius: 999px;
+		font-size: 0.6875rem;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+	}
+
 	.card__fine {
 		font-size: 0.8125rem;
 		line-height: 1.5;
@@ -755,6 +894,32 @@ const WAYS = [
 		padding-bottom: clamp(2rem, 4vh, 2.75rem);
 	}
 
+	/* Heading on the left, the thing itself on the right. A full-width heading
+	   over full-width text left the right half of every one of these sections
+	   empty; a spread uses it and reads as a page rather than a stack. */
+	@media (min-width: 62rem) {
+		.give__band--spread {
+			display: grid;
+			grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+			column-gap: clamp(2.5rem, 6vw, 5rem);
+			align-items: start;
+		}
+
+		.give__band--spread .give__band-head {
+			position: sticky;
+			top: calc(var(--nav-h) + 2.5rem);
+			padding-bottom: 0;
+		}
+
+		.give__band--spread .give__band-title {
+			font-size: clamp(1.5rem, 2.4vw, 1.9rem);
+		}
+
+		.give__band--spread .give__band-foot {
+			padding-top: 1.25rem;
+		}
+	}
+
 	.give__band-title {
 		font-family: var(--face-bodoni);
 		font-size: clamp(1.75rem, 3vw, 2.25rem);
@@ -791,106 +956,213 @@ const WAYS = [
 		text-decoration-color: var(--warm-white);
 	}
 
-	/* ══ The three areas ══════════════════════════════════════════════════════ */
+	/* ══ The three plates ═════════════════════════════════════════════════════ */
 
-	.areas {
+	.plates {
 		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: clamp(1rem, 2vw, 1.5rem);
+		gap: clamp(1.25rem, 3vw, 2.25rem);
 		list-style: none;
 		margin: 0;
 		padding: 0;
+		counter-reset: plate;
 	}
 
-	/* Each card takes a wash of its own colour rather than a shared cream, so
-	   the three read as three things at a glance and not as one list. */
-	.area {
+	/* A picture hung on the ground, not a card laid on it: no paper, no border,
+	   just the plate and the shadow it throws. */
+	.plate__frame {
 		position: relative;
-		display: grid;
-		align-content: start;
-		gap: 0.6rem;
-		min-height: 13.5rem;
-		padding: 1.9rem 1.6rem 2.1rem;
-		border: 0;
-		border-radius: 4px;
-		box-shadow: 0 2px 4px rgba(10, 47, 53, 0.16),
-			0 20px 44px -26px rgba(10, 47, 53, 0.5);
+		margin: 0;
+		border-radius: 5px;
 		overflow: hidden;
-		background: color-mix(in srgb, var(--cream) 93%, var(--floor));
-		/* A card is paper laid on the ground, so it takes the page's ink back. */
-		--ink: #2c2721;
-		--ink-soft: #5d564d;
-		--ink-faint: #655e55;
-		color: var(--ink);
-		transition:
-			transform 320ms var(--ease),
-			box-shadow 320ms var(--ease);
-	}
-
-	.area:hover {
-		transform: translateY(-3px);
+		background: var(--floor);
 		box-shadow:
-			0 2px 4px rgba(10, 47, 53, 0.18),
-			0 28px 56px -26px rgba(10, 47, 53, 0.62);
+			0 1px 0 rgba(250, 247, 240, 0.14) inset,
+			0 26px 60px -34px rgba(4, 26, 30, 0.9);
+		isolation: isolate;
 	}
 
-	.area__rule {
+	.plate__frame::after {
+		content: '';
 		position: absolute;
-		inset: 0 0 auto;
-		height: 3px;
-		background: var(--accent);
-	}
-
-	/* The project's own mark, held back to a watermark so the card stays a card
-	   and not a logo tile. */
-	.area__sign {
-		position: absolute;
-		right: -1.75rem;
-		bottom: -2rem;
-		width: 10rem;
-		height: 10rem;
-		opacity: 0.1;
-		color: var(--accent-ink);
+		inset: 0;
+		border: 1px solid rgba(250, 247, 240, 0.14);
+		border-radius: inherit;
 		pointer-events: none;
 	}
 
-	.area__sign :global(svg) {
-		width: 100%;
-		height: 100%;
-	}
-
-	.area__raster {
+	/* Wide enough to read as a plate and not a hero. Taller on a phone, where a
+	   letterbox would leave nothing of the picture at all. */
+	.plate__img {
 		display: block;
 		width: 100%;
-		height: 100%;
-		background: currentColor;
-		-webkit-mask: var(--mark) center / contain no-repeat;
-		mask: var(--mark) center / contain no-repeat;
+		height: clamp(15rem, 34vw, 23rem);
+		object-fit: cover;
+		/* The slow close a picture gets when you stand in front of it. */
+		transition: scale 900ms var(--ease);
 	}
 
-	.area__numeral {
+	/* The ground, brought up over the picture from the side the words are on,
+	   so the type is read off the page's own teal rather than off the plate. */
+	.plate__wash {
+		position: absolute;
+		inset: 0;
+		background:
+			linear-gradient(
+				90deg,
+				var(--floor) 0%,
+				color-mix(in srgb, var(--floor) 88%, transparent) 34%,
+				color-mix(in srgb, var(--floor) 40%, transparent) 58%,
+				color-mix(in srgb, var(--floor) 16%, transparent) 100%
+			);
+		pointer-events: none;
+	}
+
+	.plate__label {
+		position: absolute;
+		inset: 0 auto 0 0;
+		display: grid;
+		align-content: center;
+		gap: 0.55rem;
+		width: min(24rem, 52%);
+		padding: clamp(1.5rem, 3.5vw, 2.75rem);
+	}
+
+	/* The wall label changes wall every picture. */
+	.plate:nth-child(even) .plate__wash {
+		scale: -1 1;
+	}
+
+	.plate:nth-child(even) .plate__label {
+		inset: 0 0 0 auto;
+		justify-items: end;
+		text-align: right;
+	}
+
+	.plate__numeral {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
 		font-family: var(--face-cinzel);
 		font-size: 0.6875rem;
 		font-weight: 500;
 		letter-spacing: 0.22em;
-		/* Pulled toward the ink: the -ink accents clear 4.5 against pure cream,
-	   and this card sits a shade under it so it does not glare on the dark. */
-		color: color-mix(in srgb, var(--accent-ink) 80%, var(--ink));
+		color: var(--warm-white);
 	}
 
-	.area__name {
+	.plate__numeral-mark {
+		font-size: 0.8125rem;
+	}
+
+	.plate:nth-child(even) .plate__numeral {
+		flex-direction: row-reverse;
+	}
+
+	/* The one place the pillar's own colour is allowed on this page: a rule, not
+	   a word, so the teal keeps the page and the accent still marks the work. */
+	.plate__numeral-rule {
+		width: 2.25rem;
+		height: 2px;
+		background: var(--accent);
+	}
+
+	.plate__name {
 		font-family: var(--face-bodoni);
-		font-size: 1.5rem;
+		font-size: clamp(1.75rem, 3.4vw, 2.5rem);
 		font-weight: var(--display-weight);
-		letter-spacing: -0.005em;
+		line-height: 1.05;
+		letter-spacing: -0.015em;
+		color: var(--warm-white);
+		text-wrap: balance;
 	}
 
-	.area__line {
-		position: relative;
-		max-width: 20rem;
+	.plate__line {
+		max-width: 22rem;
 		font-size: 1rem;
 		line-height: 1.55;
-		color: var(--ink-soft);
+		color: rgba(250, 247, 240, 0.82);
+	}
+
+	/* Set where the licence asks it to be set: on the picture, and on the same
+	   side as the label, because that is the end of the frame the wash has
+	   already brought down to the page's own ground. Over the picture itself it
+	   measured 2.05 against the heron's foliage. */
+	.plate__credit {
+		position: absolute;
+		left: clamp(1.5rem, 3.5vw, 2.75rem);
+		bottom: clamp(0.9rem, 1.8vw, 1.35rem);
+		max-width: min(24rem, 52%);
+		font-size: 0.6875rem;
+		letter-spacing: 0.02em;
+		line-height: 1.4;
+		text-align: left;
+		color: rgba(250, 247, 240, 0.72);
+	}
+
+	.plate:nth-child(even) .plate__credit {
+		left: auto;
+		right: clamp(1.5rem, 3.5vw, 2.75rem);
+		text-align: right;
+	}
+
+	.plate__frame:hover .plate__img {
+		scale: 1.035;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.plate__img,
+		.plate__frame:hover .plate__img {
+			transition: none;
+			scale: 1;
+		}
+	}
+
+	/* On a narrow screen there is no room beside the picture, so the words come
+	   off it and sit underneath, and the wash turns to face up the frame. */
+	@media (max-width: 44rem) {
+		.plate__img {
+			height: clamp(13rem, 52vw, 17rem);
+		}
+
+		.plate__wash,
+		.plate:nth-child(even) .plate__wash {
+			scale: 1;
+			background: linear-gradient(
+				178deg,
+				color-mix(in srgb, var(--floor) 10%, transparent) 0%,
+				color-mix(in srgb, var(--floor) 62%, transparent) 46%,
+				var(--floor) 100%
+			);
+		}
+
+		.plate__label,
+		.plate:nth-child(even) .plate__label {
+			inset: auto 0 0 0;
+			width: auto;
+			justify-items: start;
+			text-align: left;
+			padding: 1.25rem;
+		}
+
+		.plate__line {
+			font-size: 0.9375rem;
+		}
+
+		.plate__label,
+		.plate:nth-child(even) .plate__label {
+			padding-bottom: 2.9rem;
+		}
+
+		/* Under the words, on the solid end of the wash. At the top of the frame
+		   it sat on whatever the picture happened to be doing there, which for
+		   the heron was bright foliage. */
+		.plate__credit,
+		.plate:nth-child(even) .plate__credit {
+			right: auto;
+			left: 1.25rem;
+			bottom: 1.1rem;
+			max-width: calc(100% - 2.5rem);
+			text-align: left;
+		}
 	}
 
 	/* ══ The plinth ═══════════════════════════════════════════════════════════ */
@@ -905,6 +1177,11 @@ const WAYS = [
 		border-top: 1px solid var(--rule);
 		border-bottom: 1px solid var(--rule);
 		overflow: clip;
+		background: radial-gradient(
+			120% 100% at 50% 50%,
+			color-mix(in srgb, var(--teal-deep) 62%, transparent) 0%,
+			transparent 72%
+		);
 	}
 
 
@@ -920,13 +1197,27 @@ const WAYS = [
 		text-align: center;
 	}
 
+	/* The section's name, set as the wall label it is, with the hairline the
+	   rest of the site hangs its labels from. */
 	.plinth__eyebrow {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.85rem;
+		margin-bottom: clamp(1.5rem, 3vh, 2.25rem);
 		font-family: var(--face-cinzel);
 		font-size: 0.6875rem;
 		font-weight: 500;
 		letter-spacing: 0.18em;
 		text-transform: uppercase;
 		color: color-mix(in srgb, var(--cream) 88%, var(--teal-deep));
+	}
+
+	.plinth__eyebrow::before,
+	.plinth__eyebrow::after {
+		content: '';
+		width: clamp(1.5rem, 4vw, 3rem);
+		height: 1px;
+		background: color-mix(in srgb, var(--cream) 40%, transparent);
 	}
 
 	.plinth__line {
@@ -947,6 +1238,43 @@ const WAYS = [
 		color: var(--ink-soft);
 	}
 
+	/* ══ The coda ═════════════════════════════════════════════════════════════ */
+
+	.coda {
+		width: 100vw;
+		margin-left: calc(50% - 50vw);
+		padding: clamp(4rem, 11vh, 7rem) var(--gutter) clamp(4.5rem, 12vh, 7.5rem);
+		border-top: 1px solid var(--rule);
+		text-align: center;
+	}
+
+	.coda__mark {
+		display: flex;
+		justify-content: center;
+		margin-bottom: clamp(1.25rem, 3vh, 1.85rem);
+		color: var(--cream);
+		opacity: 0.45;
+	}
+
+	/* Italic, because it is somebody's words and not the page's. */
+	.coda__quote {
+		margin: 0 auto;
+		max-width: 44rem;
+		font-family: var(--face-bodoni);
+		font-size: clamp(1.5rem, 3.2vw, 2.5rem);
+		font-style: italic;
+		font-weight: 400;
+		line-height: 1.28;
+		letter-spacing: -0.005em;
+		color: var(--cream);
+		text-wrap: balance;
+	}
+
+	.coda__quote p {
+		margin: 0;
+		font-style: italic;
+	}
+
 	/* ══ Facts and ways ═══════════════════════════════════════════════════════ */
 
 	/* Four columns divided by hairlines rather than four paragraphs stacked in
@@ -961,45 +1289,16 @@ const WAYS = [
 	}
 
 	.fact {
+		display: grid;
+		gap: 0.35rem 2rem;
 		padding: 1.35rem 0 1.5rem;
 		border-bottom: 1px solid var(--rule);
 	}
 
 	@media (min-width: 44rem) {
-		.facts {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-		}
-
 		.fact {
-			padding-right: clamp(1.25rem, 2.5vw, 2.25rem);
-		}
-
-		.fact:nth-child(2n) {
-			padding-right: 0;
-			padding-left: clamp(1.25rem, 2.5vw, 2.25rem);
-			border-left: 1px solid var(--rule);
-		}
-	}
-
-	@media (min-width: 70rem) {
-		.facts {
-			grid-template-columns: repeat(4, minmax(0, 1fr));
-		}
-
-		.fact {
-			padding-right: clamp(1rem, 1.8vw, 1.6rem);
-			padding-left: clamp(1rem, 1.8vw, 1.6rem);
-			border-left: 1px solid var(--rule);
-			border-bottom: 0;
-		}
-
-		.fact:first-child {
-			padding-left: 0;
-			border-left: 0;
-		}
-
-		.fact:last-child {
-			padding-right: 0;
+			grid-template-columns: minmax(0, 13rem) minmax(0, 1fr);
+			align-items: baseline;
 		}
 	}
 
@@ -1012,10 +1311,14 @@ const WAYS = [
 		color: color-mix(in srgb, var(--cream) 74%, var(--teal-deep));
 	}
 
+	.fact__term {
+		padding-top: 0.15rem;
+	}
+
 	.fact__def {
-		margin: 0.6rem 0 0;
-		max-width: 26rem;
-		font-size: 0.9375rem;
+		margin: 0;
+		max-width: 32rem;
+		font-size: 1rem;
 		line-height: 1.6;
 		color: var(--ink-soft);
 		text-wrap: pretty;
@@ -1023,25 +1326,42 @@ const WAYS = [
 
 	.ways {
 		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: clamp(1rem, 2vw, 1.5rem);
 		list-style: none;
 		margin: 0;
 		padding: 0;
+		border-top: 1px solid var(--rule);
 	}
 
 	.way {
+		border-bottom: 1px solid var(--rule);
+	}
+
+	/* The whole row is the target, so there is no small underlined phrase to
+	   aim at. The row lights rather than moves: three rows sharing an edge
+	   cannot lift without opening a gap in the rule above them. */
+	.way__link {
 		display: grid;
-		align-content: start;
-		gap: 0.55rem;
-		padding-top: 1.35rem;
-		border-top: 1px solid var(--rule);
+		grid-template-columns: auto minmax(0, 1fr);
+		align-items: baseline;
+		gap: 0.35rem 1.35rem;
+		padding: 1.5rem clamp(0.75rem, 1.6vw, 1.25rem) 1.6rem;
+		margin-inline: clamp(-1.25rem, -1.6vw, -0.75rem);
+		color: inherit;
+		text-decoration: none;
+		transition: background-color 220ms var(--ease);
+	}
+
+	.way__link:hover,
+	.way__link:focus-visible {
+		background: color-mix(in srgb, var(--warm-white) 7%, transparent);
 	}
 
 	/* The Bodoni italic numeral the registration form sets its sections in. It
 	   is the site's own device, and it turns three paragraphs into three
 	   numbered things without adding a word. */
 	.way__numeral {
+		grid-row: 1 / span 2;
+		width: 2ch;
 		font-family: var(--face-bodoni);
 		font-size: 1.75rem;
 		font-style: italic;
@@ -1050,27 +1370,55 @@ const WAYS = [
 		color: color-mix(in srgb, var(--cream) 52%, var(--teal-deep));
 	}
 
+	.way__text {
+		display: grid;
+		gap: 0.4rem;
+	}
+
 	.way__name {
 		font-family: var(--face-bodoni);
-		font-size: 1.25rem;
+		font-size: 1.375rem;
 		font-weight: var(--display-weight);
 	}
 
 	.way__body {
+		max-width: 34rem;
 		font-size: 0.9375rem;
 		line-height: 1.6;
 		color: var(--ink-soft);
 	}
 
-	.way__link {
+	.way__cta {
+		grid-column: 2;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		padding-top: 0.55rem;
 		font-size: 0.9375rem;
 		color: var(--warm-white);
-		text-decoration: none;
 	}
 
-	.way__link:hover {
-		text-decoration: underline;
-		text-underline-offset: 0.2em;
+	.way__arrow {
+		transition: translate 220ms var(--ease);
+	}
+
+	.way__link:hover .way__arrow,
+	.way__link:focus-visible .way__arrow {
+		translate: 0.25rem 0;
+	}
+
+	@media (min-width: 62rem) {
+		.way__link {
+			grid-template-columns: auto minmax(0, 1fr) auto;
+		}
+
+		.way__cta {
+			grid-column: 3;
+			grid-row: 1 / span 2;
+			align-self: center;
+			padding-top: 0;
+			white-space: nowrap;
+		}
 	}
 
 	/* ══ Arrival ══════════════════════════════════════════════════════════════ */
@@ -1099,7 +1447,6 @@ const WAYS = [
 			transition: none;
 		}
 
-		.area,
 		.amount,
 		.card__go,
 		.card__go-arrow {
@@ -1124,16 +1471,10 @@ const WAYS = [
 			opacity: 0.04;
 		}
 
-		.areas,
 		.ways,
 		.facts {
 			grid-template-columns: 1fr;
 		}
-
-		.area {
-			min-height: 0;
-		}
-
 	}
 </style>
 <script>

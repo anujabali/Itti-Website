@@ -1,4 +1,9 @@
 @import '@fontsource-variable/bodoni-moda';
+/* The italic of the same family. `font-synthesis: none` below means a browser
+   will not slant the roman for us, so italic Bodoni either ships or silently
+   is not italic at all. Subsets are unicode-ranged, so only the latin file is
+   ever fetched, and only by a page that sets something in it. */
+@import '@fontsource-variable/bodoni-moda/wght-italic.css';
 @import '@fontsource-variable/cinzel';
 @import '@fontsource-variable/eb-garamond';
 
