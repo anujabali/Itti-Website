@@ -21,6 +21,17 @@ import { ITEMS, PILLARS, MAKERS, STEPS, type Pillar } from '../data/marketplace'
 
 const rupees = (n: number) => `₹${n.toLocaleString('en-IN')}`;
 
+/** A maker's stamp for a thing that has no photograph yet. Two letters, taken
+ *  from the name, so nine unphotographed goods do not read as nine copies of
+ *  the same card. */
+const monogram = (name: string) =>
+	name
+		.split(/[\s,]+/)
+		.filter(Boolean)
+		.slice(0, 2)
+		.map((word) => word[0]!.toUpperCase())
+		.join('');
+
 const featured = ITEMS.find((item) => item.featured)!;
 const rest = ITEMS.filter((item) => item !== featured);
 
@@ -43,6 +54,50 @@ const enquiry = (name: string) =>
 	title="Marketplace — The Itti Foundation"
 	description="What the Foundation's workshops make, who makes it, and how the money reaches them."
 >
+	<script is:inline>
+		/**
+		 * Arriving at a section, without the page showing the top first.
+		 *
+		 * The bar links to five anchors on this page. Without this the browser
+		 * paints the masthead, then parses as far as the target, then scrolls —
+		 * and scrolls again when the fonts land and every height above the target
+		 * changes. The reader sees the top, a snap, and a second smaller snap.
+		 *
+		 * So the words are held until they can be placed. The ground and the bar
+		 * paint at once; only the document waits. `visibility` rather than
+		 * `display`, because the layout has to happen for the scroll position to
+		 * be computable at all, and a cap so a font that never arrives cannot
+		 * leave the page blank. The same arrangement the policies page uses.
+		 */
+		document.documentElement.style.scrollBehavior = 'auto';
+
+		if (location.hash) {
+			(function () {
+				var root = document.documentElement;
+				var id = location.hash.slice(1);
+				var done = false;
+
+				root.setAttribute('data-locating', '');
+
+				var reveal = function () {
+					if (done) return;
+					done = true;
+					var target = document.getElementById(id);
+					if (target) target.scrollIntoView();
+					root.removeAttribute('data-locating');
+				};
+
+				var settle = function () {
+					requestAnimationFrame(reveal);
+				};
+
+				if (document.fonts && document.fonts.ready) document.fonts.ready.then(settle);
+				addEventListener('load', settle);
+				setTimeout(reveal, 1200);
+			})();
+		}
+	</script>
+
 	<div class="mkt-page">
 		<span class="mkt-page__ornament" aria-hidden="true">
 			<Mark height="30rem" label="" />
@@ -53,14 +108,8 @@ const enquiry = (name: string) =>
 			<header class="mkt__mast">
 				<p class="mkt__eyebrow">Marketplace</p>
 				<h1 class="mkt__title">Somebody made this, and somebody is paid for it.</h1>
-				<p class="mkt__lede">
-					Everything here comes out of the workshops: the crafts the Foundation teaches
-					anyway, made by the people it teaches them to.
-				</p>
-				<p class="mkt__note">
-					The first making cycle is still running, so prices are indicative and nothing is
-					in stock yet. Write to us and we will tell you where a thing actually is.
-				</p>
+				<p class="mkt__lede">Made in the workshops, by the people the Foundation teaches.</p>
+				<p class="mkt__note">The first making cycle is still running. Prices are indicative.</p>
 			</header>
 
 			<!-- ── New arrivals ─────────────────────────────────────────────────── -->
@@ -122,6 +171,7 @@ const enquiry = (name: string) =>
 									    invented picture of a thing nobody has made would be worse
 									    than an honest absence. */}
 									<span class="good__plate" aria-hidden="true">
+										<span class="good__monogram">{monogram(item.name)}</span>
 										<span class="good__mark">
 											{PILLARS[item.pillar].mark === 'claw' ? (
 												<ClawMark mono />
@@ -185,9 +235,7 @@ const enquiry = (name: string) =>
 			<section class="mkt__band mkt__band--spread" id="makers" aria-labelledby="mkt-makers" data-reveal>
 				<header class="mkt__head mkt__head--side">
 					<h2 class="mkt__h" id="mkt-makers">Who makes it</h2>
-					<p class="mkt__aside">
-						Livelihood is the point of the skilling, not a by-product of it.
-					</p>
+					<p class="mkt__aside">Livelihood is the point, not a by-product.</p>
 				</header>
 
 				<ul class="rows">
@@ -216,9 +264,7 @@ const enquiry = (name: string) =>
 			>
 				<header class="mkt__head mkt__head--side">
 					<h2 class="mkt__h" id="mkt-how">How it works</h2>
-					<p class="mkt__aside">
-						No cart, no account, no warehouse. A letter and a person who answers it.
-					</p>
+					<p class="mkt__aside">No cart, no account, no warehouse.</p>
 				</header>
 
 				<ol class="steps">
@@ -240,10 +286,7 @@ const enquiry = (name: string) =>
 			<section class="close" aria-labelledby="mkt-close" data-reveal>
 				<span class="close__edge" aria-hidden="true"></span>
 				<h2 class="close__line" id="mkt-close">Ask about anything here.</h2>
-				<p class="close__note">
-					One address, read by people. Tell us what you want and how many, and we will
-					answer within five working days.
-				</p>
+				<p class="close__note">Within five working days, by a person.</p>
 				<a class="btn btn--wide" href={enquiry('the marketplace')}>
 					<span>Write to us</span>
 					<span class="btn__arrow" aria-hidden="true">&rarr;</span>
@@ -280,6 +323,13 @@ const enquiry = (name: string) =>
 		color: var(--teal);
 		opacity: 0.045;
 		pointer-events: none;
+	}
+
+	/* Held while the document is being placed on a fragment arrival. The ground
+	   and the bar paint at once; only the words wait. See the inline script. */
+	:global(html[data-locating]) .mkt,
+	:global(html[data-locating] .foot) {
+		visibility: hidden;
 	}
 
 	.mkt {
@@ -343,6 +393,9 @@ const enquiry = (name: string) =>
 	.mkt__band {
 		padding: clamp(2.75rem, 7vh, 4.5rem) 0;
 		border-top: 1px solid var(--rule);
+		/* The bar is fixed, so an anchor that lands at the top of the viewport
+		   lands underneath it. */
+		scroll-margin-top: calc(var(--nav-h) + 1.5rem);
 	}
 
 	.mkt__head {
@@ -552,13 +605,36 @@ const enquiry = (name: string) =>
 		overflow: hidden;
 	}
 
+	/* The stamp: two letters in the inscriptional face, the way a maker marks a
+	   thing that is not photographed. */
+	.good__monogram {
+		font-family: var(--face-cinzel);
+		font-size: clamp(2.5rem, 6vw, 3.25rem);
+		font-weight: 500;
+		letter-spacing: 0.12em;
+		line-height: 1;
+		text-indent: 0.12em;
+		color: color-mix(in srgb, var(--accent-ink) 78%, var(--ink));
+		opacity: 0.62;
+		transition: opacity 320ms var(--ease);
+	}
+
+	.good__link:hover .good__monogram,
+	.good__link:focus-visible .good__monogram {
+		opacity: 0.72;
+	}
+
+	/* The body of work it belongs to, small, in the corner. */
 	.good__mark {
+		position: absolute;
+		top: 0.85rem;
+		right: 0.9rem;
 		display: grid;
 		place-items: center;
-		width: 7.5rem;
-		height: 7.5rem;
+		width: 1.75rem;
+		height: 1.75rem;
 		color: var(--accent-ink);
-		opacity: 0.28;
+		opacity: 0.38;
 		transition:
 			opacity 320ms var(--ease),
 			scale 420ms var(--ease);
@@ -582,8 +658,8 @@ const enquiry = (name: string) =>
 
 	.good__link:hover .good__mark,
 	.good__link:focus-visible .good__mark {
-		opacity: 0.4;
-		scale: 1.04;
+		opacity: 0.6;
+		scale: 1.06;
 	}
 
 	.good__craft {

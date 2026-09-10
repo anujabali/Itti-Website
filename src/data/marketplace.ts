@@ -34,19 +34,19 @@ export const PILLARS: Record<
 	cancer: {
 		label: 'Cancer Care',
 		accent: 'rose',
-		note: 'Carries the dragonfly, and the line the Foundation says on 8 September.',
+		note: 'What the Foundation wears on 8 September.',
 		mark: '/brand/pillar-cancer.png',
 	},
 	neuro: {
 		label: 'Neurodivergence',
 		accent: 'ochre',
-		note: 'Made in the skilling workshops, by the people the programme is for.',
+		note: 'Made by the people the programme is for.',
 		mark: '/brand/pillar-neuro.png',
 	},
 	claw: {
 		label: 'Conservation',
 		accent: 'sage',
-		note: 'The recurring crafts — the techniques taught in the field, sold as they are made.',
+		note: 'The crafts taught in the field, sold as they are made.',
 		mark: 'claw',
 	},
 };
@@ -55,7 +55,7 @@ export const ITEMS: Item[] = [
 	{
 		slug: 'cancer-care-tee',
 		name: 'Cancer Care Tee',
-		line: 'The dragonfly, and the shloka the Foundation reads on 8 September.',
+		line: 'The dragonfly, and the shloka read on 8 September.',
 		craft: 'Screen print on combed cotton',
 		pillar: 'cancer',
 		price: 899,
@@ -65,7 +65,7 @@ export const ITEMS: Item[] = [
 	{
 		slug: 'bioenzyme-household',
 		name: 'Bioenzyme, household',
-		line: 'Citrus peel, jaggery and water, left three months. It cleans everything.',
+		line: 'Citrus peel, jaggery and water, three months in the dark.',
 		craft: 'Fermented in the CLAW workshops',
 		pillar: 'claw',
 		price: 240,
@@ -74,7 +74,7 @@ export const ITEMS: Item[] = [
 	{
 		slug: 'bioenzyme-garden',
 		name: 'Bioenzyme, garden',
-		line: 'The same ferment, cut for soil rather than surfaces.',
+		line: 'The same ferment, cut for soil.',
 		craft: 'Fermented in the CLAW workshops',
 		pillar: 'claw',
 		price: 240,
@@ -83,7 +83,7 @@ export const ITEMS: Item[] = [
 	{
 		slug: 'vetiver-mat',
 		name: 'Vetiver mat',
-		line: 'Roots woven wet, dried flat. Wet it again in summer and the room cools.',
+		line: 'Woven wet, dried flat. Wet it again and the room cools.',
 		craft: 'Hand-woven vetiver root',
 		pillar: 'claw',
 		price: 1450,
@@ -92,7 +92,7 @@ export const ITEMS: Item[] = [
 	{
 		slug: 'vetiver-sachets',
 		name: 'Vetiver sachets',
-		line: 'For a cupboard, a drawer, or a car that has been shut all day.',
+		line: 'For a cupboard, a drawer, a shut car.',
 		craft: 'Hand-woven vetiver root',
 		pillar: 'claw',
 		price: 320,
@@ -101,7 +101,7 @@ export const ITEMS: Item[] = [
 	{
 		slug: 'seed-ball-set',
 		name: 'Seed balls',
-		line: 'Clay, compost and native seed. Thrown, not planted.',
+		line: 'Clay, compost, native seed. Thrown, not planted.',
 		craft: 'Rolled by hand in the workshops',
 		pillar: 'claw',
 		price: 180,
@@ -110,7 +110,7 @@ export const ITEMS: Item[] = [
 	{
 		slug: 'block-print-tote',
 		name: 'Block-printed tote',
-		line: 'Cut, printed and stitched by the same pair of hands, start to finish.',
+		line: 'Cut, printed and stitched by one pair of hands.',
 		craft: 'Hand block print on canvas',
 		pillar: 'neuro',
 		price: 640,
@@ -119,7 +119,7 @@ export const ITEMS: Item[] = [
 	{
 		slug: 'clay-planters',
 		name: 'Clay planters',
-		line: 'Thrown small, glazed once. No two come out the same size.',
+		line: 'Thrown small, glazed once. No two the same.',
 		craft: 'Wheel-thrown terracotta',
 		pillar: 'neuro',
 		price: 520,
@@ -128,7 +128,7 @@ export const ITEMS: Item[] = [
 	{
 		slug: 'paper-journals',
 		name: 'Bound journals',
-		line: 'Cotton-rag paper, sewn by hand, no glue anywhere in it.',
+		line: 'Cotton-rag paper, sewn by hand. No glue.',
 		craft: 'Hand-bound, cotton-rag paper',
 		pillar: 'neuro',
 		price: 480,
@@ -140,17 +140,17 @@ export const MAKERS = [
 	{
 		numeral: 'I',
 		title: 'The people the programme is for',
-		body: 'Neurodivergent teenagers and adults skilled in the workshops. The work is theirs, the pace is theirs, and the money reaches them by name.',
+		body: 'The work is theirs, the pace is theirs, the money reaches them by name.',
 	},
 	{
 		numeral: 'II',
 		title: 'The people who teach it',
-		body: 'The crafts repeat across the Foundation — bioenzymes and vetiver are taught in the field as often as they are made for sale.',
+		body: 'The same crafts are taught in the field as often as they are made for sale.',
 	},
 	{
 		numeral: 'III',
 		title: 'The people who buy it',
-		body: 'A marketplace is only a livelihood if somebody buys. That is the whole of the ask, and there is no other.',
+		body: 'A marketplace is only a livelihood if somebody buys.',
 	},
 ];
 
@@ -158,21 +158,21 @@ export const STEPS = [
 	{
 		numeral: '01',
 		title: 'You write',
-		body: 'Say what you want and how many. There is no cart yet, and a person reads every message.',
+		body: 'Say what you want and how many.',
 	},
 	{
 		numeral: '02',
 		title: 'We answer',
-		body: 'With what is made, what it costs to send, and how long the making takes. Within five working days.',
+		body: 'What is made, what sending costs, how long it takes.',
 	},
 	{
 		numeral: '03',
 		title: 'It is made',
-		body: 'By hand, in a workshop, by somebody who is paid for it. Nothing here is held in a warehouse.',
+		body: 'By hand, by somebody who is paid for it.',
 	},
 	{
 		numeral: '04',
 		title: 'The money goes back',
-		body: 'To the maker first, and to the programme that taught them. The Foundation takes nothing above its costs.',
+		body: 'To the maker first, then the programme that taught them.',
 	},
 ];
