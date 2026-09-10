@@ -113,60 +113,72 @@ const MENUS = [
 			<ul class="nav__list">
 				{
 					MENUS.map((menu, i) => (
-						<li class="nav__item" data-menu-item>
+						<li class="nav__item" data-menu-item data-menu-index={i}>
 							<button
 								class="nav__link"
 								type="button"
 								aria-expanded="false"
-								aria-controls={`mega-${i}`}
+								aria-controls="mega-panel"
 								data-menu-trigger
 							>
 								{menu.label}
 							</button>
-
-							<div class="mega" id={`mega-${i}`} data-menu-panel>
-								<div class="mega__inner">
-									<span class="mega__edge" aria-hidden="true" />
-									<div class="mega__cols">
-										{menu.groups.map((group) => (
-											<section class="mega__group">
-												<h2 class="mega__title">
-													<span class="mega__title-rule" aria-hidden="true" />
-													{group.title}
-												</h2>
-												<ul class="mega__links">
-													{group.links.map((link) => (
-														<li>
-															<a
-																class="mega__link"
-																href={link.href}
-																style={
-																	'accent' in link
-																		? `--accent: var(--${(link as { accent: string }).accent}); --accent-ink: var(--${(link as { accent: string }).accent}-ink)`
-																		: undefined
-																}
-															>
-																<span>{link.label}</span>
-																<span class="mega__link-arrow" aria-hidden="true">
-																	&rarr;
-																</span>
-															</a>
-														</li>
-													))}
-												</ul>
-											</section>
-										))}
-									</div>
-									<a class="mega__all" href={menu.href}>
-										<span>All of {menu.label}</span>
-										<span class="mega__all-arrow" aria-hidden="true">&rarr;</span>
-									</a>
-								</div>
-							</div>
 						</li>
 					))
 				}
 			</ul>
+
+			{/* One panel for the whole bar, not one per menu.
+			    Four panels each anchored to their own label meant four different
+			    places for the same object to appear, at four different widths —
+			    the bar behaved differently depending on where you pointed. This
+			    one slides along under the labels and resizes to whatever it is
+			    holding, so the menu is a single thing that moves rather than four
+			    that come and go. */}
+			<div class="mega" id="mega-panel" data-mega>
+				<div class="mega__frame" data-mega-frame>
+					{MENUS.map((menu, i) => (
+						<div class="mega__sheet" data-mega-sheet={i} aria-hidden="true">
+							<span class="mega__edge" aria-hidden="true" />
+							<div class="mega__cols">
+								{menu.groups.map((group) => (
+									<section class="mega__group">
+										<h2 class="mega__title">
+											<span class="mega__title-rule" aria-hidden="true" />
+											{group.title}
+										</h2>
+										<ul class="mega__links">
+											{group.links.map((link) => (
+												<li>
+													<a
+														class="mega__link"
+														href={link.href}
+														tabindex="-1"
+														style={
+															'accent' in link
+																? `--accent: var(--${(link as { accent: string }).accent}); --accent-ink: var(--${(link as { accent: string }).accent}-ink)`
+																: undefined
+														}
+													>
+														<span>{link.label}</span>
+														<span class="mega__link-arrow" aria-hidden="true">
+															&rarr;
+														</span>
+													</a>
+												</li>
+											))}
+										</ul>
+									</section>
+								))}
+							</div>
+							<a class="mega__all" href={menu.href} tabindex="-1">
+								<span>All of {menu.label}</span>
+								<span class="mega__all-arrow" aria-hidden="true">&rarr;</span>
+							</a>
+						</div>
+					))}
+				</div>
+			</div>
 		</nav>
 
 		{
@@ -394,6 +406,9 @@ const MENUS = [
 	}
 
 	.nav__inner {
+		/* The panel is placed against the bar rather than against a label, so
+		   the bar is what it measures from. */
+		position: relative;
 		display: flex;
 		align-items: center;
 		/* Named, so the pair of actions at the end can measure itself against the
@@ -739,22 +754,21 @@ const MENUS = [
 
 	/* ── Mega menu ──────────────────────────────────────────────────────── */
 
+	/* One panel for the bar. It is placed against the bar itself rather than
+	   against a label, and slides to sit under whichever label is open — so
+	   there is one object with one behaviour, wherever you point. */
 	.mega {
 		position: absolute;
 		top: 100%;
-		/* Pulled left by the panel's own padding, so the first link sits on the
-		   same vertical as the nav label above it. */
-		left: -1.3rem;
+		left: var(--gutter);
 		/* Transparent bridge between the bar and the card — visual gap without a
 		   hover gap. */
 		padding-top: 0.5rem;
 		opacity: 0;
-		translate: 0 -0.4rem;
+		translate: var(--mega-x, 0) -0.4rem;
 		/* Visibility rather than `display`, so the panel is always laid out and
-		   the transition has something to run on. Toggling `hidden` meant the
-		   browser had to build the panel and then be given two animation frames
-		   before it would animate at all, and that wait is what read as the
-		   jerk. `visibility` also keeps it out of the tab order while closed. */
+		   the transition has something to run on. It also keeps the closed panel
+		   out of the tab order. */
 		visibility: hidden;
 		pointer-events: none;
 		transition:
@@ -763,45 +777,23 @@ const MENUS = [
 			visibility 0s linear 200ms;
 	}
 
-	/* The last item would push its panel past the gutter, so it hangs the other
-	   way. */
-	.nav__item:last-child .mega {
-		left: auto;
-		right: -1.3rem;
-	}
-
-	/* One movement, one easing, and no scale: type that scales while it fades
-	   shimmers, and the shimmer is most of what reads as cheap. */
-	.mega[data-open] {
+	.nav.is-open .mega {
 		opacity: 1;
-		translate: none;
 		visibility: visible;
 		pointer-events: auto;
+		translate: var(--mega-x, 0) 0;
 		transition:
 			opacity 200ms var(--ease),
-			translate 340ms cubic-bezier(0.16, 1, 0.3, 1),
+			translate 420ms cubic-bezier(0.22, 1, 0.36, 1),
 			visibility 0s;
 	}
 
-	/* Moving from one menu straight to the next. A panel is already open and in
-	   place, so the next one takes over rather than arriving from underneath —
-	   two panels each playing their own entrance is what made crossing the bar
-	   feel unsettled. */
-	.mega[data-open][data-immediate] {
-		translate: none;
-		transition:
-			opacity 110ms var(--ease),
-			visibility 0s;
-	}
-
-	/* The contents arrive just behind the panel, so it unfolds rather than
-	   appearing whole. */
-	.mega__inner {
+	/* The frame is the shape of whatever sheet is showing, and it changes shape
+	   rather than being replaced. */
+	.mega__frame {
 		position: relative;
-		width: max-content;
-		min-width: 20rem;
-		max-width: min(34rem, calc(100vw - 2 * var(--gutter)));
-		padding: 1.35rem 1.5rem 0.6rem;
+		width: var(--mega-w, auto);
+		height: var(--mega-h, auto);
 		border-radius: 10px;
 		overflow: hidden;
 		/* Solid. A panel you can see the artwork through can never read as
@@ -815,11 +807,34 @@ const MENUS = [
 			0 1px 0 rgba(255, 255, 255, 0.6) inset,
 			0 2px 8px rgba(6, 7, 8, 0.14),
 			0 30px 60px -24px rgba(6, 7, 8, 0.55);
+		transition:
+			width 420ms cubic-bezier(0.22, 1, 0.36, 1),
+			height 420ms cubic-bezier(0.22, 1, 0.36, 1);
 	}
 
-	/* The three bodies of work, drawn across the head of the panel. The giving
-	   card and the registration sheet carry the same line; a menu that opens
-	   over any page on the site should be recognisably from it. */
+	/* The sheets are stacked on one another; one is shown at a time and they
+	   cross over rather than one leaving before the next arrives. */
+	.mega__sheet {
+		position: absolute;
+		inset: 0 auto auto 0;
+		width: max-content;
+		min-width: 20rem;
+		max-width: min(34rem, calc(100vw - 2 * var(--gutter)));
+		padding: 1.35rem 1.5rem 0.6rem;
+		opacity: 0;
+		translate: 0 0.4rem;
+		pointer-events: none;
+		transition:
+			opacity 180ms var(--ease),
+			translate 320ms cubic-bezier(0.22, 1, 0.36, 1);
+	}
+
+	.mega__sheet[data-active] {
+		opacity: 1;
+		translate: none;
+		pointer-events: auto;
+	}
+
 	.mega__edge {
 		position: absolute;
 		inset: 0 0 auto;
@@ -1097,39 +1112,73 @@ const MENUS = [
 	const nav = document.querySelector<HTMLElement>('[data-nav]');
 	if (nav) {
 		const items = [...nav.querySelectorAll<HTMLElement>('[data-menu-item]')];
+		const menu = nav.querySelector<HTMLElement>('[data-mega]');
+		const frame = nav.querySelector<HTMLElement>('[data-mega-frame]');
+		const sheets = [...nav.querySelectorAll<HTMLElement>('[data-mega-sheet]')];
+		const inner = nav.querySelector<HTMLElement>('.nav__inner');
 		let openTimer: number | undefined;
+		let openIndex = -1;
 
-		const closeAll = () => {
-			for (const item of items) {
-				const trigger = item.querySelector<HTMLButtonElement>('[data-menu-trigger]')!;
-				const panel = item.querySelector<HTMLElement>('[data-menu-panel]')!;
-				trigger.setAttribute('aria-expanded', 'false');
-				panel.removeAttribute('data-open');
-				panel.removeAttribute('data-immediate');
+		/** Links inside a sheet nobody is looking at are not tab stops. */
+		const reach = (sheet: HTMLElement, on: boolean) => {
+			sheet.toggleAttribute('data-active', on);
+			sheet.setAttribute('aria-hidden', String(!on));
+			for (const a of sheet.querySelectorAll<HTMLAnchorElement>('a')) {
+				if (on) a.removeAttribute('tabindex');
+				else a.setAttribute('tabindex', '-1');
 			}
 		};
 
+		const closeAll = () => {
+			openIndex = -1;
+			nav.classList.remove('is-open');
+			for (const item of items) {
+				item.querySelector('[data-menu-trigger]')!.setAttribute('aria-expanded', 'false');
+			}
+			for (const sheet of sheets) reach(sheet, false);
+		};
+
 		/**
-		 * The panel is always laid out and always transitionable, so opening it is
-		 * one attribute and the browser does the rest. It used to be toggled with
-		 * `hidden`, which meant building the panel from nothing and then waiting
-		 * two animation frames before it would animate — that wait is what read as
-		 * a jerk, and it was the reason the contents sometimes arrived empty.
+		 * One panel, moved and resized rather than replaced.
+		 *
+		 * The frame is given the size of the sheet that is about to show and
+		 * slides to sit under the label that asked for it, so crossing the bar is
+		 * a single object changing shape. Both are custom properties, so the
+		 * transitions are declared in the stylesheet with everything else.
 		 */
 		const open = (item: HTMLElement) => {
-			// Crossing from one menu to the next: something is already open and in
-			// place, so the next one takes over rather than playing its own
-			// entrance underneath the first.
-			const crossing = items.some(
-				(other) =>
-					other !== item && other.querySelector('[data-menu-panel][data-open]') !== null,
-			);
-			closeAll();
-			const trigger = item.querySelector<HTMLButtonElement>('[data-menu-trigger]')!;
-			const panel = item.querySelector<HTMLElement>('[data-menu-panel]')!;
-			if (crossing) panel.setAttribute('data-immediate', '');
-			panel.setAttribute('data-open', '');
-			trigger.setAttribute('aria-expanded', 'true');
+			const index = Number(item.dataset.menuIndex ?? -1);
+			const sheet = sheets[index];
+			if (!menu || !frame || !sheet || !inner) return;
+			if (index === openIndex) return;
+
+			for (const other of sheets) if (other !== sheet) reach(other, false);
+			reach(sheet, true);
+
+			// Sized from the sheet itself rather than from a number written here,
+			// so a menu that gains a link still fits.
+			frame.style.setProperty('--mega-w', `${sheet.offsetWidth}px`);
+			frame.style.setProperty('--mega-h', `${sheet.offsetHeight}px`);
+
+			// Under its own label, less the sheet's padding, so the first link in
+			// the panel sits on the same vertical as the label above it. Clamped
+			// to the gutter at both ends: a panel that runs off the screen is
+			// worse than one that stops short of its label.
+			const bar = inner.getBoundingClientRect();
+			const label = item.getBoundingClientRect();
+			const pad = parseFloat(getComputedStyle(sheet).paddingLeft) || 0;
+			const gutter = parseFloat(getComputedStyle(inner).paddingLeft) || 0;
+			const room = bar.width - gutter * 2 - sheet.offsetWidth;
+			const wanted = label.left - bar.left - gutter - pad;
+			menu.style.setProperty('--mega-x', `${Math.max(0, Math.min(wanted, room))}px`);
+
+			openIndex = index;
+			nav.classList.add('is-open');
+			for (const other of items) {
+				other
+					.querySelector('[data-menu-trigger]')!
+					.setAttribute('aria-expanded', String(other === item));
+			}
 		};
 
 		for (const item of items) {
@@ -1151,6 +1200,27 @@ const MENUS = [
 
 			trigger.addEventListener('focus', () => open(item));
 		}
+
+		// The panel is a sibling of the labels now, so leaving it has to be
+		// watched on its own rather than on the item that opened it.
+		menu?.addEventListener('pointerenter', () => window.clearTimeout(openTimer));
+		menu?.addEventListener('pointerleave', () => {
+			openTimer = window.setTimeout(closeAll, 220);
+		});
+
+		// A sheet measured before its fonts load is a sheet measured at the wrong
+		// size, and the frame would keep that size until something reopened it.
+		const remeasure = () => {
+			if (openIndex < 0) return;
+			const sheet = sheets[openIndex];
+			frame?.style.setProperty('--mega-w', `${sheet.offsetWidth}px`);
+			frame?.style.setProperty('--mega-h', `${sheet.offsetHeight}px`);
+		};
+		window.addEventListener('resize', () => {
+			closeAll();
+			remeasure();
+		});
+		document.fonts?.ready.then(remeasure);
 
 		nav.addEventListener('focusout', (event) => {
 			if (!nav.contains(event.relatedTarget as Node)) closeAll();
