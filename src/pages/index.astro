@@ -486,6 +486,18 @@ Small actions today can keep our planet alive for tomorrow.`,
 		--rise: 0rem;
 	}
 
+	/* The one frame in which the arc is wound back to its opening, off screen,
+	   after it has left. Nothing inside it is allowed to animate: the pictures
+	   are exchanged, the camera is put back at the start and the first line is
+	   lit, all in a single write nobody sees. Without this the rewind would run
+	   its own seventeen hundred milliseconds behind the reader's back and be
+	   half-done if they scrolled straight up. */
+	.arc[data-reset],
+	.arc[data-reset] * {
+		transition: none !important;
+		animation: none !important;
+	}
+
 	/* The plate IS the frame: full width, natural height, always taller than the
 	   viewport so there is somewhere to travel. */
 	.mv__plate {
@@ -1192,33 +1204,50 @@ Small actions today can keep our planet alive for tomorrow.`,
 
 			const done = () => {
 				arc.removeEventListener('transitionend', onEnd);
+				window.clearTimeout(guard);
+
+				/* Everything is put back in one write, with one layout read at the
+				   end and no paint in between.
+
+				   There are four changes here and every one of them moves
+				   something: the arc rejoins the flow, the section below gives up
+				   the height it was lent, the deck is wound back, and the scroll is
+				   set. Done across separate frames the browser paints each half-way
+				   state and corrects the scroll between them, and that correction is
+				   the jerk. `overflow-anchor` is off for the moment so nothing tries
+				   to helpfully correct it either, and nothing inside the arc is
+				   allowed a transition while it happens. */
+				const root = document.documentElement;
+				const was = root.style.scrollBehavior;
+				root.style.scrollBehavior = 'auto';
+				root.style.overflowAnchor = 'none';
+				arc.setAttribute('data-reset', '');
+
 				arc.removeAttribute('data-exiting');
-				arc.style.transition = '';
-				arc.style.transform = '';
-				arc.style.position = '';
-				arc.style.insetInline = '';
-				arc.style.top = '';
-				arc.style.zIndex = '';
+				arc.style.cssText = '';
 				if (light) light.style.marginTop = '';
 
-				// Land on the section, exactly. The arc's height and the place the
-				// next section starts are the same number in theory; in practice
-				// `svh` and the restored flow can differ by a pixel or two, and a
-				// pixel or two is a section that starts just off the top of the
-				// screen. So the answer is read from the section itself, once it is
-				// back in normal flow, rather than assumed from the arc.
-				if (light) {
-					const root = document.documentElement;
-					const was = root.style.scrollBehavior;
-					root.style.scrollBehavior = 'auto';
-					window.scrollTo(0, Math.round(light.getBoundingClientRect().top + window.scrollY));
-					root.style.scrollBehavior = was;
-				}
+				/* And the arc left above the reader is wound back to its first line,
+				   so scrolling up is the page they started on rather than a spent
+				   last frame. There is no reverse transition to build and nothing to
+				   drive: the scroll back up is the browser's own, and the deck is
+				   armed again at the top of it. */
+				show(0);
 
-				// Dispatched on the document, which is where a real scroll event goes
-				// and where the bar is listening — on the window it reaches nothing.
-				bar?.removeAttribute('data-hold');
-				document.dispatchEvent(new Event('scroll'));
+				window.scrollTo(0, tall);
+
+				// One read commits all of it. `tall` and where the section actually
+				// begins are the same number in theory; svh and the restored flow
+				// can differ by a pixel, and a pixel is a heading starting off the
+				// top of the screen. Corrected here, still before the frame paints.
+				void root.offsetHeight;
+				const off = light ? Math.round(light.getBoundingClientRect().top) : 0;
+				if (off) window.scrollTo(0, window.scrollY + off);
+
+				arc.removeAttribute('data-reset');
+				root.style.overflowAnchor = '';
+				root.style.scrollBehavior = was;
+
 				locked = false;
 				leaving = false;
 			};
@@ -1228,7 +1257,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 			arc.addEventListener('transitionend', onEnd);
 			// A belt for the brace: a transition that never fires its event must
 			// not leave the arc pinned over the page for ever.
-			window.setTimeout(done, TRAVEL + 400);
+			const guard = window.setTimeout(done, TRAVEL + 400);
 
 			// One frame to commit the pinned position, then the lift.
 			requestAnimationFrame(() => {
