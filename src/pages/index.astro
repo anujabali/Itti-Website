@@ -476,9 +476,15 @@ Let us create a world where no one struggles in silence.`,
 	   rather than a section sliding away under them. `scale` is its own
 	   property, so it multiplies the camera's transform instead of fighting it,
 	   and nothing transitions it: it is welded to the scroll on purpose, because
-	   here the reader is the one doing the moving. */
+	   here the reader is the one doing the moving.
+
+	   The plate showing is given a layer of its own. Scaling a 1440×1992 picture
+	   without one means the browser re-rasterises it every frame the scroll
+	   moves, which is the whole of why the zoom was not smooth. One layer, and
+	   only ever the one on screen. */
 	.arc__layer[data-on] .mv__plate {
 		scale: calc(1 + var(--exit, 0) * 0.16);
+		will-change: transform, scale;
 	}
 
 	/* One picture leaves by fading; the one behind it was solid all along, so
@@ -489,6 +495,19 @@ Let us create a world where no one struggles in silence.`,
 		   rate the one behind it is uncovered. An ease-out here made the first
 		   third of every hand-over the whole of it. */
 		transition: opacity 820ms cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	/* Cross-fading two full-screen pictures, each with its own vignette and
+	   grain over it, is a lot of painting to redo sixty times a second. While a
+	   hand-over is running they are given layers of their own and the fade
+	   becomes something the compositor does — which is why the first transition
+	   always felt better than the other two: that one moves a transform, and a
+	   transform was already cheap.
+
+	   Promised only for the length of the hand-over. A permanent promise on all
+	   three is three full-screen layers held for the life of the page. */
+	.arc[data-moving] .arc__layer {
+		will-change: opacity;
 	}
 
 	.arc__layer[data-gone] {
@@ -878,6 +897,9 @@ Let us create a world where no one struggles in silence.`,
 			if (next < 0 || next > last) return false;
 			const travelling = show(next);
 			locked = true;
+			// The pictures get layers of their own for the length of the move, and
+			// give them back after. See the stylesheet.
+			arc.setAttribute('data-moving', '');
 			window.clearTimeout(unlock);
 			// The lock outlasts the transition by a little, because a trackpad
 			// keeps sending for a while after the hand has stopped and every one
@@ -885,6 +907,7 @@ Let us create a world where no one struggles in silence.`,
 			unlock = window.setTimeout(
 				() => {
 					locked = false;
+					arc.removeAttribute('data-moving');
 				},
 				(travelling ? TRAVEL : FADE) + 220,
 			);
