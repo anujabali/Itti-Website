@@ -353,11 +353,26 @@ const MENUS = [
 	/* Over the arc the bar is glass on top of a picture. Past the turn there is
 	   real content underneath, and a transparent bar means every section scrolls
 	   straight through the lockup. */
+	/* Glass rather than a cream lid. The page under it is no longer flat cream —
+	   it carries washes of ochre, teal and sage — and an opaque bar over that
+	   reads as a different colour sitting on top of it. At 0.66 the ground comes
+	   through and the bar takes whatever the page is doing beneath it, which is
+	   what the veiled bar does on the dark pages. */
 	.nav.is-light .nav__inner {
-		background: rgba(251, 248, 240, 0.92);
-		border-bottom: 1px solid rgba(44, 39, 33, 0.08);
-		-webkit-backdrop-filter: blur(12px);
-		backdrop-filter: blur(12px);
+		background: rgba(251, 248, 240, 0.66);
+		border-bottom: 1px solid rgba(44, 39, 33, 0.07);
+		-webkit-backdrop-filter: blur(18px) saturate(1.25);
+		backdrop-filter: blur(18px) saturate(1.25);
+	}
+
+	/* A backdrop filter on a fixed bar is recomputed for every frame the page
+	   moves under it, and the arc's way out moves the page for 1700ms. The bar
+	   is over the dark arc for all of it, so there is nothing to blur; dropping
+	   the filter for the length of the move takes that cost out of the frame. */
+	:global(.arc[data-exiting]) ~ * .nav__inner,
+	:global(html:has(.arc[data-exiting])) .nav__inner {
+		-webkit-backdrop-filter: none;
+		backdrop-filter: none;
 	}
 
 	/* A page that is dark the whole way down still has content passing under
