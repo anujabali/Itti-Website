@@ -44,6 +44,12 @@ const { class: className } = Astro.props;
 		letter-spacing: 0.2em;
 		word-spacing: 0em;
 		color: var(--wordmark-name, currentColor);
+		/* The two halves of the lockup take their colours from custom properties,
+		   and a custom property cannot be transitioned — but the colour it
+		   resolves to can. Without this the name and the word snapped while the
+		   bar behind them faded, which is most of what read as awkward at the
+		   turn. */
+		transition: color var(--turn-dur) var(--ease);
 	}
 
 	.wordmark__sub {
@@ -56,5 +62,6 @@ const { class: className } = Astro.props;
 		   the two lines are optically flush on the right. */
 		margin-right: -0.316em;
 		color: var(--wordmark-sub, currentColor);
+		transition: color var(--turn-dur) var(--ease);
 	}
 </style>

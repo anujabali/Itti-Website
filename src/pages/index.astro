@@ -1177,6 +1177,19 @@ Small actions today can keep our planet alive for tomorrow.`,
 
 			arc.setAttribute('data-exiting', '');
 
+			// The bar starts changing before the arc has finished leaving, so the
+			// two land together. Held to the end and released after, it changed
+			// against a page that was already there — which is a bar appearing
+			// rather than a bar turning. 900ms is what the lockup takes, so it is
+			// let go 900ms before the arc is gone.
+			window.setTimeout(
+				() => {
+					bar?.removeAttribute('data-hold');
+					document.dispatchEvent(new Event('scroll'));
+				},
+				Math.max(0, TRAVEL - 900),
+			);
+
 			const done = () => {
 				arc.removeEventListener('transitionend', onEnd);
 				arc.removeAttribute('data-exiting');
@@ -1202,10 +1215,8 @@ Small actions today can keep our planet alive for tomorrow.`,
 					root.style.scrollBehavior = was;
 				}
 
-				// Released as the arc clears, so the bar changes over its own 620ms
-				// against the ground that is actually behind it. Dispatched on the
-				// document, which is where a real scroll event goes and where the
-				// bar is listening — on the window it reaches nothing.
+				// Dispatched on the document, which is where a real scroll event goes
+				// and where the bar is listening — on the window it reaches nothing.
 				bar?.removeAttribute('data-hold');
 				document.dispatchEvent(new Event('scroll'));
 				locked = false;
