@@ -492,6 +492,13 @@ Small actions today can keep our planet alive for tomorrow.`,
 	   lit, all in a single write nobody sees. Without this the rewind would run
 	   its own seventeen hundred milliseconds behind the reader's back and be
 	   half-done if they scrolled straight up. */
+	/* See the note where this is set. The layer is worth its memory only while
+	   the way out is one gesture away, or running. */
+	.arc[data-last],
+	.arc[data-exiting] {
+		will-change: transform;
+	}
+
 	.arc[data-reset],
 	.arc[data-reset] * {
 		transition: none !important;
@@ -1019,6 +1026,14 @@ Small actions today can keep our planet alive for tomorrow.`,
 			}
 
 			arc.dataset.slide = String(index);
+			// On the last line the next gesture is the way out, and the way out
+			// moves the whole arc on a transform. Handing it a layer now, while
+			// the reader is reading, costs a frame nobody is waiting on. Left
+			// until the gesture it cost sixty-eight milliseconds on the very frame
+			// the move began, which is four frames of the arc standing still
+			// before it went anywhere. Given back at the end of the exit, when
+			// this same line runs for slide nought.
+			arc.toggleAttribute('data-last', index === last);
 			return travelling;
 		};
 
@@ -1072,6 +1087,17 @@ Small actions today can keep our planet alive for tomorrow.`,
 			'wheel',
 			(event) => {
 				const dir = event.deltaY > 0 ? 1 : -1;
+				// The way out owns every gesture until it has finished, whatever
+				// the arc's own rectangle says. It is pinned and travelling by
+				// then, so it no longer holds the screen by the usual test — and a
+				// trackpad flick keeps sending for the better part of a second
+				// after the hand has stopped. Each of those was scrolling the page
+				// on past the landing, and the position set at the end pulled it
+				// back. That pull was the jerk.
+				if (leaving) {
+					event.preventDefault();
+					return;
+				}
 				if (!mine(dir)) return;
 				// Taken before the lock is checked: while the deck is mid-hand-over
 				// the page must still not move, or the picture slides away under
@@ -1096,6 +1122,10 @@ Small actions today can keep our planet alive for tomorrow.`,
 			'touchmove',
 			(event) => {
 				if (from === null) return;
+				if (leaving) {
+					event.preventDefault();
+					return;
+				}
 				const y = event.touches[0]?.clientY ?? from;
 				const moved = from - y;
 				const dir = moved > 0 ? 1 : -1;
@@ -1117,6 +1147,10 @@ Small actions today can keep our planet alive for tomorrow.`,
 			const down = event.key === 'ArrowDown' || event.key === 'PageDown' || event.key === ' ';
 			const up = event.key === 'ArrowUp' || event.key === 'PageUp';
 			if (!down && !up) return;
+			if (leaving) {
+				event.preventDefault();
+				return;
+			}
 			const dir = down ? 1 : -1;
 			if (!mine(dir)) return;
 			event.preventDefault();
@@ -1196,6 +1230,9 @@ Small actions today can keep our planet alive for tomorrow.`,
 			// let go 900ms before the arc is gone.
 			window.setTimeout(
 				() => {
+					// The bar borrows the long turn for this one move, because here
+					// it is not following a hand — it is landing with the arc.
+					if (bar) bar.dataset.turn = 'long';
 					bar?.removeAttribute('data-hold');
 					document.dispatchEvent(new Event('scroll'));
 				},
@@ -1224,7 +1261,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 				arc.setAttribute('data-reset', '');
 
 				arc.removeAttribute('data-exiting');
-				arc.style.cssText = '';
+				arc.removeAttribute('style');
 				if (light) light.style.marginTop = '';
 
 				/* And the arc left above the reader is wound back to its first line,
@@ -1250,6 +1287,13 @@ Small actions today can keep our planet alive for tomorrow.`,
 
 				locked = false;
 				leaving = false;
+
+				// Given back after the bar's own change has certainly finished, so
+				// a running transition never has its duration changed underneath
+				// it. From here the bar answers the reader's speed again.
+				window.setTimeout(() => {
+					if (bar) delete bar.dataset.turn;
+				}, 260);
 			};
 			const onEnd = (event: TransitionEvent) => {
 				if (event.target === arc && event.propertyName === 'transform') done();

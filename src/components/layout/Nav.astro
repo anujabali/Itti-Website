@@ -361,6 +361,24 @@ const MENUS = [
 	/* The turn is a change of ground, so the bar changes with it rather than
 	   switching. Everything that differs between the two states is named here,
 	   on one duration. */
+	/* How long the bar takes to change ground.
+
+	   The nine hundred in the token is the arc's number, not the reader's: the
+	   way out is a scripted move of known length and the bar is timed to land
+	   with it. A reader scrolling back up the same screen does it in about six
+	   hundred, so on that journey the same nine hundred left FOUNDATION visibly
+	   teal over a black picture after the picture had already arrived. The bar
+	   now turns at the speed of a hand, and only the arc's own exit borrows the
+	   long one — set on the bar while it leaves and given back afterwards, so
+	   nothing changes duration mid-transition. */
+	.nav {
+		--turn-dur: 260ms;
+	}
+
+	.nav[data-turn='long'] {
+		--turn-dur: 900ms;
+	}
+
 	.nav__inner {
 		transition:
 			background-color var(--turn-dur) var(--ease),

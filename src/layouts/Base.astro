@@ -190,9 +190,16 @@ const GRAIN =
 			const settle = () => {
 				queued = false;
 				const markCentre = nav.offsetHeight / 2;
-				const turned = zone.getBoundingClientRect().top <= markCentre;
+				const zoneTop = zone.getBoundingClientRect().top;
+				const turned = zoneTop <= markCentre;
+				// Only a hero taller than the screen has an inside to be deep in.
+				// Without this the lockup collapsed on the way back up into an arc
+				// exactly one screen tall — a state that journey down the page
+				// never shows — and then sprang open again at the top. The reader
+				// saw the name shrink and grow for no reason anybody could name.
+				const insideHero = zoneTop > window.innerHeight;
 
-				if (turned) compact = false;
+				if (turned || !insideHero) compact = false;
 				else if (!compact && window.scrollY > COLLAPSE_AT) compact = true;
 				else if (compact && window.scrollY < RESTORE_AT) compact = false;
 
