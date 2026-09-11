@@ -1,10 +1,19 @@
 ---
 /**
- * A pillar card — the last beat of the opening arc, where the poetry cashes
- * out into plain language.
+ * A pillar card — the last beat of the opening arc, where the poetry cashes out
+ * into plain language.
  *
- * Hover flips it on desktop, tap flips it on touch, and the back always carries
- * an explicit "Learn more" so the flip is never the only way through.
+ * It used to flip. Three problems with that, and they were the same problem:
+ * a 3D rotation has two faces, both drawn the whole time, and the browser has
+ * to decide every frame which is facing away. The marks flashed through the
+ * card mid-turn because `backface-visibility` is a hint the compositor applies
+ * late; it needed a button, a state and a script to manage; and a reader on a
+ * phone had to tap once to read and again to leave.
+ *
+ * So: no flip, no faces, no script. The whole card is one link. The mark stands
+ * in its own colour, and the longer passage rises over it from the foot of the
+ * panel on hover or on focus — a move in two dimensions, which the compositor
+ * can do on its own and which cannot show a back face because there is not one.
  */
 import ClawMark from '../brand/ClawMark.astro';
 
@@ -25,274 +34,226 @@ const { numeral, name, line, back, href, accent, mark } = Astro.props;
 <article
 	class="pillar"
 	style={`--accent: var(--${accent}); --accent-ink: var(--${accent}-ink)`}
-	data-pillar
 >
-	<div class="pillar__inner">
-		<div class="pillar__face pillar__face--front">
-			<button class="pillar__hit" type="button" aria-expanded="false" data-flip>
-				<span class="u-visually-hidden">Turn the {name} card over</span>
-			</button>
-			<span class="pillar__head" aria-hidden="true">
-				<span class="pillar__numeral">{numeral}</span>
-			</span>
-			{/* The project's own mark, at the size of a picture rather than a
-			    corner signature. The front was four hundred pixels of nothing with
-			    a badge in the corner and the words pushed to the floor; the mark
-			    was the only thing it had and it was the smallest thing on it. */}
-			<span class="pillar__plate" aria-hidden="true">
+	<a class="pillar__link" href={href}>
+		<span class="pillar__plate">
+			<span class="pillar__mark" aria-hidden="true">
 				{
 					mark === 'claw' ? (
-						<span class="pillar__sign">
-							<ClawMark mono />
-						</span>
+						<ClawMark mono />
 					) : mark ? (
-						<span
-							class="pillar__sign pillar__sign--raster"
-							style={`--mark:url('${mark}')`}
-						/>
+						<span class="pillar__raster" style={`--mark:url('${mark}')`} />
 					) : null
 				}
 			</span>
-			<div class="pillar__body">
-				<h3 class="pillar__name">{name}</h3>
-				<p class="pillar__line">{line}</p>
-			</div>
-		</div>
 
-		<div class="pillar__face pillar__face--back">
-			<button class="pillar__hit" type="button" aria-expanded="true" data-flip>
-				<span class="u-visually-hidden">Turn the {name} card back</span>
-			</button>
-			<div class="pillar__body pillar__body--back">
-				{
-					mark === 'claw' ? (
-						<span class="pillar__mark pillar__mark--svg">
-							<ClawMark />
-						</span>
-					) : mark ? (
-						<img class="pillar__mark" src={mark} alt="" aria-hidden="true" />
-					) : null
-				}
-				<h4 class="pillar__back-name">{name}</h4>
-				<p class="pillar__back-text">{back}</p>
-				<a class="pillar__link" href={href}>Learn more &rarr;</a>
-			</div>
-		</div>
-	</div>
+			{/* The passage rides up over the mark. It is in the document either
+			    way, so it is read out and found by search whether or not anybody
+			    hovers. */}
+			<span class="pillar__veil">
+				<span class="pillar__back">{back}</span>
+			</span>
+		</span>
+
+		<span class="pillar__body">
+			<span class="pillar__numeral" aria-hidden="true">{numeral}</span>
+			<span class="pillar__name">{name}</span>
+			<span class="pillar__line">{line}</span>
+			<span class="pillar__more">
+				Learn more
+				<span class="pillar__arrow" aria-hidden="true">&rarr;</span>
+			</span>
+		</span>
+	</a>
 </article>
 
 <style>
 	.pillar {
-		perspective: 1400px;
-		min-height: clamp(25rem, 34vw, 30rem);
+		--accent: var(--teal);
+		--accent-ink: var(--teal);
 	}
 
-	.pillar__inner {
-		position: relative;
+	.pillar__link {
+		display: grid;
+		grid-template-rows: auto auto;
 		height: 100%;
-		min-height: inherit;
-		transform-style: preserve-3d;
-		transition: transform 780ms var(--ease);
-	}
-
-	@media (hover: hover) {
-		.pillar:hover .pillar__inner,
-		.pillar:focus-within .pillar__inner {
-			transform: rotateY(180deg);
-		}
-	}
-
-	.pillar.is-flipped .pillar__inner {
-		transform: rotateY(180deg);
-	}
-
-	.pillar__face {
-		position: absolute;
-		inset: 0;
-		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
-		padding: 1.6rem 1.5rem 1.5rem;
-		border-radius: 0.875rem;
-		border: 1px solid rgba(44, 39, 33, 0.1);
-		background: var(--cream-deep);
-		backface-visibility: hidden;
+		border-radius: 10px;
 		overflow: hidden;
-		box-shadow: 0 14px 30px -22px rgba(44, 39, 33, 0.5);
-		transition: box-shadow 400ms var(--ease);
+		background: color-mix(in srgb, var(--cream) 88%, #fff);
+		border: 1px solid rgba(44, 39, 33, 0.09);
+		color: inherit;
+		box-shadow:
+			0 1px 0 rgba(255, 255, 255, 0.7) inset,
+			0 2px 5px rgba(44, 39, 33, 0.06),
+			0 22px 44px -30px rgba(44, 39, 33, 0.55);
+		transition:
+			transform 460ms var(--ease),
+			box-shadow 460ms var(--ease),
+			border-color 460ms var(--ease);
 	}
 
-	.pillar:hover .pillar__face {
-		box-shadow: 0 22px 44px -22px rgba(44, 39, 33, 0.42);
+	.pillar__link:hover,
+	.pillar__link:focus-visible {
+		transform: translateY(-6px);
+		border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+		box-shadow:
+			0 1px 0 rgba(255, 255, 255, 0.7) inset,
+			0 4px 10px rgba(44, 39, 33, 0.08),
+			0 38px 66px -30px rgba(44, 39, 33, 0.6);
 	}
 
-	/* A chalky wash of the pillar's pigment along the top edge. */
-	.pillar__face::before {
-		content: '';
-		position: absolute;
-		inset: 0 0 auto;
-		height: 0.1875rem;
-		background: var(--accent);
-		opacity: 0.85;
-	}
-
-	/* Cream, not a colour block: the butterfly's colouring is the whole idea of
-	   that mark, and it cannot survive being reversed out of a solid ground. */
-	.pillar__face--back {
-		transform: rotateY(180deg);
-		background: var(--cream);
-		color: var(--ink);
-	}
-
-	.pillar__hit {
-		position: absolute;
-		inset: 0;
-		z-index: 0;
-		cursor: pointer;
-	}
-
-	.pillar__head {
-		position: relative;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 1rem;
-		pointer-events: none;
-	}
-
-	.pillar__numeral {
-		font-family: var(--display);
-		font-size: 0.8125rem;
-		letter-spacing: 0.24em;
-		text-transform: uppercase;
-		color: var(--accent-ink);
-	}
-
-	/* The front's picture. One colour still — the project's own palette waits
-	   for the flip — but at the size of the thing it stands for. */
+	/* The mark's own ground. The colour is the only thing that says which body
+	   of work this is before the name is read, so it is a wash rather than a
+	   tint. */
 	.pillar__plate {
 		position: relative;
 		display: grid;
 		place-items: center;
-		flex: 1;
-		min-height: 0;
-		margin: 0.5rem -0.4rem 0.75rem;
-		border-radius: 0.5rem;
+		aspect-ratio: 1 / 1;
 		overflow: hidden;
-		background: radial-gradient(
-			102% 88% at 50% 12%,
-			color-mix(in srgb, var(--accent) 34%, transparent) 0%,
-			color-mix(in srgb, var(--accent) 10%, transparent) 56%,
-			transparent 82%
-		);
+		border-bottom: 1px solid rgba(44, 39, 33, 0.08);
+		background:
+			radial-gradient(
+				104% 88% at 50% 6%,
+				color-mix(in srgb, var(--accent) 46%, transparent) 0%,
+				color-mix(in srgb, var(--accent) 14%, transparent) 56%,
+				color-mix(in srgb, var(--accent) 4%, transparent) 82%
+			),
+			color-mix(in srgb, var(--cream) 70%, #fff);
 	}
 
-	.pillar__sign {
+	.pillar__mark {
 		display: grid;
 		place-items: center;
-		width: min(70%, 11rem);
+		width: min(58%, 9.5rem);
 		aspect-ratio: 1;
 		color: var(--accent-ink);
-		opacity: 0.62;
+		opacity: 0.7;
 		transition:
-			opacity 420ms var(--ease),
+			opacity 520ms var(--ease),
 			scale 620ms var(--ease);
 	}
 
-	.pillar__sign :global(svg) {
+	.pillar__mark :global(svg) {
 		width: 100%;
 		height: 100%;
 	}
 
-	.pillar:hover .pillar__sign {
-		opacity: 0.8;
-		scale: 1.05;
-	}
-
-	.pillar__sign--raster {
-		background-color: currentColor;
+	/* The raster marks are used as a mask so they take the accent rather than
+	   their own colours, the way the marketplace and the navigation use them. */
+	.pillar__raster {
+		display: block;
+		width: 100%;
+		height: 100%;
+		background: currentColor;
 		-webkit-mask: var(--mark) center / contain no-repeat;
 		mask: var(--mark) center / contain no-repeat;
 	}
 
-	/* On the back it appears in full, in its own colours. */
-	.pillar__mark {
-		display: block;
-		width: auto;
-		height: 3.5rem;
-		max-width: 70%;
-		margin-bottom: 0.25rem;
-		object-fit: contain;
-		object-position: left center;
+	.pillar__link:hover .pillar__mark,
+	.pillar__link:focus-visible .pillar__mark {
+		opacity: 0.34;
+		scale: 1.06;
 	}
 
-	.pillar__mark--svg {
-		width: 3.5rem;
+	/* Rises from the foot of the panel. Two dimensions, one layer, nothing with
+	   a back to it. */
+	.pillar__veil {
+		position: absolute;
+		inset: 0;
+		display: grid;
+		align-content: end;
+		padding: clamp(1.1rem, 2.2vw, 1.5rem);
+		background: linear-gradient(
+			to top,
+			color-mix(in srgb, var(--accent) 30%, var(--cream)) 0%,
+			color-mix(in srgb, var(--accent) 22%, var(--cream)) 62%,
+			transparent 100%
+		);
+		opacity: 0;
+		translate: 0 22%;
+		transition:
+			opacity 480ms var(--ease),
+			translate 560ms var(--ease);
+	}
+
+	.pillar__link:hover .pillar__veil,
+	.pillar__link:focus-visible .pillar__veil {
+		opacity: 1;
+		translate: none;
+	}
+
+	.pillar__back {
+		font-size: 0.9375rem;
+		line-height: 1.55;
+		color: var(--ink);
+		text-wrap: pretty;
+		/* The source keeps these as three lines; they read as three. */
+		white-space: pre-line;
 	}
 
 	.pillar__body {
-		position: relative;
-		pointer-events: none;
+		display: grid;
+		align-content: start;
+		gap: 0.4rem;
+		padding: clamp(1.15rem, 2.2vw, 1.5rem);
+	}
+
+	.pillar__numeral {
+		font-family: var(--face-bodoni);
+		font-size: 1.375rem;
+		font-style: italic;
+		font-weight: 400;
+		line-height: 1;
+		color: color-mix(in srgb, var(--accent-ink) 70%, var(--ink-faint));
 	}
 
 	.pillar__name {
-		font-size: clamp(1.5rem, 2.2vw, 1.875rem);
+		margin-top: 0.15rem;
+		font-family: var(--face-bodoni);
+		font-size: clamp(1.375rem, 2.2vw, 1.6rem);
+		font-weight: var(--display-weight);
+		line-height: 1.1;
+		letter-spacing: -0.01em;
 		color: var(--ink);
 	}
 
 	.pillar__line {
-		margin-top: 0.5rem;
-		font-size: 1rem;
-		line-height: 1.45;
+		font-size: 0.9375rem;
+		line-height: 1.55;
 		color: var(--ink-soft);
 	}
 
-	.pillar__body--back {
-		display: flex;
-		flex-direction: column;
-		align-items: flex-start;
-		gap: 0.5rem;
-		height: 100%;
-	}
-
-	.pillar__back-name {
-		font-family: var(--body);
-		font-size: 0.6875rem;
-		font-weight: 500;
-		letter-spacing: 0.2em;
+	.pillar__more {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		margin-top: 0.55rem;
+		padding-top: 0.75rem;
+		border-top: 1px solid rgba(44, 39, 33, 0.1);
+		font-size: 0.8125rem;
+		font-weight: 600;
+		letter-spacing: 0.1em;
 		text-transform: uppercase;
-		opacity: 0.75;
-	}
-
-	.pillar__back-text {
-		font-size: 0.9375rem;
-		line-height: 1.5;
-		color: var(--ink-soft);
-		white-space: pre-line;
-	}
-
-	.pillar__link {
-		align-self: flex-start;
-		margin-top: auto;
 		color: var(--accent-ink);
-		pointer-events: auto;
-		padding-bottom: 0.15rem;
-		border-bottom: 1px solid currentColor;
-		font-size: 0.9375rem;
-		letter-spacing: 0.02em;
 	}
-</style>
 
-<script>
-	for (const card of document.querySelectorAll<HTMLElement>('[data-pillar]')) {
-		for (const button of card.querySelectorAll<HTMLButtonElement>('[data-flip]')) {
-			button.addEventListener('click', () => {
-				card.classList.toggle('is-flipped');
-				const flipped = card.classList.contains('is-flipped');
-				card
-					.querySelector<HTMLButtonElement>('.pillar__face--front [data-flip]')
-					?.setAttribute('aria-expanded', String(flipped));
-			});
+	.pillar__arrow {
+		transition: translate 300ms var(--ease);
+	}
+
+	.pillar__link:hover .pillar__arrow,
+	.pillar__link:focus-visible .pillar__arrow {
+		translate: 0.3rem 0;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.pillar__link,
+		.pillar__link:hover,
+		.pillar__mark,
+		.pillar__veil {
+			transition: none;
+			transform: none;
 		}
 	}
-</script>
+</style>
