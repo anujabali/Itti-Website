@@ -344,12 +344,10 @@ Small actions today can keep our planet alive for tomorrow.`,
 					<span class="turn__eyebrow-rule" aria-hidden="true"></span>
 					Our Commitments
 				</p>
-				<h2 class="turn__title" id="commitments-heading">
-					Three things, and the years each of them takes.
-				</h2>
+				<h2 class="turn__title" id="commitments-heading">What we work on.</h2>
 				<p class="turn__lede">
-					Different minds met as they are, cancer walked through rather than
-					around, and the land, air and water the rest of it depends on.
+					Skilling and livelihood for neurodivergent people. Support for families
+					through cancer. Practical climate work across land, air and water.
 				</p>
 			</div>
 
@@ -408,8 +406,17 @@ Small actions today can keep our planet alive for tomorrow.`,
 		pointer-events: none;
 	}
 
+	/* Cream, but not a flat fill. A warm light from the upper left and the grain
+	   the rest of the site is laid over, so the turn has somewhere to stand
+	   rather than reading as a blank page after the arc. */
 	.light {
-		background: var(--cream);
+		background:
+			radial-gradient(
+				120% 70% at 12% 0%,
+				color-mix(in srgb, var(--ochre) 9%, transparent) 0%,
+				transparent 58%
+			),
+			var(--cream);
 		color: var(--ink);
 		min-height: 100svh;
 		/* The frame the arc runs in is a positioned element and stays pinned to
@@ -757,9 +764,28 @@ Small actions today can keep our planet alive for tomorrow.`,
 		background: color-mix(in srgb, var(--teal) 55%, transparent);
 	}
 
+	@media (min-width: 62rem) {
+		.turn__head {
+			display: grid;
+			grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+			column-gap: clamp(2.5rem, 6vw, 5rem);
+			align-items: end;
+		}
+
+		.turn__eyebrow {
+			grid-column: 1 / -1;
+		}
+
+		.turn__lede {
+			padding-bottom: 0.4rem;
+			border-top: 1px solid var(--rule);
+			padding-top: 1.25rem;
+		}
+	}
+
 	.turn__title {
 		margin: 1.2rem 0 1.35rem;
-		max-width: 22ch;
+		max-width: 16ch;
 		font-size: clamp(2.1rem, 4.4vw, 3.25rem);
 		line-height: 1.05;
 		letter-spacing: -0.02em;
