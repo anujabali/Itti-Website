@@ -476,11 +476,17 @@ Small actions today can keep our planet alive for tomorrow.`,
 	.mv__plate {
 		transform: translate3d(
 				0,
-				calc(var(--cam, 0) * -9% + var(--arrive, 0) * 3.4% + var(--leave, 0) * -2.2%),
+				calc(
+					var(--cam, 0) * -9% + var(--arrive, 0) * 7.5% + var(--leave, 0) * -6.5% +
+						var(--exit, 0) * -5.5%
+				),
 				0
 			)
 			scale(
-				calc(1 + var(--cam, 0) * 0.11 + var(--arrive, 0) * 0.07 + var(--leave, 0) * 0.05)
+				calc(
+					1 + var(--cam, 0) * 0.11 + var(--arrive, 0) * 0.09 + var(--leave, 0) * 0.07 +
+						var(--exit, 0) * 0.16
+				)
 			);
 		transition: transform 1700ms var(--ease);
 	}
@@ -497,7 +503,14 @@ Small actions today can keep our planet alive for tomorrow.`,
 	   moves, which is the whole of why the zoom was not smooth. One layer, and
 	   only ever the one on screen. */
 	.arc__layer[data-on] .mv__plate {
-		will-change: transform, scale;
+		will-change: transform;
+	}
+
+	/* While the reader is leaving, the camera follows them rather than running
+	   on its own clock — so the 1700ms that carries every hand-over would fight
+	   it. The damping in the script is what smooths this one. */
+	.arc[data-leaving] .arc__layer[data-on] .mv__plate {
+		transition: none;
 	}
 
 	/* One picture leaves by fading; the one behind it was solid all along, so
@@ -1067,25 +1080,67 @@ Small actions today can keep our planet alive for tomorrow.`,
 		 * property write on a scroll that is already happening, and only while
 		 * the arc is on screen at all.
 		 */
-		const exit = () => {
+		/**
+		 * The way out, as a fourth movement.
+		 *
+		 * Once the deck has finished, the last picture travels — down and in — as
+		 * the page is scrolled, and the cream section rises over it. So arriving
+		 * at the site proper is the same kind of event as every hand-over before
+		 * it, rather than a section sliding away.
+		 *
+		 * Damped rather than welded. A wheel notch is a hundred pixels arriving at
+		 * once, so a value taken straight from the scroll offset steps by a
+		 * hundred pixels' worth each time; this closes a fixed fraction of the
+		 * distance each frame instead, which glides however unevenly the page is
+		 * being moved and keeps settling after it has stopped. The same trick the
+		 * old arc used on its dissolve, kept for the one thing that still has to
+		 * follow a scroll.
+		 */
+		const GLIDE_MS = 190;
+		let want = 0;
+		let at = 0;
+		let drawing = false;
+		let lastFrame = 0;
+
+		const aim = () => {
 			const r = arc.getBoundingClientRect();
-			// Layers are numbered by picture, slides by line — slide three is the
-			// third line but only the third picture's first.
+			if (r.bottom < 0 || r.top > 0) return null;
+			const run = arc.offsetHeight - window.innerHeight;
+			return run > 0 ? Math.min(1, Math.max(0, -r.top / run)) : 0;
+		};
+
+		const paint = (now: number) => {
+			drawing = false;
+			const dt = lastFrame ? Math.min(64, now - lastFrame) : 16;
+			lastFrame = now;
+			at += (want - at) * (1 - Math.exp(-dt / GLIDE_MS));
+			if (Math.abs(want - at) < 0.0008) at = want;
+
+			arc.toggleAttribute('data-leaving', at > 0.0005);
 			const which = index < 0 ? 0 : Number(slides[index]!.dataset.plate ?? 0);
 			const plate = layers[which]?.querySelector<HTMLElement>('.mv__plate');
-			if (!plate) return;
-			if (r.bottom < 0 || r.top > 0) {
-				if (plate.style.scale !== '') plate.style.scale = '';
-				return;
+			if (plate) {
+				// Written straight onto the element: going through a custom property
+				// on the arc invalidated the style of everything inside it — four
+				// slides, three pictures and every overlay — to move one number.
+				plate.style.setProperty('--exit', at.toFixed(4));
 			}
-			const run = arc.offsetHeight - window.innerHeight;
-			const at = run > 0 ? Math.min(1, Math.max(0, -r.top / run)) : 0;
-			// Written straight onto the plate. Going through a custom property on
-			// the arc invalidated the style of everything inside it on every
-			// scroll — four slides, three pictures and every overlay — to move one
-			// number. This touches one element.
-			plate.style.scale = (1 + at * 0.16).toFixed(4);
+			if (at !== want) schedulePaint();
 		};
+
+		const schedulePaint = () => {
+			if (drawing) return;
+			drawing = true;
+			requestAnimationFrame(paint);
+		};
+
+		const exit = () => {
+			const next = aim();
+			if (next === null) return;
+			want = next;
+			schedulePaint();
+		};
+
 		exit();
 		document.addEventListener('scroll', exit, { passive: true });
 		window.addEventListener('resize', exit);
