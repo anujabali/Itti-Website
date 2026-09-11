@@ -381,7 +381,7 @@ Let us create a world where no one struggles in silence.`,
 	   being replaced the instant the gesture is handed back. */
 	.arc {
 		position: relative;
-		height: 178svh;
+		height: 152svh;
 		color: var(--warm-white);
 		background: #0a0c0d;
 	}
@@ -469,6 +469,16 @@ Let us create a world where no one struggles in silence.`,
 		transform: translate3d(0, calc(var(--cam, 0) * -9%), 0)
 			scale(calc(1 + var(--cam, 0) * 0.11));
 		transition: transform 1700ms var(--ease);
+	}
+
+	/* The exit. Once the deck has finished, the last picture pushes in as the
+	   page is scrolled — so leaving the arc is a move the reader is making
+	   rather than a section sliding away under them. `scale` is its own
+	   property, so it multiplies the camera's transform instead of fighting it,
+	   and nothing transitions it: it is welded to the scroll on purpose, because
+	   here the reader is the one doing the moving. */
+	.arc__layer[data-on] .mv__plate {
+		scale: calc(1 + var(--exit, 0) * 0.16);
 	}
 
 	/* One picture leaves by fading; the one behind it was solid all along, so
@@ -950,6 +960,26 @@ Let us create a world where no one struggles in silence.`,
 			if (locked) return;
 			step(dir);
 		});
+
+		/**
+		 * How far through the exit the reader is: nought while the frame is still
+		 * pinned at the top, one by the time the arc has finished leaving. One
+		 * property write on a scroll that is already happening, and only while
+		 * the arc is on screen at all.
+		 */
+		const exit = () => {
+			const r = arc.getBoundingClientRect();
+			if (r.bottom < 0 || r.top > 0) {
+				if (arc.style.getPropertyValue('--exit') !== '0') arc.style.setProperty('--exit', '0');
+				return;
+			}
+			const run = arc.offsetHeight - window.innerHeight;
+			const at = run > 0 ? Math.min(1, Math.max(0, -r.top / run)) : 0;
+			arc.style.setProperty('--exit', at.toFixed(3));
+		};
+		exit();
+		document.addEventListener('scroll', exit, { passive: true });
+		window.addEventListener('resize', exit);
 
 		// Coming back up to the deck from the page below should land on its last
 		// line, not on whatever was showing when it was left.
