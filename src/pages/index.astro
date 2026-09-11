@@ -233,17 +233,6 @@ Small actions today can keep our planet alive for tomorrow.`,
 		accent: 'sage' as const,
 		mark: 'claw',
 	},
-	{
-		numeral: 'IV',
-		name: 'Mental Health',
-		line: 'No one should struggle in silence.',
-		back: `Behind every smile is a story we may not know.
-A listening ear, a kind word or a little support can change a life.
-Let us create a world where no one struggles in silence.`,
-		href: '/join',
-		accent: 'teal' as const,
-		mark: '/brand/mark.png',
-	},
 ];
 ---
 
@@ -351,10 +340,16 @@ Let us create a world where no one struggles in silence.`,
 	<div class="light" data-light-zone>
 		<section class="turn" id="turn" aria-labelledby="commitments-heading">
 			<div class="turn__head u-fade">
-				<h2 class="turn__title" id="commitments-heading">Our Commitments</h2>
+				<p class="turn__eyebrow">
+					<span class="turn__eyebrow-rule" aria-hidden="true"></span>
+					Our Commitments
+				</p>
+				<h2 class="turn__title" id="commitments-heading">
+					Three things, and the years each of them takes.
+				</h2>
 				<p class="turn__lede">
-					Three connected commitments guide our work—embracing different minds,
-					supporting people through cancer, and protecting the world we share.
+					Different minds met as they are, cancer walked through rather than
+					around, and the land, air and water the rest of it depends on.
 				</p>
 			</div>
 
@@ -742,32 +737,58 @@ Let us create a world where no one struggles in silence.`,
 		padding: clamp(5rem, 14vh, 9.5rem) var(--gutter) clamp(4.5rem, 10vh, 7.5rem);
 	}
 
+	/* The section's own name, hung from the hairline the rest of the site hangs
+	   its labels from. */
+	.turn__eyebrow {
+		display: flex;
+		align-items: center;
+		gap: 0.85rem;
+		font-family: var(--face-cinzel);
+		font-size: 0.6875rem;
+		font-weight: 500;
+		letter-spacing: 0.2em;
+		text-transform: uppercase;
+		color: var(--teal);
+	}
+
+	.turn__eyebrow-rule {
+		width: 2rem;
+		height: 1px;
+		background: color-mix(in srgb, var(--teal) 55%, transparent);
+	}
+
 	.turn__title {
-		font-size: clamp(2rem, 4vw, 3rem);
-		line-height: 1.1;
-		margin-bottom: 1.25rem;
+		margin: 1.2rem 0 1.35rem;
+		max-width: 22ch;
+		font-size: clamp(2.1rem, 4.4vw, 3.25rem);
+		line-height: 1.05;
+		letter-spacing: -0.02em;
 		color: var(--ink);
+		text-wrap: balance;
 	}
 
 	.turn__lede {
-		max-width: 46rem;
-		font-family: var(--display);
-		font-size: clamp(1.25rem, 2.2vw, 1.625rem);
-		line-height: 1.4;
+		max-width: 38rem;
+		font-family: var(--body);
+		font-size: clamp(1.0625rem, 1.6vw, 1.1875rem);
+		line-height: 1.6;
 		color: var(--ink-soft);
 		text-wrap: pretty;
 	}
 
+	/* Three, so each gets a third of the width rather than a quarter — the
+	   fourth card was Mental Health, which is not one of the bodies of work. */
 	.pillars {
 		display: grid;
-		grid-template-columns: repeat(4, minmax(0, 1fr));
-		gap: 1.125rem;
-		margin-top: clamp(3rem, 7vh, 5rem);
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: clamp(1rem, 2.2vw, 1.75rem);
+		margin-top: clamp(2.75rem, 6vh, 4rem);
 	}
 
-	@media (max-width: 72rem) {
+	@media (max-width: 62rem) {
 		.pillars {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
+			grid-template-columns: 1fr;
+			max-width: 26rem;
 		}
 	}
 
