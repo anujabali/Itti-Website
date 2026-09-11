@@ -1122,40 +1122,75 @@ Small actions today can keep our planet alive for tomorrow.`,
 		 */
 		let leaving = false;
 
+		/**
+		 * The way out, as a fourth movement — and moved by the compositor.
+		 *
+		 * This used to scroll the window from a rAF loop, which is the one thing
+		 * on the page that could never be smooth: a scroll position written by
+		 * script is applied on the main thread, so every frame of it competes with
+		 * whatever else the page is doing. The bird's own travel was fine; the
+		 * page under it was the shake.
+		 *
+		 * So the page is not scrolled at all while anybody is looking. The arc is
+		 * pinned to the viewport, the page is put where it will end up — behind
+		 * the arc, so nothing shows — and then the arc alone is lifted away on a
+		 * transform, which the compositor runs without the main thread. When it
+		 * has gone the arc is handed back to the flow at exactly the position the
+		 * page is already at, so there is nothing to correct.
+		 */
 		const away = () => {
 			if (leaving) return;
 			leaving = true;
 			locked = true;
-			arc.setAttribute('data-exiting', '');
 
-			// The site sets `scroll-behavior: smooth` on the root, so every
-			// `scrollTo` below would be handed to the browser's own animation and
-			// fight this one — the page crawling behind the picture and then
-			// lurching to catch up. Taken off for the length of the move and put
-			// back after.
+			const tall = arc.offsetHeight;
+			const light = document.querySelector<HTMLElement>('.light');
 			const root = document.documentElement;
 			const had = root.style.scrollBehavior;
+
+			// The arc leaves the flow, so the section below takes over its height —
+			// otherwise the document shortens by a screen and the scroll position
+			// means something else.
+			if (light) light.style.marginTop = `${tall}px`;
+			arc.style.position = 'fixed';
+			arc.style.insetInline = '0';
+			arc.style.top = '0';
+			arc.style.zIndex = '30';
+
+			// Where the reader will be standing when this is over. Nothing shows:
+			// the arc is covering it.
 			root.style.scrollBehavior = 'auto';
+			window.scrollTo(0, tall);
+			root.style.scrollBehavior = had;
 
-			const from = window.scrollY;
-			const to = arc.offsetHeight;
-			const started = performance.now();
-			// The same curve the stylesheet carries every other movement on.
-			const ease = (n: number) =>
-				n < 0.5 ? 4 * n * n * n : 1 - Math.pow(-2 * n + 2, 3) / 2;
+			arc.setAttribute('data-exiting', '');
 
-			const carry = (now: number) => {
-				const at = Math.min(1, (now - started) / TRAVEL);
-				window.scrollTo(0, from + (to - from) * ease(at));
-				if (at < 1) requestAnimationFrame(carry);
-				else {
-					root.style.scrollBehavior = had;
-					locked = false;
-					leaving = false;
-					arc.removeAttribute('data-exiting');
-				}
+			const done = () => {
+				arc.removeEventListener('transitionend', onEnd);
+				arc.removeAttribute('data-exiting');
+				arc.style.transition = '';
+				arc.style.transform = '';
+				arc.style.position = '';
+				arc.style.insetInline = '';
+				arc.style.top = '';
+				arc.style.zIndex = '';
+				if (light) light.style.marginTop = '';
+				locked = false;
+				leaving = false;
 			};
-			requestAnimationFrame(carry);
+			const onEnd = (event: TransitionEvent) => {
+				if (event.target === arc && event.propertyName === 'transform') done();
+			};
+			arc.addEventListener('transitionend', onEnd);
+			// A belt for the brace: a transition that never fires its event must
+			// not leave the arc pinned over the page for ever.
+			window.setTimeout(done, TRAVEL + 400);
+
+			// One frame to commit the pinned position, then the lift.
+			requestAnimationFrame(() => {
+				arc.style.transition = `transform ${TRAVEL}ms var(--arc-ease)`;
+				arc.style.transform = 'translate3d(0, -100%, 0)';
+			});
 		};
 
 
