@@ -285,10 +285,6 @@ Small actions today can keep our planet alive for tomorrow.`,
 								/>
 							</picture>
 						</div>
-						<div class="mv__scrim" aria-hidden="true" />
-						<div class="mv__grade" aria-hidden="true" />
-						<div class="mv__grain" aria-hidden="true" />
-
 						{/* The wall label belongs to its picture and lives with it, so it
 					    arrives and leaves on the same fade. */}
 						<div class="mv__label" data-label data-label-side={mv.labelSide}>
@@ -297,6 +293,14 @@ Small actions today can keep our planet alive for tomorrow.`,
 					</div>
 				))
 			}
+
+			{/* The scrim, the grade and the grain are the same for every picture,
+			    so they are painted once over the frame rather than once inside
+			    each layer. Nine full-screen boxes become three, and none of them
+			    is repainted when the pictures cross. */}
+			<div class="mv__scrim" aria-hidden="true"></div>
+			<div class="mv__grade" aria-hidden="true"></div>
+			<div class="mv__grain" aria-hidden="true"></div>
 
 			{
 				/* One screen per beat, inside the frame so they are measured
@@ -619,6 +623,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 	.mv__grade {
 		position: absolute;
 		inset: 0;
+		z-index: 4;
 		pointer-events: none;
 		background:
 			linear-gradient(rgba(8, 9, 10, 0.34), rgba(8, 9, 10, 0.34)),
@@ -649,6 +654,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 	.mv__scrim {
 		position: absolute;
 		inset: 0;
+		z-index: 4;
 		pointer-events: none;
 		background:
 			linear-gradient(to right, rgba(8, 9, 10, 0.46), transparent 40%),
@@ -685,6 +691,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 	.mv__grain {
 		position: absolute;
 		inset: 0;
+		z-index: 4;
 		pointer-events: none;
 		opacity: 0.22;
 		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='1 0 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
@@ -1145,6 +1152,11 @@ Small actions today can keep our planet alive for tomorrow.`,
 
 			const tall = arc.offsetHeight;
 			const light = document.querySelector<HTMLElement>('.light');
+			// The scroll jumps a whole screen in a moment, and the bar reads the
+			// scroll — so without this it turns light while the arc is still
+			// covering everything. It holds what it has until the arc has gone.
+			const bar = document.querySelector<HTMLElement>('[data-nav]');
+			bar?.setAttribute('data-hold', '');
 			const root = document.documentElement;
 			const had = root.style.scrollBehavior;
 
@@ -1175,6 +1187,27 @@ Small actions today can keep our planet alive for tomorrow.`,
 				arc.style.top = '';
 				arc.style.zIndex = '';
 				if (light) light.style.marginTop = '';
+
+				// Land on the section, exactly. The arc's height and the place the
+				// next section starts are the same number in theory; in practice
+				// `svh` and the restored flow can differ by a pixel or two, and a
+				// pixel or two is a section that starts just off the top of the
+				// screen. So the answer is read from the section itself, once it is
+				// back in normal flow, rather than assumed from the arc.
+				if (light) {
+					const root = document.documentElement;
+					const was = root.style.scrollBehavior;
+					root.style.scrollBehavior = 'auto';
+					window.scrollTo(0, Math.round(light.getBoundingClientRect().top + window.scrollY));
+					root.style.scrollBehavior = was;
+				}
+
+				// Released as the arc clears, so the bar changes over its own 620ms
+				// against the ground that is actually behind it. Dispatched on the
+				// document, which is where a real scroll event goes and where the
+				// bar is listening — on the window it reaches nothing.
+				bar?.removeAttribute('data-hold');
+				document.dispatchEvent(new Event('scroll'));
 				locked = false;
 				leaving = false;
 			};

@@ -358,6 +358,17 @@ const MENUS = [
 	   reads as a different colour sitting on top of it. At 0.66 the ground comes
 	   through and the bar takes whatever the page is doing beneath it, which is
 	   what the veiled bar does on the dark pages. */
+	/* The turn is a change of ground, so the bar changes with it rather than
+	   switching. Everything that differs between the two states is named here,
+	   on one duration. */
+	.nav__inner {
+		transition:
+			background-color 620ms var(--ease),
+			border-color 620ms var(--ease),
+			-webkit-backdrop-filter 620ms var(--ease),
+			backdrop-filter 620ms var(--ease);
+	}
+
 	.nav.is-light .nav__inner {
 		background: rgba(251, 248, 240, 0.5);
 		border-bottom: 1px solid rgba(44, 39, 33, 0.07);

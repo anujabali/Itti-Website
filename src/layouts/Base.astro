@@ -196,7 +196,11 @@ const GRAIN =
 				else if (!compact && window.scrollY > COLLAPSE_AT) compact = true;
 				else if (compact && window.scrollY < RESTORE_AT) compact = false;
 
-				nav.classList.toggle('is-light', turned);
+				// A page can ask the bar to hold whatever it is showing — the arc
+				// does this while it lifts away, because the scroll position jumps a
+				// whole screen at the start of that move and the bar would otherwise
+				// turn light while a dark picture still covers the screen.
+				if (!nav.hasAttribute('data-hold')) nav.classList.toggle('is-light', turned);
 				nav.classList.toggle('is-compact', compact);
 			};
 			const schedule = () => {
