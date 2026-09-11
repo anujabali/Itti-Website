@@ -368,13 +368,13 @@ Small actions today can keep our planet alive for tomorrow.`,
 <style>
 	/* A dark room. The brand's teal is held back for the turn, which is what
 	   makes the turn land. */
-	/* Taller than the screen the deck runs on. The deck holds the page still
-	   until its last line; after that the extra height is runway, and the last
-	   picture rises out of the way over three quarters of a screen instead of
-	   being replaced the instant the gesture is handed back. */
 	.arc {
+		/* Every movement in the arc runs on this. The site's own easing is an
+		   ease-out, which suits a small thing arriving; over 1700ms of travel it
+		   starts abruptly and then crawls. This eases away as well as in. */
+		--arc-ease: cubic-bezier(0.62, 0.02, 0.14, 1);
 		position: relative;
-		height: 152svh;
+		height: 100svh;
 		color: var(--warm-white);
 		background: #0a0c0d;
 	}
@@ -409,12 +409,39 @@ Small actions today can keep our planet alive for tomorrow.`,
 	/* Cream, but not a flat fill. A warm light from the upper left and the grain
 	   the rest of the site is laid over, so the turn has somewhere to stand
 	   rather than reading as a blank page after the arc. */
+	/* The grain the rest of the site is laid over. Three washes of colour on
+	   cream band without it, and banding is most of what reads as flat. */
+	.light::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		opacity: 0.5;
+		pointer-events: none;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='1 0 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+	}
+
+	.light > * {
+		position: relative;
+		z-index: 1;
+	}
+
 	.light {
 		background:
 			radial-gradient(
-				120% 70% at 12% 0%,
-				color-mix(in srgb, var(--ochre) 9%, transparent) 0%,
-				transparent 58%
+				90% 55% at 8% 2%,
+				color-mix(in srgb, var(--ochre) 14%, transparent) 0%,
+				transparent 62%
+			),
+			radial-gradient(
+				80% 50% at 96% 22%,
+				color-mix(in srgb, var(--teal) 9%, transparent) 0%,
+				transparent 66%
+			),
+			radial-gradient(
+				70% 45% at 50% 100%,
+				color-mix(in srgb, var(--sage) 8%, transparent) 0%,
+				transparent 60%
 			),
 			var(--cream);
 		color: var(--ink);
@@ -442,7 +469,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 		   pointer; the rest of the slide lets the click through to the picture. */
 		pointer-events: none;
 		opacity: 0;
-		transition: opacity 1700ms var(--ease);
+		transition: opacity 1700ms var(--arc-ease);
 	}
 
 	.slide[data-on] {
@@ -478,7 +505,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 				0,
 				calc(
 					var(--cam, 0) * -9% + var(--arrive, 0) * 7.5% + var(--leave, 0) * -6.5% +
-						var(--exit, 0) * -5.5%
+						var(--exit, 0) * -7%
 				),
 				0
 			)
@@ -488,7 +515,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 						var(--exit, 0) * 0.16
 				)
 			);
-		transition: transform 1700ms var(--ease);
+		transition: transform 1700ms var(--arc-ease);
 	}
 
 	/* The exit. Once the deck has finished, the last picture pushes in as the
@@ -506,11 +533,11 @@ Small actions today can keep our planet alive for tomorrow.`,
 		will-change: transform;
 	}
 
-	/* While the reader is leaving, the camera follows them rather than running
-	   on its own clock — so the 1700ms that carries every hand-over would fight
-	   it. The damping in the script is what smooths this one. */
-	.arc[data-leaving] .arc__layer[data-on] .mv__plate {
-		transition: none;
+	/* The last gesture is a hand-over like the others: the bird travels on the
+	   same clock and the same curve, and the page comes up to meet it. Nothing
+	   here follows the scroll — the scroll is what the script is moving. */
+	.arc[data-exiting] .arc__layer[data-on] .mv__plate {
+		--exit: 1;
 	}
 
 	/* One picture leaves by fading; the one behind it was solid all along, so
@@ -519,7 +546,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 		opacity: 1;
 		/* The same curve and the same length as the camera. Two different
 		   easings running at once is two movements, and the eye separates them. */
-		transition: opacity 1700ms var(--ease);
+		transition: opacity 1700ms var(--arc-ease);
 	}
 
 	/* Cross-fading two full-screen pictures, each with its own vignette and
@@ -670,7 +697,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 		position: absolute;
 		top: calc(var(--text-y, 50) * 1%);
 		translate: 0 calc(-50% + var(--rise, 1.1rem));
-		transition: translate 900ms var(--ease);
+		transition: translate 1700ms var(--arc-ease);
 		max-width: min(40rem, 54%);
 	}
 
@@ -983,6 +1010,12 @@ Small actions today can keep our planet alive for tomorrow.`,
 		const holdsScreen = () => arc.getBoundingClientRect().top >= -1;
 
 		const step = (dir: number) => {
+			// Past the last line, the gesture plays the way out rather than doing
+			// nothing and handing the page back mid-thought.
+			if (dir > 0 && index === last) {
+				away();
+				return true;
+			}
 			const next = index + dir;
 			if (next < 0 || next > last) return false;
 			const travelling = show(next);
@@ -1014,9 +1047,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 		 * it has finished what it was asked to do, and only then lets go.
 		 */
 		const mine = (dir: number) =>
-			holdsScreen() &&
-			!still.matches &&
-			(locked || (dir > 0 && index < last) || (dir < 0 && index > 0));
+			holdsScreen() && !still.matches && (locked || dir > 0 || index > 0);
 
 		window.addEventListener(
 			'wheel',
@@ -1083,67 +1114,50 @@ Small actions today can keep our planet alive for tomorrow.`,
 		/**
 		 * The way out, as a fourth movement.
 		 *
-		 * Once the deck has finished, the last picture travels — down and in — as
-		 * the page is scrolled, and the cream section rises over it. So arriving
-		 * at the site proper is the same kind of event as every hand-over before
-		 * it, rather than a section sliding away.
-		 *
-		 * Damped rather than welded. A wheel notch is a hundred pixels arriving at
-		 * once, so a value taken straight from the scroll offset steps by a
-		 * hundred pixels' worth each time; this closes a fixed fraction of the
-		 * distance each frame instead, which glides however unevenly the page is
-		 * being moved and keeps settling after it has stopped. The same trick the
-		 * old arc used on its dissolve, kept for the one thing that still has to
-		 * follow a scroll.
+		 * The last gesture is a hand-over like the other three. The bird travels
+		 * and fades on the same clock and the same curve, and the page is carried
+		 * up to meet it — by the script, not by the reader. Nothing here follows
+		 * the scroll, which is the whole point: a gesture asks for the move, and
+		 * the move takes the time it takes.
 		 */
-		const GLIDE_MS = 190;
-		let want = 0;
-		let at = 0;
-		let drawing = false;
-		let lastFrame = 0;
+		let leaving = false;
 
-		const aim = () => {
-			const r = arc.getBoundingClientRect();
-			if (r.bottom < 0 || r.top > 0) return null;
-			const run = arc.offsetHeight - window.innerHeight;
-			return run > 0 ? Math.min(1, Math.max(0, -r.top / run)) : 0;
+		const away = () => {
+			if (leaving) return;
+			leaving = true;
+			locked = true;
+			arc.setAttribute('data-exiting', '');
+
+			// The site sets `scroll-behavior: smooth` on the root, so every
+			// `scrollTo` below would be handed to the browser's own animation and
+			// fight this one — the page crawling behind the picture and then
+			// lurching to catch up. Taken off for the length of the move and put
+			// back after.
+			const root = document.documentElement;
+			const had = root.style.scrollBehavior;
+			root.style.scrollBehavior = 'auto';
+
+			const from = window.scrollY;
+			const to = arc.offsetHeight;
+			const started = performance.now();
+			// The same curve the stylesheet carries every other movement on.
+			const ease = (n: number) =>
+				n < 0.5 ? 4 * n * n * n : 1 - Math.pow(-2 * n + 2, 3) / 2;
+
+			const carry = (now: number) => {
+				const at = Math.min(1, (now - started) / TRAVEL);
+				window.scrollTo(0, from + (to - from) * ease(at));
+				if (at < 1) requestAnimationFrame(carry);
+				else {
+					root.style.scrollBehavior = had;
+					locked = false;
+					leaving = false;
+					arc.removeAttribute('data-exiting');
+				}
+			};
+			requestAnimationFrame(carry);
 		};
 
-		const paint = (now: number) => {
-			drawing = false;
-			const dt = lastFrame ? Math.min(64, now - lastFrame) : 16;
-			lastFrame = now;
-			at += (want - at) * (1 - Math.exp(-dt / GLIDE_MS));
-			if (Math.abs(want - at) < 0.0008) at = want;
-
-			arc.toggleAttribute('data-leaving', at > 0.0005);
-			const which = index < 0 ? 0 : Number(slides[index]!.dataset.plate ?? 0);
-			const plate = layers[which]?.querySelector<HTMLElement>('.mv__plate');
-			if (plate) {
-				// Written straight onto the element: going through a custom property
-				// on the arc invalidated the style of everything inside it — four
-				// slides, three pictures and every overlay — to move one number.
-				plate.style.setProperty('--exit', at.toFixed(4));
-			}
-			if (at !== want) schedulePaint();
-		};
-
-		const schedulePaint = () => {
-			if (drawing) return;
-			drawing = true;
-			requestAnimationFrame(paint);
-		};
-
-		const exit = () => {
-			const next = aim();
-			if (next === null) return;
-			want = next;
-			schedulePaint();
-		};
-
-		exit();
-		document.addEventListener('scroll', exit, { passive: true });
-		window.addEventListener('resize', exit);
 
 		// Coming back up to the deck from the page below should land on its last
 		// line, not on whatever was showing when it was left.
