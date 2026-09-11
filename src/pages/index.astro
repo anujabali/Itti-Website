@@ -483,7 +483,6 @@ Let us create a world where no one struggles in silence.`,
 	   moves, which is the whole of why the zoom was not smooth. One layer, and
 	   only ever the one on screen. */
 	.arc__layer[data-on] .mv__plate {
-		scale: calc(1 + var(--exit, 0) * 0.16);
 		will-change: transform, scale;
 	}
 
@@ -514,9 +513,12 @@ Let us create a world where no one struggles in silence.`,
 		opacity: 0;
 	}
 
-	.arc__layer[data-ahead] {
-		visibility: hidden;
-	}
+	/* The pictures still ahead stay painted. They are behind an opaque one and
+	   change nothing on screen — measured, pixel for pixel — but hiding them
+	   meant the incoming picture had never been rasterised when a hand-over
+	   began, so a full-screen image was drawn from nothing in the same frame the
+	   fade started. That is why the two dissolves never matched the first
+	   transition, which moves a picture that was already on screen. */
 
 	/* One credit at a time. Two half-present pictures read as a dissolve; two
 	   half-present credits just read as two credits, so this hands over faster
@@ -992,13 +994,22 @@ Let us create a world where no one struggles in silence.`,
 		 */
 		const exit = () => {
 			const r = arc.getBoundingClientRect();
+			// Layers are numbered by picture, slides by line — slide three is the
+			// third line but only the third picture's first.
+			const which = index < 0 ? 0 : Number(slides[index]!.dataset.plate ?? 0);
+			const plate = layers[which]?.querySelector<HTMLElement>('.mv__plate');
+			if (!plate) return;
 			if (r.bottom < 0 || r.top > 0) {
-				if (arc.style.getPropertyValue('--exit') !== '0') arc.style.setProperty('--exit', '0');
+				if (plate.style.scale !== '') plate.style.scale = '';
 				return;
 			}
 			const run = arc.offsetHeight - window.innerHeight;
 			const at = run > 0 ? Math.min(1, Math.max(0, -r.top / run)) : 0;
-			arc.style.setProperty('--exit', at.toFixed(3));
+			// Written straight onto the plate. Going through a custom property on
+			// the arc invalidated the style of everything inside it on every
+			// scroll — four slides, three pictures and every overlay — to move one
+			// number. This touches one element.
+			plate.style.scale = (1 + at * 0.16).toFixed(4);
 		};
 		exit();
 		document.addEventListener('scroll', exit, { passive: true });
