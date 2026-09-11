@@ -440,7 +440,7 @@ Let us create a world where no one struggles in silence.`,
 		   pointer; the rest of the slide lets the click through to the picture. */
 		pointer-events: none;
 		opacity: 0;
-		transition: opacity 1200ms cubic-bezier(0.4, 0, 0.2, 1);
+		transition: opacity 1700ms var(--ease);
 	}
 
 	.slide[data-on] {
@@ -472,8 +472,14 @@ Let us create a world where no one struggles in silence.`,
 	   different kind of event from a picture that travels, and the two never
 	   matched however long the fade was. */
 	.mv__plate {
-		transform: translate3d(0, calc(var(--cam, 0) * -9% + var(--arrive, 0) * 3.4%), 0)
-			scale(calc(1 + var(--cam, 0) * 0.11 + var(--arrive, 0) * 0.07));
+		transform: translate3d(
+				0,
+				calc(var(--cam, 0) * -9% + var(--arrive, 0) * 3.4% + var(--leave, 0) * -2.2%),
+				0
+			)
+			scale(
+				calc(1 + var(--cam, 0) * 0.11 + var(--arrive, 0) * 0.07 + var(--leave, 0) * 0.05)
+			);
 		transition: transform 1700ms var(--ease);
 	}
 
@@ -496,10 +502,9 @@ Let us create a world where no one struggles in silence.`,
 	   there is never a gap to see black through. */
 	.arc__layer {
 		opacity: 1;
-		/* Symmetric either side of the middle, so a picture leaves at the same
-		   rate the one behind it is uncovered. An ease-out here made the first
-		   third of every hand-over the whole of it. */
-		transition: opacity 1200ms cubic-bezier(0.4, 0, 0.2, 1);
+		/* The same curve and the same length as the camera. Two different
+		   easings running at once is two movements, and the eye separates them. */
+		transition: opacity 1700ms var(--ease);
 	}
 
 	/* Cross-fading two full-screen pictures, each with its own vignette and
@@ -838,8 +843,8 @@ Let us create a world where no one struggles in silence.`,
 		/** A gesture that changes the picture, and a gesture that only walks the
 		 *  camera down one. The journey is the slower of the two on purpose: it
 		 *  is a move through a drawing rather than a cut between two. */
-		/* Both hand-overs are movements now, so both take a movement's time. */
-		const FADE = 1400;
+		/* One length for both, because both are the same kind of movement. */
+		const FADE = 1700;
 		const TRAVEL = 1700;
 		const last = slides.length - 1;
 		let index = -1;
@@ -866,6 +871,12 @@ Let us create a world where no one struggles in silence.`,
 			layers.forEach((layer, i) => {
 				layer.toggleAttribute('data-gone', i < plate);
 				layer.toggleAttribute('data-on', i === plate);
+				// A picture on its way out goes on travelling while it fades, so a
+				// hand-over is one camera moving rather than one picture exchanged
+				// for another.
+				layer
+					.querySelector<HTMLElement>('.mv__plate')
+					?.style.setProperty('--leave', i < plate ? '1' : '0');
 				// Pictures still ahead leave the paint entirely. Each carries its
 				// own vignette, and three of those stacked multiply into a nearly
 				// black frame even though the one on top is fully opaque.
