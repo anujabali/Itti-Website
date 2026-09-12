@@ -304,6 +304,9 @@ Small actions today can keep our planet alive for tomorrow.`,
 			<div class="mv__grade" aria-hidden="true"></div>
 			<div class="mv__grain" aria-hidden="true"></div>
 
+			{/* The sheet the opening rises out of. See the stylesheet. */}
+			<div class="arc__open" aria-hidden="true"></div>
+
 			{
 				/* One screen per beat, inside the frame so they are measured
 			    against the screen and pinned with the picture. */
@@ -561,18 +564,36 @@ Small actions today can keep our planet alive for tomorrow.`,
 						var(--exit, 0) * 0.16
 				)
 			);
-		transition:
-			transform 1700ms var(--arc-ease),
-			opacity 900ms var(--ease);
+		transition: transform 1700ms var(--arc-ease);
 	}
 
-	/* The opening, once. The frame's own ground is already the near-black the
-	   pictures are graded into, so there is nothing to see through: the picture
-	   rises out of it rather than being switched on. Gated behind `.js` because
-	   without a script nothing would ever take the attribute off, and a reader
-	   with no script would be left looking at an empty frame. */
-	:global(.js) .arc[data-opening] .mv__plate {
+	/* The opening, once.
+
+	   Over everything in the frame, and in the frame's own colour, which is the
+	   near-black the plates are graded into. It has to be a single sheet above
+	   the whole stack: the three pictures sit one behind another and are opaque
+	   by design — the ones ahead stay painted so a hand-over never rasterises a
+	   full screen mid-fade — so fading the pictures themselves lets the reader
+	   look straight through the first to the second and third, and what rises is
+	   all three at once. Fading the sheet reveals the frame already composed.
+
+	   Gated behind `.js` because nothing would ever take the attribute off
+	   without one, and a reader with no script would be left looking at a black
+	   rectangle. */
+	.arc__open {
+		position: absolute;
+		inset: 0;
+		z-index: 10;
+		background: #0a0c0d;
 		opacity: 0;
+		pointer-events: none;
+		transition: opacity 900ms var(--ease);
+	}
+
+	:global(.js) .arc[data-opening] .arc__open {
+		opacity: 1;
+		/* Not animated on the way in — it is simply how the page starts. */
+		transition: none;
 	}
 
 	/* The exit. Once the deck has finished, the last picture pushes in as the
