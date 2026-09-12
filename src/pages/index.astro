@@ -348,12 +348,6 @@ Small actions today can keep our planet alive for tomorrow.`,
 	<!-- ── The turn: one gear-change, everything at once ────────────────── -->
 	<div class="light" data-light-zone>
 		<section class="turn" id="turn" aria-labelledby="commitments-heading">
-			{/* The ground the section stands on, one layer per commitment. See
-			    the stylesheet. */}
-			<div class="turn__wash" data-accent="ochre" aria-hidden="true"></div>
-			<div class="turn__wash" data-accent="rose" aria-hidden="true"></div>
-			<div class="turn__wash" data-accent="sage" aria-hidden="true"></div>
-
 			<div class="turn__head u-fade">
 				<p class="turn__eyebrow">
 					<span class="turn__eyebrow-rule" aria-hidden="true"></span>
@@ -519,6 +513,10 @@ Small actions today can keep our planet alive for tomorrow.`,
 		   instead, which is the gear-change the turn is meant to be. */
 		position: relative;
 		z-index: 1;
+		/* Nothing on this page may reach past the side of the screen. `clip` and
+		   not `hidden`: hidden on one axis makes the element a scroll container
+		   on both, which would trap everything inside it. */
+		overflow-x: clip;
 	}
 
 	/* ── Movements ──────────────────────────────────────────────────────── */
@@ -933,87 +931,10 @@ Small actions today can keep our planet alive for tomorrow.`,
 	/* ── The turn ───────────────────────────────────────────────────────── */
 
 	.turn {
-		position: relative;
 		padding: clamp(5rem, 14vh, 9.5rem) var(--gutter) clamp(4.5rem, 10vh, 7.5rem);
 	}
 
-	/* The ground answers the hand.
 
-	   Hovering a commitment lights the page in that commitment's colour, from
-	   roughly where the card stands — so the light moves left to right across
-	   the section as the reader moves across the three. It bleeds well past the
-	   section on every side, because a tint that stops at a boundary reads as a
-	   panel turning on rather than the page changing colour.
-
-	   Three layers rather than one interpolated colour: only opacity moves, so
-	   the compositor can do all of it, and there is no gradient being rebuilt on
-	   any frame. */
-	.turn__wash {
-		position: absolute;
-		/* Bleeds well above and below so the tint reads as the page changing
-		   colour rather than a panel turning on — but never sideways. Eight per
-		   cent of bleed either side put the layer thirty-one pixels past a
-		   390-wide screen and gave the whole document a horizontal scroll. The
-		   gradients are soft enough to reach the edges on their own. */
-		inset: -26% 0 -28%;
-		z-index: 0;
-		pointer-events: none;
-		opacity: 0;
-		transition: opacity 620ms var(--ease);
-	}
-
-	.turn__wash[data-accent='ochre'] {
-		background: radial-gradient(
-			66% 54% at 16% 50%,
-			color-mix(in srgb, var(--ochre) 32%, transparent) 0%,
-			transparent 74%
-		);
-	}
-
-	/* The middle one is given more, because most of its light falls behind the
-	   card that asked for it. Only the head above and the gaps either side ever
-	   show, so at the same strength as its neighbours it barely registered —
-	   twelve units of colour against their twenty-eight. */
-	.turn__wash[data-accent='rose'] {
-		background: radial-gradient(
-			78% 58% at 50% 44%,
-			color-mix(in srgb, var(--rose) 38%, transparent) 0%,
-			transparent 74%
-		);
-	}
-
-	.turn__wash[data-accent='sage'] {
-		background: radial-gradient(
-			66% 54% at 84% 50%,
-			color-mix(in srgb, var(--sage) 32%, transparent) 0%,
-			transparent 74%
-		);
-	}
-
-	.turn:has(.pillar[data-accent='ochre'] .pillar__link:hover) .turn__wash[data-accent='ochre'],
-	.turn:has(.pillar[data-accent='ochre'] .pillar__link:focus-visible)
-		.turn__wash[data-accent='ochre'],
-	.turn:has(.pillar[data-accent='rose'] .pillar__link:hover) .turn__wash[data-accent='rose'],
-	.turn:has(.pillar[data-accent='rose'] .pillar__link:focus-visible)
-		.turn__wash[data-accent='rose'],
-	.turn:has(.pillar[data-accent='sage'] .pillar__link:hover) .turn__wash[data-accent='sage'],
-	.turn:has(.pillar[data-accent='sage'] .pillar__link:focus-visible)
-		.turn__wash[data-accent='sage'] {
-		opacity: 1;
-	}
-
-	/* The head and the cards stand on the wash, not under it. */
-	.turn__head,
-	.pillars {
-		position: relative;
-		z-index: 1;
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.turn__wash {
-			transition: none;
-		}
-	}
 
 	/* The section's own name, hung from the hairline the rest of the site hangs
 	   its labels from. */

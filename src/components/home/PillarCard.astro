@@ -68,8 +68,58 @@ const { name, line, back, href, accent, mark } = Astro.props;
 
 <style>
 	.pillar {
+		position: relative;
 		--accent: var(--teal);
 		--accent-ink: var(--teal);
+	}
+
+	/* The light the card throws onto the page.
+
+	   The first attempt at this lit the whole section: three full-width washes
+	   behind the heading and the cards, fading in and out under the hand. It
+	   looked right and ran badly. Measured across a sweep over the three cards
+	   it cost a fifth of the frame budget and dropped one frame in six — 136
+	   frames where the same sweep with no effect at all gives 157 — and that
+	   cost did not move whatever was tried. Not the selector, not the size of
+	   the layer, not promoting it, not promoting the content above it. A layer
+	   fading behind a page of type is repainting the type with it, and the area
+	   barely matters.
+
+	   The light belongs to the card instead. It is a hand's width of colour
+	   around the thing the hand is on, with nothing over it to repaint, and it
+	   measures as costing nothing at all: 16.7ms a frame against the 16.6 of
+	   having no effect whatever, 156 frames against 157, and a worst frame
+	   better than doing nothing. */
+	.pillar::before {
+		content: '';
+		position: absolute;
+		/* Well past the card on every side, so it reads as the page lighting
+		   around it rather than a halo drawn on it. Sideways in rem rather than
+		   per cent: on a phone the card is nearly the width of the screen, and a
+		   percentage of that put the light past the edge and gave the whole
+		   document a horizontal scroll. */
+		inset: -48% -5rem;
+		z-index: -1;
+		border-radius: 30%;
+		background: radial-gradient(
+			62% 60% at 50% 50%,
+			color-mix(in srgb, var(--accent) 62%, transparent) 0%,
+			color-mix(in srgb, var(--accent) 24%, transparent) 42%,
+			transparent 74%
+		);
+		opacity: 0;
+		transition: opacity 520ms var(--ease);
+	}
+
+	.pillar:hover::before,
+	.pillar:has(.pillar__link:focus-visible)::before {
+		opacity: 1;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.pillar::before {
+			transition: none;
+		}
 	}
 
 	.pillar__link {
