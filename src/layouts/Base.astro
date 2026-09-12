@@ -108,6 +108,16 @@ const GRAIN =
 		transform: none;
 	}
 
+	/* Set while the arc lifts away. See the note where it is set. */
+	:global(html[data-no-bar]) {
+		scrollbar-width: none;
+	}
+
+	:global(html[data-no-bar])::-webkit-scrollbar {
+		width: 0;
+		height: 0;
+	}
+
 	.grain {
 		position: fixed;
 		inset: 0;

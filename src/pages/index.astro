@@ -376,14 +376,25 @@ Small actions today can keep our planet alive for tomorrow.`,
 		--arc-ease: cubic-bezier(0.62, 0.02, 0.14, 1);
 		/* The deck's curve is right for the deck: a hand-over walks the camera
 		   nine per cent of a tall plate, so even a steep middle is seven pixels
-		   a frame and reads as a drift. The way out travels a whole screen on
-		   the same curve, and the same steepness became thirty-five pixels a
-		   frame — four times its own average. Measured, it stood still for two
-		   hundred milliseconds, covered two thirds of the screen in five
-		   hundred, then crawled the last quarter for eight hundred. Its own
-		   curve answers the gesture sooner and halves the rush: nineteen pixels
-		   a frame at the peak, against thirty-five. */
-		--arc-leave: cubic-bezier(0.3, 0.06, 0.3, 1);
+		   a frame and reads as a drift. The way out travels a whole screen, and
+		   on the same curve that steepness became thirty-five pixels a frame —
+		   four times its own average. It stood still for two hundred
+		   milliseconds, covered two thirds of the screen in five hundred, then
+		   crawled the last quarter for eight hundred.
+
+		   So the departure has its own, and the number that matters most in it
+		   is the second: it must be nought. A curve that starts with speed makes
+		   a picture that was perfectly still move two pixels on its very first
+		   frame, and a still thing that is suddenly moving is a jump however
+		   smooth the rest of the travel is. From rest, the first frame is a fifth
+		   of a pixel.
+
+		     first frame   0.18px, against 2.07 and the deck's 0.36
+		     peak          20px a frame, against 35
+		     acceleration  0.79px a frame per frame, the gentlest of the curves
+		                   measured, the deck's being 2.67
+		     last tenth    533ms, so it settles rather than crawling */
+		--arc-leave: cubic-bezier(0.4, 0, 0.32, 1);
 		position: relative;
 		height: 100svh;
 		color: var(--warm-white);
@@ -1276,6 +1287,20 @@ Small actions today can keep our planet alive for tomorrow.`,
 			const root = document.documentElement;
 			const had = root.style.scrollBehavior;
 
+			/* The page is put a whole screen down in one step, behind the arc, so
+			   nothing of the page itself shows it happen — but the scrollbar is
+			   not behind the arc. Its thumb leaps a sixth of the track the instant
+			   the position is set, before the picture has moved at all, and a
+			   thumb leaping is the one part of this move that was never animated.
+			   Taken away for the length of it.
+
+			   Only where the bar is an overlay, which is the only case where
+			   removing it costs no layout. Where it takes real width — Windows, or
+			   a Mac told always to show them — hiding it would reflow the whole
+			   page by fifteen pixels, which is a far worse jump than the one being
+			   fixed. */
+			if (window.innerWidth - root.clientWidth === 0) root.setAttribute('data-no-bar', '');
+
 			// The arc leaves the flow, so the section below takes over its height —
 			// otherwise the document shortens by a screen and the scroll position
 			// means something else.
@@ -1332,6 +1357,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 
 				arc.removeAttribute('data-exiting');
 				arc.removeAttribute('style');
+				root.removeAttribute('data-no-bar');
 				if (light) light.style.marginTop = '';
 
 				/* And the arc left above the reader is wound back to its first line,
@@ -1373,11 +1399,22 @@ Small actions today can keep our planet alive for tomorrow.`,
 			// not leave the arc pinned over the page for ever.
 			const guard = window.setTimeout(done, TRAVEL + 400);
 
-			// One frame to commit the pinned position, then the lift.
-			requestAnimationFrame(() => {
-				arc.style.transition = `transform ${TRAVEL}ms var(--arc-leave)`;
-				arc.style.transform = 'translate3d(0, -100%, 0)';
-			});
+			/* The lift is declared in the same breath as the gesture.
+
+			   This used to wait a frame, and with the pinning and the placement
+			   in front of it the reader's gesture bought three frames of a
+			   picture standing perfectly still before anything moved. Forty-eight
+			   milliseconds of nothing, and then motion, is a gesture that reads as
+			   not having been answered.
+
+			   The reflow between is what the frame was really for: the promise to
+			   transition has to be in the computed style before the transform that
+			   uses it, or the arc is liable to arrive at the top of the screen
+			   without travelling there. Reading a layout property commits it,
+			   which costs nothing and waits for no frame. */
+			arc.style.transition = `transform ${TRAVEL}ms var(--arc-leave)`;
+			void arc.offsetHeight;
+			arc.style.transform = 'translate3d(0, -100%, 0)';
 		};
 
 

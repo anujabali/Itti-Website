@@ -1137,16 +1137,12 @@ const MENUS = [
 			display: flex;
 		}
 
-		/* Three things at the end of a phone's bar, in the order a thumb wants
-		   them: what the page is asking of you, what you can give, and the way
-		   into everything else. Donate used to be dropped here and only existed
-		   inside the drawer.
-
-		   Order rather than markup, because the wide bar reads the other way
-		   round — there, Donate is the quieter of two pills and defers to Join
-		   Us on the right — and the document should keep saying that. */
-		.cta,
-		.who {
+		/* Three things at the end of a phone's bar. The two pills keep the wide
+		   bar's order — Donate is the quieter of the pair and defers to the
+		   action on its right — and the menu button goes in front of them rather
+		   than after, so a pill is what sits against the edge. Donate used to be
+		   dropped at this width and existed only inside the drawer. */
+		.nav__burger {
 			order: 1;
 		}
 
@@ -1154,7 +1150,8 @@ const MENUS = [
 			order: 2;
 		}
 
-		.nav__burger {
+		.cta,
+		.who {
 			order: 3;
 		}
 
