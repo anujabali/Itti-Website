@@ -236,8 +236,13 @@ Small actions today can keep our planet alive for tomorrow.`,
 <Base
 	title="The Itti Foundation"
 	description="The difference is when. The Itti Foundation works on neurodivergence, cancer care, and climate."
+	opensAtTop
 >
-	<div class="arc">
+	{/* `data-opening` is in the markup rather than added by script, so the first
+	    picture is transparent from the very first paint and can arrive rather
+	    than appear. It is taken off once that picture has decoded — see the
+	    stylesheet, and the script at the foot of the page. */}
+	<div class="arc" data-opening>
 		{
 			/* One frame, for all three pictures.
 
@@ -556,7 +561,18 @@ Small actions today can keep our planet alive for tomorrow.`,
 						var(--exit, 0) * 0.16
 				)
 			);
-		transition: transform 1700ms var(--arc-ease);
+		transition:
+			transform 1700ms var(--arc-ease),
+			opacity 900ms var(--ease);
+	}
+
+	/* The opening, once. The frame's own ground is already the near-black the
+	   pictures are graded into, so there is nothing to see through: the picture
+	   rises out of it rather than being switched on. Gated behind `.js` because
+	   without a script nothing would ever take the attribute off, and a reader
+	   with no script would be left looking at an empty frame. */
+	:global(.js) .arc[data-opening] .mv__plate {
+		opacity: 0;
 	}
 
 	/* The exit. Once the deck has finished, the last picture pushes in as the
@@ -972,6 +988,28 @@ Small actions today can keep our planet alive for tomorrow.`,
 	// is painted, and for these that moment is the middle of a hand-over.
 	for (const img of document.querySelectorAll<HTMLImageElement>('.mv__plate img')) {
 		img.decode?.().catch(() => {});
+	}
+
+	if (arc) {
+		/* Let the opening picture up once it is ready to be seen.
+		
+		   Waiting on the decode rather than the load, because a picture that has
+		   arrived but not been decoded still paints as nothing, and fading up to
+		   nothing is a fade the reader watches happen twice. The timeout is the
+		   promise that a decode which never resolves — a picture that fails, a
+		   browser without `decode` — cannot leave the frame empty for ever. */
+		const first = arc.querySelector<HTMLImageElement>('[data-layer] .mv__plate img');
+		const open = () => arc.removeAttribute('data-opening');
+		if (first?.decode) first.decode().then(open, open);
+		else open();
+		window.setTimeout(open, 2500);
+
+		/* And the page begins where the deck does. `scrollRestoration` is already
+		   off for this page, set in the head before anything can be restored;
+		   this catches the rest — a link with a fragment, a browser that restores
+		   anyway — and only at the moment the deck starts, so it can never take
+		   the page from under a reader who has already begun. */
+		if (!location.hash && window.scrollY !== 0) window.scrollTo(0, 0);
 	}
 
 	if (arc && slides.length && layers.length) {

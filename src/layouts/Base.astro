@@ -18,6 +18,18 @@ interface Props {
 	 */
 	navTheme?: 'auto' | 'light' | 'dark' | 'veil';
 	/**
+	 * Whether this page must begin at the very top.
+	 *
+	 * The opening arc is a deck, not a scroll: reloading it puts the reader back
+	 * on its first line whatever they had reached, so the position the browser
+	 * remembers means nothing here. Restored, it meant worse than nothing — the
+	 * page came back ten pixels down with a strip of the section below showing
+	 * under the picture, and because the arc was no longer against the top of
+	 * the screen the deck did not recognise it as its own and handed every
+	 * gesture to the page.
+	 */
+	opensAtTop?: boolean;
+	/**
 	 * The ground a veiled bar takes once something is behind it. A page that is
 	 * teal the whole way down says so here, so the bar never falls back to the
 	 * near-black default and lands as a black stripe across a teal page.
@@ -31,6 +43,7 @@ const {
 	image = '/brand/lockup.png',
 	navTheme = 'auto',
 	band,
+	opensAtTop = false,
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://itti.org.in');
@@ -74,11 +87,14 @@ const GRAIN =
 		<meta property="twitter:title" content={title} />
 		<meta property="twitter:description" content={description} />
 		<meta property="twitter:image" content={imageURL} />
-		<script is:inline>
-			// Blocking and first, so nothing is ever hidden by a transition that
-			// no script is coming to finish.
-			document.documentElement.classList.add('js');
-		</script>
+		<script
+			is:inline
+			set:html={`document.documentElement.classList.add('js');${
+				opensAtTop
+					? `if('scrollRestoration' in history)history.scrollRestoration='manual';`
+					: ''
+			}`}
+		/>
 	</head>
 
 	<body data-nav-theme={navTheme}>
