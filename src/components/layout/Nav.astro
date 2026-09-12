@@ -1042,46 +1042,51 @@ const MENUS = [
 
 	/* ── Mobile ─────────────────────────────────────────────────────────── */
 
-	/* The way into everything else, and on a phone it is the only way. Two
-	   hairlines floating between two solid pills read as a stray mark rather
-	   than a control — and at 28 by 20 it was under half the area a thumb is
-	   owed. It is a button of the same family as the pills now: the same
-	   height, the same ring, the same colour, so the three read as a set and
-	   the one that opens the site is not the one you cannot see. */
+	/* The way into everything else, and on a phone it is the only way.
+
+	   No ring: the mark stands on its own. What made it invisible before was
+	   never the absence of an outline but the weight — two one-pixel lines
+	   twenty-eight long, set against two solid pills, which is a hairline
+	   asked to hold its own against type. Half a pixel thicker and a little
+	   shorter carries it.
+
+	   The box stays larger than the mark it draws. Nothing of it shows, and a
+	   thumb is owed the area whether or not there is anything under it to
+	   see: forty by thirty-eight, against the twenty-eight by twenty it
+	   started at. */
 	.nav__burger {
 		display: none;
 		flex: none;
-		width: 2.75rem;
-		height: 2.6rem;
+		width: 2.5rem;
+		height: 2.375rem;
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
 		gap: 0.375rem;
-		border-radius: 999px;
-		border: 1px solid
-			color-mix(
-				in oklab,
-				color-mix(in srgb, var(--teal) 45%, transparent) calc(var(--turned) * 100%),
-				color-mix(in srgb, var(--cream) 55%, transparent)
-			);
 		color: color-mix(in oklab, var(--teal) calc(var(--turned) * 100%), var(--cream));
 	}
 
 	.nav__burger-bar {
 		display: block;
-		width: 1.125rem;
+		width: 1.3rem;
 		height: 1.5px;
 		background: currentColor;
 		transition: transform 320ms var(--ease);
 	}
 
-	/* The two bars cross at the middle. Their centres are the gap plus one
-	   bar apart, so each travels half of that. */
-	.nav__burger[aria-expanded='true'] .nav__burger-bar:first-child {
+	/* The two bars cross at the middle. Their centres are the gap plus one bar
+	   apart, so each travels half of that.
+
+	   Matched by what they are rather than where they sit. The first child of
+	   the button is the label a screen reader hears, so `:first-child` named
+	   nothing at all and only the lower bar ever turned — the close mark has
+	   been a slanted line crossing a flat one this whole time, rather than an
+	   X. */
+	.nav__burger[aria-expanded='true'] .nav__burger-bar {
 		transform: translateY(3.75px) rotate(45deg);
 	}
 
-	.nav__burger[aria-expanded='true'] .nav__burger-bar:last-child {
+	.nav__burger[aria-expanded='true'] .nav__burger-bar + .nav__burger-bar {
 		transform: translateY(-3.75px) rotate(-45deg);
 	}
 
