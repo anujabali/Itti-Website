@@ -32,6 +32,7 @@ const { name, line, back, href, accent, mark } = Astro.props;
 
 <article
 	class="pillar"
+	data-accent={accent}
 	style={`--accent: var(--${accent}); --accent-ink: var(--${accent}-ink)`}
 >
 	<a class="pillar__link" href={href}>

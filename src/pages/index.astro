@@ -348,6 +348,12 @@ Small actions today can keep our planet alive for tomorrow.`,
 	<!-- ── The turn: one gear-change, everything at once ────────────────── -->
 	<div class="light" data-light-zone>
 		<section class="turn" id="turn" aria-labelledby="commitments-heading">
+			{/* The ground the section stands on, one layer per commitment. See
+			    the stylesheet. */}
+			<div class="turn__wash" data-accent="ochre" aria-hidden="true"></div>
+			<div class="turn__wash" data-accent="rose" aria-hidden="true"></div>
+			<div class="turn__wash" data-accent="sage" aria-hidden="true"></div>
+
 			<div class="turn__head u-fade">
 				<p class="turn__eyebrow">
 					<span class="turn__eyebrow-rule" aria-hidden="true"></span>
@@ -456,22 +462,53 @@ Small actions today can keep our planet alive for tomorrow.`,
 		z-index: 1;
 	}
 
+	/* The ground the whole page below the arc stands on.
+
+	   Three washes over five thousand pixels was one colour as far as anybody
+	   scrolling could tell, and a page that never changes colour reads as a
+	   long flat sheet however good the type on it is. There are seven now, laid
+	   down the page so the light moves as the reader does and no two sections
+	   sit on quite the same ground — warm at the commitments, cool through the
+	   figures, green at the events, back to the brand's own teal where the page
+	   asks something of you. They are wide and weak on purpose: the strongest
+	   is fourteen per cent of its colour, and each one is most of a screen
+	   across, so the change is something you feel rather than see. */
 	.light {
 		background:
 			radial-gradient(
-				90% 55% at 8% 2%,
-				color-mix(in srgb, var(--ochre) 14%, transparent) 0%,
-				transparent 62%
+				85% 30% at 12% 3%,
+				color-mix(in srgb, var(--ochre) 13%, transparent) 0%,
+				transparent 64%
 			),
 			radial-gradient(
-				80% 50% at 96% 22%,
-				color-mix(in srgb, var(--teal) 9%, transparent) 0%,
+				70% 24% at 88% 12%,
+				color-mix(in srgb, var(--rose) 9%, transparent) 0%,
 				transparent 66%
 			),
 			radial-gradient(
-				70% 45% at 50% 100%,
-				color-mix(in srgb, var(--sage) 8%, transparent) 0%,
-				transparent 60%
+				80% 26% at 22% 27%,
+				color-mix(in srgb, var(--sage) 10%, transparent) 0%,
+				transparent 68%
+			),
+			radial-gradient(
+				75% 28% at 92% 44%,
+				color-mix(in srgb, var(--teal) 10%, transparent) 0%,
+				transparent 66%
+			),
+			radial-gradient(
+				85% 26% at 8% 62%,
+				color-mix(in srgb, var(--sage) 11%, transparent) 0%,
+				transparent 66%
+			),
+			radial-gradient(
+				70% 24% at 78% 78%,
+				color-mix(in srgb, var(--ochre) 9%, transparent) 0%,
+				transparent 64%
+			),
+			radial-gradient(
+				95% 30% at 50% 100%,
+				color-mix(in srgb, var(--teal) 12%, transparent) 0%,
+				transparent 62%
 			),
 			var(--cream);
 		color: var(--ink);
@@ -896,7 +933,86 @@ Small actions today can keep our planet alive for tomorrow.`,
 	/* ── The turn ───────────────────────────────────────────────────────── */
 
 	.turn {
+		position: relative;
 		padding: clamp(5rem, 14vh, 9.5rem) var(--gutter) clamp(4.5rem, 10vh, 7.5rem);
+	}
+
+	/* The ground answers the hand.
+
+	   Hovering a commitment lights the page in that commitment's colour, from
+	   roughly where the card stands — so the light moves left to right across
+	   the section as the reader moves across the three. It bleeds well past the
+	   section on every side, because a tint that stops at a boundary reads as a
+	   panel turning on rather than the page changing colour.
+
+	   Three layers rather than one interpolated colour: only opacity moves, so
+	   the compositor can do all of it, and there is no gradient being rebuilt on
+	   any frame. */
+	.turn__wash {
+		position: absolute;
+		/* Bleeds well above and below so the tint reads as the page changing
+		   colour rather than a panel turning on — but never sideways. Eight per
+		   cent of bleed either side put the layer thirty-one pixels past a
+		   390-wide screen and gave the whole document a horizontal scroll. The
+		   gradients are soft enough to reach the edges on their own. */
+		inset: -26% 0 -28%;
+		z-index: 0;
+		pointer-events: none;
+		opacity: 0;
+		transition: opacity 620ms var(--ease);
+	}
+
+	.turn__wash[data-accent='ochre'] {
+		background: radial-gradient(
+			66% 54% at 16% 50%,
+			color-mix(in srgb, var(--ochre) 32%, transparent) 0%,
+			transparent 74%
+		);
+	}
+
+	/* The middle one is given more, because most of its light falls behind the
+	   card that asked for it. Only the head above and the gaps either side ever
+	   show, so at the same strength as its neighbours it barely registered —
+	   twelve units of colour against their twenty-eight. */
+	.turn__wash[data-accent='rose'] {
+		background: radial-gradient(
+			78% 58% at 50% 44%,
+			color-mix(in srgb, var(--rose) 38%, transparent) 0%,
+			transparent 74%
+		);
+	}
+
+	.turn__wash[data-accent='sage'] {
+		background: radial-gradient(
+			66% 54% at 84% 50%,
+			color-mix(in srgb, var(--sage) 32%, transparent) 0%,
+			transparent 74%
+		);
+	}
+
+	.turn:has(.pillar[data-accent='ochre'] .pillar__link:hover) .turn__wash[data-accent='ochre'],
+	.turn:has(.pillar[data-accent='ochre'] .pillar__link:focus-visible)
+		.turn__wash[data-accent='ochre'],
+	.turn:has(.pillar[data-accent='rose'] .pillar__link:hover) .turn__wash[data-accent='rose'],
+	.turn:has(.pillar[data-accent='rose'] .pillar__link:focus-visible)
+		.turn__wash[data-accent='rose'],
+	.turn:has(.pillar[data-accent='sage'] .pillar__link:hover) .turn__wash[data-accent='sage'],
+	.turn:has(.pillar[data-accent='sage'] .pillar__link:focus-visible)
+		.turn__wash[data-accent='sage'] {
+		opacity: 1;
+	}
+
+	/* The head and the cards stand on the wash, not under it. */
+	.turn__head,
+	.pillars {
+		position: relative;
+		z-index: 1;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.turn__wash {
+			transition: none;
+		}
 	}
 
 	/* The section's own name, hung from the hairline the rest of the site hangs

@@ -118,12 +118,54 @@ const EVENTS = [
 		border-bottom: 1px solid rgba(44, 39, 33, 0.14);
 	}
 
+	/* A list of three is still a list, and a list nothing answers reads as a
+	   table of contents. Each row takes a little ground and a little travel
+	   under the hand, and the ground bleeds past the gutter so it reads as the
+	   page lighting rather than a box appearing. */
 	.event__link {
+		position: relative;
 		display: grid;
 		grid-template-columns: 5.5rem 1fr;
 		gap: clamp(1.25rem, 4vw, 3rem);
 		padding: clamp(1.5rem, 3vh, 2.25rem) 0;
-		transition: opacity 250ms var(--ease);
+		transition:
+			transform 420ms var(--ease),
+			opacity 250ms var(--ease);
+	}
+
+	.event__link::before {
+		content: '';
+		position: absolute;
+		inset: 0 calc(-1 * clamp(0.9rem, 2.4vw, 2rem));
+		z-index: -1;
+		border-radius: 0.75rem;
+		background: linear-gradient(
+			100deg,
+			color-mix(in srgb, var(--teal) 11%, transparent) 0%,
+			color-mix(in srgb, var(--teal) 4%, transparent) 46%,
+			transparent 78%
+		);
+		opacity: 0;
+		transition: opacity 420ms var(--ease);
+	}
+
+	.event__link:hover::before,
+	.event__link:focus-visible::before {
+		opacity: 1;
+	}
+
+	.event__link:hover,
+	.event__link:focus-visible {
+		transform: translateX(0.4rem);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.event__link,
+		.event__link:hover,
+		.event__link:focus-visible {
+			transform: none;
+			transition: none;
+		}
 	}
 
 	.event__link:hover {

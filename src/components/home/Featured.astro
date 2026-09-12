@@ -6,6 +6,16 @@
  * stops permanently the moment anyone interacts, and does not move at all under
  * reduced motion. Content is PLACEHOLDER.
  */
+import ClawMark from '../brand/ClawMark.astro';
+
+/* Which commitment each of these belongs to. It decides the colour the plate
+   is built in and the mark that stands on it, so the band reads as three pieces
+   of the same work rather than three unrelated cards. */
+const MARKS = {
+	ochre: { mark: '/brand/pillar-neuro.png', of: 'Neurodivergence' },
+	rose: { mark: '/brand/pillar-cancer.png', of: 'Cancer Care' },
+	sage: { mark: 'claw', of: 'Conservation' },
+} as const;
 
 const SLIDES = [
 	{
@@ -67,7 +77,32 @@ const SLIDES = [
 							style={`object-position:${slide.focus ?? '50% 50%'}`}
 						/>
 					) : (
-						<div class="slide__media" aria-hidden="true" />
+						/* No photograph of this exists yet. A blank bordered
+						   rectangle across half the screen is the worst thing on the
+						   page; an invented photograph of a day nobody has a picture
+						   of would be worse. So it is set as a plate — the
+						   commitment's own colour, its mark standing quietly in it,
+						   and a wall label under a rule — which reads as a decision
+						   rather than a gap, and is what the marketplace does for the
+						   goods nobody has photographed either. */
+						<div class="slide__media slide__plate" aria-hidden="true">
+							<span class="slide__mark">
+								{MARKS[slide.accent].mark === 'claw' ? (
+									<ClawMark mono />
+								) : (
+									<span
+										class="slide__raster"
+										style={`--mark:url('${MARKS[slide.accent].mark}')`}
+									/>
+								)}
+							</span>
+							{/* The commitment, not the kind — the kind is already set as
+							    the eyebrow a few inches to the left. */}
+							<span class="slide__label">
+								<span class="slide__label-rule" />
+								{MARKS[slide.accent].of}
+							</span>
+						</div>
 					)}
 				</article>
 			))
@@ -146,6 +181,84 @@ const SLIDES = [
 
 	img.slide__media {
 		object-fit: cover;
+	}
+
+	/* ── The plate, where there is no photograph ──────────────────────── */
+
+	.slide__plate {
+		position: relative;
+		place-items: stretch;
+		overflow: hidden;
+		border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+		background:
+			radial-gradient(
+				82% 74% at 26% 14%,
+				color-mix(in srgb, var(--accent) 34%, transparent) 0%,
+				transparent 72%
+			),
+			radial-gradient(
+				70% 62% at 88% 92%,
+				color-mix(in srgb, var(--accent) 20%, transparent) 0%,
+				transparent 70%
+			),
+			color-mix(in srgb, var(--cream) 46%, #fff);
+	}
+
+	/* The same grain the rest of the site is laid over, so the plate sits on the
+	   page rather than on top of it. */
+	.slide__plate::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		opacity: 0.26;
+		pointer-events: none;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='1 0 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+	}
+
+	.slide__mark {
+		position: absolute;
+		inset: 0;
+		display: grid;
+		place-items: center;
+		color: var(--accent-ink);
+		opacity: 0.42;
+	}
+
+	.slide__mark :global(svg) {
+		width: min(34%, 8.5rem);
+		height: auto;
+	}
+
+	.slide__raster {
+		display: block;
+		width: min(34%, 8.5rem);
+		aspect-ratio: 1;
+		background: currentColor;
+		-webkit-mask: var(--mark) center / contain no-repeat;
+		mask: var(--mark) center / contain no-repeat;
+	}
+
+	/* A wall label, the way the arc credits its plates. */
+	.slide__label {
+		position: absolute;
+		left: clamp(1rem, 2.4vw, 1.6rem);
+		bottom: clamp(0.9rem, 2.2vw, 1.4rem);
+		display: flex;
+		align-items: center;
+		gap: 0.7rem;
+		font-size: 0.6875rem;
+		font-weight: 600;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: color-mix(in srgb, var(--accent-ink) 82%, var(--ink-soft));
+	}
+
+	.slide__label-rule {
+		display: block;
+		width: 2rem;
+		height: 1px;
+		background: currentColor;
+		opacity: 0.5;
 	}
 
 	@media (max-width: 52rem) {
