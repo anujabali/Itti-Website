@@ -1184,12 +1184,17 @@ const MENUS = [
 			min-width: 0;
 		}
 
-		/* On mobile the drawer is cream, so the bar must read as light while
-		   it is open regardless of what is behind the page. */
+		/* On mobile the drawer is cream, so the bar must read as light while it
+		   is open regardless of what is behind the page.
+
+		   One number rather than a list of colours. Naming the two lockup
+		   colours here used to be the whole of it, and once everything in the
+		   bar took its colour from how far it had turned, a list that did not
+		   include the turn left the pills behind: a cream Join Us on a cream
+		   drawer, and a Donate whose border was cream on cream. Both were
+		   invisible with the drawer open. */
 		.nav:has(.drawer[data-open]) {
-			color: var(--teal);
-			--wordmark-name: var(--ink);
-			--wordmark-sub: var(--teal);
+			--turned: 1;
 		}
 
 		.nav:has(.drawer[data-open]) .nav__inner {
