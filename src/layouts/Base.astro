@@ -197,11 +197,29 @@ const GRAIN =
 			let compact = false;
 			let queued = false;
 
+			// Measured once rather than on every scroll: reading it in the handler
+			// is a layout the handler does not need, and the bar's height only
+			// changes when the window does.
+			let bar = nav.offsetHeight;
+
 			const settle = () => {
 				queued = false;
-				const markCentre = nav.offsetHeight / 2;
 				const zoneTop = zone.getBoundingClientRect().top;
-				const turned = zoneTop <= markCentre;
+
+				/* How far the bar has turned, read off the ground rather than run
+				   on a clock.
+				
+				   Nought while the light ground is still two bar-heights below the
+				   top of the screen, one once it has reached the top, and the
+				   proportion in between. Bound to the scroll like this the bar
+				   cannot be outrun: a slow scroll gives a long fade and a fast
+				   flick gives a short one, and at every instant the bar is as
+				   light as the ground actually behind it. Every fixed duration
+				   tried here could be beaten by a hard flick from far enough down
+				   the page, and being beaten is what read as the glitch. */
+				const band = bar * 2;
+				const turned = Math.max(0, Math.min(1, 1 - zoneTop / band));
+
 				// Only a hero taller than the screen has an inside to be deep in.
 				// Without this the lockup collapsed on the way back up into an arc
 				// exactly one screen tall — a state that journey down the page
@@ -209,15 +227,21 @@ const GRAIN =
 				// saw the name shrink and grow for no reason anybody could name.
 				const insideHero = zoneTop > window.innerHeight;
 
-				if (turned || !insideHero) compact = false;
+				if (turned > 0 || !insideHero) compact = false;
 				else if (!compact && window.scrollY > COLLAPSE_AT) compact = true;
 				else if (compact && window.scrollY < RESTORE_AT) compact = false;
 
 				// A page can ask the bar to hold whatever it is showing — the arc
 				// does this while it lifts away, because the scroll position jumps a
-				// whole screen at the start of that move and the bar would otherwise
-				// turn light while a dark picture still covers the screen.
-				if (!nav.hasAttribute('data-hold')) nav.classList.toggle('is-light', turned);
+				// whole screen at the start of that move and there is no travel left
+				// to read it off.
+				if (!nav.hasAttribute('data-hold')) {
+					nav.style.setProperty('--turned', String(Math.round(turned * 1000) / 1000));
+					// The dropdown panels and the account chip are not on screen
+					// while the bar is turning, so they stay a matter of which side
+					// of the middle it is on.
+					nav.classList.toggle('is-light', turned >= 0.5);
+				}
 				nav.classList.toggle('is-compact', compact);
 			};
 			const schedule = () => {
@@ -226,8 +250,18 @@ const GRAIN =
 				requestAnimationFrame(settle);
 			};
 
-			document.addEventListener('scroll', schedule, { passive: true });
-			window.addEventListener('resize', schedule);
+			/* Run on the scroll itself rather than a frame behind it.
+			
+			   A `requestAnimationFrame` here is the usual courtesy and it is wrong
+			   for this one: the bar's whole job is to agree with the ground it is
+			   standing on, and a frame of disagreement on a fast flick is a bar
+			   visibly the wrong colour. One rectangle is read, which during a
+			   scroll costs nothing because the layout is already clean. */
+			document.addEventListener('scroll', settle, { passive: true });
+			window.addEventListener('resize', () => {
+				bar = nav.offsetHeight;
+				schedule();
+			});
 			settle();
 		}
 	}

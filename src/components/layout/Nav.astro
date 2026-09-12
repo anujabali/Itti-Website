@@ -353,7 +353,14 @@ const MENUS = [
 		inset: 0 0 auto;
 		z-index: 60;
 		--turned: 0;
-		transition: --turned var(--turn-dur) var(--ease);
+		/* No transition, deliberately. On the landing page this number is written
+		   from the scroll every frame and is already exactly right; any duration
+		   at all is a lag, and a lag is the bar disagreeing with the ground
+		   behind it. Ninety milliseconds was enough: on a hard flick up from deep
+		   in the page the ground had gone dark while the bar was still
+		   nine tenths cream. Where the ground changes in one frame the bar
+		   changes in one frame, and where the ground fades the bar fades with
+		   it, because it is the same number. */
 		color: color-mix(in oklab, var(--teal) calc(var(--turned) * 100%), var(--warm-white));
 		/* On the dark arc the whole lockup is one colour; FOUNDATION's teal
 		   would sink into a deep-teal ground. On cream it returns to the
@@ -381,22 +388,24 @@ const MENUS = [
 	/* The turn is a change of ground, so the bar changes with it rather than
 	   switching. Everything that differs between the two states is named here,
 	   on one duration. */
-	/* How long the bar takes to change ground.
+	/* A duration is the wrong tool for the turn, and was the whole of why the
+	   bar kept glitching: any fixed length can be outrun. Crossing the join on
+	   a fast flick from far down the page gave the reader the dark arc under a
+	   bar still halfway to cream, and the faster they scrolled the wronger it
+	   looked. The bar is bound to its ground instead — see the layout — and is
+	   exactly as light as the proportion of it standing over cream, at any
+	   speed, in either direction.
 
-	   The nine hundred in the token is the arc's number, not the reader's: the
-	   way out is a scripted move of known length and the bar is timed to land
-	   with it. A reader scrolling back up the same screen does it in about six
-	   hundred, so on that journey the same nine hundred left FOUNDATION visibly
-	   teal over a black picture after the picture had already arrived. The bar
-	   now turns at the speed of a hand, and only the arc's own exit borrows the
-	   long one — set on the bar while it leaves and given back afterwards, so
-	   nothing changes duration mid-transition. */
-	.nav {
-		--turn-dur: 260ms;
+	   The one move that cannot work that way is the arc's own exit, where the
+	   page is placed a whole screen down in a single step and there is no
+	   travel to bind to. That one borrows a real duration, timed to land with
+	   the arc, and gives it back afterwards. */
+	.nav[data-turn='long'] {
+		transition: --turned 900ms var(--ease);
 	}
 
-	.nav[data-turn='long'] {
-		--turn-dur: 900ms;
+	.nav {
+		--turn-dur: 260ms;
 	}
 
 	.nav__inner {
@@ -1033,29 +1042,47 @@ const MENUS = [
 
 	/* ── Mobile ─────────────────────────────────────────────────────────── */
 
+	/* The way into everything else, and on a phone it is the only way. Two
+	   hairlines floating between two solid pills read as a stray mark rather
+	   than a control — and at 28 by 20 it was under half the area a thumb is
+	   owed. It is a button of the same family as the pills now: the same
+	   height, the same ring, the same colour, so the three read as a set and
+	   the one that opens the site is not the one you cannot see. */
 	.nav__burger {
 		display: none;
 		flex: none;
-		width: 1.75rem;
-		height: 1.25rem;
+		width: 2.75rem;
+		height: 2.6rem;
 		flex-direction: column;
+		align-items: center;
 		justify-content: center;
 		gap: 0.375rem;
+		border-radius: 999px;
+		border: 1px solid
+			color-mix(
+				in oklab,
+				color-mix(in srgb, var(--teal) 45%, transparent) calc(var(--turned) * 100%),
+				color-mix(in srgb, var(--cream) 55%, transparent)
+			);
+		color: color-mix(in oklab, var(--teal) calc(var(--turned) * 100%), var(--cream));
 	}
 
 	.nav__burger-bar {
 		display: block;
-		height: 1px;
+		width: 1.125rem;
+		height: 1.5px;
 		background: currentColor;
 		transition: transform 320ms var(--ease);
 	}
 
+	/* The two bars cross at the middle. Their centres are the gap plus one
+	   bar apart, so each travels half of that. */
 	.nav__burger[aria-expanded='true'] .nav__burger-bar:first-child {
-		transform: translateY(3.5px) rotate(45deg);
+		transform: translateY(3.75px) rotate(45deg);
 	}
 
 	.nav__burger[aria-expanded='true'] .nav__burger-bar:last-child {
-		transform: translateY(-3.5px) rotate(-45deg);
+		transform: translateY(-3.75px) rotate(-45deg);
 	}
 
 	.drawer {
@@ -1194,7 +1221,10 @@ const MENUS = [
 		   drawer, and a Donate whose border was cream on cream. Both were
 		   invisible with the drawer open. */
 		.nav:has(.drawer[data-open]) {
-			--turned: 1;
+			/* Louder than the landing page, which writes this from the scroll on
+			   the element itself. Whatever is behind the page, the drawer in front
+			   of it is cream and the bar is standing on the drawer. */
+			--turned: 1 !important;
 		}
 
 		.nav:has(.drawer[data-open]) .nav__inner {
