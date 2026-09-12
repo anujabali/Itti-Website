@@ -3,50 +3,33 @@
  * Impact — the proof behind the poetry, and the reason a foundation page is
  * trusted at all.
  *
- * Every number here is PLACEHOLDER and must not ship as-is. The `since` line
- * matters as much as the figure: a number without a window is a claim, not a
- * measurement.
+ * Set as a table of measures rather than four cards: a rule over the row, a
+ * hairline between each figure, the numeral in the colour of the work it
+ * counts. Four boxes would be four things; ruled columns are one statement
+ * read across.
+ *
+ * No captions. A sentence under each number was a sentence somebody had to
+ * invent, and the labels say what the figures are without help.
  */
 
 const FIGURES = [
-	{
-		value: '125',
-		unit: '',
-		accent: 'sage',
-		title: 'Waste Warrior Episodes',
-		caption: 'Conversations sharing practical ideas for sustainable living.',
-	},
-	{
-		value: '45',
-		unit: '',
-		accent: 'ochre',
-		title: 'Students Supported',
-		caption: 'Students sponsored with art kits for creative learning.',
-	},
-	{
-		value: '3+',
-		unit: 'Years',
-		accent: 'rose',
-		title: 'Of Community Action',
-		caption: 'Creating change through education, care and sustainability since 2023.',
-	},
-	{
-		value: '3',
-		unit: '',
-		accent: 'teal',
-		title: 'Core Commitments',
-		caption: 'Neurodivergence, cancer care and climate action working together.',
-	},
+	{ value: '14', plus: true, label: 'Countries reached', accent: 'sage' },
+	{ value: '10,000', plus: true, label: 'Students impacted', accent: 'ochre' },
+	{ value: '1,000', plus: true, label: 'Cancer network', accent: 'rose' },
+	{ value: '3', plus: true, label: 'Years of community action', accent: 'teal' },
 ];
 ---
 
 <section class="impact" id="impact" aria-labelledby="impact-heading">
 	<div class="impact__head">
-		<p class="impact__eyebrow">Impact</p>
+		<p class="impact__eyebrow">
+			<span class="impact__eyebrow-rule" aria-hidden="true"></span>
+			Impact
+		</p>
 		<h2 class="impact__title" id="impact-heading">Change created together</h2>
 	</div>
 
-	<dl class="impact__grid">
+	<dl class="impact__row">
 		{
 			FIGURES.map((figure) => (
 				<div
@@ -55,99 +38,175 @@ const FIGURES = [
 				>
 					<dt class="figure__value">
 						{figure.value}
-						{figure.unit && <span class="figure__unit">{figure.unit}</span>}
+						{figure.plus && (
+							<span class="figure__plus" aria-hidden="true">
+								+
+							</span>
+						)}
 					</dt>
-					<dd class="figure__label">
-						<span class="figure__title">{figure.title}</span>
-						<span class="figure__caption">{figure.caption}</span>
-					</dd>
+					<dd class="figure__label">{figure.label}</dd>
 				</div>
 			))
 		}
 	</dl>
-
-	<p class="impact__note">
-		<a href="/join">See our impact &rarr;</a>
-	</p>
 </section>
 
 <style>
 	.impact {
-		padding: clamp(4rem, 10vh, 7rem) var(--gutter);
-		background: var(--cream-deep);
-		border-block: 1px solid rgba(44, 39, 33, 0.12);
+		padding: clamp(3.5rem, 9vh, 6rem) var(--gutter);
+	}
+
+	/* The same measure as the table under it, so the heading and the first
+	   numeral start on one line down the left. */
+	.impact__head {
+		display: grid;
+		gap: 0.9rem;
+		max-width: 76rem;
+		margin: 0 auto clamp(2.5rem, 6vh, 4rem);
 	}
 
 	.impact__eyebrow {
+		display: flex;
+		align-items: center;
+		gap: 0.85rem;
+		margin: 0;
 		font-size: 0.6875rem;
-		font-weight: 500;
+		font-weight: 600;
 		letter-spacing: 0.2em;
 		text-transform: uppercase;
-		color: var(--ink-faint);
+		color: var(--teal);
+	}
+
+	.impact__eyebrow-rule {
+		display: block;
+		width: 2.5rem;
+		height: 1px;
+		background: currentColor;
+		opacity: 0.55;
 	}
 
 	.impact__title {
-		margin-top: 0.9rem;
-		max-width: 24rem;
-		font-size: clamp(1.75rem, 3.4vw, 2.5rem);
-		line-height: 1.12;
+		margin: 0;
+		font-family: var(--face-bodoni);
+		font-size: clamp(2rem, 4.4vw, 3.25rem);
+		font-weight: var(--display-weight);
+		line-height: 1.06;
+		letter-spacing: -0.015em;
+		color: var(--ink);
+		text-wrap: balance;
 	}
 
-	.impact__grid {
+	/* The table. One rule over the whole row and a hairline between each figure,
+	   so the four are read across as one measurement rather than down as four
+	   separate claims. */
+	.impact__row {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr));
-		gap: clamp(2rem, 4vw, 3.5rem);
-		margin: clamp(3rem, 6vh, 4.5rem) 0 0;
+		grid-template-columns: 1fr;
+		gap: 0;
+		max-width: 76rem;
+		margin: 0 auto;
+		border-top: 1px solid rgba(44, 39, 33, 0.16);
 	}
 
-	/* Each figure in the colour of the work it counts, rather than four of the
-	   same teal. Four identical numbers read as a table; four colours read as
-	   the Foundation. The rule under each one carries it too, so the colour is
-	   in the structure and not only in the numeral. */
+	.figure {
+		display: grid;
+		align-content: start;
+		gap: 0.65rem;
+		padding: clamp(1.5rem, 3.5vh, 2.25rem) 0;
+		border-bottom: 1px solid rgba(44, 39, 33, 0.1);
+	}
+
+	.figure:last-child {
+		border-bottom: 0;
+	}
+
+	/* Lining figures and a tabular width, so four numerals of different lengths
+	   still sit on one baseline grid. */
 	.figure__value {
-		font-family: var(--display);
-		font-size: clamp(3rem, 6vw, 4.5rem);
+		display: flex;
+		align-items: baseline;
+		gap: 0.08em;
+		margin: 0;
+		font-family: var(--face-bodoni);
+		font-size: clamp(2.75rem, 6.5vw, 4.25rem);
 		font-weight: 400;
-		line-height: 1;
+		line-height: 0.92;
+		letter-spacing: -0.02em;
 		color: var(--accent-ink, var(--teal));
 		font-variant-numeric: lining-nums tabular-nums;
 	}
 
-	.figure__unit {
-		font-size: 0.42em;
-		margin-left: 0.15em;
+	/* The plus is a qualifier, not a digit: set smaller and lifted, the way a
+	   footnote mark is. */
+	.figure__plus {
+		align-self: flex-start;
+		font-size: 0.46em;
+		line-height: 1;
+		padding-top: 0.12em;
+		opacity: 0.8;
 	}
 
 	.figure__label {
-		display: grid;
-		gap: 0.4rem;
-		margin: 1rem 0 0;
-		padding-top: 1rem;
-		border-top: 1px solid color-mix(in srgb, var(--accent, var(--teal)) 42%, transparent);
-	}
-
-	.figure__title {
-		font-family: var(--display);
-		font-size: 1.125rem;
-		line-height: 1.25;
-		color: var(--ink);
-	}
-
-	.figure__caption {
-		font-size: 0.9375rem;
+		margin: 0;
+		max-width: 14ch;
+		font-size: 0.75rem;
+		font-weight: 600;
+		letter-spacing: 0.14em;
 		line-height: 1.5;
+		text-transform: uppercase;
 		color: var(--ink-soft);
 	}
 
-	.impact__note {
-		margin-top: clamp(2.5rem, 5vh, 3.5rem);
-		font-family: var(--display);
-		font-size: 1.0625rem;
-		color: var(--teal);
+	@media (min-width: 40rem) {
+		.impact__row {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.figure {
+			padding-inline: clamp(1.25rem, 3vw, 2.25rem);
+			border-bottom: 1px solid rgba(44, 39, 33, 0.1);
+		}
+
+		.figure:first-child,
+		.figure:nth-child(3) {
+			padding-left: 0;
+			border-right: 1px solid rgba(44, 39, 33, 0.1);
+		}
+
+		.figure:nth-child(2),
+		.figure:last-child {
+			padding-right: 0;
+		}
+
+		.figure:nth-child(3),
+		.figure:last-child {
+			border-bottom: 0;
+		}
 	}
 
-	.impact__note a {
-		padding-bottom: 0.2rem;
-		border-bottom: 1px solid currentColor;
+	@media (min-width: 64rem) {
+		.impact__row {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+		}
+
+		.figure,
+		.figure:first-child,
+		.figure:nth-child(3) {
+			border-bottom: 0;
+			border-right: 1px solid rgba(44, 39, 33, 0.1);
+		}
+
+		.figure:last-child {
+			border-right: 0;
+			padding-right: 0;
+		}
+
+		.figure:first-child {
+			padding-left: 0;
+		}
+
+		.figure:nth-child(2) {
+			padding-right: clamp(1.25rem, 3vw, 2.25rem);
+		}
 	}
 </style>

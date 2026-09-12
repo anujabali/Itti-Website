@@ -44,14 +44,15 @@ const EVENTS = [
 		<h2 class="events__title" id="events-heading">
 			Learning that moves beyond the classroom
 		</h2>
-		<a class="events__all" href="#events">View all events &rarr;</a>
+		{/* No events page to send anybody to yet. When there is one, this comes
+		    back. */}
 	</div>
 
 	<ul class="events__list">
 		{
 			EVENTS.map((event) => (
 				<li class="event">
-					<a class="event__link" href={event.href}>
+					<div class="event__link">
 						<time class="event__date" datetime={event.datetime}>
 							<span class="event__day">{event.day}</span>
 							{event.month && <span class="event__month">{event.month}</span>}
@@ -62,7 +63,7 @@ const EVENTS = [
 							<h3 class="event__name">{event.title}</h3>
 							<p class="event__line">{event.line}</p>
 						</div>
-					</a>
+					</div>
 				</li>
 			))
 		}
@@ -118,40 +119,23 @@ const EVENTS = [
 		border-bottom: 1px solid rgba(44, 39, 33, 0.14);
 	}
 
-	/* A list of three is still a list, and a list nothing answers reads as a
-	   table of contents. Each row steps a little under the hand — a movement and
-	   nothing else, deliberately. A ground fading in behind the row is the same
-	   thing that made the commitments lag: a layer fading behind type repaints
-	   the type with it, and no amount of making it smaller or promoting it
-	   helps. A transform is the compositor's own work and measures as free. */
+	/* Not a link, and so it does not answer a hand.
+	
+	   Every row pointed at `#events`, which is the section the row is already
+	   in: a click that scrolled a few pixels and did nothing else, on a thing
+	   that looked like it would open something. There are no event pages yet, so
+	   there is nowhere for a row to lead, and a row that leads nowhere should
+	   not invite the click. When the pages exist these become links again and
+	   the hover comes back with them. */
 	.event__link {
 		position: relative;
 		display: grid;
 		grid-template-columns: 5.5rem 1fr;
 		gap: clamp(1.25rem, 4vw, 3rem);
 		padding: clamp(1.5rem, 3vh, 2.25rem) 0;
-		transition:
-			transform 420ms var(--ease),
-			opacity 250ms var(--ease);
 	}
 
-	.event__link:hover,
-	.event__link:focus-visible {
-		transform: translateX(0.4rem);
-	}
 
-	@media (prefers-reduced-motion: reduce) {
-		.event__link,
-		.event__link:hover,
-		.event__link:focus-visible {
-			transform: none;
-			transition: none;
-		}
-	}
-
-	.event__link:hover {
-		opacity: 0.72;
-	}
 
 	.event__date {
 		display: grid;

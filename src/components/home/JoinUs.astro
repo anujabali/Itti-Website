@@ -1,21 +1,32 @@
 ---
 /**
- * Join Us — the pathways hub, the newsletter and the way to reach a person,
- * combined into one band so the page has a single ending rather than three.
+ * Join Us — the pathways, the newsletter and the way to reach a person, in one
+ * band so the page has a single ending rather than three.
  *
- * Donate is deliberately dominant; the other three are equal to each other and
- * quieter than it. The form posts nowhere yet — wiring it up needs a provider
- * decision, and a privacy line that means something.
+ * Set as a ruled list rather than cards. Four bordered rectangles were four
+ * objects competing for the same attention, and the one that mattered had to
+ * shout in teal to be heard over the other three. A list gives the hierarchy
+ * away for free: Donate is first, set largest, in its own colour, and the rest
+ * follow it down the page in the order somebody is likely to want them.
  *
  * Donate points at the donate page. It pointed at the registration form for as
  * long as there was no donate page to point at, and stayed there after there
  * was — which left the most prominent word on the home page sending people to
  * fill in a form instead. The bar's own Donate pill only appears once somebody
- * has signed in, so for everybody else this and the footer are the whole of the
- * way there.
+ * has signed in, so this and the footer are the whole of the way there for
+ * everybody else.
+ *
+ * The form posts nowhere yet. It says so, on the form, rather than accepting an
+ * address and dropping it.
  */
 
 const PATHS = [
+	{
+		label: 'Donate',
+		line: 'Every contribution turns care and ideas into work that reaches somebody.',
+		href: '/donate',
+		lead: true,
+	},
 	{
 		label: 'Become a member',
 		line: 'Join a community committed to inclusion, learning and lasting change.',
@@ -23,60 +34,55 @@ const PATHS = [
 	},
 	{
 		label: 'Volunteer & partner',
-		line: 'Share your time, skills or resources to help our initiatives reach further.',
+		line: 'Share your time, skills or resources to help our work reach further.',
 		href: '/join',
-	},
-	{
-		label: 'Subscribe',
-		line: 'Receive stories, upcoming events and opportunities to take action.',
-		href: '#subscribe-email',
 	},
 ];
 ---
 
 <section class="join" id="join" aria-labelledby="join-heading">
-	<div class="join__lead">
-		<p class="join__eyebrow">Join us</p>
+	<div class="join__head">
+		<p class="join__eyebrow">
+			<span class="join__eyebrow-rule" aria-hidden="true"></span>
+			Join us
+		</p>
 		<h2 class="join__title" id="join-heading">
 			Your action can become someone’s turning point
 		</h2>
 		<p class="join__line">
-			Whether you give, volunteer, partner with us or simply stay connected, you become
-			part of a community creating kinder, healthier and more sustainable futures.
+			Give, volunteer, partner with us or stay connected, and you are part of a
+			community creating kinder, healthier and more sustainable futures.
 		</p>
 	</div>
 
-	<div class="join__paths">
-		<a class="path path--primary" href="/donate">
-			<span class="path__primary-text">
-				<span class="path__label">Donate</span>
-				<span class="path__line"
-					>Every contribution helps turn care and ideas into meaningful action.</span
-				>
-			</span>
-			<span class="path__cta" aria-hidden="true">&rarr;</span>
-		</a>
-
+	{/* A ruled list. The first row is the one being asked for, and says so in
+	    size and colour rather than in a filled rectangle. */}
+	<ul class="paths">
 		{
 			PATHS.map((path) => (
-				<a class="path" href={path.href}>
-					<span class="path__label">{path.label}</span>
-					<span class="path__line">{path.line}</span>
-					<span class="path__cta" aria-hidden="true">
-						&rarr;
-					</span>
-				</a>
+				<li class:list={['paths__item', path.lead && 'paths__item--lead']}>
+					<a class="path" href={path.href}>
+						<span class="path__label">{path.label}</span>
+						<span class="path__line">{path.line}</span>
+						<span class="path__arrow" aria-hidden="true">
+							&rarr;
+						</span>
+					</a>
+				</li>
 			))
 		}
-	</div>
+	</ul>
 
 	<div class="join__base">
 		<form class="subscribe" data-subscribe>
-			<h3 class="subscribe__heading">Stay connected with our work</h3>
+			<h3 class="subscribe__heading">Stay connected</h3>
 			<p class="subscribe__desc">
-				Receive stories from the community, updates on our programmes and simple ways to
-				create change.
+				Stories from the community, what is coming up, and simple ways to take part.
 			</p>
+
+			{/* One ruled line, the way every field on the registration form is set.
+			    A boxed input beside a filled button was the only place on this page
+			    that looked like a different website. */}
 			<div class="subscribe__row">
 				<label class="u-visually-hidden" for="subscribe-email">Email address</label>
 				<input
@@ -88,20 +94,30 @@ const PATHS = [
 					placeholder="you@example.com"
 					required
 				/>
-				<button class="subscribe__button" type="submit">Subscribe</button>
+				<button class="subscribe__button" type="submit">
+					Subscribe
+					<span class="subscribe__arrow" aria-hidden="true">&rarr;</span>
+				</button>
 			</div>
+
 			<p class="subscribe__note" data-subscribe-note aria-live="polite">
 				Not yet connected — this form does not send anywhere.
 			</p>
 		</form>
 
 		<address class="contact">
-			<p class="contact__eyebrow">Contact</p>
+			<p class="contact__eyebrow">
+				<span class="contact__eyebrow-rule" aria-hidden="true"></span>
+				Contact
+			</p>
 			<h3 class="contact__heading">Let’s create change together</h3>
 			<p class="contact__desc">
-				For collaborations, volunteering, workshops or general enquiries, reach out to
-				The Itti Foundation.
+				For collaborations, volunteering, workshops or anything else, write to us.
 			</p>
+			<a class="contact__link" href="mailto:hello@itti.org.in">
+				hello@itti.org.in
+				<span class="contact__arrow" aria-hidden="true">&rarr;</span>
+			</a>
 		</address>
 	</div>
 </section>
@@ -115,188 +131,326 @@ const PATHS = [
 		border-top: 1px solid rgba(44, 39, 33, 0.12);
 	}
 
+	/* ── The head ─────────────────────────────────────────────────────────── */
+
+	.join__head {
+		display: grid;
+		gap: 0.9rem;
+		max-width: 76rem;
+		width: 100%;
+		margin-inline: auto;
+	}
+
 	.join__eyebrow {
+		display: flex;
+		align-items: center;
+		gap: 0.85rem;
+		margin: 0;
 		font-size: 0.6875rem;
-		font-weight: 500;
+		font-weight: 600;
 		letter-spacing: 0.2em;
 		text-transform: uppercase;
-		color: var(--ink-faint);
+		color: var(--teal);
+	}
+
+	.join__eyebrow-rule {
+		display: block;
+		width: 2.5rem;
+		height: 1px;
+		background: currentColor;
+		opacity: 0.55;
 	}
 
 	.join__title {
-		margin-top: 0.9rem;
-		max-width: 26rem;
-		font-size: clamp(1.875rem, 3.8vw, 2.75rem);
-		line-height: 1.12;
+		margin: 0;
+		max-width: 22ch;
+		font-family: var(--face-bodoni);
+		font-size: clamp(2rem, 4.4vw, 3.25rem);
+		font-weight: var(--display-weight);
+		line-height: 1.06;
+		letter-spacing: -0.015em;
+		text-wrap: balance;
 	}
 
 	.join__line {
-		margin-top: 1rem;
-		max-width: 34rem;
+		margin: 0.35rem 0 0;
+		max-width: 46ch;
 		font-size: 1.0625rem;
 		line-height: 1.6;
 		color: var(--ink-soft);
+		text-wrap: pretty;
 	}
 
-	/* Donate takes the full first row; the rest share the second. The hierarchy
-	   is in the layout, not in a louder colour. */
-	/* Exactly three columns, not auto-fit: auto-fit sizes columns to the
-	   available width and then leaves the surplus empty, so three cards stopped
-	   two-thirds of the way across a wide screen. */
-	.join__paths {
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 1rem;
+	/* ── The paths ────────────────────────────────────────────────────────── */
+
+	.paths {
+		max-width: 76rem;
+		width: 100%;
+		margin-inline: auto;
+		padding: 0;
+		list-style: none;
+		border-top: 1px solid rgba(44, 39, 33, 0.16);
 	}
 
-	@media (max-width: 60rem) {
-		.join__paths {
-			grid-template-columns: 1fr;
-		}
+	.paths__item {
+		border-bottom: 1px solid rgba(44, 39, 33, 0.12);
 	}
 
+	/* A row of the list, and the whole row is the target. The grid keeps the
+	   arrow against the right edge at any width, so the three read as one column
+	   of actions rather than three lines of different lengths. */
 	.path {
+		position: relative;
 		display: grid;
-		gap: 0.6rem;
-		padding: 1.5rem 1.6rem 1.4rem;
-		border: 1px solid rgba(44, 39, 33, 0.14);
-		border-radius: 0.875rem;
-		background: var(--cream);
-		transition:
-			border-color 250ms var(--ease),
-			transform 250ms var(--ease);
-	}
-
-	.path:hover {
-		border-color: var(--teal);
-		transform: translateY(-2px);
-	}
-
-	/* A band rather than a slab: full width, but only as tall as it needs to be,
-	   with the label and the arrow on the same optical line. */
-	.path--primary {
-		grid-column: 1 / -1;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 2rem;
-		padding: 1.4rem 1.75rem;
-		background: var(--teal);
-		border-color: transparent;
-		color: var(--cream);
-	}
-
-	.path__primary-text {
-		display: grid;
-		gap: 0.35rem;
-	}
-
-	.path--primary .path__cta {
-		font-size: 1.75rem;
-		opacity: 0.8;
+		grid-template-columns: minmax(0, 1fr) auto;
+		align-items: baseline;
+		gap: 0.35rem clamp(1.25rem, 4vw, 3rem);
+		padding: clamp(1.35rem, 3.2vh, 2rem) 0;
+		transition: transform 380ms var(--ease);
 	}
 
 	.path__label {
-		font-family: var(--display);
-		font-size: clamp(1.375rem, 2.4vw, 1.75rem);
-		line-height: 1.1;
-	}
-
-	.path--primary .path__label {
-		font-size: clamp(1.75rem, 3.2vw, 2.375rem);
+		grid-column: 1;
+		font-family: var(--face-bodoni);
+		font-size: clamp(1.375rem, 2.6vw, 1.875rem);
+		line-height: 1.15;
+		color: var(--ink);
 	}
 
 	.path__line {
-		max-width: 30rem;
-		font-size: 1rem;
-		line-height: 1.5;
+		grid-column: 1;
+		max-width: 56ch;
+		font-size: 0.9375rem;
+		line-height: 1.55;
 		color: var(--ink-soft);
+		text-wrap: pretty;
 	}
 
-	.path--primary .path__line {
-		color: rgba(251, 248, 240, 0.85);
-	}
-
-	.path__cta {
+	.path__arrow {
+		grid-column: 2;
+		grid-row: 1 / -1;
+		align-self: center;
 		font-size: 1.125rem;
-		opacity: 0.6;
+		color: var(--teal);
+		transition: translate 340ms var(--ease);
 	}
 
-	/* ── Subscribe and contact ──────────────────────────────────────────── */
+	/* Once there is room, the row is read across rather than down: what it is,
+	   what it means, and the way in — three things on one line, which is what
+	   keeps the middle of a wide row from being empty. */
+	@media (min-width: 58rem) {
+		.path {
+			grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.15fr) auto;
+			align-items: center;
+			gap: clamp(1.5rem, 4vw, 3.5rem);
+		}
+
+		.path__label {
+			grid-row: 1;
+		}
+
+		.path__line {
+			grid-column: 2;
+			grid-row: 1;
+			margin: 0;
+		}
+
+		.path__arrow {
+			grid-column: 3;
+			grid-row: 1;
+		}
+	}
+
+	/* Donate. Larger, in the brand's own colour, and given a marker in the
+	   gutter — enough that it is plainly the first thing asked, without a filled
+	   rectangle around it. */
+	.paths__item--lead .path__label {
+		font-size: clamp(1.75rem, 3.6vw, 2.6rem);
+		color: var(--teal);
+	}
+
+	.paths__item--lead .path__line {
+		font-size: 1rem;
+		color: var(--ink);
+	}
+
+	.paths__item--lead .path__arrow {
+		font-size: 1.4rem;
+	}
+
+	.path:hover,
+	.path:focus-visible {
+		transform: translateX(0.4rem);
+	}
+
+	.path:hover .path__arrow,
+	.path:focus-visible .path__arrow {
+		translate: 0.45rem 0;
+	}
+
+	/* ── The foot ─────────────────────────────────────────────────────────── */
 
 	.join__base {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
-		gap: clamp(2rem, 5vw, 4rem);
-		padding-top: clamp(2rem, 4vh, 3rem);
-		border-top: 1px solid rgba(44, 39, 33, 0.14);
+		gap: clamp(2.5rem, 6vh, 3.5rem);
+		max-width: 76rem;
+		width: 100%;
+		margin-inline: auto;
+	}
+
+	.subscribe,
+	.contact {
+		display: grid;
+		gap: 0.75rem;
+		align-content: start;
+		font-style: normal;
 	}
 
 	.subscribe__heading,
 	.contact__heading {
-		margin-top: 0.6rem;
-		font-family: var(--display);
-		font-size: clamp(1.375rem, 2.4vw, 1.75rem);
-		line-height: 1.15;
+		margin: 0;
+		font-family: var(--face-bodoni);
+		font-size: clamp(1.25rem, 2.2vw, 1.625rem);
+		line-height: 1.2;
 		color: var(--ink);
 	}
 
 	.subscribe__desc,
 	.contact__desc {
-		margin-top: 0.6rem;
-		max-width: 28rem;
-		font-size: 1rem;
-		line-height: 1.55;
+		margin: 0;
+		max-width: 44ch;
+		font-size: 0.9375rem;
+		line-height: 1.6;
 		color: var(--ink-soft);
-	}
-
-	.subscribe__row {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.6rem;
-		margin-top: 1.25rem;
-	}
-
-	.subscribe__input {
-		flex: 1 1 14rem;
-		padding: 0.7rem 0.9rem;
-		border: 1px solid rgba(44, 39, 33, 0.2);
-		border-radius: 0.5rem;
-		background: var(--cream);
-		font: inherit;
-		font-size: 1rem;
-		color: var(--ink);
-	}
-
-	.subscribe__input:focus-visible {
-		outline: 1.5px solid var(--teal);
-		outline-offset: 1px;
-	}
-
-	.subscribe__button {
-		padding: 0.7rem 1.4rem;
-		border-radius: 0.5rem;
-		background: var(--teal);
-		color: var(--cream);
-		font-size: 1rem;
-	}
-
-	.subscribe__note {
-		margin-top: 0.7rem;
-		font-size: 0.8125rem;
-		color: var(--ink-faint);
-	}
-
-	.contact {
-		font-style: normal;
+		text-wrap: pretty;
 	}
 
 	.contact__eyebrow {
+		display: flex;
+		align-items: center;
+		gap: 0.85rem;
+		margin: 0;
 		font-size: 0.6875rem;
-		font-weight: 500;
+		font-weight: 600;
 		letter-spacing: 0.2em;
 		text-transform: uppercase;
+		color: var(--teal);
+	}
+
+	.contact__eyebrow-rule {
+		display: block;
+		width: 2.5rem;
+		height: 1px;
+		background: currentColor;
+		opacity: 0.55;
+	}
+
+	.contact__link {
+		justify-self: start;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-top: 0.35rem;
+		padding-bottom: 0.3rem;
+		border-bottom: 1px solid color-mix(in srgb, var(--teal) 40%, transparent);
+		font-size: 1.0625rem;
+		color: var(--teal);
+	}
+
+	.contact__arrow {
+		transition: translate 320ms var(--ease);
+	}
+
+	.contact__link:hover .contact__arrow,
+	.contact__link:focus-visible .contact__arrow {
+		translate: 0.3rem 0;
+	}
+
+	/* A ruled field, like every field on the registration form. */
+	.subscribe__row {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		margin-top: 0.4rem;
+		padding-bottom: 0.55rem;
+		border-bottom: 1px solid rgba(44, 39, 33, 0.3);
+		transition: border-color 260ms var(--ease);
+	}
+
+	.subscribe__row:focus-within {
+		border-bottom-color: var(--teal);
+	}
+
+	.subscribe__input {
+		flex: 1 1 auto;
+		min-width: 0;
+		border: 0;
+		border-radius: 0;
+		background: none;
+		padding: 0.25rem 0;
+		font: inherit;
+		font-size: 1.0625rem;
+		color: var(--ink);
+	}
+
+	.subscribe__input::placeholder {
 		color: var(--ink-faint);
+	}
+
+	.subscribe__input:focus {
+		outline: none;
+	}
+
+	.subscribe__button {
+		flex: none;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		padding: 0;
+		border: 0;
+		background: none;
+		font: inherit;
+		font-size: 0.8125rem;
+		font-weight: 600;
+		letter-spacing: 0.11em;
+		text-transform: uppercase;
+		color: var(--teal);
+		cursor: pointer;
+	}
+
+	.subscribe__arrow {
+		transition: translate 320ms var(--ease);
+	}
+
+	.subscribe__button:hover .subscribe__arrow,
+	.subscribe__button:focus-visible .subscribe__arrow {
+		translate: 0.3rem 0;
+	}
+
+	.subscribe__note {
+		margin: 0;
+		font-size: 0.8125rem;
+		line-height: 1.5;
+		color: var(--ink-faint);
+	}
+
+	@media (min-width: 58rem) {
+		.join__base {
+			grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+			gap: clamp(3rem, 7vw, 6rem);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.path,
+		.path:hover,
+		.path__arrow,
+		.contact__arrow,
+		.subscribe__arrow {
+			transition: none;
+			transform: none;
+			translate: none;
+		}
 	}
 </style>
 
