@@ -1,0 +1,293 @@
+---
+/**
+ * The shop, on the landing page.
+ *
+ * A plate rather than a band. A full-width dark section here would scroll
+ * under the bar, and the bar takes its colour from the cream ground this page
+ * is laid on — it would be teal type on a pale film over a photograph, which is
+ * the one thing it must never be. Set into the page instead, the dark is the
+ * gear-change without lying to anything above it.
+ *
+ * The item, its price and its line come from the marketplace's own data, so the
+ * shop and the page that points at it can never disagree.
+ */
+import { ITEMS, PILLARS } from '../../data/marketplace';
+
+const tee = ITEMS.find((item) => item.featured)!;
+const pillar = PILLARS[tee.pillar];
+const rupees = (n: number) => `₹${n.toLocaleString('en-IN')}`;
+---
+
+<section class="shop" aria-labelledby="shop-heading">
+	<div class="shop__plate" style={`--accent: var(--${pillar.accent})`}>
+		<div class="shop__stage">
+			<img
+				class="shop__img"
+				src={tee.plate || undefined}
+				alt={`${tee.name}, front and back`}
+				width="1471"
+				height="805"
+				loading="lazy"
+				decoding="async"
+			/>
+		</div>
+
+		<div class="shop__words">
+			<p class="shop__eyebrow">
+				<span class="shop__rule" aria-hidden="true"></span>
+				Marketplace
+			</p>
+
+			<h2 class="shop__title" id="shop-heading">
+				Somebody made this, and somebody is paid for it.
+			</h2>
+
+			{/* The wall label the arc gives its plates, doing a shop's job. */}
+			<div class="shop__label">
+				<p class="shop__pillar">{pillar.label}</p>
+				<p class="shop__name">{tee.name}</p>
+				<p class="shop__line">{tee.line}</p>
+				<p class="shop__foot">
+					<span class="shop__price">{rupees(tee.price)}</span>
+					<a class="shop__go" href="/marketplace">
+						Visit the marketplace
+						<span class="shop__arrow" aria-hidden="true">&rarr;</span>
+					</a>
+				</p>
+			</div>
+
+			<p class="shop__note">
+				The first making cycle is still running. Prices are indicative.
+			</p>
+		</div>
+	</div>
+</section>
+
+<style>
+	.shop {
+		padding: clamp(1rem, 3vh, 2.5rem) var(--gutter) clamp(3rem, 7vh, 5rem);
+	}
+
+	/* The dark. A teal deep enough to read as a different room, lit from the
+	   corner the photograph is in so the two halves belong to one object. */
+	.shop__plate {
+		position: relative;
+		display: grid;
+		grid-template-columns: 1fr;
+		overflow: clip;
+		border-radius: 14px;
+		background:
+			radial-gradient(
+				76% 88% at 6% 10%,
+				color-mix(in srgb, var(--teal) 46%, transparent) 0%,
+				transparent 70%
+			),
+			radial-gradient(
+				60% 70% at 96% 96%,
+				color-mix(in srgb, var(--accent) 22%, transparent) 0%,
+				transparent 68%
+			),
+			var(--teal-deep);
+		color: var(--cream);
+		box-shadow:
+			0 1px 0 rgba(255, 255, 255, 0.06) inset,
+			0 30px 60px -40px rgba(14, 62, 69, 0.75);
+	}
+
+	/* The same grain the rest of the site is laid over, so the plate sits in the
+	   page rather than on top of it. */
+	.shop__plate::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: 2;
+		opacity: 0.2;
+		pointer-events: none;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='1 0 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+	}
+
+	/* Taller on a phone than it would be on a wide screen, because the thing
+	   being sold is a garment and the marks on it are the point: the front mark
+	   and the dragonfly both have to be in the frame. */
+	.shop__stage {
+		position: relative;
+		overflow: clip;
+		aspect-ratio: 5 / 4;
+	}
+
+	.shop__img {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: 50% 26%;
+		/* A transform, so the lean is the compositor's own work. */
+		transition: scale 720ms var(--ease);
+	}
+
+	.shop__plate:hover .shop__img {
+		scale: 1.03;
+	}
+
+	/* The photograph is on grey; the plate is teal. Left hard against each other
+	   they read as two pictures, so the join is a gradient of the plate's own
+	   colour drawn over the edge of the photograph. */
+	.shop__stage::after {
+		content: '';
+		position: absolute;
+		inset: auto 0 -1px;
+		height: 30%;
+		background: linear-gradient(to top, var(--teal-deep) 0%, transparent 100%);
+		opacity: 0.9;
+	}
+
+	.shop__words {
+		position: relative;
+		z-index: 1;
+		display: grid;
+		align-content: center;
+		gap: clamp(1.1rem, 2.4vh, 1.6rem);
+		padding: clamp(1.75rem, 5vw, 3.25rem);
+	}
+
+	.shop__eyebrow {
+		display: flex;
+		align-items: center;
+		gap: 0.85rem;
+		margin: 0;
+		font-size: 0.6875rem;
+		font-weight: 600;
+		letter-spacing: 0.2em;
+		text-transform: uppercase;
+		color: color-mix(in srgb, var(--cream) 78%, transparent);
+	}
+
+	.shop__rule {
+		display: block;
+		width: 2.5rem;
+		height: 1px;
+		background: var(--accent);
+	}
+
+	.shop__title {
+		margin: 0;
+		max-width: 20ch;
+		font-family: var(--face-bodoni);
+		font-size: clamp(1.6rem, 3.1vw, 2.5rem);
+		font-weight: var(--display-weight);
+		line-height: 1.12;
+		letter-spacing: -0.01em;
+		color: var(--warm-white);
+		text-wrap: balance;
+	}
+
+	.shop__label {
+		display: grid;
+		gap: 0.3rem;
+		padding-top: clamp(1rem, 2.4vh, 1.4rem);
+		border-top: 1px solid rgba(251, 248, 240, 0.18);
+	}
+
+	/* The commitment's colour, lifted toward cream until it can be read at ten
+	   pixels on this ground. The accent alone measured 3.60 against the plate,
+	   which is a large-text number being asked to do small-text work. */
+	.shop__pillar {
+		margin: 0;
+		font-size: 0.625rem;
+		font-weight: 600;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: color-mix(in oklab, var(--accent) 46%, var(--cream));
+	}
+
+	.shop__name {
+		margin: 0.2rem 0 0;
+		font-family: var(--face-bodoni);
+		font-size: clamp(1.1rem, 1.9vw, 1.375rem);
+		line-height: 1.2;
+		color: var(--warm-white);
+	}
+
+	.shop__line {
+		margin: 0;
+		font-size: 0.9375rem;
+		line-height: 1.5;
+		color: color-mix(in srgb, var(--cream) 80%, transparent);
+	}
+
+	.shop__foot {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 0.6rem clamp(1.25rem, 3vw, 2.25rem);
+		margin: 0.55rem 0 0;
+	}
+
+	.shop__price {
+		font-family: var(--face-bodoni);
+		font-size: clamp(1.25rem, 2.2vw, 1.625rem);
+		line-height: 1;
+		color: var(--warm-white);
+		font-variant-numeric: lining-nums tabular-nums;
+	}
+
+	.shop__go {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		font-size: 0.8125rem;
+		font-weight: 600;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--cream);
+		border-bottom: 1px solid rgba(251, 248, 240, 0.34);
+		padding-bottom: 0.2rem;
+	}
+
+	.shop__arrow {
+		transition: translate 300ms var(--ease);
+	}
+
+	.shop__go:hover .shop__arrow,
+	.shop__go:focus-visible .shop__arrow {
+		translate: 0.3rem 0;
+	}
+
+	.shop__note {
+		margin: 0;
+		font-size: 0.8125rem;
+		line-height: 1.5;
+		color: color-mix(in srgb, var(--cream) 58%, transparent);
+	}
+
+	/* Side by side once there is room for the photograph to be a photograph. */
+	@media (min-width: 56rem) {
+		.shop__plate {
+			grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
+			align-items: stretch;
+		}
+
+		.shop__stage {
+			aspect-ratio: auto;
+			min-height: clamp(24rem, 42vw, 32rem);
+		}
+
+		/* On this side the join runs the other way — along the edge the words
+		   begin at, rather than under the picture. */
+		.shop__stage::after {
+			inset: 0 -1px 0 auto;
+			width: 34%;
+			height: auto;
+			background: linear-gradient(to left, var(--teal-deep) 0%, transparent 100%);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.shop__img,
+		.shop__plate:hover .shop__img,
+		.shop__arrow {
+			transition: none;
+			scale: none;
+		}
+	}
+</style>

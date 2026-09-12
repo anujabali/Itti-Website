@@ -5,6 +5,7 @@ import PlateCredit from '../components/home/PlateCredit.astro';
 import PillarCard from '../components/home/PillarCard.astro';
 import OurStory from '../components/home/OurStory.astro';
 import Featured from '../components/home/Featured.astro';
+import Shop from '../components/home/Shop.astro';
 import Impact from '../components/home/Impact.astro';
 import Events from '../components/home/Events.astro';
 import JoinUs from '../components/home/JoinUs.astro';
@@ -351,9 +352,9 @@ Small actions today can keep our planet alive for tomorrow.`,
 			<div class="turn__head u-fade">
 				<p class="turn__eyebrow">
 					<span class="turn__eyebrow-rule" aria-hidden="true"></span>
-					What we work on
+					Our Commitments
 				</p>
-				<h2 class="turn__title" id="commitments-heading">Our commitments.</h2>
+				<h2 class="turn__title" id="commitments-heading">What we work for.</h2>
 				<p class="turn__lede">
 					Skilling and livelihood for neurodivergent people. Support for families
 					through cancer. Practical climate work across land, air and water.
@@ -364,6 +365,8 @@ Small actions today can keep our planet alive for tomorrow.`,
 				{PILLARS.map((pillar) => <PillarCard {...pillar} />)}
 			</div>
 		</section>
+
+		<Shop />
 
 		<OurStory />
 		<Featured />
