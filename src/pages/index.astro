@@ -1105,7 +1105,12 @@ Small actions today can keep our planet alive for tomorrow.`,
 		 * cap is only there so nothing can hold the page for ever.
 		 */
 		const RUN_GAP = 220;
-		const RUN_CAP = 1500;
+		/* Generous, because it is not what ends a run — a gap or a rising delta
+		   is, and a hand coming back on the trackpad does both. This is only the
+		   promise that nothing can hold the page for ever. At fifteen hundred a
+		   very long flick still got six pixels past the landing once its tail
+		   outlived the cap. */
+		const RUN_CAP = 2600;
 		let runAt = 0;
 		let runMag = Infinity;
 		let runEnds = 0;
