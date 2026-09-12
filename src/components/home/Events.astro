@@ -119,9 +119,11 @@ const EVENTS = [
 	}
 
 	/* A list of three is still a list, and a list nothing answers reads as a
-	   table of contents. Each row takes a little ground and a little travel
-	   under the hand, and the ground bleeds past the gutter so it reads as the
-	   page lighting rather than a box appearing. */
+	   table of contents. Each row steps a little under the hand — a movement and
+	   nothing else, deliberately. A ground fading in behind the row is the same
+	   thing that made the commitments lag: a layer fading behind type repaints
+	   the type with it, and no amount of making it smaller or promoting it
+	   helps. A transform is the compositor's own work and measures as free. */
 	.event__link {
 		position: relative;
 		display: grid;
@@ -131,27 +133,6 @@ const EVENTS = [
 		transition:
 			transform 420ms var(--ease),
 			opacity 250ms var(--ease);
-	}
-
-	.event__link::before {
-		content: '';
-		position: absolute;
-		inset: 0 calc(-1 * clamp(0.9rem, 2.4vw, 2rem));
-		z-index: -1;
-		border-radius: 0.75rem;
-		background: linear-gradient(
-			100deg,
-			color-mix(in srgb, var(--teal) 11%, transparent) 0%,
-			color-mix(in srgb, var(--teal) 4%, transparent) 46%,
-			transparent 78%
-		);
-		opacity: 0;
-		transition: opacity 420ms var(--ease);
-	}
-
-	.event__link:hover::before,
-	.event__link:focus-visible::before {
-		opacity: 1;
 	}
 
 	.event__link:hover,
