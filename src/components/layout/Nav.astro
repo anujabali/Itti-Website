@@ -331,23 +331,43 @@ const MENUS = [
 </script>
 
 <style>
+	/* How far the bar has turned: nought over the arc, one over cream.
+	   Registered, so it is a number the browser can interpolate rather than a
+	   token it can only swap.
+
+	   Everything that differs between the two grounds is a mix against this one
+	   number, which buys two things. Every part of the bar moves together by
+	   construction rather than by matching durations. And the mixing happens in
+	   oklab, so the lockup travels from teal to cream through warm tones
+	   instead of the pale desaturated greens sRGB puts in the middle — measured
+	   at 122,166,170 and 178,202,201 on the way, which over a dark photograph
+	   is what read as the colour glitching rather than fading. */
+	@property --turned {
+		syntax: '<number>';
+		inherits: true;
+		initial-value: 0;
+	}
+
 	.nav {
 		position: fixed;
 		inset: 0 0 auto;
 		z-index: 60;
-		color: var(--warm-white);
+		--turned: 0;
+		transition: --turned var(--turn-dur) var(--ease);
+		color: color-mix(in oklab, var(--teal) calc(var(--turned) * 100%), var(--warm-white));
 		/* On the dark arc the whole lockup is one colour; FOUNDATION's teal
-		   would sink into a deep-teal ground. */
-		--wordmark-name: var(--warm-white);
-		--wordmark-sub: rgba(250, 247, 240, 0.82);
-		transition: color var(--turn-dur) var(--ease);
+		   would sink into a deep-teal ground. On cream it returns to the
+		   brand's own two. */
+		--wordmark-name: color-mix(in oklab, var(--ink) calc(var(--turned) * 100%), var(--warm-white));
+		--wordmark-sub: color-mix(
+			in oklab,
+			var(--teal) calc(var(--turned) * 100%),
+			rgba(250, 247, 240, 0.82)
+		);
 	}
 
-	/* On cream the lockup returns to the brand's own two colours. */
 	.nav.is-light {
-		color: var(--teal);
-		--wordmark-name: var(--ink);
-		--wordmark-sub: var(--teal);
+		--turned: 1;
 	}
 
 	/* Over the arc the bar is glass on top of a picture. Past the turn there is
@@ -380,16 +400,20 @@ const MENUS = [
 	}
 
 	.nav__inner {
-		transition:
-			background-color var(--turn-dur) var(--ease),
-			border-color var(--turn-dur) var(--ease),
-			-webkit-backdrop-filter var(--turn-dur) var(--ease),
-			backdrop-filter var(--turn-dur) var(--ease);
+		background-color: color-mix(
+			in srgb,
+			rgba(251, 248, 240, 0.34) calc(var(--turned) * 100%),
+			transparent
+		);
+		border-bottom: 1px solid
+			color-mix(in srgb, rgba(44, 39, 33, 0.05) calc(var(--turned) * 100%), transparent);
 	}
 
+	/* The blur is the one thing left as a switch. It is not a colour, so it has
+	   no ugly middle to travel through, and a blur radius animating over a
+	   moving page is a full-width read-back on every frame of it for something
+	   nobody can see happening under a cream film. */
 	.nav.is-light .nav__inner {
-		background: rgba(251, 248, 240, 0.34);
-		border-bottom: 1px solid rgba(44, 39, 33, 0.05);
 		-webkit-backdrop-filter: blur(26px) saturate(1.5);
 		backdrop-filter: blur(26px) saturate(1.5);
 	}
@@ -631,42 +655,50 @@ const MENUS = [
 
 	/* ── Join Us pill — inverts at the turn ─────────────────────────────── */
 
+	/* A filled pill that inverts has no good middle. Travel the fill from cream
+	   to teal and the label from teal-deep to warm-white on the same number and
+	   they meet: for a moment the words are the colour of the button they sit
+	   on. Measured across the turn the worst contrast was 1.00:1 — literally
+	   invisible — and that pale smear at the top right is what read as the
+	   colour glitching rather than fading.
+
+	   So the fill travels and the label steps, at the one point where either ink
+	   is equally legible on the fill behind it. Worst contrast across the whole
+	   turn is 3.51:1 instead of 1.00:1; at rest it is 13.45:1 over the arc and
+	   5.74:1 on cream. It has to be a step and not a short ramp — a
+	   half-mixed ink on a half-mixed fill is the same smear, wherever it is
+	   put. */
+	.nav {
+		--pill-ink: clamp(0%, calc((var(--turned) - 0.75) * 10000%), 100%);
+	}
+
 	.pill {
 		flex: none;
 		padding: 0.5rem 1.35rem 0.55rem;
 		border-radius: 999px;
-		background: var(--cream);
-		color: var(--teal-deep);
+		background: color-mix(in oklab, var(--teal) calc(var(--turned) * 100%), var(--cream));
+		color: color-mix(in oklab, var(--warm-white) var(--pill-ink), var(--teal-deep));
 		font-size: 0.9375rem;
 		letter-spacing: 0.02em;
 		white-space: nowrap;
-		transition:
-			background var(--turn-dur) var(--ease),
-			color var(--turn-dur) var(--ease),
-			transform 300ms var(--ease);
-	}
-
-	.nav.is-light .pill {
-		background: var(--teal);
-		color: var(--warm-white);
+		transition: transform 300ms var(--ease);
 	}
 
 	/* Beside Join Us it is the quieter of the two; alone it takes the full
 	   weight, because there is nothing left for it to defer to. */
 	.pill--outline {
 		background: transparent;
-		border: 1px solid color-mix(in srgb, var(--cream) 55%, transparent);
-		color: var(--cream);
+		border: 1px solid
+			color-mix(
+				in oklab,
+				color-mix(in srgb, var(--teal) 45%, transparent) calc(var(--turned) * 100%),
+				color-mix(in srgb, var(--cream) 55%, transparent)
+			);
+		color: color-mix(in oklab, var(--teal) calc(var(--turned) * 100%), var(--cream));
 	}
 
 	.pill--outline:hover {
 		background: color-mix(in srgb, var(--cream) 14%, transparent);
-	}
-
-	.nav.is-light .pill--outline {
-		background: transparent;
-		border-color: color-mix(in srgb, var(--teal) 45%, transparent);
-		color: var(--teal);
 	}
 
 	.nav.is-light .pill--outline:hover {
@@ -674,16 +706,11 @@ const MENUS = [
 	}
 
 	/* Signed in, Join Us is gone and Donate is the only thing being asked. */
+	/* Signed in, Donate is filled too, and inverts on the same terms. */
 	.nav:has([data-signed-in]:not([hidden])) .pill--outline {
-		background: var(--cream);
-		border-color: var(--cream);
-		color: var(--teal-deep);
-	}
-
-	.nav.is-light:has([data-signed-in]:not([hidden])) .pill--outline {
-		background: var(--teal);
-		border-color: var(--teal);
-		color: var(--warm-white);
+		background: color-mix(in oklab, var(--teal) calc(var(--turned) * 100%), var(--cream));
+		border-color: color-mix(in oklab, var(--teal) calc(var(--turned) * 100%), var(--cream));
+		color: color-mix(in oklab, var(--warm-white) var(--pill-ink), var(--teal-deep));
 	}
 
 
@@ -700,12 +727,7 @@ const MENUS = [
 		font-size: 0.9375rem;
 		letter-spacing: 0.02em;
 		white-space: nowrap;
-		color: var(--cream);
-		transition: color var(--turn-dur) var(--ease);
-	}
-
-	.nav.is-light .signin {
-		color: var(--teal-deep);
+		color: color-mix(in oklab, var(--teal-deep) calc(var(--turned) * 100%), var(--cream));
 	}
 
 	.signin:hover {
@@ -1107,8 +1129,7 @@ const MENUS = [
 		/* The menu's wrapper, not just its list: a zero-width flex item still
 		   draws the gaps either side of it, which is 32px the bar does not have
 		   at 360. */
-		.nav__menu,
-		.nav__inner > .pill {
+		.nav__menu {
 			display: none;
 		}
 
@@ -1116,12 +1137,47 @@ const MENUS = [
 			display: flex;
 		}
 
-		/* The action and the menu button are a pair at this width, the way the
-		   two pills are on a wide bar. Closed up, the action sits further from
-		   the lockup and nearer the edge it belongs to. */
+		/* Three things at the end of a phone's bar, in the order a thumb wants
+		   them: what the page is asking of you, what you can give, and the way
+		   into everything else. Donate used to be dropped here and only existed
+		   inside the drawer.
+
+		   Order rather than markup, because the wide bar reads the other way
+		   round — there, Donate is the quieter of two pills and defers to Join
+		   Us on the right — and the document should keep saying that. */
+		.cta,
+		.who {
+			order: 1;
+		}
+
+		.nav__inner > .pill {
+			order: 2;
+		}
+
+		.nav__burger {
+			order: 3;
+		}
+
+		/* Closed up into one group and taken nearer the edge. The bar's own
+		   spacing is for things that are unrelated; these three are one cluster,
+		   and at 390 the old arrangement left thirty-odd pixels of nothing to
+		   the right of the menu button. */
+		.nav__inner {
+			gap: 0.5rem;
+			padding-right: clamp(0.65rem, 2.6vw, 1rem);
+		}
+
+		.nav__inner .pill + .cta,
+		.nav__inner .cta + .who,
 		.cta + .nav__burger,
 		.who + .nav__burger {
-			margin-left: calc(var(--nav-gap) * -0.45);
+			margin-left: 0;
+		}
+
+		/* A shade tighter than the wide bar, so three fit where two sat. */
+		.nav__inner > .pill,
+		.cta .pill {
+			padding-inline: 1.05rem;
 		}
 
 		.brand {

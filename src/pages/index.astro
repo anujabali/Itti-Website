@@ -201,7 +201,6 @@ const SLIDES = MOVEMENTS.flatMap((mv, plate) =>
 
 const PILLARS = [
 	{
-		numeral: 'I',
 		name: 'Neurodivergence',
 		line: 'Every mind deserves to shine.',
 		back: `Different minds do not need to fit in; they deserve to shine.
@@ -212,7 +211,6 @@ When every mind is embraced, every future becomes brighter.`,
 		mark: '/brand/pillar-neuro.png',
 	},
 	{
-		numeral: 'II',
 		name: 'Cancer Care',
 		line: 'Care, courage and hope.',
 		back: `No one should walk through cancer alone.
@@ -223,7 +221,6 @@ Because care can bring light, even during the darkest days.`,
 		mark: '/brand/pillar-cancer.png',
 	},
 	{
-		numeral: 'III',
 		name: 'Conservation',
 		line: 'Of land, air and water.',
 		back: `The Earth gives us everything; now it is our turn to give back.
@@ -377,6 +374,16 @@ Small actions today can keep our planet alive for tomorrow.`,
 		   ease-out, which suits a small thing arriving; over 1700ms of travel it
 		   starts abruptly and then crawls. This eases away as well as in. */
 		--arc-ease: cubic-bezier(0.62, 0.02, 0.14, 1);
+		/* The deck's curve is right for the deck: a hand-over walks the camera
+		   nine per cent of a tall plate, so even a steep middle is seven pixels
+		   a frame and reads as a drift. The way out travels a whole screen on
+		   the same curve, and the same steepness became thirty-five pixels a
+		   frame — four times its own average. Measured, it stood still for two
+		   hundred milliseconds, covered two thirds of the screen in five
+		   hundred, then crawled the last quarter for eight hundred. Its own
+		   curve answers the gesture sooner and halves the rush: nineteen pixels
+		   a frame at the peak, against thirty-five. */
+		--arc-leave: cubic-bezier(0.3, 0.06, 0.3, 1);
 		position: relative;
 		height: 100svh;
 		color: var(--warm-white);
@@ -561,6 +568,10 @@ Small actions today can keep our planet alive for tomorrow.`,
 	   here follows the scroll — the scroll is what the script is moving. */
 	.arc[data-exiting] .arc__layer[data-on] .mv__plate {
 		--exit: 1;
+		/* On the departure's own curve, not the deck's. The picture pushing in
+		   and the arc travelling up are one gesture; on two curves they separate,
+		   and the eye reads two movements where there is one. */
+		transition: transform 1700ms var(--arc-leave);
 	}
 
 	/* One picture leaves by fading; the one behind it was solid all along, so
@@ -1026,14 +1037,12 @@ Small actions today can keep our planet alive for tomorrow.`,
 			}
 
 			arc.dataset.slide = String(index);
-			// On the last line the next gesture is the way out, and the way out
-			// moves the whole arc on a transform. Handing it a layer now, while
-			// the reader is reading, costs a frame nobody is waiting on. Left
-			// until the gesture it cost sixty-eight milliseconds on the very frame
-			// the move began, which is four frames of the arc standing still
-			// before it went anywhere. Given back at the end of the exit, when
-			// this same line runs for slide nought.
-			arc.toggleAttribute('data-last', index === last);
+			// The layer is given back the moment the arc is no longer one gesture
+			// from leaving. Taking it is left until the move has settled — see
+			// `step` — because a compositor layer made in the middle of a
+			// transition is a stutter in that transition, which is the camera
+			// jerking on the way to the last line.
+			if (index !== last) arc.removeAttribute('data-last');
 			return travelling;
 		};
 
@@ -1065,9 +1074,61 @@ Small actions today can keep our planet alive for tomorrow.`,
 				() => {
 					locked = false;
 					arc.removeAttribute('data-moving');
+					// Standing on the last line, the next gesture is the way out and
+					// the way out moves the whole arc on a transform. The layer is
+					// worth its memory from here, and taking it now costs a frame
+					// nobody is waiting on — the reader is reading. Left until the
+					// gesture itself it cost sixty-eight milliseconds on the very
+					// frame the move began.
+					if (index === last) arc.setAttribute('data-last', '');
 				},
 				(travelling ? TRAVEL : FADE) + 220,
 			);
+			return true;
+		};
+
+		/**
+		 * A flick is not one event.
+		 *
+		 * A trackpad goes on sending for the better part of a second after the
+		 * hand has stopped, with the delta decaying each time, and not one of
+		 * those is distinguishable from a fresh gesture by looking at it alone.
+		 * Two things went wrong for want of reading the run rather than the
+		 * event. One flick could turn into two slides. And every event held back
+		 * during the way out was delivered the instant the guard lifted, sliding
+		 * the page a quarter of a screen past the landing on its own — which is
+		 * the jerk at the end of the move, measured at two hundred and forty-five
+		 * pixels arriving over a second after the arc had already settled.
+		 *
+		 * A run is over when a real gap appears, or when the deltas start rising
+		 * again, because momentum only ever decays. Either answer ends it; the
+		 * cap is only there so nothing can hold the page for ever.
+		 */
+		const RUN_GAP = 220;
+		const RUN_CAP = 1500;
+		let runAt = 0;
+		let runMag = Infinity;
+		let runEnds = 0;
+		let hushing = false;
+
+		const hush = (now: number) => {
+			hushing = true;
+			runAt = now;
+			runMag = Infinity;
+			runEnds = now + RUN_CAP;
+		};
+
+		/** True while this event is the tail of a flick already answered. */
+		const spent = (event: WheelEvent) => {
+			if (!hushing) return false;
+			const now = event.timeStamp;
+			const mag = Math.abs(event.deltaY);
+			if (now - runAt > RUN_GAP || now > runEnds || mag > runMag + 0.5) {
+				hushing = false;
+				return false;
+			}
+			runAt = now;
+			runMag = Math.min(runMag, mag);
 			return true;
 		};
 
@@ -1088,13 +1149,15 @@ Small actions today can keep our planet alive for tomorrow.`,
 			(event) => {
 				const dir = event.deltaY > 0 ? 1 : -1;
 				// The way out owns every gesture until it has finished, whatever
-				// the arc's own rectangle says. It is pinned and travelling by
-				// then, so it no longer holds the screen by the usual test — and a
-				// trackpad flick keeps sending for the better part of a second
-				// after the hand has stopped. Each of those was scrolling the page
-				// on past the landing, and the position set at the end pulled it
-				// back. That pull was the jerk.
+				// the arc's own rectangle says: it is pinned and travelling by
+				// then, so it no longer holds the screen by the usual test.
 				if (leaving) {
+					hush(event.timeStamp);
+					event.preventDefault();
+					return;
+				}
+				// And it goes on owning what is left of the flick afterwards.
+				if (spent(event)) {
 					event.preventDefault();
 					return;
 				}
@@ -1105,6 +1168,8 @@ Small actions today can keep our planet alive for tomorrow.`,
 				event.preventDefault();
 				if (locked || Math.abs(event.deltaY) < 2) return;
 				step(dir);
+				// One flick, one slide.
+				hush(event.timeStamp);
 			},
 			{ passive: false },
 		);
@@ -1305,7 +1370,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 
 			// One frame to commit the pinned position, then the lift.
 			requestAnimationFrame(() => {
-				arc.style.transition = `transform ${TRAVEL}ms var(--arc-ease)`;
+				arc.style.transition = `transform ${TRAVEL}ms var(--arc-leave)`;
 				arc.style.transform = 'translate3d(0, -100%, 0)';
 			});
 		};
