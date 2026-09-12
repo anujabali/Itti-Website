@@ -18,15 +18,17 @@ interface Props {
 	 */
 	navTheme?: 'auto' | 'light' | 'dark' | 'veil';
 	/**
-	 * Whether this page must begin at the very top.
+	 * Whether this page keeps its own place rather than the browser's.
 	 *
-	 * The opening arc is a deck, not a scroll: reloading it puts the reader back
-	 * on its first line whatever they had reached, so the position the browser
-	 * remembers means nothing here. Restored, it meant worse than nothing — the
-	 * page came back ten pixels down with a strip of the section below showing
-	 * under the picture, and because the arc was no longer against the top of
-	 * the screen the deck did not recognise it as its own and handed every
-	 * gesture to the page.
+	 * The opening arc is a deck, not a scroll, and the browser's remembered
+	 * position is no use inside it: it came back ten pixels down with a strip of
+	 * the section below showing under the picture, and because the arc was no
+	 * longer against the top of the screen the deck did not recognise it as its
+	 * own and handed every gesture to the page.
+	 *
+	 * So the browser is told not to restore, and the page restores itself —
+	 * below the arc only, and only on a reload or a back. See the script at the
+	 * foot of the landing page.
 	 */
 	opensAtTop?: boolean;
 	/**

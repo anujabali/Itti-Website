@@ -375,6 +375,44 @@ Small actions today can keep our planet alive for tomorrow.`,
 		<JoinUs />
 		<SiteFooter />
 	</div>
+
+	{/* Where the reader was.
+
+	    Blocking, and last in the document, so it runs after the page has a
+	    height and before the first paint — a restore done any later is a jump
+	    the reader watches happen.
+
+	    Only on a reload or a back, never on arriving here from somewhere else:
+	    following a link to the landing page should land on the landing page.
+	    And never into the opening — the deck does not come back on the line it
+	    was left on, so a remembered place above the arc's last pixel means
+	    nothing and the page starts at the top. Below it, which is the whole of
+	    the rest of the site, the place is kept. */}
+	<script is:inline>
+		(function () {
+			var key = 'itti:where';
+			try {
+				var save = function () {
+					try {
+						sessionStorage.setItem(key, String(Math.round(window.scrollY)));
+					} catch (e) {}
+				};
+				addEventListener('pagehide', save);
+				addEventListener('visibilitychange', function () {
+					if (document.visibilityState === 'hidden') save();
+				});
+
+				var nav = performance.getEntriesByType('navigation')[0];
+				var again = nav && (nav.type === 'reload' || nav.type === 'back_forward');
+				if (!again || location.hash) return;
+
+				var arc = document.querySelector('.arc');
+				var tall = arc ? arc.offsetHeight : 0;
+				var y = Number(sessionStorage.getItem(key) || 0);
+				if (tall > 0 && y >= tall) window.scrollTo(0, y);
+			} catch (e) {}
+		})();
+	</script>
 </Base>
 
 <style>
@@ -1114,6 +1152,9 @@ Small actions today can keep our planet alive for tomorrow.`,
 		let index = -1;
 		let locked = false;
 		let unlock: number | undefined;
+		/** Which move is the current one, so a cleanup that arrives late can tell
+		 *  whether it is still the cleanup for anything. */
+		let moves = 0;
 
 		const show = (next: number) => {
 			if (next === index) return;
@@ -1213,6 +1254,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 			if (next < 0 || next > last) return false;
 			const travelling = show(next);
 			locked = true;
+			const move = ++moves;
 			// The pictures get layers of their own for the length of the move, and
 			// give them back after. See the stylesheet.
 			arc.setAttribute('data-moving', '');
@@ -1223,14 +1265,32 @@ Small actions today can keep our planet alive for tomorrow.`,
 			unlock = window.setTimeout(
 				() => {
 					locked = false;
-					arc.removeAttribute('data-moving');
-					// Standing on the last line, the next gesture is the way out and
-					// the way out moves the whole arc on a transform. The layer is
-					// worth its memory from here, and taking it now costs a frame
-					// nobody is waiting on — the reader is reading. Left until the
-					// gesture itself it cost sixty-eight milliseconds on the very
-					// frame the move began.
-					if (index === last) arc.setAttribute('data-last', '');
+					/* Giving the layers back, and taking the one the way out needs,
+					   are both changes to what the compositor is holding, and either
+					   costs a frame. Measured, that frame landed around 1975ms —
+					   thirty milliseconds, a quarter of a second after the picture
+					   had settled, every single time. Nothing was moving, but the
+					   reader had only just stopped watching something move, and a
+					   hitch that close to a transition belongs to the transition as
+					   far as anyone can tell.
+
+					   So it waits for a frame the browser says it has nothing else to
+					   do in. The lock is released on time regardless — that gates the
+					   next gesture and cannot be late — and the token means a reader
+					   who gestures again before the idle frame arrives does not have
+					   the layers pulled out from under the move they just started. */
+					const later =
+						window.requestIdleCallback ?? ((fn: () => void) => window.setTimeout(fn, 240));
+					later(() => {
+						if (move !== moves) return;
+						arc.removeAttribute('data-moving');
+						// Standing on the last line, the next gesture is the way out
+						// and the way out moves the whole arc on a transform. The
+						// layer is worth its memory from here. Left until the gesture
+						// itself it cost sixty-eight milliseconds on the very frame
+						// the move began.
+						if (index === last) arc.setAttribute('data-last', '');
+					});
 				},
 				(travelling ? TRAVEL : FADE) + 220,
 			);
