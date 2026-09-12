@@ -220,6 +220,12 @@ const GRAIN =
 			// changes when the window does.
 			let bar = nav.offsetHeight;
 
+			/* A section may bring its own dark ground back in the middle of a page
+			   that is otherwise cream. The bar is bound to what is behind it, so it
+			   has to know: without this it stayed teal on a pale film while a dark
+			   room passed underneath, which is the one thing it must never be. */
+			const rooms = [...document.querySelectorAll<HTMLElement>('[data-dark-zone]')];
+
 			const settle = () => {
 				queued = false;
 				const zoneTop = zone.getBoundingClientRect().top;
@@ -236,7 +242,19 @@ const GRAIN =
 				   tried here could be beaten by a hard flick from far enough down
 				   the page, and being beaten is what read as the glitch. */
 				const band = bar * 2;
-				const turned = Math.max(0, Math.min(1, 1 - zoneTop / band));
+				let turned = Math.max(0, Math.min(1, 1 - zoneTop / band));
+
+				// Whichever dark room covers most of the bar takes the bar with it,
+				// in proportion to how much of the bar is standing on it. Bound to
+				// the ground exactly as the turn itself is, so it cannot be outrun
+				// at any scroll speed either.
+				let shaded = 0;
+				for (const room of rooms) {
+					const r = room.getBoundingClientRect();
+					const over = Math.min(r.bottom, bar) - Math.max(r.top, 0);
+					if (over > shaded) shaded = over;
+				}
+				if (shaded > 0) turned *= 1 - Math.min(1, shaded / bar);
 
 				// Only a hero taller than the screen has an inside to be deep in.
 				// Without this the lockup collapsed on the way back up into an arc
