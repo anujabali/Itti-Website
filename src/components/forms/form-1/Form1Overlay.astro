@@ -646,7 +646,15 @@
 				</dl>
 
 				<div class="f1-success__actions">
-					<a class="f1-submit-btn" href="/">
+					{/* Registering does not sign anybody in, and cannot: a session can
+					    only exist once somebody has proved they hold the address, or
+					    anyone could type a stranger's email into this form and be
+					    them. What it can do is hand them to the sign-in that already
+					    works, knowing the address. Shown only when one was given. */}
+					<a class="f1-submit-btn" href="/account" data-f1-signin hidden>
+						<span>Sign in to your account</span>
+					</a>
+					<a class="f1-submit-btn" href="/" data-f1-back>
 						<span>Back to the site</span>
 					</a>
 					<button class="f1-btn-secondary" type="button" data-f1-reset>
@@ -2594,6 +2602,24 @@
 							return row;
 						}),
 					);
+				}
+
+				/* Hand the address to the account page, so somebody who has just
+				   typed it does not type it again. Session storage, not the URL: an
+				   address in a query string is in the history, in the referrer, and
+				   in anything that logs either. */
+				const signinLink = successView.querySelector<HTMLElement>('[data-f1-signin]');
+				const backLink = successView.querySelector<HTMLElement>('[data-f1-back]');
+				if (signinLink && payload.email) {
+					try {
+						sessionStorage.setItem('itti.signin-email', payload.email);
+					} catch {
+						// A browser refusing storage still gets the link, and the
+						// account page still asks for the address.
+					}
+					signinLink.hidden = false;
+					// Signing in is the thing to do next; going back is not.
+					backLink?.setAttribute('class', 'f1-btn-secondary');
 				}
 
 				successView.scrollIntoView({ behavior: 'smooth', block: 'start' });

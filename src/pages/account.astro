@@ -3123,6 +3123,22 @@ const FACTS = {
 			// ── sign in ────────────────────────────────────────────────────────────
 
 			const signinForm = root.querySelector<HTMLFormElement>('[data-signin-form]');
+
+			/* Somebody who has just registered arrives here with their address
+			   already known. Filling it in is the whole of what this does — the
+			   code still goes to that address and still has to come back, because
+			   that is the only thing that proves it is theirs. Read once and
+			   dropped, so a later visit to this page starts empty. */
+			try {
+				const justGave = sessionStorage.getItem('itti.signin-email');
+				if (justGave) {
+					sessionStorage.removeItem('itti.signin-email');
+					const field = root.querySelector<HTMLInputElement>('#acct-email');
+					if (field && !field.value) field.value = justGave;
+				}
+			} catch {
+				// No storage, no shortcut. The field is asked for as usual.
+			}
 			const signinGo = root.querySelector<HTMLButtonElement>('[data-signin-go]');
 			// Verifying a code needs the address it was sent to, and the person
 			// typing it should not have to give it twice.
