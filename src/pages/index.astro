@@ -409,7 +409,30 @@ Small actions today can keep our planet alive for tomorrow.`,
 				var arc = document.querySelector('.arc');
 				var tall = arc ? arc.offsetHeight : 0;
 				var y = Number(sessionStorage.getItem(key) || 0);
-				if (tall > 0 && y >= tall) window.scrollTo(0, y);
+				if (tall > 0 && y >= tall) {
+					/* Instantly. The root is set to scroll smoothly, which is right
+					   for a link to an anchor and completely wrong here: the page
+					   glided from the top down to the remembered position over some
+					   seven hundred milliseconds, flying through every section on the
+					   way. That is the lag, and the dark band it flew through is the
+					   screen turning teal. */
+					var root = document.documentElement;
+					var had = root.style.scrollBehavior;
+					root.style.scrollBehavior = 'auto';
+					window.scrollTo(0, y);
+					root.style.scrollBehavior = had;
+					/* And the bar starts on the ground it is actually standing on.
+					   It works this out for itself, but not until its own script has
+					   run, which is after the first paint — so a reload into the page
+					   put a bar in its dark state over cream for a frame or two, which
+					   is a white lockup on a white ground. Below the arc there is only
+					   one ground, so this needs no measurement. */
+					var bar = document.querySelector('[data-nav]');
+					if (bar) {
+						bar.style.setProperty('--turned', '1');
+						bar.classList.add('is-light');
+					}
+				}
 			} catch (e) {}
 		})();
 	</script>
@@ -1133,12 +1156,23 @@ Small actions today can keep our planet alive for tomorrow.`,
 		else open();
 		window.setTimeout(open, 2500);
 
-		/* And the page begins where the deck does. `scrollRestoration` is already
-		   off for this page, set in the head before anything can be restored;
-		   this catches the rest — a link with a fragment, a browser that restores
-		   anyway — and only at the moment the deck starts, so it can never take
-		   the page from under a reader who has already begun. */
-		if (!location.hash && window.scrollY !== 0) window.scrollTo(0, 0);
+		/* And the deck begins at its own first line.
+
+		   Only from inside the arc. This used to send the page to nought from
+		   wherever it was, which was right when nothing was allowed to be
+		   remembered and became the whole of the reload problem the moment
+		   something was: the page restored to where the reader had been, and then
+		   this dragged it back to the top — smoothly, because the root scrolls
+		   smoothly, so it glided through every section on the way. Below the
+		   arc's last pixel there is nothing here to correct. */
+		const tall = arc.offsetHeight;
+		if (!location.hash && window.scrollY > 0 && window.scrollY < tall) {
+			const root = document.documentElement;
+			const had = root.style.scrollBehavior;
+			root.style.scrollBehavior = 'auto';
+			window.scrollTo(0, 0);
+			root.style.scrollBehavior = had;
+		}
 	}
 
 	if (arc && slides.length && layers.length) {

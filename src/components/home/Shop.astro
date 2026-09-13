@@ -27,7 +27,8 @@ const rupees = (n: number) => `₹${n.toLocaleString('en-IN')}`;
 				alt={`${tee.name}, front and back`}
 				width="1471"
 				height="805"
-				loading="lazy"
+				loading="eager"
+				fetchpriority="low"
 				decoding="async"
 			/>
 		</div>
