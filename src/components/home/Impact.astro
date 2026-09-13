@@ -96,117 +96,76 @@ const FIGURES = [
 		text-wrap: balance;
 	}
 
-	/* The table. One rule over the whole row and a hairline between each figure,
-	   so the four are read across as one measurement rather than down as four
-	   separate claims. */
+	/* Four measures, each under a rule in the colour of the work it counts.
+
+	   The hairlines between columns had to go. A grid line is a promise that
+	   what sits either side of it is the same shape, and these are not: "3" is
+	   two glyphs and "10,000" is six, so every column was a different amount of
+	   ink against the same ruled box and the row read as lopsided. A rule over
+	   each figure makes four marks instead of one grid, and uneven widths stop
+	   being a fault. It also puts the colour in the structure rather than only
+	   in the numeral. */
 	.impact__row {
 		display: grid;
 		grid-template-columns: 1fr;
-		gap: 0;
+		gap: clamp(2rem, 4vw, 3.25rem);
 		max-width: 76rem;
 		margin: 0 auto;
-		border-top: 1px solid rgba(44, 39, 33, 0.16);
 	}
 
 	.figure {
 		display: grid;
 		align-content: start;
-		gap: 0.65rem;
-		padding: clamp(1.5rem, 3.5vh, 2.25rem) 0;
-		border-bottom: 1px solid rgba(44, 39, 33, 0.1);
+		gap: clamp(0.7rem, 1.6vh, 1rem);
+		padding-top: clamp(1.1rem, 2.4vh, 1.5rem);
+		border-top: 3px solid var(--accent);
 	}
 
-	.figure:last-child {
-		border-bottom: 0;
-	}
-
-	/* Lining figures and a tabular width, so four numerals of different lengths
-	   still sit on one baseline grid. */
+	/* Lining, tabular figures so the four sit on one baseline grid. */
 	.figure__value {
 		display: flex;
-		align-items: baseline;
-		gap: 0.08em;
+		align-items: flex-start;
+		gap: 0.03em;
 		margin: 0;
 		font-family: var(--face-bodoni);
-		font-size: clamp(2.75rem, 6.5vw, 4.25rem);
+		font-size: clamp(2.5rem, 5.2vw, 3.5rem);
 		font-weight: 400;
-		line-height: 0.92;
+		line-height: 0.95;
 		letter-spacing: -0.02em;
 		color: var(--accent-ink, var(--teal));
 		font-variant-numeric: lining-nums tabular-nums;
 	}
 
-	/* The plus is a qualifier, not a digit: set smaller and lifted, the way a
-	   footnote mark is. */
+	/* The plus is the whole claim — every one of these is a floor, not a count.
+	   It was set at less than half the numeral and faded, which on a page read
+	   at arm's length is a mark nobody sees. Two thirds, full strength, tucked
+	   against the last digit. */
 	.figure__plus {
-		align-self: flex-start;
-		font-size: 0.46em;
+		font-size: 0.66em;
 		line-height: 1;
-		padding-top: 0.12em;
-		opacity: 0.8;
+		padding-top: 0.06em;
 	}
 
 	.figure__label {
 		margin: 0;
-		max-width: 14ch;
+		max-width: 16ch;
 		font-size: 0.75rem;
 		font-weight: 600;
-		letter-spacing: 0.14em;
+		letter-spacing: 0.15em;
 		line-height: 1.5;
 		text-transform: uppercase;
-		color: var(--ink-soft);
+		color: var(--ink);
 	}
 
-	@media (min-width: 40rem) {
+	@media (min-width: 34rem) {
 		.impact__row {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
-
-		.figure {
-			padding-inline: clamp(1.25rem, 3vw, 2.25rem);
-			border-bottom: 1px solid rgba(44, 39, 33, 0.1);
-		}
-
-		.figure:first-child,
-		.figure:nth-child(3) {
-			padding-left: 0;
-			border-right: 1px solid rgba(44, 39, 33, 0.1);
-		}
-
-		.figure:nth-child(2),
-		.figure:last-child {
-			padding-right: 0;
-		}
-
-		.figure:nth-child(3),
-		.figure:last-child {
-			border-bottom: 0;
-		}
 	}
 
-	@media (min-width: 64rem) {
+	@media (min-width: 62rem) {
 		.impact__row {
 			grid-template-columns: repeat(4, minmax(0, 1fr));
-		}
-
-		.figure,
-		.figure:first-child,
-		.figure:nth-child(3) {
-			border-bottom: 0;
-			border-right: 1px solid rgba(44, 39, 33, 0.1);
-		}
-
-		.figure:last-child {
-			border-right: 0;
-			padding-right: 0;
-		}
-
-		.figure:first-child {
-			padding-left: 0;
-		}
-
-		.figure:nth-child(2) {
-			padding-right: clamp(1.25rem, 3vw, 2.25rem);
 		}
 	}
 </style>
