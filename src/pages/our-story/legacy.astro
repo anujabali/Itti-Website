@@ -600,7 +600,9 @@ const FOUNDER_GROUPS: CredentialGroup[] = [
 								<option value="Colleague - NCBS">Colleague - NCBS</option>
 								<option value="Colleague - Greenpeace">Colleague - Greenpeace</option>
 								<option value="Colleague - NIIT">Colleague - NIIT</option>
-								<option value="Cancer Support Community">Cancer Support Community</option>
+								<option value="Cancer Support Community"
+									>Cancer Support Community</option
+								>
 								<option value="Personal Friend">Personal Friend</option>
 								<option value="Other">Other</option>
 							</select>
@@ -629,7 +631,9 @@ const FOUNDER_GROUPS: CredentialGroup[] = [
 					</div>
 					<!-- Photo or Video Upload Section with 25 MB Limit -->
 					<div class="memory-form__field">
-						<label for="mem-media">Photo or Video <span class="req">*</span></label>
+						<label for="mem-media"
+							>Photo or Video <span class="opt">(optional)</span></label
+						>
 						<div class="memory-upload" id="memory-upload-zone">
 							<input
 								type="file"
@@ -637,18 +641,31 @@ const FOUNDER_GROUPS: CredentialGroup[] = [
 								name="media"
 								accept="image/*,video/*"
 								class="memory-upload__input"
-								required
 							/>
 							<div class="memory-upload__prompt" id="mem-upload-prompt">
-								<svg class="memory-upload__icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-									<rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-									<circle cx="8.5" cy="8.5" r="1.5"/>
-									<polyline points="21 15 16 10 5 21"/>
+								<svg
+									class="memory-upload__icon"
+									viewBox="0 0 24 24"
+									width="24"
+									height="24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1.6"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									aria-hidden="true"
+								>
+									<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+									<circle cx="8.5" cy="8.5" r="1.5"></circle>
+									<polyline points="21 15 16 10 5 21"></polyline>
 								</svg>
 								<div class="memory-upload__text">
-									<span class="memory-upload__cta">Choose a photo or video</span> or drag and drop
+									<span class="memory-upload__cta">Choose a photo or video</span> or drag
+									and drop
 								</div>
-								<span class="memory-upload__hint">JPG, PNG, WebP, MP4, MOV &middot; Up to 25 MB</span>
+								<span class="memory-upload__hint"
+									>JPG, PNG, WebP, MP4, MOV &middot; Up to 25 MB</span
+								>
 							</div>
 							<div class="memory-upload__preview" id="mem-upload-preview" hidden>
 								<div class="memory-upload__file-info">
@@ -658,7 +675,12 @@ const FOUNDER_GROUPS: CredentialGroup[] = [
 										<span class="memory-upload__filesize" id="mem-filesize"></span>
 									</div>
 								</div>
-								<button type="button" class="memory-upload__remove" id="mem-remove-file" aria-label="Remove uploaded file">&times;</button>
+								<button
+									type="button"
+									class="memory-upload__remove"
+									id="mem-remove-file"
+									aria-label="Remove uploaded file">&times;</button
+								>
 							</div>
 						</div>
 						<p class="memory-upload__error" id="mem-upload-error" hidden></p>
@@ -672,8 +694,10 @@ const FOUNDER_GROUPS: CredentialGroup[] = [
 						<div class="memory-form__check">&check;</div>
 						<h4>Thank you for sharing your memory of Itti.</h4>
 						<p id="mem-success-note">
-							Your memory is now prepared in an email addressed to her family &mdash; send it and
-							it reaches her archive. If you selected a photo or video, please remember to attach it in your email message. If your mail client did not open automatically, your words are still above: copy them to
+							Your memory is now prepared in an email addressed to her family &mdash;
+							send it and it reaches her archive. If you selected a photo or video,
+							please remember to attach it in your email message. If your mail client
+							did not open automatically, your words are still above: copy them to
 							<a href="mailto:hello@itti.org.in">hello@itti.org.in</a> and they will be held
 							alongside her archive.
 						</p>
@@ -1682,6 +1706,13 @@ const FOUNDER_GROUPS: CredentialGroup[] = [
 		color: #f7a399;
 	}
 
+	.memory-form__field .opt {
+		color: rgba(251, 248, 240, 0.55);
+		font-weight: 400;
+		text-transform: none;
+		letter-spacing: 0;
+	}
+
 	.memory-form__field input,
 	.memory-form__field select,
 	.memory-form__field textarea {
@@ -1741,7 +1772,9 @@ const FOUNDER_GROUPS: CredentialGroup[] = [
 		background: rgba(10, 47, 53, 0.45);
 		padding: 1.25rem 1rem;
 		text-align: center;
-		transition: border-color 200ms var(--ease), background 200ms var(--ease);
+		transition:
+			border-color 200ms var(--ease),
+			background 200ms var(--ease);
 		cursor: pointer;
 	}
 
@@ -2050,7 +2083,8 @@ const FOUNDER_GROUPS: CredentialGroup[] = [
 					vid.playsInline = true;
 					uploadThumb.appendChild(vid);
 				} else {
-					uploadThumb.innerHTML = '<span class="memory-upload__thumb-icon">&#128196;</span>';
+					uploadThumb.innerHTML =
+						'<span class="memory-upload__thumb-icon">&#128196;</span>';
 				}
 			}
 
@@ -2113,20 +2147,16 @@ const FOUNDER_GROUPS: CredentialGroup[] = [
 				event.preventDefault();
 
 				const mediaFile = mediaInput?.files?.[0];
-				if (!mediaFile) {
-					if (uploadError) {
-						uploadError.textContent = 'Please choose a photo or video to share.';
-						uploadError.hidden = false;
-					}
-					if (uploadZone) uploadZone.classList.add('has-error');
-					uploadZone?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-					return;
-				}
 
 				const said = new FormData(memForm);
 				const field = (name) => String(said.get(name) || '').trim();
 				const place = field('place');
-				const mediaAttachmentNote = `Attached photo/video: ${mediaFile.name} (${formatFileSize(mediaFile.size)}) [Please attach this file to the email]`;
+				// A mailto cannot carry a file, so the note asks for the attachment
+				// rather than announcing it. A letter that says "attached" of a file it
+				// does not hold leaves the family hunting for something that never came.
+				const mediaAttachmentNote = mediaFile
+					? `Please attach to this email: ${mediaFile.name} (${formatFileSize(mediaFile.size)})`
+					: '';
 
 				const letter = [
 					`Name: ${field('name')}`,
