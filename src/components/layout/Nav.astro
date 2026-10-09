@@ -1,9 +1,9 @@
-﻿---
+---
 import Mark from '../brand/Mark.astro';
 import Wordmark from '../brand/Wordmark.astro';
 
 /**
- * Site navigation. Stays visible and live for the entire opening arc â€” the
+ * Site navigation. Stays visible and live for the entire opening arc — the
  * overture is an offering, not a toll gate.
  *
  * Two states, driven by `.is-light`, which the page toggles when the ground
@@ -47,7 +47,7 @@ const MENUS = [
 						accent: 'ochre',
 					},
 					{ label: 'Cancer Care', href: '/commitments/cancer-care', accent: 'rose' },
-					{ label: 'Conservation', href: '/conservation', accent: 'sage' },
+					{ label: 'Conservation', href: '/commitments/conservation', accent: 'sage' },
 				],
 			},
 			{
@@ -106,7 +106,7 @@ const MENUS = [
 
 <header class="nav" id="site-nav" data-nav>
 	<div class="nav__inner">
-		<a class="brand" href="/" aria-label="The Itti Foundation â€” home">
+		<a class="brand" href="/" aria-label="The Itti Foundation — home">
 			<Mark class="brand__mark" />
 			<span class="brand__word">
 				<Wordmark />
@@ -135,7 +135,7 @@ const MENUS = [
 			{
 				/* One panel for the whole bar, not one per menu.
 			    Four panels each anchored to their own label meant four different
-			    places for the same object to appear, at four different widths â€”
+			    places for the same object to appear, at four different widths —
 			    the bar behaved differently depending on where you pointed. This
 			    one slides along under the labels and resizes to whatever it is
 			    holding, so the menu is a single thing that moves rather than four
@@ -199,14 +199,14 @@ const MENUS = [
 		*/
 		}
 		<!-- Donate does not come and go. Signing in replaces Join Us with the
-		     account, and leaves the way to give exactly where it was â€” for a
+		     account, and leaves the way to give exactly where it was — for a
 		     visitor who has not registered, the bar and the footer are otherwise
 		     the only two routes to it. Outlined beside Join Us so the two do not
 		     compete, filled once Join Us has gone and it is the only action left. -->
 		<a class="pill pill--outline" href="/donate">Donate</a>
 
 		<!-- Signing in belongs to joining, so it sits under it rather than beside
-		     it. Join Us stays a plain link that navigates on the first click â€”
+		     it. Join Us stays a plain link that navigates on the first click —
 		     making the site's main action a menu trigger would cost it a click,
 		     which is a poor trade for a tidier bar. The panel opens on hover, and
 		     on focus, which is what makes the link inside it reachable by keyboard
@@ -220,7 +220,7 @@ const MENUS = [
 		</div>
 		<a class="who" href="/account" data-who data-accent="teal" data-signed-in hidden>
 			<span class="who__name" data-who-name></span>
-			<span class="u-visually-hidden">â€” your account</span>
+			<span class="u-visually-hidden">— your account</span>
 		</a>
 
 		<button
@@ -275,7 +275,7 @@ const MENUS = [
 				hidden
 			>
 				<span data-who-name></span>
-				<span class="u-visually-hidden">â€” your account</span>
+				<span class="u-visually-hidden">— your account</span>
 			</a>
 		</div>
 	</div>
@@ -290,7 +290,7 @@ const MENUS = [
   auth client: that would put the whole SDK on every page of the site to render
   one word. The session's own token lives in local storage under a key the
   library names after the project, so its presence is readable here for nothing
-  â€” and checking it is what makes signing out in another tab, or clearing site
+  — and checking it is what makes signing out in another tab, or clearing site
   data, take effect here too rather than leaving a stale name in the corner.
 
   This is a greeting, not a permission. It guards nothing, and `/account` reads
@@ -349,7 +349,7 @@ const MENUS = [
 	   number, which buys two things. Every part of the bar moves together by
 	   construction rather than by matching durations. And the mixing happens in
 	   oklab, so the lockup travels from teal to cream through warm tones
-	   instead of the pale desaturated greens sRGB puts in the middle â€” measured
+	   instead of the pale desaturated greens sRGB puts in the middle — measured
 	   at 122,166,170 and 178,202,201 on the way, which over a dark photograph
 	   is what read as the colour glitching rather than fading. */
 	@property --turned {
@@ -398,8 +398,8 @@ const MENUS = [
 	/* Over the arc the bar is glass on top of a picture. Past the turn there is
 	   real content underneath, and a transparent bar means every section scrolls
 	   straight through the lockup. */
-	/* Glass rather than a cream lid. The page under it is no longer flat cream â€”
-	   it carries washes of ochre, teal and sage â€” and an opaque bar over that
+	/* Glass rather than a cream lid. The page under it is no longer flat cream —
+	   it carries washes of ochre, teal and sage — and an opaque bar over that
 	   reads as a different colour sitting on top of it. At 0.66 the ground comes
 	   through and the bar takes whatever the page is doing beneath it, which is
 	   what the veiled bar does on the dark pages. */
@@ -410,7 +410,7 @@ const MENUS = [
 	   bar kept glitching: any fixed length can be outrun. Crossing the join on
 	   a fast flick from far down the page gave the reader the dark arc under a
 	   bar still halfway to cream, and the faster they scrolled the wronger it
-	   looked. The bar is bound to its ground instead â€” see the layout â€” and is
+	   looked. The bar is bound to its ground instead — see the layout — and is
 	   exactly as light as the proportion of it standing over cream, at any
 	   speed, in either direction.
 
@@ -456,7 +456,7 @@ const MENUS = [
 	}
 
 	/* A page that is dark the whole way down still has content passing under
-	   the bar â€” a cream card, in the case of the form â€” so it needs the same
+	   the bar — a cream card, in the case of the form — so it needs the same
 	   ground the light state has, in its own colour. Without it the lockup and
 	   the links are white on cream for as long as the card is behind them. */
 	:global(body[data-nav-theme='dark']) .nav__inner,
@@ -484,7 +484,7 @@ const MENUS = [
 	   The border is declared here as well, at zero visibility, because border
 	   width does not transition with border colour. Without it the un-veiled bar
 	   had no bottom border at all, so the width snapped to 1px the instant the
-	   ground was added while the colour animated away from `currentColor` â€”
+	   ground was added while the colour animated away from `currentColor` —
 	   cream on every page that veils. The result was a white hairline flashing
 	   under the bar for the length of the fade. */
 	:global(body[data-nav-theme='veil']) .nav__inner {
@@ -585,7 +585,7 @@ const MENUS = [
 		}
 	}
 
-	/* â”€â”€ Brand â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+	/* ── Brand ──────────────────────────────────────────────────────────── */
 
 	.brand {
 		display: flex;
@@ -593,7 +593,7 @@ const MENUS = [
 		margin-right: auto;
 		min-width: 0;
 		/* Custom properties, so they reach the Mark and Wordmark components by
-		   inheritance â€” a scoped class selector here would not match them. */
+		   inheritance — a scoped class selector here would not match them. */
 		--mark-h: 2.65rem;
 		--wordmark-size: 1.4rem;
 	}
@@ -626,7 +626,7 @@ const MENUS = [
 		transform: translateX(-0.75rem);
 	}
 
-	/* â”€â”€ Links â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+	/* ── Links ──────────────────────────────────────────────────────────── */
 
 	.nav__menu {
 		display: contents;
@@ -680,19 +680,19 @@ const MENUS = [
 		transform: scaleX(1);
 	}
 
-	/* â”€â”€ Join Us pill â€” inverts at the turn â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+	/* ── Join Us pill — inverts at the turn ─────────────────────────────── */
 
 	/* A filled pill that inverts has no good middle. Travel the fill from cream
 	   to teal and the label from teal-deep to warm-white on the same number and
 	   they meet: for a moment the words are the colour of the button they sit
-	   on. Measured across the turn the worst contrast was 1.00:1 â€” literally
-	   invisible â€” and that pale smear at the top right is what read as the
+	   on. Measured across the turn the worst contrast was 1.00:1 — literally
+	   invisible — and that pale smear at the top right is what read as the
 	   colour glitching rather than fading.
 
 	   So the fill travels and the label steps, at the one point where either ink
 	   is equally legible on the fill behind it. Worst contrast across the whole
 	   turn is 3.51:1 instead of 1.00:1; at rest it is 13.45:1 over the arc and
-	   5.74:1 on cream. It has to be a step and not a short ramp â€” a
+	   5.74:1 on cream. It has to be a step and not a short ramp — a
 	   half-mixed ink on a half-mixed fill is the same smear, wherever it is
 	   put. */
 	.nav {
@@ -778,15 +778,15 @@ const MENUS = [
 		text-decoration-thickness: 1px;
 	}
 
-	/* â”€â”€ Who is signed in â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+	/* ── Who is signed in ───────────────────────────────────────────────── */
 
-	/* â”€â”€ Who is signed in â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+	/* ── Who is signed in ───────────────────────────────────────────────── */
 
 	/* One object, not two. A disc showing "T" beside a name reading "Tubhyam"
 	   says the same thing twice, and the letter was there out of avatar habit
 	   rather than because it earned the space.
 
-	   A pill, then â€” but outlined where Donate is filled. Two filled pills
+	   A pill, then — but outlined where Donate is filled. Two filled pills
 	   would read as two calls to action arguing; outlined, this reads as a
 	   state sitting beside an action, the way a ghost button sits next to a
 	   primary one. The stroke also gives the colour far more room to show than
@@ -860,16 +860,16 @@ const MENUS = [
 		color: inherit;
 	}
 
-	/* â”€â”€ Mega menu â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+	/* ── Mega menu ──────────────────────────────────────────────────────── */
 
 	/* One panel for the bar. It is placed against the bar itself rather than
-	   against a label, and slides to sit under whichever label is open â€” so
+	   against a label, and slides to sit under whichever label is open — so
 	   there is one object with one behaviour, wherever you point. */
 	.mega {
 		position: absolute;
 		top: 100%;
 		left: var(--gutter);
-		/* Transparent bridge between the bar and the card â€” visual gap without a
+		/* Transparent bridge between the bar and the card — visual gap without a
 		   hover gap. */
 		padding-top: 0.5rem;
 		opacity: 0;
@@ -997,7 +997,7 @@ const MENUS = [
 	   hit exactly is a link that feels unfinished. */
 	.mega__link {
 		/* Teal unless the link is one of the three bodies of work, which answer
-		   in their own colour â€” the same three the triptych and the giving card
+		   in their own colour — the same three the triptych and the giving card
 		   are marked with. */
 		--accent: var(--teal);
 		--accent-ink: var(--teal);
@@ -1017,7 +1017,7 @@ const MENUS = [
 	}
 
 	/* The ink is pulled toward the page's own so every colour clears 4.5 on its
-	   own wash. At full strength the three sat at 4.34 to 4.43 â€” the -ink
+	   own wash. At full strength the three sat at 4.34 to 4.43 — the -ink
 	   variants are tuned against plain cream, and a wash of the same hue lifts
 	   the ground out from under them. */
 	.mega__link:hover,
@@ -1072,12 +1072,12 @@ const MENUS = [
 		translate: 0.25rem 0;
 	}
 
-	/* â”€â”€ Mobile â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+	/* ── Mobile ─────────────────────────────────────────────────────────── */
 
 	/* The way into everything else, and on a phone it is the only way.
 
 	   No ring: the mark stands on its own. What made it invisible before was
-	   never the absence of an outline but the weight â€” two one-pixel lines
+	   never the absence of an outline but the weight — two one-pixel lines
 	   twenty-eight long, set against two solid pills, which is a hairline
 	   asked to hold its own against type. Half a pixel thicker and a little
 	   shorter carries it.
@@ -1111,7 +1111,7 @@ const MENUS = [
 
 	   Matched by what they are rather than where they sit. The first child of
 	   the button is the label a screen reader hears, so `:first-child` named
-	   nothing at all and only the lower bar ever turned â€” the close mark has
+	   nothing at all and only the lower bar ever turned — the close mark has
 	   been a slanted line crossing a flat one this whole time, rather than an
 	   X. */
 	.nav__burger[aria-expanded='true'] .nav__burger-bar {
@@ -1166,7 +1166,7 @@ const MENUS = [
 	}
 
 	/* Below this the full lockup cannot fit beside the menu button. At 360 it
-	   was setting THE ITT / FOUNDATI â€” a clipped wordmark reads as a fault, and
+	   was setting THE ITT / FOUNDATI — a clipped wordmark reads as a fault, and
 	   it was taking the room the actions needed. The mark is the identity; the
 	   name is a courtesy the bar cannot afford at this width, and it is at the
 	   top of every page the bar sits on anyway. */
@@ -1202,8 +1202,8 @@ const MENUS = [
 		}
 
 		/* Three things at the end of a phone's bar. The two pills keep the wide
-		   bar's order â€” Donate is the quieter of the pair and defers to the
-		   action on its right â€” and the menu button goes in front of them rather
+		   bar's order — Donate is the quieter of the pair and defers to the
+		   action on its right — and the menu button goes in front of them rather
 		   than after, so a pill is what sits against the edge. Donate used to be
 		   dropped at this width and existed only inside the drawer. */
 		.nav__burger {
