@@ -99,7 +99,13 @@ const csp = [
 	// remain in the markup. style-src-attr would be tighter; it is not old
 	// enough to rely on alone, and losing it means losing the layout.
 	`style-src 'self' 'unsafe-inline'`,
-	`img-src 'self' data: ${RAZORPAY.images.join(' ')}`,
+	// blob: is for the memory form on the legacy page, which shows the sender
+	// their own photograph before they send it. A blob URL can only be minted by
+	// script already running on this origin and refers to bytes the visitor chose
+	// themselves, so it widens nothing a page could not already reach.
+	`img-src 'self' data: blob: ${RAZORPAY.images.join(' ')}`,
+	// The same preview, when what they chose is a video.
+	`media-src 'self' blob:`,
 	`font-src 'self'`,
 	// api.postalpincode.in resolves an Indian PIN to its district.
 	`connect-src 'self' ${supabase} https://api.postalpincode.in ${RAZORPAY.connect.join(' ')}`,
