@@ -1,127 +1,395 @@
 ---
+/**
+ * The diary.
+ *
+ * Drawn on the server, not in the browser. The month grids, the dots and every
+ * event are in the HTML as it ships, so the page can be read by a search
+ * engine, by a reader whose JavaScript never arrives, and by anybody who views
+ * source. The script does only the things a build cannot know: which month the
+ * reader is actually in, which day is today, and what has already happened.
+ *
+ * That is also why the styles are scoped again. They had to be global while the
+ * day cells were built by script, because markup the compiler never sees cannot
+ * carry its scope attribute. Now it sees all of it.
+ *
+ * A day with something on it is a button; a day with nothing on it is not. An
+ * empty cell that takes focus and does nothing is a cell that wastes a reader's
+ * time, and there are thirty of them in a month.
+ */
+import {
+	EVENTS,
+	startsAt,
+	monthsSpanned,
+	type FoundationEvent,
+} from '../../data/events';
 
+const BUILT = new Date();
+const months = monthsSpanned(EVENTS, BUILT);
+
+/** Every event that falls on a given day, in the order they were written. */
+const onDay = new Map<string, FoundationEvent[]>();
+for (const event of EVENTS) {
+	onDay.set(event.date, [...(onDay.get(event.date) ?? []), event]);
+}
+
+const ymd = (y: number, m: number, d: number) =>
+	`${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+
+/** A month as a flat run of cells: the blank lead-in, then its days. */
+const cellsOf = (key: string) => {
+	const year = Number(key.slice(0, 4));
+	const month = Number(key.slice(5, 7));
+	const lead = new Date(year, month - 1, 1).getDay();
+	const length = new Date(year, month, 0).getDate();
+	const cells: Array<{ day: number; date: string } | null> = Array(lead).fill(null);
+	for (let day = 1; day <= length; day++)
+		cells.push({ day, date: ymd(year, month, day) });
+	return cells;
+};
+
+const monthName = (key: string) =>
+	new Date(Number(key.slice(0, 4)), Number(key.slice(5, 7)) - 1, 1).toLocaleString(
+		'en-GB',
+		{
+			month: 'long',
+			year: 'numeric',
+		},
+	);
+
+const dayName = (date: string) =>
+	new Date(`${date}T12:00:00`).toLocaleString('en-GB', {
+		weekday: 'short',
+		day: 'numeric',
+		month: 'short',
+	});
+
+/**
+ * The events, declared. A diary a search engine can read is a diary it can put
+ * in front of somebody looking for what is on — which is the whole reason for
+ * publishing one. No location is claimed here because none is recorded; an
+ * invented address is worse than an absent one.
+ */
+const SCHEMA = EVENTS.map((event) => ({
+	'@context': 'https://schema.org',
+	'@type': 'Event',
+	name: event.title,
+	startDate: startsAt(event),
+	description: event.desc,
+	eventStatus: 'https://schema.org/EventScheduled',
+	url: 'https://itti.org.in/#diary',
+	organizer: { '@id': 'https://itti.org.in/#foundation' },
+}));
+
+const WEEKDAYS = [
+	'Sunday',
+	'Monday',
+	'Tuesday',
+	'Wednesday',
+	'Thursday',
+	'Friday',
+	'Saturday',
+];
 ---
 
 <article class="event-calendar">
 	<div class="calendar__main">
 		<div class="calendar__header">
-			<button class="calendar__btn" id="prev-month">&larr;</button>
-			<h3 class="calendar__title" id="month-year">October 2026</h3>
-			<button class="calendar__btn" id="next-month">&rarr;</button>
+			<button
+				type="button"
+				class="calendar__btn"
+				data-step="-1"
+				aria-label="Previous month"
+			>
+				<span aria-hidden="true">&larr;</span>
+			</button>
+			<p class="calendar__title" data-title aria-live="polite">
+				{monthName(months[0])}
+			</p>
+			<button type="button" class="calendar__btn" data-step="1" aria-label="Next month">
+				<span aria-hidden="true">&rarr;</span>
+			</button>
 		</div>
-		<div class="calendar__grid-header">
-			<span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span
-				>Fr</span
-			><span>Sa</span>
+
+		<div class="calendar__grid-header" aria-hidden="true">
+			{WEEKDAYS.map((d) => <span>{d.slice(0, 2)}</span>)}
 		</div>
-		<div class="calendar__grid" id="calendar-days">
-			<!-- Days injected by JS -->
-		</div>
+
+		{
+			months.map((key, index) => (
+				<div class="calendar__month" data-month={key} hidden={index !== 0}>
+					<div class="calendar__grid">
+						{cellsOf(key).map((cell) => {
+							if (!cell)
+								return (
+									<span class="calendar__day calendar__day--blank" aria-hidden="true" />
+								);
+							const here = onDay.get(cell.date);
+							if (!here)
+								return (
+									<span class="calendar__day" data-date={cell.date}>
+										{cell.day}
+									</span>
+								);
+							const label = `${dayName(cell.date)}: ${here.map((e) => e.title).join(', ')}`;
+							return (
+								<button
+									type="button"
+									class="calendar__day calendar__day--has-event"
+									data-date={cell.date}
+									aria-label={label}
+								>
+									{cell.day}
+								</button>
+							);
+						})}
+					</div>
+				</div>
+			))
+		}
 	</div>
-	<div class="calendar__sidebar">
-		<h4 class="sidebar__title">Selected Event</h4>
-		<div id="event-details" class="sidebar__details">
-			<p class="sidebar__empty">Select a highlighted date to see event details.</p>
+
+	<aside class="calendar__sidebar">
+		<h3 class="sidebar__title" data-sidebar-title>What&rsquo;s next</h3>
+		<div class="sidebar__scroll">
+			<ol class="sidebar__details" data-list>
+				{
+					EVENTS.map((event) => (
+						<li>
+							<article class="event-card" data-date={event.date} tabindex="-1">
+								<time class="event-card__time" datetime={startsAt(event)}>
+									{dayName(event.date)} &middot; {event.time}
+								</time>
+								<h4 class="event-card__title">{event.title}</h4>
+								<p class="event-card__desc">{event.desc}</p>
+							</article>
+						</li>
+					))
+				}
+			</ol>
+			<p class="sidebar__empty" data-empty hidden>Nothing is on this day.</p>
+
+			{
+				/* The way back. It lived inside the empty message, which meant that
+			    picking a day that did have something on it left no way to see the rest
+			    again short of reloading the page. */
+			}
+			<button type="button" class="sidebar__all" data-all hidden>
+				&larr; Everything coming up
+			</button>
 		</div>
-	</div>
+	</aside>
 </article>
 
-<!--
-	The day cells are made by the script, so they never carry the scope attribute
-	Astro adds to markup it can see — which is why these rules are global rather
-	than scoped. Being global, every one of them is confined to `.event-calendar`
-	by hand: names like `.sidebar__title` and `.event-card` are too ordinary to be
-	let loose on a page that did not ask for them.
--->
-<style is:global>
+<script type="application/ld+json" is:inline set:html={JSON.stringify(SCHEMA)} />
+
+<script>
+	const root = document.querySelector('.event-calendar');
+	if (root) {
+		const months = [...root.querySelectorAll<HTMLElement>('[data-month]')];
+		const title = root.querySelector<HTMLElement>('[data-title]')!;
+		const list = root.querySelector<HTMLElement>('[data-list]')!;
+		const empty = root.querySelector<HTMLElement>('[data-empty]')!;
+		const sidebarTitle = root.querySelector<HTMLElement>('[data-sidebar-title]')!;
+		const cards = [...root.querySelectorAll<HTMLElement>('.event-card')];
+
+		const keys = months.map((m) => m.dataset.month!);
+		const named = (key: string) =>
+			new Date(Number(key.slice(0, 4)), Number(key.slice(5, 7)) - 1, 1).toLocaleString(
+				'en-GB',
+				{
+					month: 'long',
+					year: 'numeric',
+				},
+			);
+
+		/** Today, as the reader's own clock has it — not as the build had it. */
+		const now = new Date();
+		const pad = (n: number) => String(n).padStart(2, '0');
+		const today = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+
+		// What has already happened is dimmed rather than removed, so a reader can
+		// still see that it was held.
+		let past = 0;
+		for (const card of cards) {
+			if (card.dataset.date! < today) {
+				card.classList.add('event-card--past');
+				past++;
+			}
+		}
+		if (past === cards.length && cards.length) sidebarTitle.textContent = 'Recently';
+
+		const todayCell = root.querySelector<HTMLElement>(
+			`[data-date="${today}"].calendar__day`,
+		);
+		todayCell?.classList.add('calendar__day--today');
+		todayCell?.setAttribute('aria-current', 'date');
+
+		let at = Math.max(0, keys.indexOf(today.slice(0, 7)));
+
+		const show = (index: number) => {
+			at = Math.min(Math.max(index, 0), keys.length - 1);
+			months.forEach((m, i) => (m.hidden = i !== at));
+			title.textContent = named(keys[at]);
+			for (const button of root.querySelectorAll<HTMLButtonElement>('[data-step]')) {
+				const step = Number(button.dataset.step);
+				button.disabled = at + step < 0 || at + step > keys.length - 1;
+			}
+		};
+		show(at);
+
+		for (const button of root.querySelectorAll<HTMLButtonElement>('[data-step]')) {
+			button.addEventListener('click', () => show(at + Number(button.dataset.step)));
+		}
+
+		const all = root.querySelector<HTMLElement>('[data-all]')!;
+
+		const everything = () => {
+			sidebarTitle.textContent =
+				past === cards.length && cards.length ? 'Recently' : "What's next";
+			list.hidden = false;
+			empty.hidden = true;
+			all.hidden = true;
+			for (const other of root.querySelectorAll('.calendar__day--selected')) {
+				other.classList.remove('calendar__day--selected');
+			}
+			for (const card of cards) {
+				card.hidden = false;
+				card.classList.remove('event-card--picked');
+			}
+		};
+
+		root
+			.querySelector<HTMLButtonElement>('[data-all]')
+			?.addEventListener('click', everything);
+
+		for (const cell of root.querySelectorAll<HTMLButtonElement>(
+			'.calendar__day--has-event',
+		)) {
+			cell.addEventListener('click', () => {
+				const date = cell.dataset.date!;
+				for (const other of root.querySelectorAll('.calendar__day--selected')) {
+					other.classList.remove('calendar__day--selected');
+				}
+				cell.classList.add('calendar__day--selected');
+
+				const picked = cards.filter((c) => c.dataset.date === date);
+				sidebarTitle.textContent = cell.getAttribute('aria-label')!.split(':')[0];
+				list.hidden = picked.length === 0;
+				empty.hidden = picked.length > 0;
+				all.hidden = false;
+				for (const card of cards) {
+					card.hidden = card.dataset.date !== date;
+					card.classList.toggle('event-card--picked', card.dataset.date === date);
+				}
+				picked[0]?.focus();
+			});
+		}
+	}
+</script>
+
+<style>
 	.event-calendar {
 		background: color-mix(in srgb, var(--cream) 34%, #fff);
 		border: 1px solid rgba(44, 39, 33, 0.09);
 		border-radius: 10px;
 		display: grid;
-		grid-template-columns: 2fr 1fr;
+		grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
 		box-shadow: 0 2px 5px rgba(44, 39, 33, 0.06);
-		height: 100%;
 		overflow: hidden;
 	}
 
-	.event-calendar .calendar__main {
+	.calendar__main {
 		padding: clamp(1.5rem, 3vw, 2rem);
 		display: flex;
 		flex-direction: column;
-		gap: 1.5rem;
+		gap: 1.25rem;
 	}
 
-	.event-calendar .calendar__header {
+	.calendar__header {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 	}
 
-	.event-calendar .calendar__title {
+	.calendar__title {
+		margin: 0;
 		font-family: var(--face-bodoni);
 		font-size: 1.5rem;
 		color: var(--teal);
-		margin: 0;
 	}
 
-	.event-calendar .calendar__btn {
+	.calendar__btn {
+		width: 2.25rem;
+		height: 2.25rem;
+		border: 1px solid rgba(44, 39, 33, 0.12);
 		background: transparent;
-		border: 1px solid color-mix(in srgb, var(--teal) 30%, transparent);
-		color: var(--teal);
-		width: 2rem;
-		height: 2rem;
 		border-radius: 50%;
+		color: var(--teal);
 		cursor: pointer;
 		display: grid;
 		place-items: center;
-		transition: all 200ms ease;
+		transition:
+			background-color 200ms var(--ease),
+			opacity 200ms var(--ease);
 	}
 
-	.event-calendar .calendar__btn:hover {
+	.calendar__btn:hover:not(:disabled) {
 		background: color-mix(in srgb, var(--teal) 10%, transparent);
 	}
 
-	.event-calendar .calendar__grid-header {
+	.calendar__btn:disabled {
+		opacity: 0.3;
+		cursor: default;
+	}
+
+	.calendar__grid-header {
 		display: grid;
-		grid-template-columns: repeat(7, 1fr);
+		grid-template-columns: repeat(7, minmax(0, 1fr));
 		text-align: center;
 		font-weight: 600;
 		color: var(--ink-soft);
 		font-size: 0.85rem;
-		margin-bottom: -0.5rem;
 	}
 
-	.event-calendar .calendar__grid {
+	.calendar__grid {
 		display: grid;
-		grid-template-columns: repeat(7, 1fr);
-		gap: 0.5rem;
+		grid-template-columns: repeat(7, minmax(0, 1fr));
+		gap: 0.4rem;
 		text-align: center;
 	}
 
-	.event-calendar .calendar__day {
+	.calendar__day {
 		aspect-ratio: 1;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
+		border: 0;
+		background: transparent;
 		border-radius: 50%;
-		cursor: pointer;
+		font: inherit;
 		font-size: 0.95rem;
 		color: var(--ink);
-		transition: all 200ms ease;
 		position: relative;
+		transition:
+			background-color 200ms var(--ease),
+			color 200ms var(--ease);
 	}
 
-	.event-calendar .calendar__day:hover {
+	.calendar__day--blank {
+		visibility: hidden;
+	}
+
+	/* A button, so it says so. */
+	button.calendar__day {
+		cursor: pointer;
+	}
+
+	button.calendar__day:hover {
 		background: color-mix(in srgb, var(--teal) 10%, transparent);
 	}
 
-	.event-calendar .calendar__day--muted {
-		color: color-mix(in srgb, var(--ink) 30%, transparent);
-	}
-
-	.event-calendar .calendar__day--has-event::after {
+	.calendar__day--has-event::after {
 		content: '';
 		display: block;
 		width: 6px;
@@ -131,216 +399,146 @@
 		margin-top: 2px;
 	}
 
-	.event-calendar .calendar__day--selected {
-		background: var(--teal) !important;
-		color: #fff !important;
+	/* Today is ringed rather than filled, so the filled day can stay the one the
+	   reader chose. */
+	.calendar__day--today {
+		box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--teal) 55%, transparent);
+		font-weight: 600;
 	}
 
-	.event-calendar .calendar__sidebar {
+	.calendar__day--selected {
+		background: var(--teal);
+		color: var(--warm-white);
+	}
+
+	.calendar__day--selected::after {
+		background: var(--warm-white);
+	}
+
+	/* The panel is as tall as the calendar beside it and scrolls within itself.
+	   Capped at a fixed height instead, it stopped short of the calendar's foot
+	   and cut the last card in half. The `minmax(0, 1fr)` is what lets the list
+	   shrink below its own content so the row is sized by the calendar rather
+	   than by however many events there happen to be. */
+	.calendar__sidebar {
 		background: color-mix(in srgb, var(--teal) 8%, transparent);
 		padding: clamp(1.5rem, 3vw, 2rem);
 		border-left: 1px solid rgba(44, 39, 33, 0.09);
+		display: grid;
+		grid-template-rows: auto minmax(0, 1fr);
 	}
 
-	.event-calendar .sidebar__title {
+	.sidebar__scroll {
+		overflow-y: auto;
+		min-height: 0;
+	}
+
+	.sidebar__title {
 		font-family: var(--face-bodoni);
 		font-size: 1.25rem;
+		font-weight: var(--display-weight);
 		color: var(--teal-deep);
-		margin: 0 0 1.5rem 0;
+		margin: 0 0 1.25rem;
 	}
 
-	.event-calendar .sidebar__details {
+	.sidebar__details {
+		list-style: none;
 		display: flex;
 		flex-direction: column;
-		gap: 1rem;
+		gap: 0.75rem;
+		margin: 0;
+		padding: 0;
 	}
 
-	.event-calendar .sidebar__empty {
+	.sidebar__empty {
 		color: var(--ink-soft);
 		font-size: 0.9rem;
 		line-height: 1.5;
 	}
 
-	.event-calendar .event-card {
+	.sidebar__all {
+		margin-top: 1rem;
+		border: 0;
+		background: none;
+		padding: 0;
+		font: inherit;
+		font-size: 0.8125rem;
+		font-weight: 600;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--teal);
+		cursor: pointer;
+	}
+
+	.sidebar__all:hover {
+		text-decoration: underline;
+	}
+
+	.event-card {
 		background: #fff;
 		border: 1px solid rgba(44, 39, 33, 0.09);
 		border-radius: 8px;
 		padding: 1rem;
 		box-shadow: 0 2px 4px rgba(44, 39, 33, 0.04);
+		transition:
+			opacity 200ms var(--ease),
+			border-color 200ms var(--ease);
 	}
 
-	.event-calendar .event-card__time {
+	.event-card--past {
+		opacity: 0.5;
+	}
+
+	.event-card--picked {
+		border-color: color-mix(in srgb, var(--teal) 45%, transparent);
+	}
+
+	.event-card__time {
 		font-size: 0.75rem;
 		font-weight: 600;
-		color: var(--sage);
+		color: var(--sage-ink, var(--sage));
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		margin-bottom: 0.25rem;
 		display: block;
 	}
 
-	.event-calendar .event-card__title {
+	.event-card__title {
 		font-size: 0.95rem;
-		font-weight: 500;
+		font-weight: 600;
 		color: var(--ink);
-		margin: 0 0 0.5rem 0;
+		margin: 0 0 0.5rem;
 	}
 
-	.event-calendar .event-card__desc {
+	.event-card__desc {
 		font-size: 0.85rem;
 		color: var(--ink-soft);
 		margin: 0;
-		line-height: 1.4;
+		line-height: 1.45;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 48rem) {
 		.event-calendar {
 			grid-template-columns: 1fr;
 		}
-		.event-calendar .calendar__sidebar {
+
+		.calendar__sidebar {
 			border-left: none;
 			border-top: 1px solid rgba(44, 39, 33, 0.09);
+			display: block;
+		}
+
+		/* Stacked, there is nothing beside it to match, so it simply runs on. */
+		.sidebar__scroll {
+			overflow-y: visible;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.calendar__btn,
+		.calendar__day,
+		.event-card {
+			transition: none;
 		}
 	}
 </style>
-
-<script>
-	const events = [
-		{
-			date: '2026-10-05',
-			title: 'Monthly Volunteer Sync (Zoom)',
-			time: '11:00 AM',
-			desc: 'A quick online catch-up with our volunteers globally.',
-		},
-		{
-			date: '2026-10-10',
-			title: 'Pune Milk Bag Project Meet',
-			time: '4:00 PM',
-			desc: 'Offline event at Pune collection center for recycling.',
-		},
-		{
-			date: '2026-10-15',
-			title: 'Cancer Care Meetup',
-			time: '10:00 AM',
-			desc: 'Support and discussion group for individuals and families.',
-		},
-		{
-			date: '2026-10-18',
-			title: 'Periods ki Pathshala Webinar',
-			time: '12:30 PM',
-			desc: 'Online Zoom webinar raising awareness about menstrual health.',
-		},
-		{
-			date: '2026-10-22',
-			title: 'Neurodivergence Workshop',
-			time: '2:00 PM',
-			desc: 'An interactive offline workshop embracing cognitive diversity.',
-		},
-		{
-			date: '2026-10-28',
-			title: 'Rainwater Harvesting Visit',
-			time: '9:00 AM',
-			desc: 'Offline tour of the newly implemented community tanks.',
-		},
-		{
-			date: '2026-11-05',
-			title: 'Conservation Drive',
-			time: '9:00 AM',
-			desc: 'Tree planting and local environmental cleanup.',
-		},
-	];
-
-	// Open on the month the reader is actually in. Pinned to a literal date it
-	// would still be showing October long after October.
-	const today = new Date();
-	let currentDate = new Date(today.getFullYear(), today.getMonth(), 1);
-
-	const monthYearEl = document.getElementById('month-year');
-	const daysEl = document.getElementById('calendar-days');
-	const detailsEl = document.getElementById('event-details');
-	const prevBtn = document.getElementById('prev-month');
-	const nextBtn = document.getElementById('next-month');
-
-	function renderCalendar() {
-		daysEl.innerHTML = '';
-		const year = currentDate.getFullYear();
-		const month = currentDate.getMonth();
-
-		const firstDay = new Date(year, month, 1).getDay();
-		const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-		monthYearEl.innerText = currentDate.toLocaleString('default', {
-			month: 'long',
-			year: 'numeric',
-		});
-
-		// Pad empty days
-		for (let i = 0; i < firstDay; i++) {
-			const empty = document.createElement('div');
-			daysEl.appendChild(empty);
-		}
-
-		// Days
-		for (let i = 1; i <= daysInMonth; i++) {
-			const dayBtn = document.createElement('div');
-			dayBtn.className = 'calendar__day';
-			dayBtn.innerText = i;
-
-			const dateString =
-				year +
-				'-' +
-				String(month + 1).padStart(2, '0') +
-				'-' +
-				String(i).padStart(2, '0');
-			const dayEvents = events.filter((e) => e.date === dateString);
-
-			if (dayEvents.length > 0) {
-				dayBtn.classList.add('calendar__day--has-event');
-			}
-
-			dayBtn.onclick = () => {
-				document
-					.querySelectorAll('.calendar__day')
-					.forEach((d) => d.classList.remove('calendar__day--selected'));
-				dayBtn.classList.add('calendar__day--selected');
-				showEvents(dayEvents);
-			};
-
-			daysEl.appendChild(dayBtn);
-		}
-	}
-
-	function showEvents(dayEvents) {
-		if (dayEvents.length === 0) {
-			detailsEl.innerHTML =
-				'<p class="sidebar__empty">No events scheduled for this day.</p>';
-			return;
-		}
-
-		detailsEl.innerHTML = dayEvents
-			.map(
-				(e) =>
-					'<div class="event-card"><span class="event-card__time">' +
-					e.time +
-					'</span><h5 class="event-card__title">' +
-					e.title +
-					'</h5><p class="event-card__desc">' +
-					e.desc +
-					'</p></div>',
-			)
-			.join('');
-	}
-
-	if (prevBtn)
-		prevBtn.onclick = () => {
-			currentDate.setMonth(currentDate.getMonth() - 1);
-			renderCalendar();
-		};
-	if (nextBtn)
-		nextBtn.onclick = () => {
-			currentDate.setMonth(currentDate.getMonth() + 1);
-			renderCalendar();
-		};
-
-	if (daysEl) renderCalendar();
-</script>
