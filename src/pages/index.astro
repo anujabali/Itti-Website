@@ -1,4 +1,4 @@
-﻿---
+---
 import PLATES from '../data/plates.json';
 import Base from '../layouts/Base.astro';
 import PlateCredit from '../components/home/PlateCredit.astro';
@@ -13,13 +13,13 @@ import JoinUs from '../components/home/JoinUs.astro';
 import SiteFooter from '../components/layout/SiteFooter.astro';
 
 /**
- * The opening arc â€” the museum.
+ * The opening arc — the museum.
  *
  * The unit is a MOVEMENT, not a screen. A movement is one uncut plate, filling
  * the frame edge to edge, that pans slowly downward for as long as the movement
  * lasts. Over it ride one or more BEATS: a line of the poem that pins dead
  * still, holds, then scrolls away so the next can arrive. The picture never
- * cuts inside a movement â€” which is how the first two lines read as one
+ * cuts inside a movement — which is how the first two lines read as one
  * continuous descent through the Cajal rather than as two slides.
  *
  * Between movements there is no dissolve. One simply scrolls off and the next
@@ -37,7 +37,7 @@ const plateWidths = (plate: string) => {
 	const widths = PLATE_WIDTHS[plate];
 	if (!widths)
 		throw new Error(
-			`No plate variants built for "${plate}" â€” run scripts/build-plates.mjs.`,
+			`No plate variants built for "${plate}" — run scripts/build-plates.mjs.`,
 		);
 	return widths;
 };
@@ -65,12 +65,12 @@ const MOVEMENTS = [
 		labelSide: 'right',
 		credit: {
 			plate: 'I',
-			artist: 'Santiago RamÃ³n y Cajal',
+			artist: 'Santiago Ramón y Cajal',
 			title: 'Purkinje cell of the cerebellum',
 			year: '1899',
 			collection: 'Museo Cajal, Instituto Cajal, CSIC, Madrid',
 			licence: 'Public domain',
-			note: 'One nerve cell from the cerebellum, stained by hand and drawn from the slide. Look at it long enough and you lose track of what it is: a tree in winter, the roots under a wood, the vessels feeding a lung. Branching is what living things do when they have to reach everywhere at once â€” so the same shape arrives in a mind, in a forest, in a body. All three of our concerns are already here, in one drawing. Cajal was arguing something as well: that a brain is not one web but a crowd of separate cells, each meeting the next.',
+			note: 'One nerve cell from the cerebellum, stained by hand and drawn from the slide. Look at it long enough and you lose track of what it is: a tree in winter, the roots under a wood, the vessels feeding a lung. Branching is what living things do when they have to reach everywhere at once — so the same shape arrives in a mind, in a forest, in a body. All three of our concerns are already here, in one drawing. Cajal was arguing something as well: that a brain is not one web but a crowd of separate cells, each meeting the next.',
 			programme: 'Neurodivergence',
 			programmeHref: '#turn',
 		},
@@ -88,7 +88,7 @@ const MOVEMENTS = [
 			{
 				id: 'met',
 				line: 'A mind met, not&nbsp;mended.',
-				// Opposite corner, high â€” the composition turns while the picture
+				// Opposite corner, high — the composition turns while the picture
 				// keeps going.
 				side: 'left',
 				y: 34,
@@ -100,7 +100,7 @@ const MOVEMENTS = [
 		id: 'body',
 		carry: 1,
 		plate: 'thorax',
-		// A push in. Barely any travel, a slow close on the chest â€” the camera
+		// A push in. Barely any travel, a slow close on the chest — the camera
 		// leaning toward the thing rather than moving past it. Pan and zoom are
 		// cut with the hold: the same journey over less scroll would be the same
 		// picture moving further per frame, which is the opposite of shorter and
@@ -111,8 +111,8 @@ const MOVEMENTS = [
 		credit: {
 			plate: 'II',
 			artist: 'Nicolas-Henri Jacob, for J. M. Bourgery',
-			title: "TraitÃ© complet de l'anatomie de l'homme, Pl. 42",
-			year: '1831â€“54',
+			title: "Traité complet de l'anatomie de l'homme, Pl. 42",
+			year: '1831–54',
 			collection: 'Hand-coloured lithograph',
 			licence: 'Public domain',
 			note: 'The chest opened and drawn from the body itself, life-size and in colour: nerves in white, vessels in red, branching through a person exactly as the cell branched through a slide. Bourgery spent twenty years on the atlas and died before the last volume was printed; Jacob drew every plate from dissection. None of it was made to shock. It was made so that someone could see what was there before they had to act on it, which is the whole of catching something early.',
@@ -123,7 +123,7 @@ const MOVEMENTS = [
 			{
 				id: 'caught',
 				line: 'A cancer caught, not&nbsp;carried.',
-				// Dead centre, back to the right â€” the stillest position on the
+				// Dead centre, back to the right — the stillest position on the
 				// page, for the plainest line in the poem.
 				side: 'right',
 				y: 50,
@@ -139,7 +139,7 @@ const MOVEMENTS = [
 		carry: 1,
 		plate: 'bird',
 		// A lift. The only photograph in the arc, and the only living thing in
-		// it â€” a drawing, a drawing, then something with a pulse. Middling
+		// it — a drawing, a drawing, then something with a pulse. Middling
 		// travel and a gentle push, so the frame closes on the bird as the arc
 		// resolves.
 		pan: 0.21,
@@ -152,7 +152,7 @@ const MOVEMENTS = [
 			year: '2023',
 			collection: 'Arizona-Sonora Desert Museum',
 			licence: 'CC BY-SA 4.0',
-			note: 'A bird on a nest, alive, watching back through a screen of twigs â€” and the twigs branch the way the cell did and the vessels did, because that is how living things solve reaching. The first two plates had to be stained or cut open before anyone could see them. This one needed someone to be there, and to leave afterwards. The difference between a species drawn and a species photographed is the difference this whole page is about.',
+			note: 'A bird on a nest, alive, watching back through a screen of twigs — and the twigs branch the way the cell did and the vessels did, because that is how living things solve reaching. The first two plates had to be stained or cut open before anyone could see them. This one needed someone to be there, and to leave afterwards. The difference between a species drawn and a species photographed is the difference this whole page is about.',
 			programme: 'Conservation',
 			programmeHref: '#turn',
 		},
@@ -161,7 +161,7 @@ const MOVEMENTS = [
 				id: 'saved',
 				line: 'A forest saved, not&nbsp;mourned.',
 				// Low and left, so the bird rises out of the line and the arc ends
-				// at the bottom of the frame â€” which is where the turn begins.
+				// at the bottom of the frame — which is where the turn begins.
 				side: 'left',
 				y: 62,
 				hold: 170,
@@ -174,8 +174,8 @@ const MOVEMENTS = [
  * The arc as slides.
  *
  * Every beat of the poem becomes one screen. A scroll gesture moves the page
- * to the next screen and the browser snaps it there; what happens then â€” the
- * dissolve, the camera, the words arriving â€” runs on its own fixed clock and
+ * to the next screen and the browser snaps it there; what happens then — the
+ * dissolve, the camera, the words arriving — runs on its own fixed clock and
  * does not care how fast anybody scrolled. That is the whole change. The old
  * arc welded every one of those to the scroll offset, so the rate a picture
  * faded at was whatever rate the page happened to be moving, and a wheel notch
@@ -230,7 +230,7 @@ Because care can bring light, even during the darkest days.`,
 		back: `The Earth gives us everything; now it is our turn to give back.
 Every drop saved, every breath protected and every patch of land restored matters.
 Small actions today can keep our planet alive for tomorrow.`,
-		href: '/conservation',
+		href: '/commitments/conservation',
 		accent: 'sage' as const,
 		mark: 'claw',
 		whatsappUrl: 'https://chat.whatsapp.com/KXxQHZs6l2QHBaOrVgcL0n?mode=gi_t',
@@ -239,7 +239,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 		name: 'Suicide Prevention',
 		line: 'Support and care when it matters most.',
 		back: 'Every life is precious and worth fighting for.\nWe are here to provide a safe space, resources, and emotional support.\nReach out, because you are never truly alone.',
-		href: '#',
+		href: '/join',
 		accent: 'teal' as const,
 	},
 ];
@@ -253,7 +253,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 	{
 		/* `data-opening` is in the markup rather than added by script, so the first
 	    picture is transparent from the very first paint and can arrive rather
-	    than appear. It is taken off once that picture has decoded â€” see the
+	    than appear. It is taken off once that picture has decoded — see the
 	    stylesheet, and the script at the foot of the page. */
 	}
 	<div class="arc" data-opening>
@@ -262,7 +262,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 
 		    Each movement used to carry a frame of its own, which meant that at
 		    every hand-over one frame genuinely unpinned and travelled away while
-		    the next arrived â€” and everything behind that had to be corrected for.
+		    the next arrived — and everything behind that had to be corrected for.
 		    This frame pins at the top of the arc and stays there until the arc is
 		    over. The pictures inside it never move; one simply dissolves into the
 		    one behind it. There is no moment when the frame is between pictures,
@@ -292,7 +292,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 									{
 									/* All three are fetched, not just the first. Lazy-loading the
 									    second and third meant the browser went looking for a
-									    1440Ã—1992 picture at the moment the dissolve wanted it, and
+									    1440×1992 picture at the moment the dissolve wanted it, and
 									    a fetch plus a decode in the middle of a hand-over is the
 									    stutter. They queue behind the first rather than competing
 									    with it. */ }
@@ -366,7 +366,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 		</div>
 	</div>
 
-	<!-- â”€â”€ The turn: one gear-change, everything at once â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+	<!-- ── The turn: one gear-change, everything at once ────────────────── -->
 	<div class="light" data-light-zone>
 		<section class="turn" id="turn" aria-labelledby="commitments-heading">
 			<div class="turn__head u-fade">
@@ -381,14 +381,31 @@ Small actions today can keep our planet alive for tomorrow.`,
 				</p>
 			</div>
 
-			<div class="pillars">
+			{
+				/* The row takes its column count from the data. Fixed at three, a
+			    fourth commitment landed alone on a second row beside an empty
+			    gap. */
+			}
+			<div class="pillars" style={`--cols: ${PILLARS.length}`}>
 				{PILLARS.map((pillar) => <PillarCard {...pillar} />)}
-				<div
-					style="grid-column: span 2; height: 100%; display: flex; flex-direction: column;"
-				>
-					<EventCalendar />
-				</div>
 			</div>
+		</section>
+
+		{
+			/* The calendar was set inside the commitments grid, where it was read as
+		    a fourth commitment and stretched the card beside it to its own height.
+		    What is on next week is not what the Foundation stands for, so it is its
+		    own section. */
+		}
+		<section class="diary" aria-labelledby="diary-heading">
+			<div class="diary__head">
+				<p class="diary__eyebrow">
+					<span class="diary__eyebrow-rule" aria-hidden="true"></span>
+					Events
+				</p>
+				<h2 class="diary__title" id="diary-heading">What is coming up.</h2>
+			</div>
+			<EventCalendar />
 		</section>
 
 		<Shop />
@@ -405,12 +422,12 @@ Small actions today can keep our planet alive for tomorrow.`,
 		/* Where the reader was.
 
 	    Blocking, and last in the document, so it runs after the page has a
-	    height and before the first paint â€” a restore done any later is a jump
+	    height and before the first paint — a restore done any later is a jump
 	    the reader watches happen.
 
 	    Only on a reload or a back, never on arriving here from somewhere else:
 	    following a link to the landing page should land on the landing page.
-	    And never into the opening â€” the deck does not come back on the line it
+	    And never into the opening — the deck does not come back on the line it
 	    was left on, so a remembered place above the arc's last pixel means
 	    nothing and the page starts at the top. Below it, which is the whole of
 	    the rest of the site, the place is kept. */
@@ -450,7 +467,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 					root.style.scrollBehavior = had;
 					/* And the bar starts on the ground it is actually standing on.
 					   It works this out for itself, but not until its own script has
-					   run, which is after the first paint â€” so a reload into the page
+					   run, which is after the first paint — so a reload into the page
 					   put a bar in its dark state over cream for a frame or two, which
 					   is a white lockup on a white ground. Below the arc there is only
 					   one ground, so this needs no measurement. */
@@ -476,7 +493,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 		/* The deck's curve is right for the deck: a hand-over walks the camera
 		   nine per cent of a tall plate, so even a steep middle is seven pixels
 		   a frame and reads as a drift. The way out travels a whole screen, and
-		   on the same curve that steepness became thirty-five pixels a frame â€”
+		   on the same curve that steepness became thirty-five pixels a frame —
 		   four times its own average. It stood still for two hundred
 		   milliseconds, covered two thirds of the screen in five hundred, then
 		   crawled the last quarter for eight hundred.
@@ -510,7 +527,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 		overflow: clip;
 		background: #0a0c0d;
 		/* A stacking context of its own, so the layers inside can be ordered
-		   against each other without the frame itself rising above the poem â€”
+		   against each other without the frame itself rising above the poem —
 		   which is laid over it by the movements that follow it in the markup. */
 		isolation: isolate;
 	}
@@ -523,7 +540,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 		/* A layer that has dissolved to nothing is still a full-frame box on top
 		   of the ones behind it, and it would go on catching every click. Only
 		   the wall label inside takes the pointer, and only one label is ever
-		   live â€” the rest are marked inert as they fade. */
+		   live — the rest are marked inert as they fade. */
 		pointer-events: none;
 	}
 
@@ -553,7 +570,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 	   scrolling could tell, and a page that never changes colour reads as a
 	   long flat sheet however good the type on it is. There are seven now, laid
 	   down the page so the light moves as the reader does and no two sections
-	   sit on quite the same ground â€” warm at the commitments, cool through the
+	   sit on quite the same ground — warm at the commitments, cool through the
 	   figures, green at the events, back to the brand's own teal where the page
 	   asks something of you. They are wide and weak on purpose: the strongest
 	   is fourteen per cent of its colour, and each one is most of a screen
@@ -610,7 +627,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 		overflow-x: clip;
 	}
 
-	/* â”€â”€ Movements â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+	/* ── Movements ──────────────────────────────────────────────────────── */
 
 	/* The slides are stacked on one screen, not laid out down the page. A scroll
 	   gesture changes which one is showing; the page itself does not move until
@@ -671,7 +688,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 	   leaves the camera where it was and lets the fade do the work. */
 	/* Where the camera stands, plus how far the picture still has to come.
 	   `--arrive` is one at the instant a picture appears and nought a frame
-	   later, so it arrives already moving and settles â€” which is what made the
+	   later, so it arrives already moving and settles — which is what made the
 	   first transition the one worth copying. A picture that only fades in is a
 	   different kind of event from a picture that travels, and the two never
 	   matched however long the fade was.
@@ -680,7 +697,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 	   plates are anchored at the top of the frame, so it was the one term here
 	   that pushed a picture DOWN, and a picture pushed down leaves a band of
 	   bare frame above it. The pictures ahead are deliberately left painted
-	   behind the one showing, so that band was not bare at all â€” it was the next
+	   behind the one showing, so that band was not bare at all — it was the next
 	   picture, seventy-eight pixels of it across the top of the screen, on the
 	   opening and on both of the hand-overs that change picture. Which are
 	   exactly the two that never felt as good as the first.
@@ -709,8 +726,8 @@ Small actions today can keep our planet alive for tomorrow.`,
 	   Over everything in the frame, and in the frame's own colour, which is the
 	   near-black the plates are graded into. It has to be a single sheet above
 	   the whole stack: the three pictures sit one behind another and are opaque
-	   by design â€” the ones ahead stay painted so a hand-over never rasterises a
-	   full screen mid-fade â€” so fading the pictures themselves lets the reader
+	   by design — the ones ahead stay painted so a hand-over never rasterises a
+	   full screen mid-fade — so fading the pictures themselves lets the reader
 	   look straight through the first to the second and third, and what rises is
 	   all three at once. Fading the sheet reveals the frame already composed.
 
@@ -729,18 +746,18 @@ Small actions today can keep our planet alive for tomorrow.`,
 
 	:global(.js) .arc[data-opening] .arc__open {
 		opacity: 1;
-		/* Not animated on the way in â€” it is simply how the page starts. */
+		/* Not animated on the way in — it is simply how the page starts. */
 		transition: none;
 	}
 
 	/* The exit. Once the deck has finished, the last picture pushes in as the
-	   page is scrolled â€” so leaving the arc is a move the reader is making
+	   page is scrolled — so leaving the arc is a move the reader is making
 	   rather than a section sliding away under them. `scale` is its own
 	   property, so it multiplies the camera's transform instead of fighting it,
 	   and nothing transitions it: it is welded to the scroll on purpose, because
 	   here the reader is the one doing the moving.
 
-	   The plate showing is given a layer of its own. Scaling a 1440Ã—1992 picture
+	   The plate showing is given a layer of its own. Scaling a 1440×1992 picture
 	   without one means the browser re-rasterises it every frame the scroll
 	   moves, which is the whole of why the zoom was not smooth. One layer, and
 	   only ever the one on screen. */
@@ -750,7 +767,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 
 	/* The last gesture is a hand-over like the others: the bird travels on the
 	   same clock and the same curve, and the page comes up to meet it. Nothing
-	   here follows the scroll â€” the scroll is what the script is moving. */
+	   here follows the scroll — the scroll is what the script is moving. */
 	.arc[data-exiting] .arc__layer[data-on] .mv__plate {
 		--exit: 1;
 		/* On the departure's own curve, not the deck's. The picture pushing in
@@ -771,7 +788,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 	/* Cross-fading two full-screen pictures, each with its own vignette and
 	   grain over it, is a lot of painting to redo sixty times a second. While a
 	   hand-over is running they are given layers of their own and the fade
-	   becomes something the compositor does â€” which is why the first transition
+	   becomes something the compositor does — which is why the first transition
 	   always felt better than the other two: that one moves a transform, and a
 	   transform was already cheap.
 
@@ -796,7 +813,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 	   bitmap to build when one is wanted, and what was left behind was two
 	   full-screen photographs composited on every frame of a move for nobody to
 	   see. Measured over interleaved runs, taking them out nearly halves the
-	   walk down the first plate and takes a third off the first hand-over â€” and
+	   walk down the first plate and takes a third off the first hand-over — and
 	   the worst frame at the start of a hand-over, which is the one the old
 	   reasoning was protecting, gets better rather than worse.
 
@@ -869,7 +886,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 			linear-gradient(to top, rgba(8, 9, 10, 0.8), transparent 32%);
 	}
 
-	/* â”€â”€ Beats â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+	/* ── Beats ──────────────────────────────────────────────────────────── */
 
 	/* Laid back over the stage, so the type is on the picture, not after it. */
 	.slide__beat {
@@ -880,7 +897,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 
 	/* A quiet, symmetric edge darkening that never changes. The previous
 	   version cross-shifted its weight from one side to the other as the beats
-	   handed over, which read as a black cloud drifting across the picture â€”
+	   handed over, which read as a black cloud drifting across the picture —
 	   the most distracting thing on the page. Type legibility now comes from
 	   the glyph shadow, which is local to the letters and moves nothing. */
 	.mv__scrim {
@@ -893,11 +910,11 @@ Small actions today can keep our planet alive for tomorrow.`,
 			linear-gradient(to left, rgba(8, 9, 10, 0.46), transparent 40%);
 	}
 
-	/* â”€â”€ The wall label â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+	/* ── The wall label ─────────────────────────────────────────────────── */
 
 	/* Out of flow and spanning the whole movement, with a sticky child inside.
 	   Restoring the flow with a large bottom margin instead shrinks the area a
-	   sticky element is allowed to travel in â€” to zero, in this case â€” so the
+	   sticky element is allowed to travel in — to zero, in this case — so the
 	   label never pinned and simply scrolled away. */
 	/* Positioned on the element itself, not on its child. A scoped selector
 	   cannot reach into a child component's root, so `.mv__label > *` silently
@@ -918,7 +935,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 		left: var(--gutter);
 	}
 
-	/* Grain, over the picture rather than over the whole page â€” film has it,
+	/* Grain, over the picture rather than over the whole page — film has it,
 	   and a clean gradient is the fastest way to look like a render. */
 	.mv__grain {
 		position: absolute;
@@ -930,7 +947,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 	}
 
 	.slide__beat .line {
-		/* Still selectable â€” it is the words that catch the pointer, not the
+		/* Still selectable — it is the words that catch the pointer, not the
 		   empty frame around them. */
 		pointer-events: auto;
 		position: absolute;
@@ -957,7 +974,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 		/* Splitting the line into inline-blocks removes the whitespace between
 		   words along with it. This puts the space back. */
 		margin-right: 0.32em;
-		/* Opacity only. The words arrive exactly where they will sit â€” nothing
+		/* Opacity only. The words arrive exactly where they will sit — nothing
 		   rises into position.
 
 		   No will-change. Promising a permanent layer for every word promoted
@@ -970,7 +987,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 	/* The line arrives as one thing. It used to come in a word at a time, each
 	   on its own thousand-millisecond animation staggered behind the last, so a
 	   four-word line was still assembling one and a half seconds after the
-	   gesture that called it â€” which is the lag. */
+	   gesture that called it — which is the lag. */
 	.word {
 		opacity: 1;
 	}
@@ -983,7 +1000,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 		display: inline-block;
 	}
 
-	/* The poem is set in inscriptional capitals â€” the title-card register â€”
+	/* The poem is set in inscriptional capitals — the title-card register —
 	   while everything else stays in Bodoni. Caps need their own tuning: they
 	   run much wider, so the measure opens up, and they need real leading and a
 	   little positive tracking rather than the negative tracking lowercase
@@ -1016,7 +1033,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 		opacity: 0.35;
 	}
 
-	/* â”€â”€ The turn â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+	/* ── The turn ───────────────────────────────────────────────────────── */
 
 	.turn {
 		padding: clamp(5rem, 14vh, 9.5rem) var(--gutter) clamp(4.5rem, 10vh, 7.5rem);
@@ -1080,13 +1097,69 @@ Small actions today can keep our planet alive for tomorrow.`,
 		text-wrap: pretty;
 	}
 
-	/* Three, so each gets a third of the width rather than a quarter â€” the
+	/* Three, so each gets a third of the width rather than a quarter — the
 	   fourth card was Mental Health, which is not one of the bodies of work. */
 	.pillars {
 		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
+		grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr));
 		gap: clamp(1rem, 2.2vw, 1.75rem);
 		margin-top: clamp(2.75rem, 6vh, 4rem);
+	}
+
+	/* Four across needs more room than three. Below that they pair off before
+	   they stack, so a fourth commitment never leaves a hole in the row. */
+	@media (max-width: 80rem) {
+		.pillars {
+			grid-template-columns: repeat(min(var(--cols, 3), 3), minmax(0, 1fr));
+		}
+	}
+
+	@media (max-width: 72rem) {
+		.pillars {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	/* The section the calendar sits in, on the same measure as the rest. */
+	.diary {
+		padding: clamp(1rem, 3vh, 2.5rem) var(--gutter) clamp(3rem, 7vh, 5rem);
+	}
+
+	.diary__head {
+		display: grid;
+		gap: 0.9rem;
+		margin: 0 auto clamp(1.75rem, 4vh, 2.5rem);
+	}
+
+	.diary__eyebrow {
+		display: flex;
+		align-items: center;
+		gap: 0.85rem;
+		margin: 0;
+		font-size: 0.6875rem;
+		font-weight: 600;
+		letter-spacing: 0.2em;
+		text-transform: uppercase;
+		color: var(--teal);
+	}
+
+	.diary__eyebrow-rule {
+		display: block;
+		width: 2.5rem;
+		height: 1px;
+		background: currentColor;
+		opacity: 0.55;
+	}
+
+	.diary__title {
+		margin: 0;
+		font-family: var(--face-bodoni);
+		font-size: clamp(2rem, 4.4vw, 3.25rem);
+		font-weight: var(--display-weight);
+		line-height: 1.06;
+		letter-spacing: -0.015em;
+		color: var(--ink);
+		text-wrap: balance;
 	}
 
 	@media (max-width: 62rem) {
@@ -1139,7 +1212,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 	 *
 	 * The page does not move through it. It is one screen, the pictures and the
 	 * lines are stacked on that screen, and a scroll gesture advances to the next
-	 * one â€” the way a slide deck answers a click. What happens then is a fixed
+	 * one — the way a slide deck answers a click. What happens then is a fixed
 	 * transition on its own clock, so a nudge and a flick produce the same
 	 * hand-over. That is the point of doing it this way: nothing the reader does
 	 * can change the speed of the thing they are watching.
@@ -1170,8 +1243,8 @@ Small actions today can keep our planet alive for tomorrow.`,
 		   Waiting on the decode rather than the load, because a picture that has
 		   arrived but not been decoded still paints as nothing, and fading up to
 		   nothing is a fade the reader watches happen twice. The timeout is the
-		   promise that a decode which never resolves â€” a picture that fails, a
-		   browser without `decode` â€” cannot leave the frame empty for ever. */
+		   promise that a decode which never resolves — a picture that fails, a
+		   browser without `decode` — cannot leave the frame empty for ever. */
 		const first = arc.querySelector<HTMLImageElement>('[data-layer] .mv__plate img');
 		const open = () => arc.removeAttribute('data-opening');
 		if (first?.decode) first.decode().then(open, open);
@@ -1184,7 +1257,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 		   wherever it was, which was right when nothing was allowed to be
 		   remembered and became the whole of the reload problem the moment
 		   something was: the page restored to where the reader had been, and then
-		   this dragged it back to the top â€” smoothly, because the root scrolls
+		   this dragged it back to the top — smoothly, because the root scrolls
 		   smoothly, so it glided through every section on the way. Below the
 		   arc's last pixel there is nothing here to correct. */
 		const tall = arc.offsetHeight;
@@ -1270,7 +1343,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 				} else {
 					// A different picture. It is placed a little back with no
 					// transition, the position is committed, and then it is released
-					// â€” so it arrives travelling rather than simply being there, on
+					// — so it arrives travelling rather than simply being there, on
 					// the same clock and the same curve as the walk down the first
 					// plate.
 					plateEl.style.transition = 'none';
@@ -1285,8 +1358,8 @@ Small actions today can keep our planet alive for tomorrow.`,
 
 			arc.dataset.slide = String(index);
 			// The layer is given back the moment the arc is no longer one gesture
-			// from leaving. Taking it is left until the move has settled â€” see
-			// `step` â€” because a compositor layer made in the middle of a
+			// from leaving. Taking it is left until the move has settled — see
+			// `step` — because a compositor layer made in the middle of a
 			// transition is a stutter in that transition, which is the camera
 			// jerking on the way to the last line.
 			if (index !== last) arc.removeAttribute('data-last');
@@ -1295,7 +1368,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 
 		show(0);
 
-		/** True while the deck is the screen â€” which is the only time it answers
+		/** True while the deck is the screen — which is the only time it answers
 		 *  a gesture rather than letting the page have it. */
 		const holdsScreen = () => arc.getBoundingClientRect().top >= -1;
 
@@ -1323,7 +1396,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 					locked = false;
 					/* Giving the layers back, and taking the one the way out needs,
 					   are both changes to what the compositor is holding, and either
-					   costs a frame. Measured, that frame landed around 1975ms â€”
+					   costs a frame. Measured, that frame landed around 1975ms —
 					   thirty milliseconds, a quarter of a second after the picture
 					   had settled, every single time. Nothing was moving, but the
 					   reader had only just stopped watching something move, and a
@@ -1331,8 +1404,8 @@ Small actions today can keep our planet alive for tomorrow.`,
 					   far as anyone can tell.
 
 					   So it waits for a frame the browser says it has nothing else to
-					   do in. The lock is released on time regardless â€” that gates the
-					   next gesture and cannot be late â€” and the token means a reader
+					   do in. The lock is released on time regardless — that gates the
+					   next gesture and cannot be late — and the token means a reader
 					   who gestures again before the idle frame arrives does not have
 					   the layers pulled out from under the move they just started. */
 					const later =
@@ -1363,7 +1436,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 		 * Two things went wrong for want of reading the run rather than the
 		 * event. One flick could turn into two slides. And every event held back
 		 * during the way out was delivered the instant the guard lifted, sliding
-		 * the page a quarter of a screen past the landing on its own â€” which is
+		 * the page a quarter of a screen past the landing on its own — which is
 		 * the jerk at the end of the move, measured at two hundred and forty-five
 		 * pixels arriving over a second after the arc had already settled.
 		 *
@@ -1372,7 +1445,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 		 * cap is only there so nothing can hold the page for ever.
 		 */
 		const RUN_GAP = 220;
-		/* Generous, because it is not what ends a run â€” a gap or a rising delta
+		/* Generous, because it is not what ends a run — a gap or a rising delta
 		   is, and a hand coming back on the trackpad does both. This is only the
 		   promise that nothing can hold the page for ever. At fifteen hundred a
 		   very long flick still got six pixels past the landing once its tail
@@ -1409,7 +1482,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 		 *
 		 * `locked` is in here deliberately. Without it the gesture that called the
 		 * last hand-over was consumed, and the very next one scrolled the page
-		 * while that hand-over was still running â€” the picture sliding away under
+		 * while that hand-over was still running — the picture sliding away under
 		 * its own dissolve, which is the jerk. The deck keeps the page still until
 		 * it has finished what it was asked to do, and only then lets go.
 		 */
@@ -1507,14 +1580,14 @@ Small actions today can keep our planet alive for tomorrow.`,
 		 *
 		 * The last gesture is a hand-over like the other three. The bird travels
 		 * and fades on the same clock and the same curve, and the page is carried
-		 * up to meet it â€” by the script, not by the reader. Nothing here follows
+		 * up to meet it — by the script, not by the reader. Nothing here follows
 		 * the scroll, which is the whole point: a gesture asks for the move, and
 		 * the move takes the time it takes.
 		 */
 		let leaving = false;
 
 		/**
-		 * The way out, as a fourth movement â€” and moved by the compositor.
+		 * The way out, as a fourth movement — and moved by the compositor.
 		 *
 		 * This used to scroll the window from a rAF loop, which is the one thing
 		 * on the page that could never be smooth: a scroll position written by
@@ -1523,8 +1596,8 @@ Small actions today can keep our planet alive for tomorrow.`,
 		 * page under it was the shake.
 		 *
 		 * So the page is not scrolled at all while anybody is looking. The arc is
-		 * pinned to the viewport, the page is put where it will end up â€” behind
-		 * the arc, so nothing shows â€” and then the arc alone is lifted away on a
+		 * pinned to the viewport, the page is put where it will end up — behind
+		 * the arc, so nothing shows — and then the arc alone is lifted away on a
 		 * transform, which the compositor runs without the main thread. When it
 		 * has gone the arc is handed back to the flow at exactly the position the
 		 * page is already at, so there is nothing to correct.
@@ -1537,7 +1610,7 @@ Small actions today can keep our planet alive for tomorrow.`,
 			const tall = arc.offsetHeight;
 			const light = document.querySelector<HTMLElement>('.light');
 			// The scroll jumps a whole screen in a moment, and the bar reads the
-			// scroll â€” so without this it turns light while the arc is still
+			// scroll — so without this it turns light while the arc is still
 			// covering everything. It holds what it has until the arc has gone.
 			const bar = document.querySelector<HTMLElement>('[data-nav]');
 			bar?.setAttribute('data-hold', '');
@@ -1545,21 +1618,21 @@ Small actions today can keep our planet alive for tomorrow.`,
 			const had = root.style.scrollBehavior;
 
 			/* The page is put a whole screen down in one step, behind the arc, so
-			   nothing of the page itself shows it happen â€” but the scrollbar is
+			   nothing of the page itself shows it happen — but the scrollbar is
 			   not behind the arc. Its thumb leaps a sixth of the track the instant
 			   the position is set, before the picture has moved at all, and a
 			   thumb leaping is the one part of this move that was never animated.
 			   Taken away for the length of it.
 
 			   Only where the bar is an overlay, which is the only case where
-			   removing it costs no layout. Where it takes real width â€” Windows, or
-			   a Mac told always to show them â€” hiding it would reflow the whole
+			   removing it costs no layout. Where it takes real width — Windows, or
+			   a Mac told always to show them — hiding it would reflow the whole
 			   page by fifteen pixels, which is a far worse jump than the one being
 			   fixed. */
 			if (window.innerWidth - root.clientWidth === 0)
 				root.setAttribute('data-no-bar', '');
 
-			// The arc leaves the flow, so the section below takes over its height â€”
+			// The arc leaves the flow, so the section below takes over its height —
 			// otherwise the document shortens by a screen and the scroll position
 			// means something else.
 			if (light) light.style.marginTop = `${tall}px`;
@@ -1578,13 +1651,13 @@ Small actions today can keep our planet alive for tomorrow.`,
 
 			// The bar starts changing before the arc has finished leaving, so the
 			// two land together. Held to the end and released after, it changed
-			// against a page that was already there â€” which is a bar appearing
+			// against a page that was already there — which is a bar appearing
 			// rather than a bar turning. 900ms is what the lockup takes, so it is
 			// let go 900ms before the arc is gone.
 			window.setTimeout(
 				() => {
 					// The bar borrows the long turn for this one move, because here
-					// it is not following a hand â€” it is landing with the arc.
+					// it is not following a hand — it is landing with the arc.
 					if (bar) bar.dataset.turn = 'long';
 					bar?.removeAttribute('data-hold');
 					document.dispatchEvent(new Event('scroll'));

@@ -1,4 +1,4 @@
-﻿---
+---
 
 ---
 
@@ -26,6 +26,13 @@
 	</div>
 </article>
 
+<!--
+	The day cells are made by the script, so they never carry the scope attribute
+	Astro adds to markup it can see — which is why these rules are global rather
+	than scoped. Being global, every one of them is confined to `.event-calendar`
+	by hand: names like `.sidebar__title` and `.event-card` are too ordinary to be
+	let loose on a page that did not ask for them.
+-->
 <style is:global>
 	.event-calendar {
 		background: color-mix(in srgb, var(--cream) 34%, #fff);
@@ -38,27 +45,27 @@
 		overflow: hidden;
 	}
 
-	.calendar__main {
+	.event-calendar .calendar__main {
 		padding: clamp(1.5rem, 3vw, 2rem);
 		display: flex;
 		flex-direction: column;
 		gap: 1.5rem;
 	}
 
-	.calendar__header {
+	.event-calendar .calendar__header {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 	}
 
-	.calendar__title {
+	.event-calendar .calendar__title {
 		font-family: var(--face-bodoni);
 		font-size: 1.5rem;
 		color: var(--teal);
 		margin: 0;
 	}
 
-	.calendar__btn {
+	.event-calendar .calendar__btn {
 		background: transparent;
 		border: 1px solid color-mix(in srgb, var(--teal) 30%, transparent);
 		color: var(--teal);
@@ -71,11 +78,11 @@
 		transition: all 200ms ease;
 	}
 
-	.calendar__btn:hover {
+	.event-calendar .calendar__btn:hover {
 		background: color-mix(in srgb, var(--teal) 10%, transparent);
 	}
 
-	.calendar__grid-header {
+	.event-calendar .calendar__grid-header {
 		display: grid;
 		grid-template-columns: repeat(7, 1fr);
 		text-align: center;
@@ -85,14 +92,14 @@
 		margin-bottom: -0.5rem;
 	}
 
-	.calendar__grid {
+	.event-calendar .calendar__grid {
 		display: grid;
 		grid-template-columns: repeat(7, 1fr);
 		gap: 0.5rem;
 		text-align: center;
 	}
 
-	.calendar__day {
+	.event-calendar .calendar__day {
 		aspect-ratio: 1;
 		display: flex;
 		flex-direction: column;
@@ -106,15 +113,15 @@
 		position: relative;
 	}
 
-	.calendar__day:hover {
+	.event-calendar .calendar__day:hover {
 		background: color-mix(in srgb, var(--teal) 10%, transparent);
 	}
 
-	.calendar__day--muted {
+	.event-calendar .calendar__day--muted {
 		color: color-mix(in srgb, var(--ink) 30%, transparent);
 	}
 
-	.calendar__day--has-event::after {
+	.event-calendar .calendar__day--has-event::after {
 		content: '';
 		display: block;
 		width: 6px;
@@ -124,37 +131,37 @@
 		margin-top: 2px;
 	}
 
-	.calendar__day--selected {
+	.event-calendar .calendar__day--selected {
 		background: var(--teal) !important;
 		color: #fff !important;
 	}
 
-	.calendar__sidebar {
+	.event-calendar .calendar__sidebar {
 		background: color-mix(in srgb, var(--teal) 8%, transparent);
 		padding: clamp(1.5rem, 3vw, 2rem);
 		border-left: 1px solid rgba(44, 39, 33, 0.09);
 	}
 
-	.sidebar__title {
+	.event-calendar .sidebar__title {
 		font-family: var(--face-bodoni);
 		font-size: 1.25rem;
 		color: var(--teal-deep);
 		margin: 0 0 1.5rem 0;
 	}
 
-	.sidebar__details {
+	.event-calendar .sidebar__details {
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
 	}
 
-	.sidebar__empty {
+	.event-calendar .sidebar__empty {
 		color: var(--ink-soft);
 		font-size: 0.9rem;
 		line-height: 1.5;
 	}
 
-	.event-card {
+	.event-calendar .event-card {
 		background: #fff;
 		border: 1px solid rgba(44, 39, 33, 0.09);
 		border-radius: 8px;
@@ -162,7 +169,7 @@
 		box-shadow: 0 2px 4px rgba(44, 39, 33, 0.04);
 	}
 
-	.event-card__time {
+	.event-calendar .event-card__time {
 		font-size: 0.75rem;
 		font-weight: 600;
 		color: var(--sage);
@@ -172,14 +179,14 @@
 		display: block;
 	}
 
-	.event-card__title {
+	.event-calendar .event-card__title {
 		font-size: 0.95rem;
 		font-weight: 500;
 		color: var(--ink);
 		margin: 0 0 0.5rem 0;
 	}
 
-	.event-card__desc {
+	.event-calendar .event-card__desc {
 		font-size: 0.85rem;
 		color: var(--ink-soft);
 		margin: 0;
@@ -190,7 +197,7 @@
 		.event-calendar {
 			grid-template-columns: 1fr;
 		}
-		.calendar__sidebar {
+		.event-calendar .calendar__sidebar {
 			border-left: none;
 			border-top: 1px solid rgba(44, 39, 33, 0.09);
 		}
@@ -243,7 +250,10 @@
 		},
 	];
 
-	let currentDate = new Date(2026, 9, 1); // Oct 2026
+	// Open on the month the reader is actually in. Pinned to a literal date it
+	// would still be showing October long after October.
+	const today = new Date();
+	let currentDate = new Date(today.getFullYear(), today.getMonth(), 1);
 
 	const monthYearEl = document.getElementById('month-year');
 	const daysEl = document.getElementById('calendar-days');
